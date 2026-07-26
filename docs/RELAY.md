@@ -28,7 +28,7 @@
 | cycle_parity | even (next: feature) |
 | next_action | relay-031 Pull-to-refresh on Home |
 | blockers | [] |
-| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, running) |
+| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, stopped — restart needed) |
 
 ---
 
