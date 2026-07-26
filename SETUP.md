@@ -14,7 +14,16 @@ PWA on GitHub Pages (`https://p1927.github.io/Habits/`) + Mac backend via Tailsc
 ```bash
 cp .env.example .env
 # Fill: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MINIMAX_API_KEY
-# After Tailscale Funnel: HABITS_PUBLIC_URL, GOOGLE_REDIRECT_URI, NEXT_PUBLIC_LIVEKIT_URL
+# After Tailscale Funnel: HABITS_PUBLIC_URL, GOOGLE_REDIRECT_URI
+# Voice: run local-voice-ai via ./scripts/up-with-voice.sh; funnel ports 8080 + 7880
+```
+
+In `../local-voice-ai/.env` (copy from `.env.example`):
+
+```bash
+AGENT_PROFILE=habits
+HABITS_API_URL=http://host.docker.internal:8787
+HABITS_INTERNAL_BEARER=<bearer from step 3>
 ```
 
 Rotate `HABITS_ADMIN_SECRET` before exposing the API publicly.
@@ -40,13 +49,9 @@ curl -X POST $API/api/issue \
   -H "X-Admin-Token: $ADMIN" \
   -H "Content-Type: application/json" \
   -d '{"device_id":"phone","label":"PWA"}'
-
-# Voice agent — set as HABITS_INTERNAL_BEARER in .env
-curl -X POST $API/api/issue \
-  -H "X-Admin-Token: $ADMIN" \
-  -H "Content-Type: application/json" \
-  -d '{"device_id":"livekit-agent","label":"Voice agent"}'
 ```
+
+Use the same bearer in `../local-voice-ai/.env` as `HABITS_INTERNAL_BEARER` so the voice agent can log food and calendar events.
 
 ## 4. Tailscale Funnel
 
@@ -58,6 +63,9 @@ Updates needed in `.env`:
 
 - `HABITS_PUBLIC_URL=https://<machine>.<tailnet>.ts.net`
 - `GOOGLE_REDIRECT_URI=https://<machine>.<tailnet>.ts.net/auth/callback`
+
+In `../local-voice-ai/.env`:
+
 - `NEXT_PUBLIC_LIVEKIT_URL=wss://<machine>.<tailnet>.ts.net:7880`
 
 Google Cloud OAuth:
@@ -74,7 +82,7 @@ Google Cloud OAuth:
 | Secret | Value |
 |--------|--------|
 | `VITE_HABITS_API_URL` | `https://<machine>.<tailnet>.ts.net` |
-| `VITE_HABITS_LIVEKIT_URL` | `wss://<machine>.<tailnet>.ts.net:7880` |
+| `VITE_VOICE_UI_URL` | `https://<machine>.<tailnet>.ts.net:8080` |
 
 Push to `main` triggers [deploy-pages.yml](.github/workflows/deploy-pages.yml).
 
@@ -85,11 +93,12 @@ cd pwa && npm install && npm run dev
 # http://localhost:5173/Habits/
 ```
 
-Uses `pwa/.env.development` for API URL.
+Uses `pwa/.env.development` for API URL (`VITE_VOICE_UI_URL=http://localhost:8080`).
 
 ## Verification
 
 - [ ] `GET /healthz` returns `{"ok":true}`
 - [ ] PWA shows green status with bearer saved
 - [ ] Google connect works; food log writes to Nutrition sheet
-- [ ] Voice connects from phone (both API and LiveKit funneled)
+- [ ] Voice Agent tab shows daily context panel + local-voice-ai iframe (Docker on :8080)
+- [ ] Voice: "I had 200g paneer" logs food; "Schedule deep work at 2pm" creates calendar event

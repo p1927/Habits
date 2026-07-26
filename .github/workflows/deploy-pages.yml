@@ -51,7 +51,7 @@ jobs:
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_HABITS_API_URL: ${{ secrets.VITE_HABITS_API_URL }}
-          VITE_HABITS_LIVEKIT_URL: ${{ secrets.VITE_HABITS_LIVEKIT_URL }}
+          VITE_VOICE_UI_URL: ${{ secrets.VITE_VOICE_UI_URL }}
           VITE_GIT_COMMIT_SHA: ${{ github.sha }}
 
       - name: Setup Pages
