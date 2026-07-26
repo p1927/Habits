@@ -4,7 +4,9 @@ import { Card } from '../components/ui/Card';
 import { SwipeStack } from '../components/ui/SwipeStack';
 import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
+import { UndoToast } from '../components/UndoToast';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
+import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import {
   api,
   ApiError,
@@ -90,6 +92,15 @@ export function Home({ serverOnline }: HomeProps) {
     setMealPlanQueueCount(getMealPlanQueue().length);
   }, []);
 
+  const {
+    undoLog: mealPlanUndo,
+    undoing: mealPlanUndoing,
+    dismissUndo: dismissMealPlanUndo,
+    snapshotRows: snapshotFoodRows,
+    offerUndoFromSummary,
+    handleUndo: handleMealPlanUndo,
+  } = useMealPlanUndo(serverOnline);
+
   const refresh = useCallback(async () => {
     setMealPhotos(getTodayMealPhotos());
     syncMealPlanQueueCount();
@@ -172,6 +183,7 @@ export function Home({ serverOnline }: HomeProps) {
       setLoggingMealKey(entry.meal);
       setMealPlanMessage('');
       setError('');
+      dismissMealPlanUndo();
 
       if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
         enqueueMealPlanLog({
@@ -186,13 +198,16 @@ export function Home({ serverOnline }: HomeProps) {
         return;
       }
 
-      void api
-        .logMealPlanItem(entry.meal)
-        .then((res) => {
-          setMealPlanMessage(res.message);
+      void (async () => {
+        try {
+          const before = food ?? (await api.getFoodToday());
+          const res = await api.logMealPlanItem(entry.meal);
+          if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, entry.label)) {
+            setMealPlanMessage(res.message);
+          }
+          setFood(res.summary);
           void refresh();
-        })
-        .catch((e) => {
+        } catch (e) {
           if (isOfflineError(e)) {
             enqueueMealPlanLog({
               kind: 'item',
@@ -205,16 +220,19 @@ export function Home({ serverOnline }: HomeProps) {
             return;
           }
           setError(e instanceof Error ? e.message : 'Meal log failed');
-        })
-        .finally(() => setLoggingMealKey(null));
+        } finally {
+          setLoggingMealKey(null);
+        }
+      })();
     },
-    [serverOnline, refresh, syncMealPlanQueueCount],
+    [serverOnline, refresh, syncMealPlanQueueCount, food, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary],
   );
 
   const logAllMealPlan = useCallback(() => {
     setLoggingMeals(true);
     setMealPlanMessage('');
     setError('');
+    dismissMealPlanUndo();
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
       enqueueMealPlanLog({ kind: 'all' });
@@ -224,13 +242,16 @@ export function Home({ serverOnline }: HomeProps) {
       return;
     }
 
-    void api
-      .logMealPlanToday()
-      .then((res) => {
-        setMealPlanMessage(res.message);
+    void (async () => {
+      try {
+        const before = food ?? (await api.getFoodToday());
+        const res = await api.logMealPlanToday();
+        if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, 'All planned meals')) {
+          setMealPlanMessage(res.message);
+        }
+        setFood(res.summary);
         void refresh();
-      })
-      .catch((e) => {
+      } catch (e) {
         if (isOfflineError(e)) {
           enqueueMealPlanLog({ kind: 'all' });
           syncMealPlanQueueCount();
@@ -238,9 +259,11 @@ export function Home({ serverOnline }: HomeProps) {
           return;
         }
         setError(e instanceof Error ? e.message : 'Meal log failed');
-      })
-      .finally(() => setLoggingMeals(false));
-  }, [serverOnline, refresh, syncMealPlanQueueCount]);
+      } finally {
+        setLoggingMeals(false);
+      }
+    })();
+  }, [serverOnline, refresh, syncMealPlanQueueCount, food, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary]);
 
   async function handleShareRings() {
     setSharingRings(true);
@@ -418,7 +441,9 @@ export function Home({ serverOnline }: HomeProps) {
         <Card className="home-meal-plan-card">
           <h2>Today&apos;s meal plan</h2>
           <p className="muted">From WEEK MEALS sheet</p>
-          {mealPlanMessage && <p className="banner banner-ok home-meal-plan-msg">{mealPlanMessage}</p>}
+          {mealPlanMessage && !mealPlanUndo && (
+            <p className="banner banner-ok home-meal-plan-msg">{mealPlanMessage}</p>
+          )}
           <ul className="food-list">
             {mealPlan.map((m) => (
               <li key={m.meal} className="food-row">
@@ -528,6 +553,17 @@ export function Home({ serverOnline }: HomeProps) {
       )}
 
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
+      {mealPlanUndo && (
+        <UndoToast
+          message={`Logged ${mealPlanUndo.label}`}
+          onUndo={() => void handleMealPlanUndo(() => {
+            setMealPlanMessage('Log undone');
+            void refresh();
+          })}
+          onDismiss={dismissMealPlanUndo}
+          undoing={mealPlanUndoing}
+        />
+      )}
     </section>
   );
 }

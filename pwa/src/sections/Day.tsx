@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { Card } from '../components/ui/Card';
+import { UndoToast } from '../components/UndoToast';
+import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
@@ -41,6 +43,31 @@ interface DayProps {
   serverOnline: boolean;
 }
 
+const METRIC_COLORS: Record<string, string> = {
+  sleep: 'var(--ring-habits)',
+  work: 'var(--accent)',
+  read: 'var(--ok)',
+  speak: 'var(--warn)',
+  game: 'var(--carbs)',
+  wasted: 'var(--err)',
+};
+
+function weekStripDays(): Date[] {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - today.getDay());
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate();
+}
 const METRICS = [
   { key: 'sleep', label: 'Sleep', target: 7 },
   { key: 'work', label: 'Work', target: 4 },
@@ -89,6 +116,15 @@ export function Day({ serverOnline }: DayProps) {
     setError,
     setSyncMessage: setHabitSyncMessage,
   });
+
+  const {
+    undoLog: mealPlanUndo,
+    undoing: mealPlanUndoing,
+    dismissUndo: dismissMealPlanUndo,
+    snapshotRows: snapshotFoodRows,
+    offerUndoFromSummary,
+    handleUndo: handleMealPlanUndo,
+  } = useMealPlanUndo(serverOnline);
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -222,6 +258,7 @@ export function Day({ serverOnline }: DayProps) {
       setLoggingMealKey(entry.meal);
       setMealSuccess('');
       setError('');
+      dismissMealPlanUndo();
 
       if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
         enqueueMealPlanLog({
@@ -236,10 +273,14 @@ export function Day({ serverOnline }: DayProps) {
         return;
       }
 
-      void api
-        .logMealPlanItem(entry.meal)
-        .then((res) => setMealSuccess(res.message))
-        .catch((e) => {
+      void (async () => {
+        try {
+          const before = await api.getFoodToday();
+          const res = await api.logMealPlanItem(entry.meal);
+          if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, entry.label)) {
+            setMealSuccess(res.message);
+          }
+        } catch (e) {
           if (isOfflineError(e)) {
             enqueueMealPlanLog({
               kind: 'item',
@@ -252,16 +293,19 @@ export function Day({ serverOnline }: DayProps) {
             return;
           }
           setError(e instanceof Error ? e.message : 'Meal log failed');
-        })
-        .finally(() => setLoggingMealKey(null));
+        } finally {
+          setLoggingMealKey(null);
+        }
+      })();
     },
-    [serverOnline, syncMealPlanQueue],
+    [serverOnline, syncMealPlanQueue, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary],
   );
 
   const logAllMealPlan = useCallback(() => {
     setLoggingMeals(true);
     setMealSuccess('');
     setError('');
+    dismissMealPlanUndo();
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
       enqueueMealPlanLog({ kind: 'all' });
@@ -271,10 +315,14 @@ export function Day({ serverOnline }: DayProps) {
       return;
     }
 
-    void api
-      .logMealPlanToday()
-      .then((res) => setMealSuccess(res.message))
-      .catch((e) => {
+    void (async () => {
+      try {
+        const before = await api.getFoodToday();
+        const res = await api.logMealPlanToday();
+        if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, 'All planned meals')) {
+          setMealSuccess(res.message);
+        }
+      } catch (e) {
         if (isOfflineError(e)) {
           enqueueMealPlanLog({ kind: 'all' });
           syncMealPlanQueue();
@@ -282,9 +330,11 @@ export function Day({ serverOnline }: DayProps) {
           return;
         }
         setError(e instanceof Error ? e.message : 'Meal log failed');
-      })
-      .finally(() => setLoggingMeals(false));
-  }, [serverOnline, syncMealPlanQueue]);
+      } finally {
+        setLoggingMeals(false);
+      }
+    })();
+  }, [serverOnline, syncMealPlanQueue, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary]);
 
   useEffect(() => {
     if (localStorage.getItem(STREAK_LEGEND_SEEN_KEY) !== '1') {
@@ -345,6 +395,24 @@ export function Day({ serverOnline }: DayProps) {
     <section className="section day-section" aria-labelledby="day-heading">
       <h1 id="day-heading">Your Day</h1>
       <p className="muted">Schedule + habit tracker</p>
+
+      <div className="day-week-strip" role="group" aria-label="This week">
+        {weekStripDays().map((d) => {
+          const isToday = isSameDay(d, new Date());
+          return (
+            <div
+              key={d.toISOString()}
+              className={`day-week-pill ${isToday ? 'day-week-pill--today' : ''}`}
+              aria-current={isToday ? 'date' : undefined}
+            >
+              <span className="day-week-pill__dow">
+                {d.toLocaleDateString([], { weekday: 'narrow' })}
+              </span>
+              <span className="day-week-pill__date">{d.getDate()}</span>
+            </div>
+          );
+        })}
+      </div>
 
       {!serverOnline && <div className="banner banner-warn" role="alert">Server offline — habit edits save locally.</div>}
 
@@ -483,22 +551,26 @@ export function Day({ serverOnline }: DayProps) {
         )}
       </Card>
 
-      <Card>
+      <Card className="day-timeline-card">
         <h2>Timeline</h2>
         {!events.length ? (
           <p className="muted">No calendar events today.</p>
         ) : (
-          <ul className="timeline" aria-label="Today's calendar events">
-            {events.map((ev) => (
-              <li
-                key={ev.id}
-                className={`timeline-item ${isPastEvent(ev.start) ? 'timeline-item--past' : ''}`}
-              >
-                <span className="timeline-time">{formatTime(ev.start)}</span>
-                <span className="timeline-title">{ev.summary}</span>
-                {isPastEvent(ev.start) && <span className="timeline-nudge">Passed</span>}
-              </li>
-            ))}
+          <ul className="timeline timeline--dense" aria-label="Today's calendar events">
+            {events.map((ev) => {
+              const past = isPastEvent(ev.start);
+              return (
+                <li
+                  key={ev.id}
+                  className={`timeline-item ${past ? 'timeline-item--past' : 'timeline-item--upcoming'}`}
+                >
+                  <span className="timeline-block" aria-hidden="true" />
+                  <span className="timeline-time">{formatTime(ev.start)}</span>
+                  <span className="timeline-title">{ev.summary}</span>
+                  {past && <span className="timeline-nudge">Passed</span>}
+                </li>
+              );
+            })}
           </ul>
         )}
       </Card>
@@ -548,7 +620,11 @@ export function Day({ serverOnline }: DayProps) {
             const behind = target > 0 && (val ?? 0) < target * 0.5;
             const streak = streaks?.metrics?.[key] ?? 0;
             return (
-              <label key={key} className={`habit-chip ${behind ? 'habit-chip--behind' : ''}`}>
+              <label
+                key={key}
+                className={`habit-chip habit-chip--${key} ${behind ? 'habit-chip--behind' : ''}`}
+                style={{ '--habit-accent': METRIC_COLORS[key] ?? 'var(--accent)' } as CSSProperties}
+              >
                 <span className="habit-chip-label">
                   {label}
                   {target > 0 && streak > 0 && (
@@ -625,10 +701,18 @@ export function Day({ serverOnline }: DayProps) {
       )}
 
       <div role="status" aria-live="polite">
-        {mealSuccess && <div className="banner banner-ok">{mealSuccess}</div>}
+        {mealSuccess && !mealPlanUndo && <div className="banner banner-ok">{mealSuccess}</div>}
         {habitSyncMessage && <div className="banner banner-ok">{habitSyncMessage}</div>}
       </div>
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
+      {mealPlanUndo && (
+        <UndoToast
+          message={`Logged ${mealPlanUndo.label}`}
+          onUndo={() => void handleMealPlanUndo(() => setMealSuccess('Log undone'))}
+          onDismiss={dismissMealPlanUndo}
+          undoing={mealPlanUndoing}
+        />
+      )}
     </section>
   );
 }
