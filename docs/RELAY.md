@@ -42,6 +42,7 @@
 
 - [ ] relay-019 | Notification click opens Log tab | maintenance
 - [ ] relay-020 | Habit ring share card PNG export | feature
+- [ ] relay-021 | Meal photo lightbox on Home | maintenance
 
 ---
 
@@ -58,7 +59,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-018 | done | build | pending |
+| 2026-07-27 | relay-018 | done | build | 3fe40e3 |
 | 2026-07-27 | relay-017 | done | build | 90dbb9f |
 | 2026-07-27 | relay-016 | done | build | 822b082 |
 | 2026-07-27 | relay-015 | done | build | 73030fe |
