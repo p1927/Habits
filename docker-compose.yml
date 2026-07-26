@@ -1,0 +1,33 @@
+# API-only compose. For full voice stack use: ./scripts/up-with-voice.sh
+# (docker-compose.voice.yml — Whisper, Kokoro, LiveKit, livekit_agent)
+services:
+  habits-api:
+    build:
+      context: ./server
+    ports:
+      - "${HABITS_PORT:-8787}:8787"
+    env_file:
+      - .env
+    volumes:
+      - habits-data:/app/.habits
+    restart: unless-stopped
+    networks:
+      - habits_net
+
+  # Voice stack (Phase 3) — enable with: docker compose --profile voice up
+  livekit:
+    profiles: [voice]
+    image: livekit/livekit-server:latest
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+    command: --dev --bind "0.0.0.0"
+    networks:
+      - habits_net
+
+volumes:
+  habits-data:
+
+networks:
+  habits_net:
+    driver: bridge

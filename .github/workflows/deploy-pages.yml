@@ -1,0 +1,67 @@
+name: Deploy PWA to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "pwa/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate secrets
+        run: |
+          if [ -z "${{ secrets.VITE_HABITS_API_URL }}" ]; then
+            echo "::error::Set repository secret VITE_HABITS_API_URL (Tailscale Funnel URL for habits-api)"
+            exit 1
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: pwa/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./pwa
+
+      - name: Build
+        run: npm run build
+        working-directory: ./pwa
+        env:
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_HABITS_API_URL: ${{ secrets.VITE_HABITS_API_URL }}
+          VITE_HABITS_LIVEKIT_URL: ${{ secrets.VITE_HABITS_LIVEKIT_URL }}
+          VITE_GIT_COMMIT_SHA: ${{ github.sha }}
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: "./pwa/dist"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
