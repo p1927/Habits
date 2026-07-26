@@ -30,6 +30,8 @@ import {
   clearMealPlanQueue,
   enqueueMealPlanLog,
   getCachedMealPlan,
+  getMealPlanQueue,
+  removeMealPlanQueueItem,
   type MealPlanEntry,
 } from '../lib/mealPlanQueue';
 
@@ -105,6 +107,8 @@ export function Log({ serverOnline }: LogProps) {
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
+  const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
+  const [mealPlanSyncProgress, setMealPlanSyncProgress] = useState<{ done: number; total: number } | null>(null);
   const [showShortcutHint, setShowShortcutHint] = useState(
     () => localStorage.getItem(LOG_SHORTCUT_HINT_KEY) !== '1',
   );
@@ -245,6 +249,62 @@ export function Log({ serverOnline }: LogProps) {
       setMealPlan(getCachedMealPlan());
     }
   }, [serverOnline]);
+
+  const flushMealPlanQueue = useCallback(async () => {
+    if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
+    const queue = getMealPlanQueue();
+    if (!queue.length) return;
+
+    setSyncingMealPlanQueue(true);
+    setError('');
+    dismissMealPlanUndo();
+    const total = queue.length;
+    setMealPlanSyncProgress({ done: 0, total });
+    let synced = 0;
+    const labels: string[] = [];
+    let lastSummary: FoodTodayResponse | null = null;
+
+    try {
+      const before = data ?? (await api.getFoodToday());
+      const beforeRows = snapshotFoodRows(before);
+
+      for (const item of queue) {
+        try {
+          let summary: FoodTodayResponse | null = null;
+          if (item.kind === 'all') {
+            summary = (await api.logMealPlanToday()).summary;
+          } else if (item.meal) {
+            summary = (await api.logMealPlanItem(item.meal)).summary;
+          } else {
+            continue;
+          }
+          removeMealPlanQueueItem(item.id);
+          lastSummary = summary;
+          synced += 1;
+          setMealPlanSyncProgress({ done: synced, total });
+          labels.push(
+            item.kind === 'all'
+              ? 'All planned meals'
+              : item.label ?? item.meal ?? 'Meal',
+          );
+        } catch (e) {
+          if (isOfflineError(e)) break;
+          setError(e instanceof Error ? e.message : 'Meal plan sync failed');
+          break;
+        }
+      }
+      if (synced > 0 && lastSummary) {
+        setData(lastSummary);
+        const label = synced === 1 ? labels[0]! : `${synced} queued meal logs`;
+        if (!offerUndoFromSummary(beforeRows, lastSummary, label)) {
+          setSuccess(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
+        }
+      }
+    } finally {
+      setSyncingMealPlanQueue(false);
+      setMealPlanSyncProgress(null);
+    }
+  }, [serverOnline, data, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary]);
 
   const logMealPlanEntry = useCallback(
     (entry: MealPlanEntry) => {
@@ -1037,23 +1097,56 @@ export function Log({ serverOnline }: LogProps) {
 
       {tab === 'mealplan' && (
         <>
-          {mealPlanQueueCount > 0 && (
-            <div className="banner banner-warn banner-row" role="status">
-              <span>
-                {mealPlanQueueCount} meal log{mealPlanQueueCount === 1 ? '' : 's'} queued
-                {serverOnline ? ' — sync on Home or Day tab' : ' — will sync when online'}.
-              </span>
-              <button
-                type="button"
-                className="btn-small"
-                aria-label="Dismiss meal plan log queue"
-                onClick={() => {
-                  clearMealPlanQueue();
-                  setSuccess('Meal plan log queue cleared');
-                }}
-              >
-                Dismiss
-              </button>
+          {(mealPlanQueueCount > 0 || syncingMealPlanQueue) && (
+            <div
+              className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}`}
+            >
+              <div className="banner banner-warn banner-row" role="status">
+                <span>
+                  {syncingMealPlanQueue && mealPlanSyncProgress
+                    ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
+                    : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued${serverOnline ? ' — tap Sync now' : ' — will sync when online'}.`}
+                </span>
+                {serverOnline && (
+                  <button
+                    type="button"
+                    className="btn-small"
+                    disabled={syncingMealPlanQueue}
+                    onClick={() => void flushMealPlanQueue()}
+                  >
+                    {syncingMealPlanQueue ? 'Syncing…' : 'Sync now'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="btn-small"
+                  aria-label="Dismiss meal plan log queue"
+                  disabled={syncingMealPlanQueue}
+                  onClick={() => {
+                    clearMealPlanQueue();
+                    setSuccess('Meal plan log queue cleared');
+                  }}
+                >
+                  Dismiss
+                </button>
+              </div>
+              {syncingMealPlanQueue && mealPlanSyncProgress && mealPlanSyncProgress.total > 0 && (
+                <div
+                  className="home-meal-plan-sync-progress"
+                  role="progressbar"
+                  aria-valuenow={mealPlanSyncProgress.done}
+                  aria-valuemin={0}
+                  aria-valuemax={mealPlanSyncProgress.total}
+                  aria-label="Meal plan sync progress"
+                >
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${(mealPlanSyncProgress.done / mealPlanSyncProgress.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
         <Card>
