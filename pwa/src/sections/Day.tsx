@@ -3,6 +3,9 @@ import { Card } from '../components/ui/Card';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
+import { vibrateFireStreak } from '../lib/haptics';
+
+const FIRE_HAPTIC_KEY = 'habits-streak-fire-haptic';
 
 interface DayProps {
   serverOnline: boolean;
@@ -74,6 +77,15 @@ export function Day({ serverOnline }: DayProps) {
     const id = window.setInterval(() => void refresh(), 60_000);
     return () => window.clearInterval(id);
   }, [refresh]);
+
+  useEffect(() => {
+    if (!streaks || streaks.overall < 14) return;
+    const prev = Number(sessionStorage.getItem(FIRE_HAPTIC_KEY) ?? '0');
+    if (prev < 14) vibrateFireStreak();
+    if (streaks.overall !== prev) {
+      sessionStorage.setItem(FIRE_HAPTIC_KEY, String(streaks.overall));
+    }
+  }, [streaks]);
 
   function formatTime(iso: string): string {
     try {

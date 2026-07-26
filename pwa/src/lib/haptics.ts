@@ -1,0 +1,5 @@
+export function vibrateFireStreak(): void {
+  if (typeof navigator === 'undefined' || !navigator.vibrate) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  navigator.vibrate([12, 40, 16, 40, 24]);
+}
