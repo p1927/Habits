@@ -1347,6 +1347,10 @@ button:disabled {
   color: var(--muted);
 }
 
+.habit-sync-list {
+  margin-top: 0.75rem;
+}
+
 .habit-chip-label {
   display: flex;
   align-items: center;

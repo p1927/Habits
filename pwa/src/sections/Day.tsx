@@ -23,6 +23,10 @@ function streakTierClass(days: number): string {
   return '';
 }
 
+function metricLabel(key: string): string {
+  return METRICS.find((m) => m.key === key)?.label ?? key;
+}
+
 export function Day({ serverOnline }: DayProps) {
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [events, setEvents] = useState<{ id: string; summary: string; start: string }[]>([]);
@@ -34,7 +38,7 @@ export function Day({ serverOnline }: DayProps) {
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
 
-  const { saving, updateMetric, queuedCount } = useOptimisticHabitLog({
+  const { saving, updateMetric, queuedCount, pending, retry, dismiss } = useOptimisticHabitLog({
     serverOnline,
     habits,
     setHabits,
@@ -193,6 +197,36 @@ export function Day({ serverOnline }: DayProps) {
             );
           })}
         </div>
+        {pending.some((e) => e.status === 'failed') && (
+          <ul className="food-list habit-sync-list" aria-label="Failed habit syncs">
+            {pending
+              .filter((e) => e.status === 'failed')
+              .map((entry) => (
+                <li key={entry.id} className="food-row food-row--failed">
+                  <div>
+                    <strong>{metricLabel(entry.metric)}</strong>
+                    <span className="muted">
+                      {' '}
+                      · {entry.value ?? 0}h · Failed to sync
+                    </span>
+                  </div>
+                  <div className="food-row-actions">
+                    <button type="button" className="btn-small" onClick={() => retry(entry)}>
+                      Retry
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-small btn-danger"
+                      aria-label={`Dismiss failed ${metricLabel(entry.metric)} update`}
+                      onClick={() => dismiss(entry.id)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </li>
+              ))}
+          </ul>
+        )}
       </Card>
 
       {Object.keys(manageDay).length > 0 && (

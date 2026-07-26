@@ -140,5 +140,19 @@ export function useOptimisticHabitLog({
 
   const queuedCount = pending.filter((x) => x.status === 'queued').length;
 
-  return { pending, saving, updateMetric, queuedCount };
+  const dismiss = useCallback((id: string) => {
+    removeHabitQueueItem(id);
+    setPending((p) => p.filter((x) => x.id !== id));
+  }, []);
+
+  const retry = useCallback(
+    (entry: QueuedHabitEntry) => {
+      removeHabitQueueItem(entry.id);
+      setPending((p) => p.filter((x) => x.id !== entry.id));
+      void updateMetric(entry.metric, entry.value == null ? '' : String(entry.value));
+    },
+    [updateMetric],
+  );
+
+  return { pending, saving, updateMetric, queuedCount, retry, dismiss };
 }
