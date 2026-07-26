@@ -55,6 +55,7 @@ function App() {
 
   return (
     <div className="app">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <header className="header">
         <span className="logo">Habits</span>
         <div className="header-actions">

@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T00:54:00Z |
+| reviewed_at | 2026-07-27T00:56:00Z |
 | git_branch | main |
-| uncommitted_files | 0 (excluding .env.development, cursor metadata) |
-| where_we_are | 60s `/loop` tick fired; relay-005 camera attach shipped on Coach tab. |
+| uncommitted_files | docs/RELAY.md checkpoint only |
+| where_we_are | Loop tick #2; relay-006 optimistic food log + retry shipped on Log tab. |
 | blockers | [] |
-| confirmed_next | relay-006 Optimistic food log + retry |
-| brainstorm_notes | Backlog healthy; no reprioritization |
+| confirmed_next | relay-007 Lighthouse PWA score > 90 |
+| brainstorm_notes | Backlog at 4 items; no reprioritization |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T00:54:00Z |
+| last_wake | 2026-07-27T00:56:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-006 Optimistic food log + retry |
+| cycle_parity | even (next: feature) |
+| next_action | relay-007 Lighthouse PWA score > 90 |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-006 | Optimistic food log + retry | maintenance
 - [ ] relay-007 | Lighthouse PWA score > 90 | maintenance
 - [ ] relay-010 | Weekly habit sparklines on Home | feature
 - [ ] relay-011 | Offline food log queue | feature
@@ -62,6 +61,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-006 | done | build | 708aa91 |
 | 2026-07-27 | relay-005 | done | build | b661c4b |
 | 2026-07-27 | relay-004 | done | build | 2a395cc |
 | 2026-07-27 | relay-v2 | done | build | bd0cc1f + ritual docs |
