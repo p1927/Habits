@@ -25,6 +25,7 @@ import {
   getCachedMealPlan,
   getMealPlanQueue,
   isOfflineError,
+  removeMealPlanQueueItem,
   type MealPlanEntry,
 } from '../lib/mealPlanQueue';
 
@@ -86,6 +87,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [mealPlanQueueCount, setMealPlanQueueCount] = useState(() => getMealPlanQueue().length);
+  const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
   const syncMealPlanQueueCount = useCallback(() => {
@@ -140,6 +142,42 @@ export function Home({ serverOnline }: HomeProps) {
     }
   }, [serverOnline, syncMealPlanQueueCount]);
 
+  const flushMealPlanQueue = useCallback(async () => {
+    if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
+    const queue = getMealPlanQueue();
+    if (!queue.length) return;
+
+    setSyncingMealPlanQueue(true);
+    setError('');
+    let synced = 0;
+    try {
+      for (const item of queue) {
+        try {
+          if (item.kind === 'all') {
+            await api.logMealPlanToday();
+          } else if (item.meal) {
+            await api.logMealPlanItem(item.meal);
+          } else {
+            continue;
+          }
+          removeMealPlanQueueItem(item.id);
+          synced += 1;
+        } catch (e) {
+          if (isOfflineError(e)) break;
+          setError(e instanceof Error ? e.message : 'Meal plan sync failed');
+          break;
+        }
+      }
+      syncMealPlanQueueCount();
+      if (synced > 0) {
+        setMealPlanMessage(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
+        void refresh();
+      }
+    } finally {
+      setSyncingMealPlanQueue(false);
+    }
+  }, [serverOnline, syncMealPlanQueueCount, refresh]);
+
   const { pullProgress, refreshing, triggerRefresh } = usePullToRefresh({
     onRefresh: refresh,
     enabled: true,
@@ -147,14 +185,21 @@ export function Home({ serverOnline }: HomeProps) {
 
   useEffect(() => {
     syncMealPlanQueueCount();
-    const onWake = () => syncMealPlanQueueCount();
+    const onWake = () => {
+      syncMealPlanQueueCount();
+      void flushMealPlanQueue();
+    };
     window.addEventListener('online', onWake);
     window.addEventListener('focus', onWake);
     return () => {
       window.removeEventListener('online', onWake);
       window.removeEventListener('focus', onWake);
     };
-  }, [syncMealPlanQueueCount]);
+  }, [syncMealPlanQueueCount, flushMealPlanQueue]);
+
+  useEffect(() => {
+    void flushMealPlanQueue();
+  }, [flushMealPlanQueue]);
 
   useEffect(() => {
     void refresh();
@@ -372,8 +417,18 @@ export function Home({ serverOnline }: HomeProps) {
         <div className="banner banner-warn banner-row" role="status">
           <span>
             {mealPlanQueueCount} meal log{mealPlanQueueCount === 1 ? '' : 's'} queued
-            {serverOnline ? ' — open Day to sync' : ' — will sync when online'}.
+            {serverOnline ? ' — tap Sync now' : ' — will sync when online'}.
           </span>
+          {serverOnline && (
+            <button
+              type="button"
+              className="btn-small"
+              disabled={syncingMealPlanQueue}
+              onClick={() => void flushMealPlanQueue()}
+            >
+              {syncingMealPlanQueue ? 'Syncing…' : 'Sync now'}
+            </button>
+          )}
           <button
             type="button"
             className="btn-small"
