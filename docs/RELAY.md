@@ -8,12 +8,12 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T00:52:00Z |
+| reviewed_at | 2026-07-27T00:54:00Z |
 | git_branch | main |
 | uncommitted_files | 0 (excluding .env.development, cursor metadata) |
-| where_we_are | `/loop` 60s armed. relay-004 accessibility pass complete — aria, keyboard swipe actions, live regions on all main tabs. |
+| where_we_are | 60s `/loop` tick fired; relay-005 camera attach shipped on Coach tab. |
 | blockers | [] |
-| confirmed_next | relay-005 Agent chat camera attach |
+| confirmed_next | relay-006 Optimistic food log + retry |
 | brainstorm_notes | Backlog healthy; no reprioritization |
 
 ---
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T00:52:00Z |
+| last_wake | 2026-07-27T00:54:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-005 Agent chat camera attach |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-006 Optimistic food log + retry |
 | blockers | [] |
-| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (this chat tab) |
+| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, running) |
 
 ---
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-005 | Agent chat camera attach | maintenance
 - [ ] relay-006 | Optimistic food log + retry | maintenance
 - [ ] relay-007 | Lighthouse PWA score > 90 | maintenance
 - [ ] relay-010 | Weekly habit sparklines on Home | feature
@@ -63,6 +62,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-005 | done | build | pending |
+| 2026-07-27 | relay-004 | done | build | 2a395cc |
 | 2026-07-27 | relay-v2 | done | build | bd0cc1f + ritual docs |
 | 2026-07-27 | relay-003 | done | build | meal plan API + Day tab |
 | 2026-07-27 | git-catchup | done | — | 004a76f, 73adfe1, 11e1f3f, livekit rm |
