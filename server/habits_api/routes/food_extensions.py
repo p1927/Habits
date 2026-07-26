@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from pydantic import BaseModel, Field
 
 from habits_api.auth import require_bearer
 from habits_api.config import Settings
@@ -12,6 +13,10 @@ from habits_api.food import vision as food_vision
 from habits_api.routes.api import get_db, get_settings
 
 router = APIRouter()
+
+
+class MealPlanLogRequest(BaseModel):
+    meal: str = Field(..., min_length=1)
 
 
 @router.get("/api/food/history", dependencies=[Depends(require_bearer)])
@@ -100,6 +105,20 @@ async def meal_plan_log_today(
 ) -> dict:
     try:
         return await food_meal_plan.log_today_meal_plan(settings, db)
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/api/food/meal-plan/log", dependencies=[Depends(require_bearer)])
+async def meal_plan_log_item(
+    body: MealPlanLogRequest,
+    db: TokenDB = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> dict:
+    try:
+        return await food_meal_plan.log_meal_plan_item(settings, db, body.meal)
     except RuntimeError as exc:
         raise HTTPException(503, str(exc)) from exc
     except ValueError as exc:

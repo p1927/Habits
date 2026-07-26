@@ -190,6 +190,11 @@ export const api = {
       '/api/food/meal-plan/log-today',
       { method: 'POST' },
     ),
+  logMealPlanItem: (meal: string) =>
+    request<{ message: string; summary: FoodTodayResponse; label?: string; errors?: string[] }>(
+      '/api/food/meal-plan/log',
+      { method: 'POST', body: JSON.stringify({ meal }) },
+    ),
   logFood: (description: string, meal_type = 'other') =>
     request<{ message: string; errors?: string[]; summary: FoodTodayResponse }>(
       '/api/food/log',

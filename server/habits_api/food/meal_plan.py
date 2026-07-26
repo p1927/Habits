@@ -61,3 +61,23 @@ async def log_today_meal_plan(settings: Settings, db: TokenDB) -> dict:
         "message": f"Logged {len(logged)} planned meals for {data['weekday']}.",
         "summary": summary,
     }
+
+
+async def log_meal_plan_item(settings: Settings, db: TokenDB, meal_key: str) -> dict:
+    data = await get_today_meal_plan(settings, db)
+    meals = data.get("meals") or []
+    match = next((m for m in meals if m["meal"] == meal_key), None)
+    if not match:
+        raise ValueError(f"No planned meal '{meal_key}' for {data.get('weekday', 'today')}")
+
+    result = await food_service.log_meal_description(
+        settings, db, match["description"], match["meal"]
+    )
+    summary = await food_service.get_today_summary(settings, db)
+    return {
+        "meal": meal_key,
+        "label": match["label"],
+        "message": result.get("message", f"Logged {match['label']}"),
+        "errors": result.get("errors", []),
+        "summary": summary,
+    }

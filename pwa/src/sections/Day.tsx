@@ -52,6 +52,7 @@ export function Day({ serverOnline }: DayProps) {
   const [error, setError] = useState('');
   const [habitSyncMessage, setHabitSyncMessage] = useState('');
   const [loggingMeals, setLoggingMeals] = useState(false);
+  const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
 
   const { saving, updateMetric, queuedCount, pending, retry, dismiss, dismissAllQueued } = useOptimisticHabitLog({
@@ -167,8 +168,28 @@ export function Day({ serverOnline }: DayProps) {
             <ul className="food-list">
               {mealPlan.map((m) => (
                 <li key={m.meal} className="food-row">
-                  <strong>{m.label}</strong>
-                  <span className="muted">{m.description}</span>
+                  <div>
+                    <strong>{m.label}</strong>
+                    <span className="muted">{m.description}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-small"
+                    disabled={!serverOnline || loggingMealKey === m.meal}
+                    aria-label={`Log ${m.label}`}
+                    onClick={() => {
+                      setLoggingMealKey(m.meal);
+                      setMealSuccess('');
+                      setError('');
+                      void api
+                        .logMealPlanItem(m.meal)
+                        .then((res) => setMealSuccess(res.message))
+                        .catch((e) => setError(e instanceof Error ? e.message : 'Meal log failed'))
+                        .finally(() => setLoggingMealKey(null));
+                    }}
+                  >
+                    {loggingMealKey === m.meal ? 'Logging…' : 'Log'}
+                  </button>
                 </li>
               ))}
             </ul>
