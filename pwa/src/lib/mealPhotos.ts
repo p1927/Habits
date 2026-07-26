@@ -51,3 +51,7 @@ export function getTodayMealPhotos(): MealPhoto[] {
 export function getRecentMealPhotos(limit = 12): MealPhoto[] {
   return prune(readAll()).slice(0, limit);
 }
+
+export function getMealPhotoById(id: string): MealPhoto | null {
+  return prune(readAll()).find((p) => p.id === id) ?? null;
+}
