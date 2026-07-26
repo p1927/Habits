@@ -26,6 +26,7 @@ import {
   getCachedMealPlan,
   getMealPlanQueue,
   isOfflineError,
+  MEAL_PLAN_QUEUE_CHANGE,
   removeMealPlanQueueItem,
   type MealPlanEntry,
 } from '../lib/mealPlanQueue';
@@ -217,6 +218,8 @@ export function Home({ serverOnline }: HomeProps) {
 
   useEffect(() => {
     syncMealPlanQueueCount();
+    const onQueueChange = () => syncMealPlanQueueCount();
+    window.addEventListener(MEAL_PLAN_QUEUE_CHANGE, onQueueChange);
     const onWake = () => {
       syncMealPlanQueueCount();
       void flushMealPlanQueue();
@@ -224,6 +227,7 @@ export function Home({ serverOnline }: HomeProps) {
     window.addEventListener('online', onWake);
     window.addEventListener('focus', onWake);
     return () => {
+      window.removeEventListener(MEAL_PLAN_QUEUE_CHANGE, onQueueChange);
       window.removeEventListener('online', onWake);
       window.removeEventListener('focus', onWake);
     };
@@ -411,6 +415,13 @@ export function Home({ serverOnline }: HomeProps) {
   const proteinTarget = food?.protein_target_g ?? 150;
   const habitPct = habitCompletionPct(habits);
   const burn = estimateBurn(habits);
+  const hasPendingMealPlanQueue = mealPlanQueueCount > 0 || syncingMealPlanQueue;
+  const mealPlanQueueBannerText =
+    syncingMealPlanQueue && mealPlanSyncProgress
+      ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
+      : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued${
+          mealPlan.length === 0 ? ' — no meals planned today' : ''
+        }${serverOnline ? ' — tap Sync now' : ' — will sync when online'}.`;
 
   return (
     <section className="section home-section" aria-labelledby="home-heading">
@@ -445,14 +456,12 @@ export function Home({ serverOnline }: HomeProps) {
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
-      {mealPlanQueueCount > 0 || syncingMealPlanQueue ? (
-        <div className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}`}>
+      {hasPendingMealPlanQueue ? (
+        <div
+          className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}${mealPlan.length === 0 ? ' home-meal-plan-queue-panel--no-plan' : ''}`}
+        >
           <div className="banner banner-warn banner-row" role="status">
-            <span>
-              {syncingMealPlanQueue && mealPlanSyncProgress
-                ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
-                : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued${serverOnline ? ' — tap Sync now' : ' — will sync when online'}.`}
-            </span>
+            <span>{mealPlanQueueBannerText}</span>
             {serverOnline && (
               <button
                 type="button"
