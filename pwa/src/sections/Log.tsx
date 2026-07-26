@@ -59,7 +59,8 @@ export function Log({ serverOnline }: LogProps) {
   } | null>(null);
   const searchTimer = useRef<number | null>(null);
 
-  const { pending, logItem, logMeal, retry, dismiss } = useOptimisticFoodLog({
+  const { pending, logItem, logMeal, retry, dismiss, queuedCount } = useOptimisticFoodLog({
+    serverOnline,
     setData,
     setSuccess,
     setError,
@@ -154,6 +155,12 @@ export function Log({ serverOnline }: LogProps) {
     <section className="section" aria-labelledby="log-heading">
       <h1 id="log-heading">Log Food</h1>
       <p className="muted">Scan, type, or review history</p>
+
+      {queuedCount > 0 && (
+        <div className="banner banner-warn" role="status">
+          {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
+        </div>
+      )}
 
       <div className="sub-tabs" role="tablist" aria-label="Log food views">
         {(['scan', 'type', 'recipes', 'history'] as LogTab[]).map((t) => {
@@ -274,7 +281,11 @@ export function Log({ serverOnline }: LogProps) {
                       <strong>{entry.food}</strong>
                       <span className="muted">
                         {entry.quantity_g > 0 ? ` · ${entry.quantity_g}g` : ''}
-                        {entry.status === 'pending' ? ' · Saving…' : ' · Failed to save'}
+                        {entry.status === 'pending'
+                          ? ' · Saving…'
+                          : entry.status === 'queued'
+                            ? ' · Queued offline'
+                            : ' · Failed to save'}
                       </span>
                     </div>
                     {entry.status === 'failed' && (

@@ -403,6 +403,11 @@ button:disabled {
   padding-left: 0.35rem;
 }
 
+.food-row--queued {
+  border-left: 3px solid var(--warn);
+  padding-left: 0.35rem;
+}
+
 .btn-small {
   padding: 0.25rem 0.5rem;
   font-size: 1rem;
