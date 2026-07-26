@@ -1090,6 +1090,17 @@ button:disabled {
   margin: 0 0 var(--space-xs);
 }
 
+.home-meal-plan-msg {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--font-size-sm);
+}
+
+.home-meal-plan-log-all {
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
 .home-burn {
   margin-top: var(--space-md);
   margin-bottom: 0;
