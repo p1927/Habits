@@ -42,6 +42,7 @@
 
 - [ ] relay-017 | Export week PDF report | feature
 - [ ] relay-018 | Streak badge animations on Day | maintenance
+- [ ] relay-019 | Notification click opens Log tab | maintenance
 
 ---
 
