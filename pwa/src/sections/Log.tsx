@@ -83,6 +83,8 @@ export function Log({ serverOnline }: LogProps) {
     items: { food: string; quantity_g: number; calories: number; protein: number }[];
     totals: { calories: number; protein: number } | null;
   } | null>(null);
+  const [recipeSheetsConnected, setRecipeSheetsConnected] = useState<boolean | null>(null);
+  const [recipeLoading, setRecipeLoading] = useState(false);
   const [recipePhoto, setRecipePhoto] = useState<string | null>(null);
   const [recipeScanResult, setRecipeScanResult] = useState<FoodScanResult | null>(null);
   const [recipeScanning, setRecipeScanning] = useState(false);
@@ -118,12 +120,28 @@ export function Log({ serverOnline }: LogProps) {
     }
   }, [serverOnline]);
 
+  const loadSavedRecipe = useCallback(async () => {
+    if (!serverOnline) return;
+    setRecipeLoading(true);
+    setError('');
+    try {
+      const r = await api.getSavedRecipe();
+      setRecipe(r.recipe);
+      setRecipeSheetsConnected(r.sheets_connected);
+    } catch (e) {
+      setRecipe(null);
+      setRecipeSheetsConnected(null);
+      if (e instanceof ApiError && e.status === 401) return;
+      setError(e instanceof Error ? e.message : 'Failed to load saved recipe');
+    } finally {
+      setRecipeLoading(false);
+    }
+  }, [serverOnline]);
+
   useEffect(() => {
     void refresh();
-    if (tab === 'recipes' && serverOnline) {
-      void api.getSavedRecipe().then((r) => setRecipe(r.recipe)).catch(() => setRecipe(null));
-    }
-  }, [refresh, tab, serverOnline]);
+    if (tab === 'recipes') void loadSavedRecipe();
+  }, [refresh, tab, loadSavedRecipe]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -695,20 +713,48 @@ export function Log({ serverOnline }: LogProps) {
           )}
 
           <Card>
-            <h2>Saved recipe</h2>
-            <p className="muted">From Save Reciepe tab in Nutrition sheet</p>
-            {!recipe ? (
-              <p className="muted">No saved recipe found.</p>
+            <div className="home-export-row">
+              <div>
+                <h2>Saved recipe</h2>
+                <p className="muted">From Save Reciepe tab in Nutrition sheet</p>
+              </div>
+              <button
+                type="button"
+                className="btn-small"
+                disabled={!serverOnline || recipeLoading}
+                aria-label="Refresh saved recipe from sheet"
+                onClick={() => void loadSavedRecipe()}
+              >
+                {recipeLoading ? 'Loading…' : 'Refresh'}
+              </button>
+            </div>
+            {!serverOnline ? (
+              <p className="muted">Connect to server to browse Save Reciepe sheet.</p>
+            ) : recipeSheetsConnected === false ? (
+              <p className="muted">Google Sheets not connected — link in Settings.</p>
+            ) : !recipe ? (
+              <p className="muted">No saved recipe found in Save Reciepe tab.</p>
             ) : (
               <>
                 <h3>{recipe.name}</h3>
                 <ul className="food-list">
                   {recipe.items.map((item) => (
                     <li key={item.food} className="food-row">
-                      <strong>{item.food}</strong>
-                      <span className="muted">
-                        {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
-                      </span>
+                      <div>
+                        <strong>{item.food}</strong>
+                        <span className="muted">
+                          {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn-small"
+                        disabled={!serverOnline || loading}
+                        aria-label={`Log ${item.food}`}
+                        onClick={() => void logItem(item.food, item.quantity_g)}
+                      >
+                        Log
+                      </button>
                     </li>
                   ))}
                 </ul>
