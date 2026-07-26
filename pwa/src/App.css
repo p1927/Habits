@@ -143,6 +143,12 @@ body {
   color: var(--warn);
 }
 
+.banner-err {
+  background: color-mix(in srgb, var(--err) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--err) 40%, transparent);
+  color: var(--err);
+}
+
 .banner-row {
   display: flex;
   align-items: center;
@@ -1647,6 +1653,27 @@ button:disabled {
   border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
   border-top: none;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.meal-plan-queue-panel--has-failed .meal-plan-queue-list {
+  background: color-mix(in srgb, var(--err) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--err) 30%, transparent);
+}
+
+.meal-plan-queue-list .food-row--failed {
+  margin-top: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--err) 12%, transparent);
+}
+
+.meal-plan-queue-list .food-row--failed strong {
+  color: var(--err);
+}
+
+.meal-plan-queue-item-failed {
+  color: var(--err) !important;
 }
 
 .meal-plan-queue-empty {

@@ -440,6 +440,8 @@ export function Day({ serverOnline }: DayProps) {
     return new Date(start) < new Date();
   }
 
+  const failedMealPlanCount = mealPlanQueue.filter((item) => failedMealPlanIds.has(item.id)).length;
+
   return (
     <section className="section day-section" aria-labelledby="day-heading">
       <h1 id="day-heading">Your Day</h1>
@@ -486,14 +488,14 @@ export function Day({ serverOnline }: DayProps) {
 
       {mealPlanQueue.length > 0 || syncingMealPlanQueue ? (
         <div
-          className={`meal-plan-queue-panel${syncingMealPlanQueue ? ' meal-plan-queue-panel--syncing' : ''}`}
+          className={`meal-plan-queue-panel${syncingMealPlanQueue ? ' meal-plan-queue-panel--syncing' : ''}${failedMealPlanCount > 0 ? ' meal-plan-queue-panel--has-failed' : ''}`}
           role="status"
         >
-          <div className="banner banner-warn banner-row">
+          <div className={`banner banner-row${failedMealPlanCount > 0 ? ' banner-err' : ' banner-warn'}`}>
             <span>
               {syncingMealPlanQueue && mealPlanSyncProgress
                 ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
-                : `${mealPlanQueue.length} meal log${mealPlanQueue.length === 1 ? '' : 's'} queued${serverOnline ? ' — tap Retry or Sync all' : ' — will sync when online'}.`}
+                : `${mealPlanQueue.length} meal log${mealPlanQueue.length === 1 ? '' : 's'} queued${failedMealPlanCount > 0 ? ` · ${failedMealPlanCount} failed` : ''}${serverOnline ? ' — tap Retry or Sync all' : ' — will sync when online'}.`}
             </span>
             {serverOnline && (
               <button
@@ -546,10 +548,11 @@ export function Day({ serverOnline }: DayProps) {
                 <li
                   key={item.id}
                   className={`food-row food-row--${failed ? 'failed' : 'queued'}`}
+                  role={failed ? 'alert' : undefined}
                 >
                   <div>
                     <strong>{mealPlanQueueLabel(item)}</strong>
-                    <span className="muted">
+                    <span className={`muted${failed ? ' meal-plan-queue-item-failed' : ''}`}>
                       {item.description ? ` · ${item.description}` : ''}
                       {retrying
                         ? ' · Syncing…'

@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:40:00Z |
+| reviewed_at | 2026-07-27T02:41:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #65; relay-072 Home empty hint gated on meal plan shipped. |
+| where_we_are | Loop tick #66; relay-073 Day failed queue item highlight shipped. |
 | blockers | [] |
-| confirmed_next | relay-073 Day queue failed-item highlight on sync error |
-| brainstorm_notes | relay-072 done; Home skips empty queue hint when no meals planned |
+| confirmed_next | relay-074 Home queue banner when pending but no meal plan today |
+| brainstorm_notes | relay-073 done; failed items get err banner, count, and row styling |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:40:00Z |
+| last_wake | 2026-07-27T02:41:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | odd (next: maintenance) |
-| next_action | relay-073 Day queue failed-item highlight on sync error |
+| next_action | relay-074 Home queue banner when pending but no meal plan today |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-073 | Day queue failed-item highlight on sync error | feature
 - [ ] relay-074 | Home queue banner when pending but no meal plan today | maintenance
 - [ ] relay-075 | Log Plan badge tooltip on queue count | feature
+- [ ] relay-076 | Clear Day failed highlights on successful Sync all | maintenance
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-073 | done | build | — |
 | 2026-07-27 | relay-072 | done | build | ce5cea3 |
 | 2026-07-27 | relay-071 | done | build | 86d7c4a |
 | 2026-07-27 | relay-070 | done | build | 535f7a2 |
 | 2026-07-27 | relay-069 | done | build | a6a3c50 |
 | 2026-07-27 | relay-068 | done | build | fb08e83 |
-| 2026-07-27 | relay-067 | done | build | f7772b4 |
 
 ---
 
