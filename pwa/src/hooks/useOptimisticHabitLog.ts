@@ -8,6 +8,7 @@ import {
   getHabitLogQueue,
   isOfflineError,
   removeHabitQueueItem,
+  clearHabitLogQueue,
   type QueuedHabitUpdate,
 } from '../lib/habitQueue';
 
@@ -145,6 +146,11 @@ export function useOptimisticHabitLog({
     setPending((p) => p.filter((x) => x.id !== id));
   }, []);
 
+  const dismissAllQueued = useCallback(() => {
+    clearHabitLogQueue();
+    setPending((p) => p.filter((x) => x.status !== 'queued'));
+  }, []);
+
   const retry = useCallback(
     (entry: QueuedHabitEntry) => {
       removeHabitQueueItem(entry.id);
@@ -154,5 +160,5 @@ export function useOptimisticHabitLog({
     [updateMetric],
   );
 
-  return { pending, saving, updateMetric, queuedCount, retry, dismiss };
+  return { pending, saving, updateMetric, queuedCount, retry, dismiss, dismissAllQueued };
 }

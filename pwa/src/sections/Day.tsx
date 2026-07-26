@@ -54,7 +54,7 @@ export function Day({ serverOnline }: DayProps) {
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
 
-  const { saving, updateMetric, queuedCount, pending, retry, dismiss } = useOptimisticHabitLog({
+  const { saving, updateMetric, queuedCount, pending, retry, dismiss, dismissAllQueued } = useOptimisticHabitLog({
     serverOnline,
     habits,
     setHabits,
@@ -139,8 +139,21 @@ export function Day({ serverOnline }: DayProps) {
       {!serverOnline && <div className="banner banner-warn" role="alert">Server offline — habit edits save locally.</div>}
 
       {queuedCount > 0 && (
-        <div className="banner banner-warn" role="status">
-          {queuedCount} habit update{queuedCount === 1 ? '' : 's'} queued — will sync when online.
+        <div className="banner banner-warn banner-row" role="status">
+          <span>
+            {queuedCount} habit update{queuedCount === 1 ? '' : 's'} queued — will sync when online.
+          </span>
+          <button
+            type="button"
+            className="btn-small"
+            aria-label="Dismiss offline habit update queue"
+            onClick={() => {
+              dismissAllQueued();
+              setHabitSyncMessage('Offline habit update queue cleared');
+            }}
+          >
+            Dismiss
+          </button>
         </div>
       )}
 

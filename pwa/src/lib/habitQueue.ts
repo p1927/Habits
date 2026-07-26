@@ -46,6 +46,10 @@ export function removeHabitQueueItem(id: string) {
   writeQueue(readQueue().filter((x) => x.id !== id));
 }
 
+export function clearHabitLogQueue() {
+  localStorage.removeItem(QUEUE_KEY);
+}
+
 export function cacheHabitsToday(habits: HabitsTodayResponse) {
   localStorage.setItem(CACHE_KEY, JSON.stringify(habits));
 }
