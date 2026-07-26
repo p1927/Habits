@@ -141,6 +141,11 @@ function App() {
                   <span
                     className={`tab-badge${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' ? ' tab-badge--actionable' : ''}`}
                     aria-label={`${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`}
+                    title={
+                      t.id === 'log'
+                        ? `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued — tap to open Plan`
+                        : undefined
+                    }
                     onClick={
                       t.id === 'log'
                         ? (e) => {
