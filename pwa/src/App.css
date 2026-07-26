@@ -1219,6 +1219,51 @@ button:disabled {
   font-size: var(--font-size-sm);
 }
 
+.barcode-scanner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.barcode-preview-wrap {
+  position: relative;
+  min-height: 160px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface2);
+}
+
+.barcode-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.barcode-preview-hidden {
+  display: none;
+}
+
+.barcode-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.barcode-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.barcode-manual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .cards-search {
   width: 100%;
   padding: 0.65rem 1rem;

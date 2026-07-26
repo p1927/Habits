@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
+import { BarcodeScanner } from '../components/BarcodeScanner';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
@@ -139,6 +140,29 @@ export function Log({ serverOnline }: LogProps) {
     await logItem(name, qty);
   }
 
+  async function handleBarcode(code: string) {
+    setError('');
+    setSuccess('');
+    setTab('type');
+    setFoodName(code);
+    if (!serverOnline) return;
+    setLoading(true);
+    try {
+      const res = await api.searchFood(code);
+      setSearchResults(res.results);
+      if (res.results[0]) {
+        setFoodName(res.results[0].name);
+        setSuccess(`Found: ${res.results[0].name}`);
+      } else {
+        setSuccess(`Barcode ${code} — pick or edit the food name below`);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Barcode lookup failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleDelete(row: number) {
     if (!window.confirm('Remove this entry?')) return;
     setLoading(true);
@@ -214,6 +238,15 @@ export function Log({ serverOnline }: LogProps) {
 
       {tab === 'type' && (
         <>
+          <Card>
+            <h2>Barcode</h2>
+            <p className="muted">Scan packaged food like MyFitnessPal</p>
+            <BarcodeScanner
+              disabled={!serverOnline || loading}
+              onScan={(code) => void handleBarcode(code)}
+            />
+          </Card>
+
           <form className="card" onSubmit={handleVoiceLog}>
             <h2>Quick log</h2>
             <label className="field">

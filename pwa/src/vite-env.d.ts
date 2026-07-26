@@ -11,3 +11,13 @@ interface ImportMeta {
 }
 
 declare const __APP_BUILD_LABEL__: string;
+
+interface BarcodeDetectorOptions {
+  formats?: string[];
+}
+
+declare class BarcodeDetector {
+  constructor(options?: BarcodeDetectorOptions);
+  detect(source: ImageBitmapSource): Promise<{ rawValue: string; format: string }[]>;
+  static getSupportedFormats(): Promise<string[]>;
+}
