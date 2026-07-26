@@ -18,8 +18,10 @@ import { getTodayMealPhotos, type MealPhoto } from '../lib/mealPhotos';
 import { cacheHabitStreak, getCachedHabitStreak } from '../lib/habitQueue';
 import {
   cacheMealPlan,
+  clearMealPlanQueue,
   enqueueMealPlanLog,
   getCachedMealPlan,
+  getMealPlanQueue,
   isOfflineError,
   type MealPlanEntry,
 } from '../lib/mealPlanQueue';
@@ -81,10 +83,16 @@ export function Home({ serverOnline }: HomeProps) {
   const [mealPlanMessage, setMealPlanMessage] = useState('');
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
+  const [mealPlanQueueCount, setMealPlanQueueCount] = useState(() => getMealPlanQueue().length);
   const [dashboardLoading, setDashboardLoading] = useState(true);
+
+  const syncMealPlanQueueCount = useCallback(() => {
+    setMealPlanQueueCount(getMealPlanQueue().length);
+  }, []);
 
   const refresh = useCallback(async () => {
     setMealPhotos(getTodayMealPhotos());
+    syncMealPlanQueueCount();
     if (!serverOnline) {
       setMealPlan(getCachedMealPlan());
       setDashboardLoading(false);
@@ -119,12 +127,23 @@ export function Home({ serverOnline }: HomeProps) {
     } finally {
       setDashboardLoading(false);
     }
-  }, [serverOnline]);
+  }, [serverOnline, syncMealPlanQueueCount]);
 
   const { pullProgress, refreshing, triggerRefresh } = usePullToRefresh({
     onRefresh: refresh,
     enabled: true,
   });
+
+  useEffect(() => {
+    syncMealPlanQueueCount();
+    const onWake = () => syncMealPlanQueueCount();
+    window.addEventListener('online', onWake);
+    window.addEventListener('focus', onWake);
+    return () => {
+      window.removeEventListener('online', onWake);
+      window.removeEventListener('focus', onWake);
+    };
+  }, [syncMealPlanQueueCount]);
 
   useEffect(() => {
     void refresh();
@@ -161,6 +180,7 @@ export function Home({ serverOnline }: HomeProps) {
           label: entry.label,
           description: entry.description,
         });
+        syncMealPlanQueueCount();
         setMealPlanMessage(`${entry.label} queued — will log when online`);
         setLoggingMealKey(null);
         return;
@@ -180,6 +200,7 @@ export function Home({ serverOnline }: HomeProps) {
               label: entry.label,
               description: entry.description,
             });
+            syncMealPlanQueueCount();
             setMealPlanMessage(`${entry.label} queued — will log when online`);
             return;
           }
@@ -187,7 +208,7 @@ export function Home({ serverOnline }: HomeProps) {
         })
         .finally(() => setLoggingMealKey(null));
     },
-    [serverOnline, refresh],
+    [serverOnline, refresh, syncMealPlanQueueCount],
   );
 
   const logAllMealPlan = useCallback(() => {
@@ -197,6 +218,7 @@ export function Home({ serverOnline }: HomeProps) {
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
       enqueueMealPlanLog({ kind: 'all' });
+      syncMealPlanQueueCount();
       setMealPlanMessage('All planned meals queued — will log when online');
       setLoggingMeals(false);
       return;
@@ -211,13 +233,14 @@ export function Home({ serverOnline }: HomeProps) {
       .catch((e) => {
         if (isOfflineError(e)) {
           enqueueMealPlanLog({ kind: 'all' });
+          syncMealPlanQueueCount();
           setMealPlanMessage('All planned meals queued — will log when online');
           return;
         }
         setError(e instanceof Error ? e.message : 'Meal log failed');
       })
       .finally(() => setLoggingMeals(false));
-  }, [serverOnline, refresh]);
+  }, [serverOnline, refresh, syncMealPlanQueueCount]);
 
   async function handleShareRings() {
     setSharingRings(true);
@@ -320,6 +343,27 @@ export function Home({ serverOnline }: HomeProps) {
 
       {!serverOnline && (
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
+      )}
+
+      {mealPlanQueueCount > 0 && (
+        <div className="banner banner-warn banner-row" role="status">
+          <span>
+            {mealPlanQueueCount} meal log{mealPlanQueueCount === 1 ? '' : 's'} queued
+            {serverOnline ? ' — open Day to sync' : ' — will sync when online'}.
+          </span>
+          <button
+            type="button"
+            className="btn-small"
+            aria-label="Dismiss meal plan log queue"
+            onClick={() => {
+              clearMealPlanQueue();
+              syncMealPlanQueueCount();
+              setMealPlanMessage('Meal plan log queue cleared');
+            }}
+          >
+            Dismiss
+          </button>
+        </div>
       )}
 
       <Card className="home-export-card">
