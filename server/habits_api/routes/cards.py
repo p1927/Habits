@@ -18,6 +18,17 @@ class CreateCardRequest(BaseModel):
     body: str = ""
 
 
+@router.get("/api/cards/sickness/timeline", dependencies=[Depends(require_bearer)])
+async def sickness_timeline(
+    db: TokenDB = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> dict:
+    try:
+        return await cards_service.get_sickness_timeline(settings, db)
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+
 @router.get("/api/cards", dependencies=[Depends(require_bearer)])
 async def list_cards(
     type: str | None = Query(None, alias="type"),

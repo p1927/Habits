@@ -120,6 +120,12 @@ export interface HabitsTodayResponse {
   sheets_connected: boolean;
 }
 
+export interface SicknessTimelineEvent {
+  label: string;
+  start: string;
+  end: string;
+}
+
 export interface KeepCard {
   id: string;
   type: 'sickness' | 'notes' | 'strategy';
@@ -255,6 +261,10 @@ export const api = {
   getCards: (type?: string) =>
     request<{ cards: KeepCard[]; sheets_connected: boolean }>(
       `/api/cards${type ? `?type=${type}` : ''}`,
+    ),
+  getSicknessTimeline: () =>
+    request<{ events: SicknessTimelineEvent[]; sheets_connected: boolean }>(
+      '/api/cards/sickness/timeline',
     ),
   createCard: (card_type: string, title: string, body: string) =>
     request<{ cards: KeepCard[] }>('/api/cards', {

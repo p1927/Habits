@@ -1280,6 +1280,59 @@ button:disabled {
   gap: 0.75rem;
 }
 
+.sickness-timeline {
+  margin-top: 0.25rem;
+}
+
+.sickness-timeline-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.625rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.sickness-timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sickness-timeline-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.2rem;
+}
+
+.sickness-timeline-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.sickness-timeline-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+
+.sickness-timeline-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--warn);
+  min-width: 4px;
+}
+
+.sickness-timeline-dates {
+  font-size: 0.625rem;
+}
+
 .keep-card h3 {
   margin: 0.25rem 0;
   font-size: var(--font-size-sm);

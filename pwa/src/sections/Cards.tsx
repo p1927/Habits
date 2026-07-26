@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
-import { api, ApiError, type KeepCard } from '../lib/api';
+import { SicknessTimeline } from '../components/SicknessTimeline';
+import { api, ApiError, type KeepCard, type SicknessTimelineEvent } from '../lib/api';
 
 interface CardsProps {
   serverOnline: boolean;
@@ -23,13 +24,18 @@ export function Cards({ serverOnline }: CardsProps) {
   const [newTitle, setNewTitle] = useState('');
   const [newBody, setNewBody] = useState('');
   const [error, setError] = useState('');
+  const [sicknessEvents, setSicknessEvents] = useState<SicknessTimelineEvent[]>([]);
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
     try {
       const type = filter === 'all' ? undefined : filter;
-      const res = await api.getCards(type);
+      const [res, timeline] = await Promise.all([
+        api.getCards(type),
+        filter === 'all' || filter === 'sickness' ? api.getSicknessTimeline() : Promise.resolve(null),
+      ]);
       setCards(res.cards);
+      setSicknessEvents(timeline?.events ?? []);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return;
       setError(e instanceof Error ? e.message : 'Failed to load cards');
@@ -98,6 +104,14 @@ export function Cards({ serverOnline }: CardsProps) {
           </button>
         ))}
       </div>
+
+      {(filter === 'all' || filter === 'sickness') && (
+        <Card variant="keep-yellow">
+          <h2>Sickness timeline</h2>
+          <p className="muted">Last 90 days from Nutrition sheet</p>
+          <SicknessTimeline events={sicknessEvents} />
+        </Card>
+      )}
 
       <div className="cards-grid" role="list" aria-label="Keep cards">
         {filtered.map((card) => (

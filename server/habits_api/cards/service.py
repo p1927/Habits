@@ -14,6 +14,72 @@ CARD_COLORS = {
 }
 
 
+def _parse_sheet_date(val: Any) -> date | None:
+    if val is None or val == "":
+        return None
+    if isinstance(val, datetime):
+        return val.date()
+    if isinstance(val, date):
+        return val
+    text = str(val).strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y"):
+        try:
+            return datetime.strptime(text[:10], fmt).date()
+        except ValueError:
+            continue
+    try:
+        return datetime.fromisoformat(text[:10]).date()
+    except ValueError:
+        return None
+
+
+async def get_sickness_timeline(settings: Settings, db: TokenDB) -> dict:
+    connected = await db.google_connected()
+    if not connected:
+        return {"events": [], "sheets_connected": False}
+
+    rows = await read_range(
+        settings,
+        db,
+        settings.habits_sheet_nutrition,
+        settings.habits_tab_sickness,
+        "A1:D100",
+    )
+    events: list[dict] = []
+    for row in rows:
+        if not row or not row[0]:
+            continue
+        label = str(row[0]).strip()
+        mid = str(row[1]).strip() if len(row) > 1 and row[1] else ""
+        end_raw = row[2] if len(row) > 2 else None
+        note = str(row[3]).strip() if len(row) > 3 and row[3] else ""
+
+        if "----" in mid:
+            start = _parse_sheet_date(label)
+            end = _parse_sheet_date(end_raw)
+            if start and end:
+                events.append({
+                    "label": note or f"{label} → {end_raw}",
+                    "start": start.isoformat(),
+                    "end": end.isoformat(),
+                })
+            continue
+
+        if label.lower() in ("after poland", "after croatia") or len(label) < 3:
+            continue
+
+        start = _parse_sheet_date(label)
+        if start:
+            events.append({
+                "label": note or mid or "Sickness",
+                "start": start.isoformat(),
+                "end": start.isoformat(),
+            })
+
+    events.sort(key=lambda e: e["start"], reverse=True)
+    return {"events": events, "sheets_connected": True}
+
+
 async def list_cards(settings: Settings, db: TokenDB, card_type: str | None = None) -> dict:
     connected = await db.google_connected()
     if not connected:
