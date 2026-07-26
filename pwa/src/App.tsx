@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import { useMealNotifications } from './hooks/useMealNotifications';
+import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
 import { bindNotificationNavigation } from './lib/notificationNavigation';
 import { useServerStatus } from './hooks/useServerStatus';
 import { Home } from './sections/Home';
@@ -40,6 +41,7 @@ function App() {
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
+  const mealPlanQueueCount = useMealPlanQueueCount();
 
   const handleTabChange = useCallback((id: TabId) => {
     setTab(id);
@@ -113,7 +115,10 @@ function App() {
 
       {tab !== 'settings' && (
         <nav className="tab-bar" aria-label="Main">
-          {TABS.map((t) => (
+          {TABS.map((t) => {
+            const showQueueBadge =
+              mealPlanQueueCount > 0 && (t.id === 'home' || t.id === 'day');
+            return (
             <button
               key={t.id}
               type="button"
@@ -121,10 +126,20 @@ function App() {
               onClick={() => handleTabChange(t.id)}
               aria-current={tab === t.id ? 'page' : undefined}
             >
-              <span className="tab-icon" aria-hidden>{t.icon}</span>
+              <span className="tab-icon-wrap">
+                <span className="tab-icon" aria-hidden>{t.icon}</span>
+                {showQueueBadge && (
+                  <span
+                    className="tab-badge"
+                    aria-label={`${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`}
+                  >
+                    {mealPlanQueueCount > 9 ? '9+' : mealPlanQueueCount}
+                  </span>
+                )}
+              </span>
               <span className="tab-label">{t.label}</span>
             </button>
-          ))}
+          );})}
         </nav>
       )}
     </div>

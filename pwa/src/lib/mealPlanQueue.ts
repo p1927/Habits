@@ -1,6 +1,14 @@
 const QUEUE_KEY = 'habits-meal-plan-queue';
 const CACHE_KEY = 'habits-meal-plan-cache';
 
+export const MEAL_PLAN_QUEUE_CHANGE = 'habits-meal-plan-queue-change';
+
+function notifyQueueChange() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(MEAL_PLAN_QUEUE_CHANGE));
+  }
+}
+
 export interface MealPlanEntry {
   meal: string;
   label: string;
@@ -29,6 +37,7 @@ function readQueue(): QueuedMealPlanLog[] {
 
 function writeQueue(items: QueuedMealPlanLog[]) {
   localStorage.setItem(QUEUE_KEY, JSON.stringify(items));
+  notifyQueueChange();
 }
 
 export function getMealPlanQueue(): QueuedMealPlanLog[] {
@@ -53,6 +62,7 @@ export function removeMealPlanQueueItem(id: string) {
 
 export function clearMealPlanQueue() {
   localStorage.removeItem(QUEUE_KEY);
+  notifyQueueChange();
 }
 
 export function cacheMealPlan(meals: MealPlanEntry[]) {
