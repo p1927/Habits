@@ -41,7 +41,7 @@ function App() {
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
-  const mealPlanQueueCount = useMealPlanQueueCount();
+  const { count: mealPlanQueueCount, badgePulse: mealPlanBadgePulse } = useMealPlanQueueCount();
 
   const handleTabChange = useCallback((id: TabId) => {
     setTab(id);
@@ -130,7 +130,7 @@ function App() {
                 <span className="tab-icon" aria-hidden>{t.icon}</span>
                 {showQueueBadge && (
                   <span
-                    className="tab-badge"
+                    className={`tab-badge${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}`}
                     aria-label={`${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`}
                   >
                     {mealPlanQueueCount > 9 ? '9+' : mealPlanQueueCount}

@@ -311,6 +311,23 @@ button:disabled {
   pointer-events: none;
 }
 
+.tab-badge--pulse {
+  animation: tab-badge-pulse 0.65s ease-out;
+}
+
+@keyframes tab-badge-pulse {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.35);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 45%, transparent);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .transcript-list {
   list-style: none;
   padding: 0;

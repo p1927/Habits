@@ -224,7 +224,7 @@ export function Log({ serverOnline }: LogProps) {
     handleUndo: handleMealPlanUndo,
   } = useMealPlanUndo(serverOnline);
 
-  const mealPlanQueueCount = useMealPlanQueueCount();
+  const { count: mealPlanQueueCount } = useMealPlanQueueCount();
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
