@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T01:52:00Z |
+| reviewed_at | 2026-07-27T01:54:00Z |
 | git_branch | main |
 | uncommitted_files | docs/RELAY.md checkpoint only |
-| where_we_are | Loop tick #30; relay-036 recipe scan queue dismiss shipped. |
+| where_we_are | Loop tick #31; relay-037 per-metric fire streak haptic shipped. |
 | blockers | [] |
-| confirmed_next | relay-037 Per-metric fire streak haptic |
-| brainstorm_notes | relay-036 done; next maintenance item |
+| confirmed_next | relay-038 Home refresh keyboard shortcut |
+| brainstorm_notes | relay-037 done; next maintenance item |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T01:52:00Z |
+| last_wake | 2026-07-27T01:54:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-037 Per-metric fire streak haptic |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-038 Home refresh keyboard shortcut |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-037 | Per-metric fire streak haptic | maintenance
 - [ ] relay-038 | Home refresh keyboard shortcut | maintenance
 - [ ] relay-039 | Food log queue dismiss on banner | maintenance
+- [ ] relay-040 | Hot tier single-pulse haptic | maintenance
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Per-item recipe queue dismiss | — | List queued photos in Recipes tab |
+| Metric name in haptic toast | — | "Work streak on fire!" |
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-036 | done | build | pending |
+| 2026-07-27 | relay-037 | done | build | pending |
+| 2026-07-27 | relay-036 | done | build | d60da47 |
 | 2026-07-27 | relay-035 | done | build | f13d681 |
 | 2026-07-27 | relay-034 | done | build | 4dcb101 |
 | 2026-07-27 | relay-033 | done | build | 1cb16cb |
 | 2026-07-27 | relay-032 | done | build | cf359c8 |
-| 2026-07-27 | relay-031 | done | build | e9b67a1 |
 
 ---
 
