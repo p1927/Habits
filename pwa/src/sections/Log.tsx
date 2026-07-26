@@ -63,6 +63,11 @@ export function Log({ serverOnline }: LogProps) {
     totals: { calories: number; protein: number } | null;
   } | null>(null);
   const [recipePhoto, setRecipePhoto] = useState<string | null>(null);
+  const [recipeScanResult, setRecipeScanResult] = useState<FoodScanResult | null>(null);
+  const [recipeScanning, setRecipeScanning] = useState(false);
+  const [recipeEditOpen, setRecipeEditOpen] = useState(false);
+  const [recipeEditName, setRecipeEditName] = useState('');
+  const [recipeEditQty, setRecipeEditQty] = useState('100');
   const searchTimer = useRef<number | null>(null);
 
   const { pending, logItem, logMeal, retry, dismiss, queuedCount } = useOptimisticFoodLog({
@@ -147,8 +152,34 @@ export function Log({ serverOnline }: LogProps) {
     const label = recipe?.name ?? 'Recipe';
     addMealPhoto(dataUrl, label);
     setRecipePhoto(dataUrl);
-    setSuccess('Recipe photo saved — visible on Home');
+    setRecipeScanResult(null);
     setError('');
+
+    if (!serverOnline) {
+      setSuccess('Recipe photo saved — visible on Home');
+      return;
+    }
+
+    setRecipeScanning(true);
+    try {
+      const result = await api.scanFood(dataUrlToFile(dataUrl, 'recipe.jpg'));
+      setRecipeScanResult(result);
+      setRecipeEditName(result.matched_name ?? result.detected_name);
+      setRecipeEditQty(String(result.suggested_grams));
+      setSuccess(
+        `Identified ${result.matched_name ?? result.detected_name} — swipe to log or use saved recipe below`,
+      );
+    } catch (e) {
+      setSuccess('Recipe photo saved — visible on Home');
+      setError(e instanceof Error ? e.message : 'Recipe scan failed');
+    } finally {
+      setRecipeScanning(false);
+    }
+  }
+
+  async function logRecipeScan(name: string, qty: number) {
+    setRecipeScanResult(null);
+    await logItem(name, qty);
   }
 
   async function handleManualLog(e: React.FormEvent) {
@@ -467,7 +498,9 @@ export function Log({ serverOnline }: LogProps) {
         <>
           <Card>
             <h2>Recipe photo</h2>
-            <p className="muted">Photograph your prepared meal — appears in Today&apos;s meal photos on Home</p>
+            <p className="muted">
+              Photograph your prepared meal — AI identifies it for logging and saves to Home gallery
+            </p>
             {recipePhoto && (
               <img
                 src={recipePhoto}
@@ -475,13 +508,35 @@ export function Log({ serverOnline }: LogProps) {
                 className="recipe-photo-preview"
               />
             )}
-            <CameraCapture
-              facingMode="environment"
-              placeholder="Photograph your prepared recipe"
-              onCapture={(url) => void handleRecipePhoto(url)}
-              disabled={loading}
-            />
+            {!recipeScanResult && (
+              <CameraCapture
+                facingMode="environment"
+                placeholder="Photograph your prepared recipe"
+                onCapture={(url) => void handleRecipePhoto(url)}
+                disabled={loading || recipeScanning}
+              />
+            )}
+            {recipeScanning && (
+              <p className="muted" role="status" aria-live="polite">Identifying recipe…</p>
+            )}
           </Card>
+
+          {recipeScanResult && (
+            <SwipeFoodCard
+              scan={recipeScanResult}
+              onAction={(dir) => {
+                if (dir === 'right') {
+                  void logRecipeScan(
+                    recipeEditName,
+                    Number.parseFloat(recipeEditQty) || recipeScanResult.suggested_grams,
+                  );
+                } else if (dir === 'up' || dir === 'left') {
+                  setRecipeScanResult(null);
+                }
+              }}
+              onEdit={() => setRecipeEditOpen(true)}
+            />
+          )}
 
           <Card>
             <h2>Saved recipe</h2>
@@ -550,6 +605,26 @@ export function Log({ serverOnline }: LogProps) {
       )}
 
       </div>
+
+      <BottomSheet open={recipeEditOpen} onClose={() => setRecipeEditOpen(false)} title="Edit recipe scan">
+        <label className="field">
+          Food name
+          <input value={recipeEditName} onChange={(e) => setRecipeEditName(e.target.value)} />
+        </label>
+        <label className="field">
+          Quantity (g)
+          <input type="number" value={recipeEditQty} onChange={(e) => setRecipeEditQty(e.target.value)} />
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            void logRecipeScan(recipeEditName, Number.parseFloat(recipeEditQty));
+            setRecipeEditOpen(false);
+          }}
+        >
+          Log food
+        </button>
+      </BottomSheet>
 
       <BottomSheet open={editOpen} onClose={() => setEditOpen(false)} title="Edit scan">
         <label className="field">
