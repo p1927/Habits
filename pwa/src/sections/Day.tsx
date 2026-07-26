@@ -235,6 +235,20 @@ export function Day({ serverOnline }: DayProps) {
 
       <Card>
         <h2>Habit hours</h2>
+        <ul className="streak-tier-legend" aria-label="Streak badge tiers">
+          <li>
+            <span className="streak-badge streak-badge--warm streak-tier-legend-badge" aria-hidden="true">3d</span>
+            <span className="muted">Warm · 3+ days</span>
+          </li>
+          <li>
+            <span className="streak-badge streak-badge--hot streak-tier-legend-badge" aria-hidden="true">7d</span>
+            <span className="muted">Hot · 7+ days</span>
+          </li>
+          <li>
+            <span className="streak-badge streak-badge--fire streak-tier-legend-badge" aria-hidden="true">14d</span>
+            <span className="muted">Fire · 14+ days</span>
+          </li>
+        </ul>
         {streaks && streaks.overall > 0 && (
           <p className="streak-banner streak-banner--animated" role="status">
             <span
