@@ -3,6 +3,7 @@ import type { HabitsTodayResponse } from './api';
 const QUEUE_KEY = 'habits-habit-log-queue';
 const CACHE_KEY = 'habits-today-cache';
 const STREAK_CACHE_KEY = 'habits-streak-cache';
+const STREAK_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 export interface QueuedHabitUpdate {
   id: string;
@@ -70,8 +71,13 @@ export function getCachedHabitStreak(): number {
   try {
     const raw = localStorage.getItem(STREAK_CACHE_KEY);
     if (!raw) return 0;
-    const parsed = JSON.parse(raw) as { overall?: number };
-    return typeof parsed.overall === 'number' ? parsed.overall : 0;
+    const parsed = JSON.parse(raw) as { overall?: number; cached_at?: string };
+    if (typeof parsed.overall !== 'number') return 0;
+    if (parsed.cached_at) {
+      const age = Date.now() - new Date(parsed.cached_at).getTime();
+      if (Number.isFinite(age) && age > STREAK_CACHE_TTL_MS) return 0;
+    }
+    return parsed.overall;
   } catch {
     return 0;
   }
