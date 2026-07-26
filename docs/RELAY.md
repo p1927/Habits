@@ -1,7 +1,6 @@
 # Habits Relay — Canonical Agent State
 
-> **Wake order:** LAST_REVIEW → CHECKPOINT → IN_PROGRESS → BACKLOG top item.  
-> Phase archive: [`ROADMAP.md`](ROADMAP.md).
+> **Wake order:** LAST_REVIEW → CHECKPOINT → IN_PROGRESS → BACKLOG top item.
 
 ---
 
@@ -9,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | *(updated each wake)* |
-| git_branch | *(current branch)* |
-| uncommitted_files | *(count)* |
-| where_we_are | Phases 0–7 done. Relay v2 in progress. relay-003 meal plan quick-add next. |
+| reviewed_at | 2026-07-27T00:35:00Z |
+| git_branch | main |
+| uncommitted_files | 0 (excluding .env.development, cursor metadata) |
+| where_we_are | Relay v2 live: 60s loop, Review→Brainstorm→Commit ritual. relay-003 meal plan quick-add done. 5 commits on main. |
 | blockers | [] |
-| confirmed_next | relay-003 Meal plan quick-add |
-| brainstorm_notes | Backlog healthy; no reprioritization needed |
+| confirmed_next | relay-004 Accessibility pass |
+| brainstorm_notes | Backlog healthy; no reprioritization |
 
 ---
 
@@ -23,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T00:32:00Z |
-| status | in_progress |
-| current_item_id | relay-003 |
-| cycle_parity | odd (maintenance) |
-| next_action | Meal plan quick-add on Day/Home |
+| last_wake | 2026-07-27T00:35:00Z |
+| status | ready |
+| current_item_id | — |
+| cycle_parity | even (next: feature) |
+| next_action | relay-004 Accessibility pass on new tabs |
 | blockers | [] |
 | loops | `agent-relay-loop.sh` (60s) + `agent-relay-fallback.sh` (300s) |
 
@@ -35,12 +34,7 @@
 
 ## IN_PROGRESS
 
-| Field | Value |
-|-------|-------|
-| item_id | relay-003 |
-| title | Meal plan quick-add from WEEK MEALS |
-| type | maintenance |
-| acceptance_criteria | Show today's meals; one-tap log all |
+*(empty)*
 
 ---
 
@@ -70,9 +64,10 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-v2 | in_progress | — | Loop 60s + ritual docs |
+| 2026-07-27 | relay-v2 | done | build | bd0cc1f + ritual docs |
+| 2026-07-27 | relay-003 | done | build | meal plan API + Day tab |
+| 2026-07-27 | git-catchup | done | — | 004a76f, 73adfe1, 11e1f3f, livekit rm |
 | 2026-07-27 | relay-002 | done | build | recipes API + Log tab |
-| 2026-07-27 | relay-loop-fix | done | running | persistent loop scripts |
 | 2026-07-27 | relay-001 | done | build | voice postMessage orb |
 
 ---
@@ -82,5 +77,5 @@
 1. Every wake: **Review → Brainstorm → Execute → Verify → Commit → Update RELAY**
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
-4. Persistent loops only — never one-shot sleepers
+4. Persistent loops only — 60s primary, 300s fallback
 5. BACKLOG < 3: refill from BRAINSTORM + web research
