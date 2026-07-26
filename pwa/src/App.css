@@ -1618,6 +1618,22 @@ button:disabled {
   font-size: var(--font-size-sm);
 }
 
+.habit-hours-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.habit-hours-header h2 {
+  margin: 0;
+}
+
+.streak-legend-toggle {
+  flex-shrink: 0;
+}
+
 .streak-tier-legend li {
   display: flex;
   align-items: center;

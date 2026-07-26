@@ -18,6 +18,13 @@ import { vibrateFireStreak, vibrateHotStreak, vibrateMetricFireStreak, vibrateMe
 
 const STREAK_HAPTIC_OVERALL_KEY = 'habits-streak-haptic-overall';
 const STREAK_HAPTIC_METRICS_KEY = 'habits-streak-haptic-metrics';
+const STREAK_LEGEND_SEEN_KEY = 'habits-streak-legend-seen';
+const STREAK_LEGEND_COLLAPSED_KEY = 'habits-streak-legend-collapsed';
+
+function readStreakLegendOpen(): boolean {
+  if (localStorage.getItem(STREAK_LEGEND_COLLAPSED_KEY) === '1') return false;
+  return localStorage.getItem(STREAK_LEGEND_SEEN_KEY) !== '1';
+}
 
 function readMetricStreakHaptics(): Record<string, number> {
   try {
@@ -73,6 +80,7 @@ export function Day({ serverOnline }: DayProps) {
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
+  const [streakLegendOpen, setStreakLegendOpen] = useState(readStreakLegendOpen);
 
   const { saving, updateMetric, queuedCount, pending, retry, dismiss, dismissAllQueued } = useOptimisticHabitLog({
     serverOnline,
@@ -279,6 +287,20 @@ export function Day({ serverOnline }: DayProps) {
   }, [serverOnline, syncMealPlanQueue]);
 
   useEffect(() => {
+    if (localStorage.getItem(STREAK_LEGEND_SEEN_KEY) !== '1') {
+      localStorage.setItem(STREAK_LEGEND_SEEN_KEY, '1');
+    }
+  }, []);
+
+  const toggleStreakLegend = useCallback(() => {
+    setStreakLegendOpen((open) => {
+      const next = !open;
+      localStorage.setItem(STREAK_LEGEND_COLLAPSED_KEY, next ? '0' : '1');
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
     if (!streaks) return;
 
     let didVibrate = false;
@@ -482,21 +504,34 @@ export function Day({ serverOnline }: DayProps) {
       </Card>
 
       <Card>
-        <h2>Habit hours</h2>
-        <ul className="streak-tier-legend" aria-label="Streak badge tiers">
-          <li>
-            <span className="streak-badge streak-badge--warm streak-tier-legend-badge" aria-hidden="true">3d</span>
-            <span className="muted">Warm · 3+ days</span>
-          </li>
-          <li>
-            <span className="streak-badge streak-badge--hot streak-tier-legend-badge" aria-hidden="true">7d</span>
-            <span className="muted">Hot · 7+ days</span>
-          </li>
-          <li>
-            <span className="streak-badge streak-badge--fire streak-tier-legend-badge" aria-hidden="true">14d</span>
-            <span className="muted">Fire · 14+ days</span>
-          </li>
-        </ul>
+        <div className="habit-hours-header">
+          <h2>Habit hours</h2>
+          <button
+            type="button"
+            className="btn-small streak-legend-toggle"
+            aria-expanded={streakLegendOpen}
+            aria-controls="streak-tier-legend"
+            onClick={toggleStreakLegend}
+          >
+            {streakLegendOpen ? 'Hide legend' : 'Show legend'}
+          </button>
+        </div>
+        {streakLegendOpen && (
+          <ul id="streak-tier-legend" className="streak-tier-legend" aria-label="Streak badge tiers">
+            <li>
+              <span className="streak-badge streak-badge--warm streak-tier-legend-badge" aria-hidden="true">3d</span>
+              <span className="muted">Warm · 3+ days</span>
+            </li>
+            <li>
+              <span className="streak-badge streak-badge--hot streak-tier-legend-badge" aria-hidden="true">7d</span>
+              <span className="muted">Hot · 7+ days</span>
+            </li>
+            <li>
+              <span className="streak-badge streak-badge--fire streak-tier-legend-badge" aria-hidden="true">14d</span>
+              <span className="muted">Fire · 14+ days</span>
+            </li>
+          </ul>
+        )}
         {streaks && streaks.overall > 0 && (
           <p className="streak-banner streak-banner--animated" role="status">
             <span
