@@ -495,9 +495,9 @@ export function Home({ serverOnline }: HomeProps) {
             </div>
           )}
         </div>
-      ) : (
+      ) : mealPlan.length > 0 ? (
         <MealPlanQueueEmptyHint />
-      )}
+      ) : null}
 
       <Card className="home-export-card">
         <div className="home-export-row">
