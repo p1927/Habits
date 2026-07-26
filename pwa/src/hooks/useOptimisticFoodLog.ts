@@ -13,6 +13,7 @@ export interface OptimisticFoodEntry {
   food: string;
   quantity_g: number;
   status: 'pending' | 'failed' | 'queued';
+  source?: 'macros';
 }
 
 interface UseOptimisticFoodLogOptions {
@@ -25,6 +26,15 @@ interface UseOptimisticFoodLogOptions {
 function queueToEntry(item: QueuedFoodLog): OptimisticFoodEntry {
   if (item.kind === 'item') {
     return { id: item.id, food: item.food, quantity_g: item.quantity_g, status: 'queued' };
+  }
+  if (item.kind === 'macros') {
+    return {
+      id: item.id,
+      food: item.food,
+      quantity_g: item.quantity_g,
+      status: 'queued',
+      source: 'macros',
+    };
   }
   return { id: item.id, food: item.description, quantity_g: 0, status: 'queued' };
 }
@@ -62,7 +72,16 @@ export function useOptimisticFoodLog({
         const res =
           item.kind === 'item'
             ? await api.logFoodItem(item.food, item.quantity_g)
-            : await api.logFood(item.description, item.meal_type);
+            : item.kind === 'macros'
+              ? await api.logFoodMacros({
+                  food: item.food,
+                  quantity_g: item.quantity_g,
+                  calories: item.calories,
+                  carbs: item.carbs,
+                  protein: item.protein,
+                  fat: item.fat,
+                })
+              : await api.logFood(item.description, item.meal_type);
         setData(res.summary);
         removeFoodLogQueueItem(item.id);
         setPending((p) => p.filter((x) => x.id !== item.id));
@@ -130,6 +149,47 @@ export function useOptimisticFoodLog({
     [serverOnline, setData, setSuccess, setError],
   );
 
+  const logMacros = useCallback(
+    async (
+      food: string,
+      quantity_g: number,
+      macros: { calories: number; carbs: number; protein: number; fat: number },
+      onSuccess?: () => void,
+    ) => {
+      const id = `pending-macros-${Date.now()}`;
+      setPending((p) => [...p, { id, food, quantity_g, status: 'pending', source: 'macros' }]);
+      setError('');
+
+      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+        const q = enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros });
+        setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
+        setSuccess('Saved offline — will sync when back online');
+        onSuccess?.();
+        return;
+      }
+
+      try {
+        const res = await api.logFoodMacros({ food, quantity_g, ...macros });
+        setData(res.summary);
+        setSuccess(res.message);
+        setPending((p) => p.filter((x) => x.id !== id));
+        onSuccess?.();
+      } catch (e) {
+        if (isOfflineError(e)) {
+          const q = enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros });
+          setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
+          setSuccess('Saved offline — will sync when back online');
+          onSuccess?.();
+          return;
+        }
+        const msg = e instanceof Error ? e.message : 'Log failed';
+        setPending((p) => p.map((x) => (x.id === id ? { ...x, status: 'failed' as const } : x)));
+        setError(msg);
+      }
+    },
+    [serverOnline, setData, setSuccess, setError],
+  );
+
   const logMeal = useCallback(
     async (description: string, meal_type: string, onSuccess?: () => void) => {
       const id = `pending-meal-${Date.now()}`;
@@ -168,15 +228,23 @@ export function useOptimisticFoodLog({
 
   const retry = useCallback(
     (entry: OptimisticFoodEntry) => {
+      const queued = getFoodLogQueue().find((q) => q.id === entry.id);
       removeFoodLogQueueItem(entry.id);
       setPending((p) => p.filter((x) => x.id !== entry.id));
-      if (entry.quantity_g > 0) {
+      if (queued?.kind === 'macros') {
+        void logMacros(queued.food, queued.quantity_g, {
+          calories: queued.calories,
+          carbs: queued.carbs,
+          protein: queued.protein,
+          fat: queued.fat,
+        });
+      } else if (entry.quantity_g > 0) {
         void logItem(entry.food, entry.quantity_g);
       } else {
         void logMeal(entry.food, 'other');
       }
     },
-    [logItem, logMeal],
+    [logItem, logMeal, logMacros],
   );
 
   const dismiss = useCallback((id: string) => {
@@ -184,5 +252,5 @@ export function useOptimisticFoodLog({
     setPending((p) => p.filter((x) => x.id !== id));
   }, []);
 
-  return { pending, logItem, logMeal, retry, dismiss, flushQueue, queuedCount: pending.filter((x) => x.status === 'queued').length };
+  return { pending, logItem, logMeal, logMacros, retry, dismiss, flushQueue, queuedCount: pending.filter((x) => x.status === 'queued').length };
 }

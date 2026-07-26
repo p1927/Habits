@@ -70,7 +70,7 @@ export function Log({ serverOnline }: LogProps) {
   const [recipeEditQty, setRecipeEditQty] = useState('100');
   const searchTimer = useRef<number | null>(null);
 
-  const { pending, logItem, logMeal, retry, dismiss, queuedCount } = useOptimisticFoodLog({
+  const { pending, logItem, logMeal, logMacros, retry, dismiss, queuedCount } = useOptimisticFoodLog({
     serverOnline,
     setData,
     setSuccess,
@@ -193,23 +193,18 @@ export function Log({ serverOnline }: LogProps) {
   }
 
   async function handleLogOffProduct() {
-    if (!offProduct || !serverOnline) return;
+    if (!offProduct) return;
     const qty = Number.parseFloat(offQuantity);
     if (!qty || qty <= 0) return;
     setLoading(true);
     setError('');
     try {
       const macros = scaleOffMacros(offProduct.per100g, qty);
-      const res = await api.logFoodMacros({
-        food: offProduct.name,
-        quantity_g: qty,
-        ...macros,
+      await logMacros(offProduct.name, qty, macros, () => {
+        setOffProduct(null);
+        setFoodName('');
+        setSearchResults([]);
       });
-      setData(res.summary);
-      setSuccess(res.message);
-      setOffProduct(null);
-      setFoodName('');
-      setSearchResults([]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Open Food Facts log failed');
     } finally {
@@ -384,7 +379,7 @@ export function Log({ serverOnline }: LogProps) {
               })()}
               <button
                 type="button"
-                disabled={!serverOnline || loading}
+                disabled={loading}
                 onClick={() => void handleLogOffProduct()}
               >
                 Log from Open Food Facts
@@ -460,6 +455,7 @@ export function Log({ serverOnline }: LogProps) {
                       <strong>{entry.food}</strong>
                       <span className="muted">
                         {entry.quantity_g > 0 ? ` · ${entry.quantity_g}g` : ''}
+                        {entry.source === 'macros' ? ' · Open Food Facts' : ''}
                         {entry.status === 'pending'
                           ? ' · Saving…'
                           : entry.status === 'queued'

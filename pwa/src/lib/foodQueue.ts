@@ -2,7 +2,18 @@ const STORAGE_KEY = 'habits-food-log-queue';
 
 export type QueuedFoodLog =
   | { id: string; kind: 'item'; food: string; quantity_g: number; created_at: string }
-  | { id: string; kind: 'meal'; description: string; meal_type: string; created_at: string };
+  | { id: string; kind: 'meal'; description: string; meal_type: string; created_at: string }
+  | {
+      id: string;
+      kind: 'macros';
+      food: string;
+      quantity_g: number;
+      calories: number;
+      carbs: number;
+      protein: number;
+      fat: number;
+      created_at: string;
+    };
 
 function readQueue(): QueuedFoodLog[] {
   try {
@@ -25,7 +36,17 @@ export function getFoodLogQueue(): QueuedFoodLog[] {
 
 type QueueInput =
   | { kind: 'item'; food: string; quantity_g: number; id?: string }
-  | { kind: 'meal'; description: string; meal_type: string; id?: string };
+  | { kind: 'meal'; description: string; meal_type: string; id?: string }
+  | {
+      kind: 'macros';
+      food: string;
+      quantity_g: number;
+      calories: number;
+      carbs: number;
+      protein: number;
+      fat: number;
+      id?: string;
+    };
 
 export function enqueueFoodLog(entry: QueueInput): QueuedFoodLog {
   const item = {
