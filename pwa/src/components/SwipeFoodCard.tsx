@@ -14,6 +14,7 @@ export function SwipeFoodCard({ scan, onAction, onEdit }: SwipeFoodCardProps) {
 
   return (
     <SwipeStack
+      label={`Food scan: ${name}`}
       onSwipe={(dir) => {
         if (dir === 'left') onEdit();
         else onAction(dir);

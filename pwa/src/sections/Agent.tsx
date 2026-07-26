@@ -53,43 +53,46 @@ export function Agent({ serverOnline }: AgentProps) {
   }, [input, serverOnline, messages, context]);
 
   return (
-    <section className="section agent-section">
+    <section className="section agent-section" aria-labelledby="agent-heading">
       <header className="agent-header">
         <div>
-          <h1>Coach</h1>
+          <h1 id="agent-heading">Coach</h1>
           <p className="muted agent-subtitle">Chat, voice, and daily context</p>
         </div>
         <VoiceStatusOrb state={voiceOpen ? orbState : toOrbVisual(null, serverOnline)} />
       </header>
 
       {!serverOnline && (
-        <div className="banner banner-warn">habits-api offline — context unavailable.</div>
+        <div className="banner banner-warn" role="alert">habits-api offline — context unavailable.</div>
       )}
 
       <AgentContextPanel context={context} />
 
-      <div className="agent-chat" ref={listRef}>
+      <div className="agent-chat" ref={listRef} role="log" aria-live="polite" aria-label="Chat messages">
         {messages.length === 0 && (
           <p className="muted agent-chat-empty">
             Ask me to log food, update habits, schedule events, or add health notes.
           </p>
         )}
         {messages.map((m, i) => (
-          <div key={i} className={`chat-bubble chat-bubble--${m.role}`}>
+          <div key={i} className={`chat-bubble chat-bubble--${m.role}`} aria-label={m.role === 'user' ? 'You' : 'Coach'}>
             {m.content}
           </div>
         ))}
-        {loading && <div className="chat-bubble chat-bubble--assistant">Thinking…</div>}
+        {loading && <div className="chat-bubble chat-bubble--assistant" role="status">Thinking…</div>}
       </div>
 
       <form
         className="agent-chat-input"
+        aria-label="Send a message"
         onSubmit={(e) => {
           e.preventDefault();
           void send();
         }}
       >
+        <label className="sr-only" htmlFor="agent-chat-input">Message</label>
         <input
+          id="agent-chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Message your coach…"
@@ -121,7 +124,7 @@ export function Agent({ serverOnline }: AgentProps) {
         )}
       </BottomSheet>
 
-      {error && <div className="banner banner-warn">{error}</div>}
+      {error && <div className="banner banner-warn" role="alert">{error}</div>}
     </section>
   );
 }

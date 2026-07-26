@@ -75,11 +75,11 @@ export function Day({ serverOnline }: DayProps) {
   }
 
   return (
-    <section className="section day-section">
-      <h1>Your Day</h1>
+    <section className="section day-section" aria-labelledby="day-heading">
+      <h1 id="day-heading">Your Day</h1>
       <p className="muted">Schedule + habit tracker</p>
 
-      {!serverOnline && <div className="banner banner-warn">Server offline.</div>}
+      {!serverOnline && <div className="banner banner-warn" role="alert">Server offline.</div>}
 
       <Card>
         <h2>Today&apos;s meal plan</h2>
@@ -121,7 +121,7 @@ export function Day({ serverOnline }: DayProps) {
         {!events.length ? (
           <p className="muted">No calendar events today.</p>
         ) : (
-          <ul className="timeline">
+          <ul className="timeline" aria-label="Today's calendar events">
             {events.map((ev) => (
               <li
                 key={ev.id}
@@ -138,7 +138,7 @@ export function Day({ serverOnline }: DayProps) {
 
       <Card>
         <h2>Habit hours</h2>
-        <div className="habit-grid">
+        <div className="habit-grid" role="group" aria-label="Habit hours">
           {METRICS.map(({ key, label, target }) => {
             const val = habits?.metrics?.[key];
             const behind = target > 0 && (val ?? 0) < target * 0.5;
@@ -179,8 +179,10 @@ export function Day({ serverOnline }: DayProps) {
         </Card>
       )}
 
-      {mealSuccess && <div className="banner banner-ok">{mealSuccess}</div>}
-      {error && <div className="banner banner-warn">{error}</div>}
+      <div role="status" aria-live="polite">
+        {mealSuccess && <div className="banner banner-ok">{mealSuccess}</div>}
+      </div>
+      {error && <div className="banner banner-warn" role="alert">{error}</div>}
     </section>
   );
 }

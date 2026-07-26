@@ -25,8 +25,8 @@ export function Ring({
   const offset = circumference * (1 - pct);
 
   return (
-    <div className="ui-ring" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <div className="ui-ring" style={{ width: size, height: size }} role="img" aria-label={`${label ?? 'Progress'}: ${Math.round(value)}${unit} of ${Math.round(max)}${unit}`}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -68,7 +68,7 @@ interface ActivityRingsProps {
 
 export function ActivityRings({ protein, calories, habits }: ActivityRingsProps) {
   return (
-    <div className="ui-rings-stack">
+    <div className="ui-rings-stack" role="group" aria-label="Activity rings">
       <Ring
         value={habits.value}
         max={habits.max}

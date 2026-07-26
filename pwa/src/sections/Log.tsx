@@ -169,23 +169,30 @@ export function Log({ serverOnline }: LogProps) {
   }
 
   return (
-    <section className="section">
-      <h1>Log Food</h1>
+    <section className="section" aria-labelledby="log-heading">
+      <h1 id="log-heading">Log Food</h1>
       <p className="muted">Scan, type, or review history</p>
 
-      <div className="sub-tabs">
-        {(['scan', 'type', 'recipes', 'history'] as LogTab[]).map((t) => (
+      <div className="sub-tabs" role="tablist" aria-label="Log food views">
+        {(['scan', 'type', 'recipes', 'history'] as LogTab[]).map((t) => {
+          const label = t === 'scan' ? 'Scan' : t === 'type' ? 'Type' : t === 'recipes' ? 'Recipes' : 'History';
+          return (
           <button
             key={t}
             type="button"
+            role="tab"
+            id={`log-tab-${t}`}
+            aria-selected={tab === t}
+            aria-controls={`log-panel-${t}`}
             className={`sub-tab ${tab === t ? 'sub-tab-active' : ''}`}
             onClick={() => setTab(t)}
           >
-            {t === 'scan' ? 'Scan' : t === 'type' ? 'Type' : t === 'recipes' ? 'Recipes' : 'History'}
+            {label}
           </button>
-        ))}
+        );})}
       </div>
 
+      <div role="tabpanel" id={`log-panel-${tab}`} aria-labelledby={`log-tab-${tab}`}>
       {tab === 'scan' && (
         <>
           {!scanResult ? (
@@ -198,7 +205,7 @@ export function Log({ serverOnline }: LogProps) {
                 onCapture={(url) => void handleCapture(url)}
                 disabled={!serverOnline || loading}
               />
-              {loading && <p className="muted">Identifying food…</p>}
+              {loading && <p className="muted" role="status" aria-live="polite">Identifying food…</p>}
             </Card>
           ) : (
             <SwipeFoodCard
@@ -282,7 +289,7 @@ export function Log({ serverOnline }: LogProps) {
                       <strong>{item.food}</strong>
                       <span className="muted"> · {item.quantity_g}g · {item.protein.toFixed(1)}g protein</span>
                     </div>
-                    <button type="button" className="btn-small btn-danger" onClick={() => void handleDelete(item.row)}>×</button>
+                    <button type="button" className="btn-small btn-danger" aria-label={`Remove ${item.food}`} onClick={() => void handleDelete(item.row)}>×</button>
                   </li>
                 ))}
               </ul>
@@ -357,6 +364,8 @@ export function Log({ serverOnline }: LogProps) {
         </Card>
       )}
 
+      </div>
+
       <BottomSheet open={editOpen} onClose={() => setEditOpen(false)} title="Edit scan">
         <label className="field">
           Food name
@@ -377,8 +386,10 @@ export function Log({ serverOnline }: LogProps) {
         </button>
       </BottomSheet>
 
-      {success && <div className="banner banner-ok">{success}</div>}
-      {error && <div className="banner banner-warn">{error}</div>}
+      <div role="status" aria-live="polite">
+        {success && <div className="banner banner-ok">{success}</div>}
+      </div>
+      {error && <div className="banner banner-warn" role="alert">{error}</div>}
     </section>
   );
 }

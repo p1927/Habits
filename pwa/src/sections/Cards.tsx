@@ -71,22 +71,26 @@ export function Cards({ serverOnline }: CardsProps) {
   }
 
   return (
-    <section className="section cards-section">
-      <h1>Cards</h1>
+    <section className="section cards-section" aria-labelledby="cards-heading">
+      <h1 id="cards-heading">Cards</h1>
       <p className="muted">Notes, sickness, strategy — like Google Keep</p>
 
+      <label className="sr-only" htmlFor="cards-search">Search cards</label>
       <input
+        id="cards-search"
         className="cards-search"
         placeholder="Search cards…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <div className="sub-tabs">
+      <div className="sub-tabs" role="tablist" aria-label="Card filters">
         {FILTERS.map((f) => (
           <button
             key={f}
             type="button"
+            role="tab"
+            aria-selected={filter === f}
             className={`sub-tab ${filter === f ? 'sub-tab-active' : ''}`}
             onClick={() => setFilter(f)}
           >
@@ -95,19 +99,21 @@ export function Cards({ serverOnline }: CardsProps) {
         ))}
       </div>
 
-      <div className="cards-grid">
+      <div className="cards-grid" role="list" aria-label="Keep cards">
         {filtered.map((card) => (
           <Card
             key={card.id}
             variant={KEEP_VARIANTS[card.type] ?? 'keep-purple'}
             className="keep-card"
             onClick={() => {}}
+            ariaLabel={`${card.type} card: ${card.title}`}
           >
             <div className="keep-card-header">
               <span className="keep-card-type">{card.type}</span>
               <button
                 type="button"
                 className="btn-small btn-danger"
+                aria-label={`Delete ${card.title}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   void handleDelete(card);
@@ -150,7 +156,7 @@ export function Cards({ serverOnline }: CardsProps) {
         </form>
       </BottomSheet>
 
-      {error && <div className="banner banner-warn">{error}</div>}
+      {error && <div className="banner banner-warn" role="alert">{error}</div>}
     </section>
   );
 }

@@ -101,12 +101,12 @@ export function Home({ serverOnline }: HomeProps) {
   const burn = estimateBurn(habits);
 
   return (
-    <section className="section home-section">
-      <h1>Today</h1>
+    <section className="section home-section" aria-labelledby="home-heading">
+      <h1 id="home-heading">Today</h1>
       <p className="muted">Your health dashboard</p>
 
       {!serverOnline && (
-        <div className="banner banner-warn">Server offline — connect to sync.</div>
+        <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
       <Card className="home-rings-card">
@@ -143,11 +143,12 @@ export function Home({ serverOnline }: HomeProps) {
           {decisionCard.image_url && (
             <img
               src={decisionCard.image_url}
-              alt=""
+              alt={decisionCard.title ? `Illustration for ${decisionCard.title}` : 'Decision card illustration'}
               className="decision-card-img"
             />
           )}
           <SwipeStack
+            label="Future self decision card"
             onSwipe={(dir) => {
               if (dir === 'right') void handleAcceptCard();
               else if (dir === 'left' || dir === 'up') setDecisionCard(null);
@@ -164,7 +165,7 @@ export function Home({ serverOnline }: HomeProps) {
         </Card>
       )}
 
-      {error && <div className="banner banner-warn">{error}</div>}
+      {error && <div className="banner banner-warn" role="alert">{error}</div>}
     </section>
   );
 }

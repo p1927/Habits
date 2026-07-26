@@ -24,6 +24,14 @@ function parseInitialTab(): TabId {
   return 'home';
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  online: 'Server connected',
+  'online-unauthorized': 'Server connected, authorization required',
+  offline: 'Server offline',
+  checking: 'Checking server connection',
+  'no-config': 'API URL not configured',
+};
+
 function App() {
   const [tab, setTab] = useState<TabId>(parseInitialTab);
   const [oauthSuccess, setOauthSuccess] = useState(false);
@@ -58,23 +66,27 @@ function App() {
           >
             ⚙
           </button>
-          <span className={`status-dot status-${status}`} title={status} />
+          <span
+            className={`status-dot status-${status}`}
+            role="status"
+            aria-label={STATUS_LABELS[status] ?? status}
+          />
         </div>
       </header>
 
       {status === 'no-config' && (
-        <div className="banner banner-warn">
+        <div className="banner banner-warn" role="alert">
           API URL not configured. Set VITE_HABITS_API_URL in GitHub secrets or pwa/.env.development.
         </div>
       )}
 
       {status === 'online-unauthorized' && (
-        <div className="banner banner-warn">
+        <div className="banner banner-warn" role="alert">
           Server reachable — paste your bearer token in Settings.
         </div>
       )}
 
-      <main className="main">
+      <main className="main" id="main-content" role="main">
         {tab === 'home' && <Home serverOnline={serverOnline} />}
         {tab === 'log' && <Log serverOnline={serverOnline} />}
         {tab === 'day' && <Day serverOnline={serverOnline} />}

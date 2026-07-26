@@ -8,7 +8,14 @@ interface MacroBarProps {
 export function MacroBar({ label, value, target, color }: MacroBarProps) {
   const pct = target > 0 ? Math.min((value / target) * 100, 100) : 0;
   return (
-    <div className="macro-bar">
+    <div
+      className="macro-bar"
+      role="progressbar"
+      aria-valuenow={Math.round(value)}
+      aria-valuemin={0}
+      aria-valuemax={Math.round(target)}
+      aria-label={`${label}: ${Math.round(value)} of ${Math.round(target)} grams`}
+    >
       <div className="macro-bar__header">
         <span>{label}</span>
         <span className="macro-bar__nums">
@@ -43,8 +50,13 @@ export function Sparkline({ data, color = 'var(--accent)', height = 48 }: Sparkl
     .join(' ');
 
   return (
-    <svg className="sparkline" width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none">
-      <polyline fill="none" stroke={color} strokeWidth="2" points={points} />
-    </svg>
+    <>
+      <svg className="sparkline" width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" aria-hidden="true">
+        <polyline fill="none" stroke={color} strokeWidth="2" points={points} />
+      </svg>
+      <span className="sr-only">
+        Trend from {Math.round(data[0])} to {Math.round(data[data.length - 1])} over {data.length} days
+      </span>
+    </>
   );
 }

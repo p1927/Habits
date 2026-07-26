@@ -121,6 +121,14 @@
   transition: none;
 }
 
+.ui-swipe-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
 /* Bottom sheet */
 .ui-sheet-backdrop {
   position: fixed;

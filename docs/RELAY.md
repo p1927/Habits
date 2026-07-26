@@ -8,12 +8,12 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T00:35:00Z |
+| reviewed_at | 2026-07-27T00:52:00Z |
 | git_branch | main |
 | uncommitted_files | 0 (excluding .env.development, cursor metadata) |
-| where_we_are | Relay v2 live: 60s loop, Review→Brainstorm→Commit ritual. relay-003 meal plan quick-add done. 5 commits on main. |
+| where_we_are | `/loop` 60s armed. relay-004 accessibility pass complete — aria, keyboard swipe actions, live regions on all main tabs. |
 | blockers | [] |
-| confirmed_next | relay-004 Accessibility pass |
+| confirmed_next | relay-005 Agent chat camera attach |
 | brainstorm_notes | Backlog healthy; no reprioritization |
 
 ---
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T00:35:00Z |
+| last_wake | 2026-07-27T00:52:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | even (next: feature) |
-| next_action | relay-004 Accessibility pass on new tabs |
+| next_action | relay-005 Agent chat camera attach |
 | blockers | [] |
-| loops | `agent-relay-loop.sh` (60s) + `agent-relay-fallback.sh` (300s) |
+| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (this chat tab) |
 
 ---
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-004 | Accessibility pass on new tabs | maintenance
 - [ ] relay-005 | Agent chat camera attach | maintenance
 - [ ] relay-006 | Optimistic food log + retry | maintenance
 - [ ] relay-007 | Lighthouse PWA score > 90 | maintenance
@@ -77,5 +76,5 @@
 1. Every wake: **Review → Brainstorm → Execute → Verify → Commit → Update RELAY**
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
-4. Persistent loops only — 60s primary, 300s fallback
+4. **In-session `/loop`** — 60s `AGENT_LOOP_TICK_HABITS`; chain items while chat is open
 5. BACKLOG < 3: refill from BRAINSTORM + web research

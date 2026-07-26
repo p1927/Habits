@@ -14,28 +14,22 @@ Each 1-minute wake runs the **full relay cycle**, not blind coding:
 | 4 | **Verify** | `npm run build`; API import if backend changed; see [`VERIFICATION.md`](VERIFICATION.md) |
 | 5 | **Commit** | Git commit completed work (see protocol below) |
 | 6 | **Update RELAY** | Append HISTORY, update CHECKPOINT, clear IN_PROGRESS |
-| 7 | **Confirm loops** | Ensure `agent-relay-loop.sh` and `agent-relay-fallback.sh` still running; restart if not |
+| 7 | **Confirm loop** | Ensure in-session `/loop` (60s `AGENT_LOOP_TICK_HABITS`) still running; restart if not |
 
 If mid-implementation when tick fires: finish the current atomic step, then run Review + Brainstorm before the next item.
 
-## Loop schedule
+## Loop schedule (this chat tab)
 
 | Trigger | Delay | Purpose |
 |---------|-------|---------|
-| Primary loop | **60 seconds** | Persistent ritual wake |
-| Fallback | **5 minutes** | Safety net if agent went idle |
-| Initial arm | **Immediate** | Run ritual now |
+| `/loop` fixed schedule | **60 seconds** | Persistent ritual wake via `AGENT_LOOP_TICK_HABITS` |
+| Initial arm | **Immediate** | Run ritual now on session start |
 
-**Never use one-shot** `sleep N && echo` — it dies after one fire.
+Use the Loop skill fixed schedule — persistent `while true; sleep 60; echo AGENT_LOOP_TICK_HABITS …` with monitored shell output. **Never use one-shot** `sleep N && echo`.
 
-### Persistent scripts (always running)
+While this chat is open: **chain BACKLOG items** without waiting for ticks. The loop only wakes you when idle between turns.
 
-```bash
-./scripts/agent-relay-loop.sh      # 60s primary
-./scripts/agent-relay-fallback.sh  # 300s fallback
-```
-
-After every wake, confirm both are running. Restart if either exited.
+After every wake, confirm the loop terminal is still running. Restart if it exited.
 
 ## Git commit protocol (required)
 

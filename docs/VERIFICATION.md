@@ -63,7 +63,7 @@ Run the checks for the current relay item before advancing HISTORY.
 - [ ] Brainstorm step recorded (even if "no changes")
 - [ ] `cd pwa && npm run build` passes
 - [ ] Git commit created for completed item (or noted why skipped in HISTORY)
-- [ ] Both loop scripts running (`agent-relay-loop.sh`, `agent-relay-fallback.sh`)
+- [ ] In-session `/loop` running (`AGENT_LOOP_TICK_HABITS`, 60s) — check loop terminal or `pgrep -f AGENT_LOOP_TICK_HABITS`
 
 ## Maintenance Backlog
 
