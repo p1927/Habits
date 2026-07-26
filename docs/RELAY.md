@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:36:00Z |
+| last_wake | 2026-07-27T02:37:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-069 Home meal plan empty queue hint |
+| cycle_parity | even (next: feature) |
+| next_action | relay-070 Queue badge hide when on active tab |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-069 | Home meal plan empty queue hint | maintenance
 - [ ] relay-070 | Queue badge hide when on active tab | maintenance
 
 ---
@@ -57,6 +56,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-069 | done | build | — |
 | 2026-07-27 | relay-068 | done | build | fb08e83 |
 | 2026-07-27 | relay-067 | done | build | f7772b4 |
 | 2026-07-27 | relay-066 | done | build | ee334bd |
