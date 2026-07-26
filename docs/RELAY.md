@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:08:00Z |
+| reviewed_at | 2026-07-27T02:10:00Z |
 | git_branch | main |
 | uncommitted_files | Log undo toast WIP, maintenance docs |
-| where_we_are | Loop tick #38; relay-044 VoiceStatusOrb postMessage wiring shipped. |
+| where_we_are | Loop tick #39; relay-045 meal plan quick-add shipped. |
 | blockers | [] |
-| confirmed_next | relay-045 Meal plan quick-add from WEEK MEALS |
-| brainstorm_notes | relay-044 done; orb driven by VoiceEmbed onStatusChange |
+| confirmed_next | relay-046 Streak tier legend on Day |
+| brainstorm_notes | relay-045 done; per-meal log from WEEK MEALS |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:08:00Z |
+| last_wake | 2026-07-27T02:10:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-045 Meal plan quick-add from WEEK MEALS |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-046 Streak tier legend on Day |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-045 | Meal plan quick-add from WEEK MEALS | feature
 - [ ] relay-046 | Streak tier legend on Day | maintenance
 - [ ] relay-047 | Food log undo toast polish | maintenance
+- [ ] relay-048 | Meal plan offline queue | maintenance
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Orb click opens voice sheet | — | Quick mic access |
+| Log meal plan from Home | — | Quick breakfast log widget |
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-044 | done | build | pending |
+| 2026-07-27 | relay-045 | done | build+import | pending |
+| 2026-07-27 | relay-044 | done | build | 0128f6f |
 | 2026-07-27 | relay-043 | done | build | d530f03 |
 | 2026-07-27 | relay-042 | done | build | c417b7a |
 | 2026-07-27 | relay-041 | done | build | b7b5857 |
 | 2026-07-27 | relay-040 | done | build | 058303e |
-| 2026-07-27 | relay-039 | done | build | 3bf363d |
 
 ---
 
