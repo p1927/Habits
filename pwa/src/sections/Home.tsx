@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { ActivityRings } from '../components/ui/Ring';
 import { Card } from '../components/ui/Card';
 import { SwipeStack } from '../components/ui/SwipeStack';
 import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import {
   api,
   ApiError,
@@ -99,6 +100,11 @@ export function Home({ serverOnline }: HomeProps) {
     }
   }, [serverOnline]);
 
+  const { pullProgress, refreshing } = usePullToRefresh({
+    onRefresh: refresh,
+    enabled: true,
+  });
+
   useEffect(() => {
     void refresh();
     const id = window.setInterval(() => void refresh(), 60_000);
@@ -177,6 +183,16 @@ export function Home({ serverOnline }: HomeProps) {
 
   return (
     <section className="section home-section" aria-labelledby="home-heading">
+      {(pullProgress > 0 || refreshing) && (
+        <div
+          className="pull-refresh-indicator"
+          role="status"
+          aria-live="polite"
+          style={{ '--pull-progress': pullProgress } as CSSProperties}
+        >
+          {refreshing ? 'Refreshing…' : pullProgress >= 1 ? 'Release to refresh' : 'Pull to refresh'}
+        </div>
+      )}
       <h1 id="home-heading">Today</h1>
       <p className="muted">Your health dashboard</p>
 

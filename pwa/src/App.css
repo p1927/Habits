@@ -1008,6 +1008,23 @@ button:disabled {
   margin: 0;
 }
 
+.home-section {
+  position: relative;
+}
+
+.pull-refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  margin: -0.25rem 0 0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--muted);
+  opacity: calc(0.35 + var(--pull-progress, 0) * 0.65);
+  transform: translateY(calc((1 - var(--pull-progress, 0)) * -4px));
+  transition: opacity 0.15s ease;
+}
+
 .home-export-row {
   display: flex;
   align-items: center;
