@@ -106,6 +106,8 @@ export function Day({ serverOnline }: DayProps) {
   const [mealPlanQueue, setMealPlanQueue] = useState<QueuedMealPlanLog[]>(() => getMealPlanQueue());
   const [failedMealPlanIds, setFailedMealPlanIds] = useState<Set<string>>(() => new Set());
   const [retryingMealPlanId, setRetryingMealPlanId] = useState<string | null>(null);
+  const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
+  const [mealPlanSyncProgress, setMealPlanSyncProgress] = useState<{ done: number; total: number } | null>(null);
   const [mealSuccess, setMealSuccess] = useState('');
   const [error, setError] = useState('');
   const [habitSyncMessage, setHabitSyncMessage] = useState('');
@@ -191,7 +193,10 @@ export function Day({ serverOnline }: DayProps) {
     const queue = getMealPlanQueue();
     if (!queue.length) return;
 
+    setSyncingMealPlanQueue(true);
     dismissMealPlanUndo();
+    const total = queue.length;
+    setMealPlanSyncProgress({ done: 0, total });
     let synced = 0;
     const labels: string[] = [];
     let lastSummary: FoodTodayResponse | null = null;
@@ -207,6 +212,8 @@ export function Day({ serverOnline }: DayProps) {
             lastSummary = summary;
             synced += 1;
             labels.push(mealPlanQueueLabel(item));
+            setMealPlanSyncProgress({ done: synced, total });
+            syncMealPlanQueue();
           }
         } catch (e) {
           if (isOfflineError(e)) break;
@@ -215,7 +222,6 @@ export function Day({ serverOnline }: DayProps) {
           break;
         }
       }
-      syncMealPlanQueue();
       if (synced > 0 && lastSummary) {
         const label = mealPlanSyncUndoLabel(synced, labels);
         if (!offerUndoFromSummary(beforeRows, lastSummary, label)) {
@@ -224,6 +230,10 @@ export function Day({ serverOnline }: DayProps) {
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Meal plan sync failed');
+    } finally {
+      setSyncingMealPlanQueue(false);
+      setMealPlanSyncProgress(null);
+      syncMealPlanQueue();
     }
   }, [
     serverOnline,
@@ -473,27 +483,32 @@ export function Day({ serverOnline }: DayProps) {
         </div>
       )}
 
-      {mealPlanQueue.length > 0 && (
-        <div className="meal-plan-queue-panel" role="status">
+      {mealPlanQueue.length > 0 || syncingMealPlanQueue ? (
+        <div
+          className={`meal-plan-queue-panel${syncingMealPlanQueue ? ' meal-plan-queue-panel--syncing' : ''}`}
+          role="status"
+        >
           <div className="banner banner-warn banner-row">
             <span>
-              {mealPlanQueue.length} meal log{mealPlanQueue.length === 1 ? '' : 's'} queued
-              {serverOnline ? ' — tap Retry or Sync all' : ' — will sync when online'}.
+              {syncingMealPlanQueue && mealPlanSyncProgress
+                ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
+                : `${mealPlanQueue.length} meal log${mealPlanQueue.length === 1 ? '' : 's'} queued${serverOnline ? ' — tap Retry or Sync all' : ' — will sync when online'}.`}
             </span>
             {serverOnline && (
               <button
                 type="button"
                 className="btn-small"
-                disabled={!!retryingMealPlanId}
+                disabled={syncingMealPlanQueue || !!retryingMealPlanId}
                 onClick={() => void flushMealPlanQueue()}
               >
-                Sync all
+                {syncingMealPlanQueue ? 'Syncing…' : 'Sync all'}
               </button>
             )}
             <button
               type="button"
               className="btn-small"
               aria-label="Dismiss meal plan log queue"
+              disabled={syncingMealPlanQueue}
               onClick={() => {
                 clearMealPlanQueue();
                 setFailedMealPlanIds(new Set());
@@ -504,6 +519,24 @@ export function Day({ serverOnline }: DayProps) {
               Dismiss all
             </button>
           </div>
+          {syncingMealPlanQueue && mealPlanSyncProgress && mealPlanSyncProgress.total > 0 && (
+            <div
+              className="meal-plan-sync-progress"
+              role="progressbar"
+              aria-valuenow={mealPlanSyncProgress.done}
+              aria-valuemin={0}
+              aria-valuemax={mealPlanSyncProgress.total}
+              aria-label="Meal plan sync progress"
+            >
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${(mealPlanSyncProgress.done / mealPlanSyncProgress.total) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+          {mealPlanQueue.length > 0 && (
           <ul className="food-list meal-plan-queue-list" aria-label="Queued meal logs">
             {mealPlanQueue.map((item) => {
               const failed = failedMealPlanIds.has(item.id);
@@ -529,7 +562,7 @@ export function Day({ serverOnline }: DayProps) {
                       <button
                         type="button"
                         className="btn-small"
-                        disabled={!!retryingMealPlanId}
+                        disabled={syncingMealPlanQueue || !!retryingMealPlanId}
                         onClick={() => void retryMealPlanItem(item)}
                       >
                         {retrying ? 'Syncing…' : 'Retry'}
@@ -539,7 +572,7 @@ export function Day({ serverOnline }: DayProps) {
                       type="button"
                       className="btn-small btn-danger"
                       aria-label={`Dismiss queued ${mealPlanQueueLabel(item)}`}
-                      disabled={retrying}
+                      disabled={retrying || syncingMealPlanQueue}
                       onClick={() => dismissMealPlanItem(item.id)}
                     >
                       ×
@@ -549,8 +582,9 @@ export function Day({ serverOnline }: DayProps) {
               );
             })}
           </ul>
+          )}
         </div>
-      )}
+      ) : null}
 
       <Card>
         <h2>Today&apos;s meal plan</h2>

@@ -1593,6 +1593,31 @@ button:disabled {
   margin-bottom: 0.75rem;
 }
 
+.meal-plan-queue-panel .banner-row {
+  margin: 0;
+  border-radius: var(--radius-md);
+}
+
+.meal-plan-queue-panel:has(.meal-plan-queue-list) .banner-row,
+.meal-plan-queue-panel--syncing .banner-row {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.meal-plan-sync-progress {
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+  border-top: none;
+}
+
+.meal-plan-sync-progress .progress-bar {
+  height: 6px;
+}
+
+.meal-plan-queue-panel--syncing:not(:has(.meal-plan-queue-list)) .meal-plan-sync-progress {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
 .meal-plan-queue-list {
   margin: 0;
   padding: 0 0.75rem 0.75rem;
@@ -1600,11 +1625,6 @@ button:disabled {
   border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
   border-top: none;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
-}
-
-.meal-plan-queue-panel .banner-row {
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  margin: 0;
 }
 
 .habit-chip-label {
