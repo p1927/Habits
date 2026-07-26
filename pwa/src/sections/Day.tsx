@@ -15,6 +15,13 @@ const METRICS = [
   { key: 'wasted', label: 'Wasted', target: 0 },
 ] as const;
 
+function streakTierClass(days: number): string {
+  if (days >= 14) return 'streak-badge--fire';
+  if (days >= 7) return 'streak-badge--hot';
+  if (days >= 3) return 'streak-badge--warm';
+  return '';
+}
+
 export function Day({ serverOnline }: DayProps) {
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [events, setEvents] = useState<{ id: string; summary: string; start: string }[]>([]);
@@ -142,8 +149,12 @@ export function Day({ serverOnline }: DayProps) {
       <Card>
         <h2>Habit hours</h2>
         {streaks && streaks.overall > 0 && (
-          <p className="streak-banner" role="status">
-            <span className="streak-badge streak-badge--overall">{streaks.overall}d</span>
+          <p className="streak-banner streak-banner--animated" role="status">
+            <span
+              className={`streak-badge streak-badge--overall ${streakTierClass(streaks.overall)}`}
+            >
+              {streaks.overall}d
+            </span>
             All-target streak
           </p>
         )}
@@ -157,7 +168,10 @@ export function Day({ serverOnline }: DayProps) {
                 <span className="habit-chip-label">
                   {label}
                   {target > 0 && streak > 0 && (
-                    <span className="streak-badge" aria-label={`${streak} day streak`}>
+                    <span
+                      className={`streak-badge ${streakTierClass(streak)}`}
+                      aria-label={`${streak} day streak`}
+                    >
                       {streak}d
                     </span>
                   )}

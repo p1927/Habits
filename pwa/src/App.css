@@ -836,7 +836,14 @@ button:disabled {
   .voice-status-orb-listening .voice-status-bar,
   .voice-status-orb-thinking .voice-status-bar,
   .voice-status-orb-speaking .voice-status-bar,
-  .agent-action {
+  .agent-action,
+  .streak-banner--animated,
+  .streak-badge,
+  .streak-badge--overall,
+  .streak-badge--hot,
+  .streak-badge--fire,
+  .streak-badge--overall.streak-badge--hot,
+  .streak-badge--overall.streak-badge--fire {
     animation: none;
   }
 }
@@ -1244,6 +1251,65 @@ button:disabled {
   margin: 0 0 0.75rem;
 }
 
+.streak-banner--animated {
+  animation: streak-banner-in 0.45s ease-out both;
+}
+
+@keyframes streak-banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes streak-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes streak-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 10px 2px color-mix(in srgb, var(--ok) 45%, transparent);
+  }
+}
+
+@keyframes streak-glow-hot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--warn) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 12px 3px color-mix(in srgb, var(--warn) 50%, transparent);
+  }
+}
+
+@keyframes streak-glow-fire {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, #f97316 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 14px 4px color-mix(in srgb, #f97316 55%, transparent);
+  }
+}
+
 .streak-badge {
   display: inline-flex;
   align-items: center;
@@ -1256,12 +1322,43 @@ button:disabled {
   font-size: 0.625rem;
   font-weight: 700;
   line-height: 1.2;
+  animation: streak-badge-in 0.35s ease-out both;
 }
 
 .streak-badge--overall {
   min-width: 2.25rem;
   padding: 0.2rem 0.5rem;
   font-size: 0.75rem;
+  animation: streak-badge-in 0.4s ease-out both, streak-glow 2.8s ease-in-out 0.45s infinite;
+}
+
+.streak-badge--warm {
+  background: color-mix(in srgb, var(--warn) 28%, var(--surface2));
+  color: var(--warn);
+}
+
+.streak-badge--hot {
+  background: color-mix(in srgb, var(--warn) 38%, var(--surface2));
+  color: color-mix(in srgb, var(--warn) 90%, white);
+  animation: streak-badge-in 0.35s ease-out both, streak-glow-hot 2.2s ease-in-out 0.35s infinite;
+}
+
+.streak-badge--fire {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #f97316 45%, var(--surface2)),
+    color-mix(in srgb, var(--warn) 35%, var(--surface2))
+  );
+  color: #fdba74;
+  animation: streak-badge-in 0.35s ease-out both, streak-glow-fire 1.6s ease-in-out 0.35s infinite;
+}
+
+.streak-badge--overall.streak-badge--hot {
+  animation: streak-badge-in 0.4s ease-out both, streak-glow-hot 2.2s ease-in-out 0.45s infinite;
+}
+
+.streak-badge--overall.streak-badge--fire {
+  animation: streak-badge-in 0.4s ease-out both, streak-glow-fire 1.6s ease-in-out 0.45s infinite;
 }
 
 .manage-quad h3 {
