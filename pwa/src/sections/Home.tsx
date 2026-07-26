@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
-import { ActivityRings } from '../components/ui/Ring';
+import { ActivityRings, ActivityRingsSkeleton } from '../components/ui/Ring';
 import { Card } from '../components/ui/Card';
 import { SwipeStack } from '../components/ui/SwipeStack';
 import { MacroBar, Sparkline } from '../components/MacroChart';
@@ -16,6 +16,13 @@ import {
 } from '../lib/api';
 import { getTodayMealPhotos, type MealPhoto } from '../lib/mealPhotos';
 import { cacheHabitStreak, getCachedHabitStreak } from '../lib/habitQueue';
+import {
+  cacheMealPlan,
+  enqueueMealPlanLog,
+  getCachedMealPlan,
+  isOfflineError,
+  type MealPlanEntry,
+} from '../lib/mealPlanQueue';
 
 interface HomeProps {
   serverOnline: boolean;
@@ -70,13 +77,21 @@ export function Home({ serverOnline }: HomeProps) {
   const [exporting, setExporting] = useState(false);
   const [sharingRings, setSharingRings] = useState(false);
   const [mealPhotos, setMealPhotos] = useState<MealPhoto[]>(() => getTodayMealPhotos());
+  const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
+  const [mealPlanMessage, setMealPlanMessage] = useState('');
+  const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     setMealPhotos(getTodayMealPhotos());
-    if (!serverOnline) return;
+    if (!serverOnline) {
+      setMealPlan(getCachedMealPlan());
+      setDashboardLoading(false);
+      return;
+    }
     setError('');
     try {
-      const [f, h, hist, targets, cards, week, streaks] = await Promise.all([
+      const [f, h, hist, targets, cards, week, streaks, mealPlanToday] = await Promise.all([
         api.getFoodToday(),
         api.getHabitsToday(),
         api.getFoodHistory(7),
@@ -84,12 +99,15 @@ export function Home({ serverOnline }: HomeProps) {
         api.getFutureSelfCards(true),
         api.getHabitsWeek(),
         api.getHabitStreaks(),
+        api.getMealPlanToday(),
       ]);
       setFood(f);
       setHabits(h);
       setHistory(hist.days);
       setHabitWeek(week);
       cacheHabitStreak(streaks.overall);
+      setMealPlan(mealPlanToday.meals ?? []);
+      cacheMealPlan(mealPlanToday.meals ?? []);
       setCalTarget(targets.calorie_target ?? 2200);
       if (cards.cards.length > 0) {
         setDecisionCard(cards.cards[0]);
@@ -97,6 +115,8 @@ export function Home({ serverOnline }: HomeProps) {
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return;
       setError(e instanceof Error ? e.message : 'Failed to load dashboard');
+    } finally {
+      setDashboardLoading(false);
     }
   }, [serverOnline]);
 
@@ -126,6 +146,48 @@ export function Home({ serverOnline }: HomeProps) {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [triggerRefresh]);
+
+  const logMealPlanEntry = useCallback(
+    (entry: MealPlanEntry) => {
+      setLoggingMealKey(entry.meal);
+      setMealPlanMessage('');
+      setError('');
+
+      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+        enqueueMealPlanLog({
+          kind: 'item',
+          meal: entry.meal,
+          label: entry.label,
+          description: entry.description,
+        });
+        setMealPlanMessage(`${entry.label} queued — will log when online`);
+        setLoggingMealKey(null);
+        return;
+      }
+
+      void api
+        .logMealPlanItem(entry.meal)
+        .then((res) => {
+          setMealPlanMessage(res.message);
+          void refresh();
+        })
+        .catch((e) => {
+          if (isOfflineError(e)) {
+            enqueueMealPlanLog({
+              kind: 'item',
+              meal: entry.meal,
+              label: entry.label,
+              description: entry.description,
+            });
+            setMealPlanMessage(`${entry.label} queued — will log when online`);
+            return;
+          }
+          setError(e instanceof Error ? e.message : 'Meal log failed');
+        })
+        .finally(() => setLoggingMealKey(null));
+    },
+    [serverOnline, refresh],
+  );
 
   async function handleShareRings() {
     setSharingRings(true);
@@ -253,26 +315,57 @@ export function Home({ serverOnline }: HomeProps) {
           <button
             type="button"
             className="btn-small"
-            disabled={sharingRings}
+            disabled={sharingRings || dashboardLoading}
             onClick={() => void handleShareRings()}
           >
             {sharingRings ? 'Saving…' : 'Share PNG'}
           </button>
         </div>
-        <ActivityRings
-          protein={{ value: food?.protein_g ?? 0, max: proteinTarget }}
-          calories={{ value: food?.calories ?? 0, max: calTarget }}
-          habits={{ value: habitPct, max: 100 }}
-        />
+        {dashboardLoading && serverOnline ? (
+          <ActivityRingsSkeleton />
+        ) : (
+          <ActivityRings
+            protein={{ value: food?.protein_g ?? 0, max: proteinTarget }}
+            calories={{ value: food?.calories ?? 0, max: calTarget }}
+            habits={{ value: habitPct, max: 100 }}
+          />
+        )}
         <p className="home-burn muted">Est. active burn: {burn} kcal (from work + read hours)</p>
       </Card>
 
-      <Card>
+      <Card className="home-macros-card">
         <h2>Macros today</h2>
         <MacroBar label="Protein" value={food?.protein_g ?? 0} target={proteinTarget} color="var(--ring-protein)" />
         <MacroBar label="Carbs" value={food?.carbs ?? 0} target={250} color="var(--carbs)" />
         <MacroBar label="Fat" value={food?.fat ?? 0} target={80} color="var(--fat)" />
       </Card>
+
+      {mealPlan.length > 0 && (
+        <Card className="home-meal-plan-card">
+          <h2>Today&apos;s meal plan</h2>
+          <p className="muted">From WEEK MEALS sheet</p>
+          {mealPlanMessage && <p className="banner banner-ok home-meal-plan-msg">{mealPlanMessage}</p>}
+          <ul className="food-list">
+            {mealPlan.map((m) => (
+              <li key={m.meal} className="food-row">
+                <div>
+                  <strong>{m.label}</strong>
+                  <span className="muted">{m.description}</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-small"
+                  disabled={loggingMealKey === m.meal}
+                  aria-label={`Log ${m.label}`}
+                  onClick={() => logMealPlanEntry(m)}
+                >
+                  {loggingMealKey === m.meal ? 'Logging…' : 'Log'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {mealPhotos.length > 0 && (
         <Card>
@@ -324,7 +417,8 @@ export function Home({ serverOnline }: HomeProps) {
       )}
 
       {decisionCard && (
-        <Card className="decision-card-wrap">
+        <Card className="decision-card-wrap decision-card-wrap--elevated">
+          <p className="decision-card-eyebrow">Future self</p>
           <h2>Today&apos;s decision</h2>
           {decisionCard.image_url && (
             <img
