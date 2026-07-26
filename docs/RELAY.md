@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:38:00Z |
+| last_wake | 2026-07-27T02:39:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-071 Tap Log tab badge opens Plan sub-tab |
+| cycle_parity | even (next: feature) |
+| next_action | relay-072 Home empty queue hint only when meal plan visible |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-071 | Tap Log tab badge opens Plan sub-tab | feature
 - [ ] relay-072 | Home empty queue hint only when meal plan visible | maintenance
 - [ ] relay-073 | Day queue failed-item highlight on sync error | feature
 
@@ -58,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-071 | done | build | — |
 | 2026-07-27 | relay-070 | done | build | 535f7a2 |
 | 2026-07-27 | relay-069 | done | build | a6a3c50 |
 | 2026-07-27 | relay-068 | done | build | fb08e83 |
