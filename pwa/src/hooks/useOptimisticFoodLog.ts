@@ -115,7 +115,7 @@ export function useOptimisticFoodLog({
   }, [flushQueue, syncQueuedFromStorage]);
 
   const logItem = useCallback(
-    async (food: string, quantity_g: number, onSuccess?: () => void) => {
+    async (food: string, quantity_g: number, onSuccess?: (summary: FoodTodayResponse) => void) => {
       const id = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       setPending((p) => [...p, { id, food, quantity_g, status: 'pending' }]);
       setError('');
@@ -124,7 +124,6 @@ export function useOptimisticFoodLog({
         const q = enqueueFoodLog({ kind: 'item', food, quantity_g });
         setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
         setSuccess('Saved offline — will sync when back online');
-        onSuccess?.();
         return;
       }
 
@@ -133,13 +132,12 @@ export function useOptimisticFoodLog({
         setData(res.summary);
         setSuccess(res.message);
         setPending((p) => p.filter((x) => x.id !== id));
-        onSuccess?.();
+        onSuccess?.(res.summary);
       } catch (e) {
         if (isOfflineError(e)) {
           const q = enqueueFoodLog({ kind: 'item', food, quantity_g });
           setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
           setSuccess('Saved offline — will sync when back online');
-          onSuccess?.();
           return;
         }
         const msg = e instanceof Error ? e.message : 'Log failed';

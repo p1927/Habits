@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
+import { UndoToast } from '../components/UndoToast';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import {
@@ -96,6 +97,83 @@ export function Log({ serverOnline }: LogProps) {
     () => localStorage.getItem(LOG_SHORTCUT_HINT_KEY) !== '1',
   );
   const searchTimer = useRef<number | null>(null);
+  const [undoLog, setUndoLog] = useState<{
+    row: number;
+    food: string;
+    restoreScan?: FoodScanResult | null;
+    restoreRecipeScan?: FoodScanResult | null;
+    restoreEditName?: string;
+    restoreEditQty?: string;
+  } | null>(null);
+  const [undoing, setUndoing] = useState(false);
+
+  const dismissUndo = useCallback(() => setUndoLog(null), []);
+
+  const findLoggedRow = useCallback((summary: FoodTodayResponse, food: string, qty: number) => {
+    const match = [...summary.items].reverse().find(
+      (i) => i.food === food && Math.abs(i.quantity_g - qty) < 0.01,
+    );
+    return match?.row ?? summary.items[summary.items.length - 1]?.row ?? null;
+  }, []);
+
+  const offerUndo = useCallback(
+    (
+      summary: FoodTodayResponse,
+      food: string,
+      qty: number,
+      restore?: {
+        scan?: FoodScanResult | null;
+        recipeScan?: FoodScanResult | null;
+        editName: string;
+        editQty: string;
+      },
+    ) => {
+      const row = findLoggedRow(summary, food, qty);
+      if (row != null && serverOnline) {
+        setSuccess('');
+        setUndoLog({
+          row,
+          food,
+          restoreScan: restore?.scan,
+          restoreRecipeScan: restore?.recipeScan,
+          restoreEditName: restore?.editName,
+          restoreEditQty: restore?.editQty,
+        });
+      }
+    },
+    [findLoggedRow, serverOnline, setSuccess],
+  );
+
+  const handleUndoLog = useCallback(async () => {
+    if (!undoLog || undoing) return;
+    setUndoing(true);
+    try {
+      setData(await api.deleteFoodRow(undoLog.row));
+      if (undoLog.restoreScan) {
+        setScanResult(undoLog.restoreScan);
+        setEditName(
+          undoLog.restoreEditName
+            ?? undoLog.restoreScan.matched_name
+            ?? undoLog.restoreScan.detected_name,
+        );
+        setEditQty(undoLog.restoreEditQty ?? String(undoLog.restoreScan.suggested_grams));
+      } else if (undoLog.restoreRecipeScan) {
+        setRecipeScanResult(undoLog.restoreRecipeScan);
+        setRecipeEditName(
+          undoLog.restoreEditName
+            ?? undoLog.restoreRecipeScan.matched_name
+            ?? undoLog.restoreRecipeScan.detected_name,
+        );
+        setRecipeEditQty(undoLog.restoreEditQty ?? String(undoLog.restoreRecipeScan.suggested_grams));
+      }
+      setSuccess('Log undone');
+      setUndoLog(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Undo failed');
+    } finally {
+      setUndoing(false);
+    }
+  }, [undoLog, undoing, setData, setSuccess, setError]);
 
   const dismissShortcutHint = useCallback(() => {
     localStorage.setItem(LOG_SHORTCUT_HINT_KEY, '1');
@@ -261,8 +339,17 @@ export function Log({ serverOnline }: LogProps) {
   }
 
   async function logScan(name: string, qty: number) {
+    const savedScan = scanResult;
+    const savedName = editName;
+    const savedQty = editQty;
     setScanResult(null);
-    await logItem(name, qty);
+    await logItem(name, qty, (summary) => {
+      offerUndo(summary, name, qty, {
+        scan: savedScan,
+        editName: savedName,
+        editQty: savedQty,
+      });
+    });
   }
 
   async function handleVoiceLog(e: React.FormEvent) {
@@ -313,8 +400,17 @@ export function Log({ serverOnline }: LogProps) {
   }
 
   async function logRecipeScan(name: string, qty: number) {
+    const savedScan = recipeScanResult;
+    const savedName = recipeEditName;
+    const savedQty = recipeEditQty;
     setRecipeScanResult(null);
-    await logItem(name, qty);
+    await logItem(name, qty, (summary) => {
+      offerUndo(summary, name, qty, {
+        recipeScan: savedScan,
+        editName: savedName,
+        editQty: savedQty,
+      });
+    });
     syncRecipeScanQueueCount();
     void processRecipeScanQueue();
   }
@@ -326,7 +422,9 @@ export function Log({ serverOnline }: LogProps) {
     const name = foodName.trim();
     setFoodName('');
     setSearchResults([]);
-    await logItem(name, qty);
+    await logItem(name, qty, (summary) => {
+      offerUndo(summary, name, qty);
+    });
   }
 
   async function handleLogOffProduct() {
@@ -751,7 +849,11 @@ export function Log({ serverOnline }: LogProps) {
                         className="btn-small"
                         disabled={!serverOnline || loading}
                         aria-label={`Log ${item.food}`}
-                        onClick={() => void logItem(item.food, item.quantity_g)}
+                        onClick={() =>
+                          void logItem(item.food, item.quantity_g, (summary) => {
+                            offerUndo(summary, item.food, item.quantity_g);
+                          })
+                        }
                       >
                         Log
                       </button>
@@ -849,9 +951,18 @@ export function Log({ serverOnline }: LogProps) {
       </BottomSheet>
 
       <div role="status" aria-live="polite">
-        {success && <div className="banner banner-ok">{success}</div>}
+        {success && !undoLog && <div className="banner banner-ok">{success}</div>}
       </div>
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
+
+      {undoLog && (
+        <UndoToast
+          message={`Logged ${undoLog.food}`}
+          onUndo={() => void handleUndoLog()}
+          onDismiss={dismissUndo}
+          undoing={undoing}
+        />
+      )}
     </section>
   );
 }
