@@ -1012,6 +1012,28 @@ button:disabled {
   position: relative;
 }
 
+.home-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.home-header-row h1 {
+  margin: 0;
+}
+
+.home-refresh-btn {
+  display: none;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .home-refresh-btn {
+    display: inline-flex;
+  }
+}
+
 .pull-refresh-indicator {
   display: flex;
   align-items: center;

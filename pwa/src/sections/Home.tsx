@@ -100,7 +100,7 @@ export function Home({ serverOnline }: HomeProps) {
     }
   }, [serverOnline]);
 
-  const { pullProgress, refreshing } = usePullToRefresh({
+  const { pullProgress, refreshing, triggerRefresh } = usePullToRefresh({
     onRefresh: refresh,
     enabled: true,
   });
@@ -193,8 +193,21 @@ export function Home({ serverOnline }: HomeProps) {
           {refreshing ? 'Refreshing…' : pullProgress >= 1 ? 'Release to refresh' : 'Pull to refresh'}
         </div>
       )}
-      <h1 id="home-heading">Today</h1>
-      <p className="muted">Your health dashboard</p>
+      <div className="home-header-row">
+        <div>
+          <h1 id="home-heading">Today</h1>
+          <p className="muted">Your health dashboard</p>
+        </div>
+        <button
+          type="button"
+          className="btn-small home-refresh-btn"
+          disabled={refreshing}
+          aria-label="Refresh dashboard"
+          onClick={() => void triggerRefresh()}
+        >
+          {refreshing ? 'Refreshing…' : 'Refresh'}
+        </button>
+      </div>
 
       {!serverOnline && (
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const PULL_THRESHOLD = 72;
 
@@ -86,9 +86,24 @@ export function usePullToRefresh({
     };
   }, [enabled, scrollSelector]);
 
+  const triggerRefresh = useCallback(async () => {
+    if (refreshingRef.current) return;
+    refreshingRef.current = true;
+    setRefreshing(true);
+    try {
+      await Promise.resolve(onRefreshRef.current());
+    } catch {
+      /* refresh errors handled by caller */
+    } finally {
+      refreshingRef.current = false;
+      setRefreshing(false);
+    }
+  }, []);
+
   return {
     pullDistance,
     refreshing,
     pullProgress: Math.min(pullDistance / PULL_THRESHOLD, 1),
+    triggerRefresh,
   };
 }
