@@ -10,6 +10,7 @@ from habits_api.google.sheets import read_range, update_range
 
 METRICS = ("sleep", "work", "wasted", "speak", "game", "read")
 METRIC_COLS = {"sleep": "F", "work": "G", "wasted": "H", "speak": "I", "game": "J", "read": "K"}
+METRIC_TARGETS = {"sleep": 7, "work": 4, "read": 1, "speak": 0.5, "game": 0, "wasted": 0}
 
 
 @dataclass
@@ -171,4 +172,51 @@ async def get_week_summary(settings: Settings, db: TokenDB) -> dict:
         "recent_days": [
             {"date": d.day_date, "weekday": d.weekday, "metrics": d.metrics} for d in week_days
         ],
+    }
+
+
+def _day_hits_target(day: TrackerDay, metric: str) -> bool:
+    target = METRIC_TARGETS.get(metric, 0)
+    if target <= 0:
+        return True
+    val = day.metrics.get(metric)
+    return val is not None and val >= target
+
+
+def _day_all_targets_hit(day: TrackerDay) -> bool:
+    for m in METRICS:
+        target = METRIC_TARGETS.get(m, 0)
+        if target <= 0:
+            continue
+        if not _day_hits_target(day, m):
+            return False
+    return True
+
+
+async def get_streaks(settings: Settings, db: TokenDB) -> dict:
+    days = await load_tracker(settings, db)
+    today = date.today().isoformat()
+    ordered = sorted(
+        [d for d in days if d.day_date <= today],
+        key=lambda d: d.day_date,
+        reverse=True,
+    )
+    by_date = {d.day_date: d for d in ordered}
+
+    def count_streak(check) -> int:
+        streak = 0
+        cursor = date.fromisoformat(today)
+        while True:
+            day = by_date.get(cursor.isoformat())
+            if not day or not check(day):
+                break
+            streak += 1
+            cursor = cursor.fromordinal(cursor.toordinal() - 1)
+        return streak
+
+    metric_streaks = {m: count_streak(lambda d, metric=m: _day_hits_target(d, metric)) for m in METRICS}
+    return {
+        "overall": count_streak(_day_all_targets_hit),
+        "metrics": metric_streaks,
+        "sheets_connected": True,
     }

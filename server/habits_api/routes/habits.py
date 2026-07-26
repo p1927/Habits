@@ -62,3 +62,16 @@ async def habits_week(
         return await habits_service.get_week_summary(settings, db)
     except RuntimeError as exc:
         raise HTTPException(503, str(exc)) from exc
+
+
+@router.get("/api/habits/streaks", dependencies=[Depends(require_bearer)])
+async def habits_streaks(
+    db: TokenDB = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> dict:
+    try:
+        if not await db.google_connected():
+            return {"overall": 0, "metrics": {}, "sheets_connected": False}
+        return await habits_service.get_streaks(settings, db)
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc)) from exc

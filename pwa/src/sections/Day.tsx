@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Card } from '../components/ui/Card';
-import { api, ApiError, type HabitsTodayResponse } from '../lib/api';
+import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 
 interface DayProps {
   serverOnline: boolean;
@@ -24,20 +24,23 @@ export function Day({ serverOnline }: DayProps) {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
+  const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
     try {
-      const [h, cal, md, mp] = await Promise.all([
+      const [h, cal, md, mp, st] = await Promise.all([
         api.getHabitsToday(),
         api.getCalendarToday(),
         api.getManageDay(),
         api.getMealPlanToday(),
+        api.getHabitStreaks(),
       ]);
       setHabits(h);
       setEvents(cal.events ?? []);
       setManageDay(md.quadrants ?? {});
       setMealPlan(mp.meals ?? []);
+      setStreaks(st);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return;
       setError(e instanceof Error ? e.message : 'Failed to load day');
@@ -138,13 +141,27 @@ export function Day({ serverOnline }: DayProps) {
 
       <Card>
         <h2>Habit hours</h2>
+        {streaks && streaks.overall > 0 && (
+          <p className="streak-banner" role="status">
+            <span className="streak-badge streak-badge--overall">{streaks.overall}d</span>
+            All-target streak
+          </p>
+        )}
         <div className="habit-grid" role="group" aria-label="Habit hours">
           {METRICS.map(({ key, label, target }) => {
             const val = habits?.metrics?.[key];
             const behind = target > 0 && (val ?? 0) < target * 0.5;
+            const streak = streaks?.metrics?.[key] ?? 0;
             return (
               <label key={key} className={`habit-chip ${behind ? 'habit-chip--behind' : ''}`}>
-                <span>{label}</span>
+                <span className="habit-chip-label">
+                  {label}
+                  {target > 0 && streak > 0 && (
+                    <span className="streak-badge" aria-label={`${streak} day streak`}>
+                      {streak}d
+                    </span>
+                  )}
+                </span>
                 <input
                   type="number"
                   step="0.5"

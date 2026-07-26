@@ -105,6 +105,12 @@ export interface HabitsWeekResponse {
   recent_days: HabitsWeekDay[];
 }
 
+export interface HabitsStreaksResponse {
+  overall: number;
+  metrics: Record<string, number>;
+  sheets_connected: boolean;
+}
+
 export interface HabitsTodayResponse {
   date: string;
   row: number | null;
@@ -222,6 +228,7 @@ export const api = {
     }),
   getHabitsToday: () => request<HabitsTodayResponse>('/api/habits/today'),
   getHabitsWeek: () => request<HabitsWeekResponse>('/api/habits/week'),
+  getHabitStreaks: () => request<HabitsStreaksResponse>('/api/habits/streaks'),
   updateHabitMetric: (metric: string, value: number | null) =>
     request<HabitsTodayResponse>(`/api/habits/today/${metric}`, {
       method: 'PUT',
