@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Card } from '../components/ui/Card';
+import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 
 interface DayProps {
@@ -29,9 +30,17 @@ export function Day({ serverOnline }: DayProps) {
   const [mealPlan, setMealPlan] = useState<{ meal: string; label: string; description: string }[]>([]);
   const [mealSuccess, setMealSuccess] = useState('');
   const [error, setError] = useState('');
-  const [saving, setSaving] = useState<string | null>(null);
+  const [habitSyncMessage, setHabitSyncMessage] = useState('');
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
+
+  const { saving, updateMetric, queuedCount } = useOptimisticHabitLog({
+    serverOnline,
+    habits,
+    setHabits,
+    setError,
+    setSyncMessage: setHabitSyncMessage,
+  });
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -60,18 +69,6 @@ export function Day({ serverOnline }: DayProps) {
     return () => window.clearInterval(id);
   }, [refresh]);
 
-  async function updateMetric(key: string, value: string) {
-    setSaving(key);
-    try {
-      const num = value === '' ? null : Number.parseFloat(value);
-      setHabits(await api.updateHabitMetric(key, num));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Update failed');
-    } finally {
-      setSaving(null);
-    }
-  }
-
   function formatTime(iso: string): string {
     try {
       return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -89,7 +86,13 @@ export function Day({ serverOnline }: DayProps) {
       <h1 id="day-heading">Your Day</h1>
       <p className="muted">Schedule + habit tracker</p>
 
-      {!serverOnline && <div className="banner banner-warn" role="alert">Server offline.</div>}
+      {!serverOnline && <div className="banner banner-warn" role="alert">Server offline — habit edits save locally.</div>}
+
+      {queuedCount > 0 && (
+        <div className="banner banner-warn" role="status">
+          {queuedCount} habit update{queuedCount === 1 ? '' : 's'} queued — will sync when online.
+        </div>
+      )}
 
       <Card>
         <h2>Today&apos;s meal plan</h2>
@@ -182,7 +185,7 @@ export function Day({ serverOnline }: DayProps) {
                   min="0"
                   value={val ?? ''}
                   placeholder="0"
-                  disabled={!serverOnline || saving === key}
+                  disabled={saving === key}
                   onChange={(e) => void updateMetric(key, e.target.value)}
                 />
                 {target > 0 && <span className="habit-target">/{target}h</span>}
@@ -212,6 +215,7 @@ export function Day({ serverOnline }: DayProps) {
 
       <div role="status" aria-live="polite">
         {mealSuccess && <div className="banner banner-ok">{mealSuccess}</div>}
+        {habitSyncMessage && <div className="banner banner-ok">{habitSyncMessage}</div>}
       </div>
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
     </section>
