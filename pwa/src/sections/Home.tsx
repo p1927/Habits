@@ -80,6 +80,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
   const [mealPlanMessage, setMealPlanMessage] = useState('');
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
+  const [loggingMeals, setLoggingMeals] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -188,6 +189,35 @@ export function Home({ serverOnline }: HomeProps) {
     },
     [serverOnline, refresh],
   );
+
+  const logAllMealPlan = useCallback(() => {
+    setLoggingMeals(true);
+    setMealPlanMessage('');
+    setError('');
+
+    if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+      enqueueMealPlanLog({ kind: 'all' });
+      setMealPlanMessage('All planned meals queued — will log when online');
+      setLoggingMeals(false);
+      return;
+    }
+
+    void api
+      .logMealPlanToday()
+      .then((res) => {
+        setMealPlanMessage(res.message);
+        void refresh();
+      })
+      .catch((e) => {
+        if (isOfflineError(e)) {
+          enqueueMealPlanLog({ kind: 'all' });
+          setMealPlanMessage('All planned meals queued — will log when online');
+          return;
+        }
+        setError(e instanceof Error ? e.message : 'Meal log failed');
+      })
+      .finally(() => setLoggingMeals(false));
+  }, [serverOnline, refresh]);
 
   async function handleShareRings() {
     setSharingRings(true);
@@ -364,6 +394,14 @@ export function Home({ serverOnline }: HomeProps) {
               </li>
             ))}
           </ul>
+          <button
+            type="button"
+            className="home-meal-plan-log-all"
+            disabled={loggingMeals || !!loggingMealKey}
+            onClick={logAllMealPlan}
+          >
+            {loggingMeals ? 'Logging…' : 'Log all planned meals'}
+          </button>
         </Card>
       )}
 
