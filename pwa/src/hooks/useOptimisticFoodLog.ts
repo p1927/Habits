@@ -153,7 +153,7 @@ export function useOptimisticFoodLog({
       food: string,
       quantity_g: number,
       macros: { calories: number; carbs: number; protein: number; fat: number },
-      onSuccess?: () => void,
+      onSuccess?: (summary: FoodTodayResponse) => void,
     ) => {
       const id = `pending-macros-${Date.now()}`;
       setPending((p) => [...p, { id, food, quantity_g, status: 'pending', source: 'macros' }]);
@@ -163,7 +163,6 @@ export function useOptimisticFoodLog({
         const q = enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros });
         setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
         setSuccess('Saved offline — will sync when back online');
-        onSuccess?.();
         return;
       }
 
@@ -172,13 +171,12 @@ export function useOptimisticFoodLog({
         setData(res.summary);
         setSuccess(res.message);
         setPending((p) => p.filter((x) => x.id !== id));
-        onSuccess?.();
+        onSuccess?.(res.summary);
       } catch (e) {
         if (isOfflineError(e)) {
           const q = enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros });
           setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
           setSuccess('Saved offline — will sync when back online');
-          onSuccess?.();
           return;
         }
         const msg = e instanceof Error ? e.message : 'Log failed';

@@ -102,8 +102,10 @@ export function Log({ serverOnline }: LogProps) {
     food: string;
     restoreScan?: FoodScanResult | null;
     restoreRecipeScan?: FoodScanResult | null;
+    restoreOffProduct?: OffProduct | null;
     restoreEditName?: string;
     restoreEditQty?: string;
+    restoreOffQuantity?: string;
   } | null>(null);
   const [undoing, setUndoing] = useState(false);
 
@@ -124,8 +126,10 @@ export function Log({ serverOnline }: LogProps) {
       restore?: {
         scan?: FoodScanResult | null;
         recipeScan?: FoodScanResult | null;
+        offProduct?: OffProduct | null;
         editName: string;
         editQty: string;
+        offQuantity?: string;
       },
     ) => {
       const row = findLoggedRow(summary, food, qty);
@@ -136,8 +140,10 @@ export function Log({ serverOnline }: LogProps) {
           food,
           restoreScan: restore?.scan,
           restoreRecipeScan: restore?.recipeScan,
+          restoreOffProduct: restore?.offProduct,
           restoreEditName: restore?.editName,
           restoreEditQty: restore?.editQty,
+          restoreOffQuantity: restore?.offQuantity,
         });
       }
     },
@@ -165,6 +171,11 @@ export function Log({ serverOnline }: LogProps) {
             ?? undoLog.restoreRecipeScan.detected_name,
         );
         setRecipeEditQty(undoLog.restoreEditQty ?? String(undoLog.restoreRecipeScan.suggested_grams));
+      } else if (undoLog.restoreOffProduct) {
+        setOffProduct(undoLog.restoreOffProduct);
+        setOffQuantity(undoLog.restoreOffQuantity ?? String(undoLog.restoreOffProduct.quantityG));
+        setFoodName(undoLog.restoreOffProduct.name);
+        setTab('scan');
       }
       setSuccess('Log undone');
       setUndoLog(null);
@@ -431,14 +442,22 @@ export function Log({ serverOnline }: LogProps) {
     if (!offProduct) return;
     const qty = Number.parseFloat(offQuantity);
     if (!qty || qty <= 0) return;
+    const savedOff = offProduct;
+    const savedQty = offQuantity;
     setLoading(true);
     setError('');
     try {
       const macros = scaleOffMacros(offProduct.per100g, qty);
-      await logMacros(offProduct.name, qty, macros, () => {
+      await logMacros(offProduct.name, qty, macros, (summary) => {
         setOffProduct(null);
         setFoodName('');
         setSearchResults([]);
+        offerUndo(summary, savedOff.name, qty, {
+          offProduct: savedOff,
+          editName: savedOff.name,
+          editQty: savedQty,
+          offQuantity: savedQty,
+        });
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Open Food Facts log failed');
