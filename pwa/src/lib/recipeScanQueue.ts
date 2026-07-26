@@ -40,3 +40,7 @@ export function enqueueRecipeScan(photoId: string, label: string, id?: string): 
 export function removeRecipeScanQueueItem(id: string) {
   writeQueue(readQueue().filter((x) => x.id !== id));
 }
+
+export function clearRecipeScanQueue() {
+  localStorage.removeItem(STORAGE_KEY);
+}

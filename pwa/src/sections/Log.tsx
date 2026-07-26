@@ -19,6 +19,7 @@ import {
   enqueueRecipeScan,
   getRecipeScanQueue,
   removeRecipeScanQueueItem,
+  clearRecipeScanQueue,
 } from '../lib/recipeScanQueue';
 import { isOfflineError } from '../lib/foodQueue';
 
@@ -112,6 +113,12 @@ export function Log({ serverOnline }: LogProps) {
   const syncRecipeScanQueueCount = useCallback(() => {
     setRecipeScanQueueCount(getRecipeScanQueue().length);
   }, []);
+
+  const dismissRecipeScanQueue = useCallback(() => {
+    clearRecipeScanQueue();
+    syncRecipeScanQueueCount();
+    setSuccess('Recipe scan queue cleared');
+  }, [syncRecipeScanQueueCount]);
 
   const processRecipeScanQueue = useCallback(async () => {
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
@@ -355,8 +362,18 @@ export function Log({ serverOnline }: LogProps) {
       )}
 
       {recipeScanQueueCount > 0 && (
-        <div className="banner banner-warn" role="status">
-          {recipeScanQueueCount} recipe photo{recipeScanQueueCount === 1 ? '' : 's'} queued — will scan when online.
+        <div className="banner banner-warn banner-row" role="status">
+          <span>
+            {recipeScanQueueCount} recipe photo{recipeScanQueueCount === 1 ? '' : 's'} queued — will scan when online.
+          </span>
+          <button
+            type="button"
+            className="btn-small"
+            aria-label="Dismiss recipe scan queue"
+            onClick={dismissRecipeScanQueue}
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
