@@ -14,6 +14,7 @@ import {
   type FoodTodayResponse,
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
+import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -23,14 +24,20 @@ import {
   clearRecipeScanQueue,
 } from '../lib/recipeScanQueue';
 import { isOfflineError } from '../lib/foodQueue';
+import {
+  cacheMealPlan,
+  enqueueMealPlanLog,
+  getCachedMealPlan,
+  type MealPlanEntry,
+} from '../lib/mealPlanQueue';
 
 interface LogProps {
   serverOnline: boolean;
 }
 
-type LogTab = 'scan' | 'type' | 'history' | 'recipes';
+type LogTab = 'scan' | 'type' | 'mealplan' | 'recipes' | 'history';
 
-const LOG_TABS: LogTab[] = ['scan', 'type', 'recipes', 'history'];
+const LOG_TABS: LogTab[] = ['scan', 'type', 'mealplan', 'recipes', 'history'];
 const LOG_SHORTCUT_HINT_KEY = 'habits-log-shortcuts-hint-seen';
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -93,6 +100,9 @@ export function Log({ serverOnline }: LogProps) {
   const [recipeEditName, setRecipeEditName] = useState('');
   const [recipeEditQty, setRecipeEditQty] = useState('100');
   const [recipeScanQueueCount, setRecipeScanQueueCount] = useState(() => getRecipeScanQueue().length);
+  const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
+  const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
+  const [loggingMeals, setLoggingMeals] = useState(false);
   const [showShortcutHint, setShowShortcutHint] = useState(
     () => localStorage.getItem(LOG_SHORTCUT_HINT_KEY) !== '1',
   );
@@ -198,6 +208,15 @@ export function Log({ serverOnline }: LogProps) {
     setError,
   });
 
+  const {
+    undoLog: mealPlanUndo,
+    undoing: mealPlanUndoing,
+    dismissUndo: dismissMealPlanUndo,
+    snapshotRows: snapshotFoodRows,
+    offerUndoFromSummary,
+    handleUndo: handleMealPlanUndo,
+  } = useMealPlanUndo(serverOnline);
+
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
     try {
@@ -208,6 +227,101 @@ export function Log({ serverOnline }: LogProps) {
       if (e instanceof ApiError && e.status === 401) return;
     }
   }, [serverOnline]);
+
+  const loadMealPlan = useCallback(async () => {
+    if (!serverOnline) {
+      setMealPlan(getCachedMealPlan());
+      return;
+    }
+    try {
+      const res = await api.getMealPlanToday();
+      setMealPlan(res.meals ?? []);
+      cacheMealPlan(res.meals ?? []);
+    } catch {
+      setMealPlan(getCachedMealPlan());
+    }
+  }, [serverOnline]);
+
+  const logMealPlanEntry = useCallback(
+    (entry: MealPlanEntry) => {
+      setLoggingMealKey(entry.meal);
+      setSuccess('');
+      setError('');
+      dismissMealPlanUndo();
+
+      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+        enqueueMealPlanLog({
+          kind: 'item',
+          meal: entry.meal,
+          label: entry.label,
+          description: entry.description,
+        });
+        setSuccess(`${entry.label} queued — will log when online`);
+        setLoggingMealKey(null);
+        return;
+      }
+
+      void (async () => {
+        try {
+          const before = data ?? (await api.getFoodToday());
+          const res = await api.logMealPlanItem(entry.meal);
+          setData(res.summary);
+          if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, entry.label)) {
+            setSuccess(res.message);
+          }
+        } catch (e) {
+          if (isOfflineError(e)) {
+            enqueueMealPlanLog({
+              kind: 'item',
+              meal: entry.meal,
+              label: entry.label,
+              description: entry.description,
+            });
+            setSuccess(`${entry.label} queued — will log when online`);
+            return;
+          }
+          setError(e instanceof Error ? e.message : 'Meal log failed');
+        } finally {
+          setLoggingMealKey(null);
+        }
+      })();
+    },
+    [serverOnline, data, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError],
+  );
+
+  const logAllMealPlan = useCallback(() => {
+    setLoggingMeals(true);
+    setSuccess('');
+    setError('');
+    dismissMealPlanUndo();
+
+    if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+      enqueueMealPlanLog({ kind: 'all' });
+      setSuccess('All planned meals queued — will log when online');
+      setLoggingMeals(false);
+      return;
+    }
+
+    void (async () => {
+      try {
+        const before = data ?? (await api.getFoodToday());
+        const res = await api.logMealPlanToday();
+        setData(res.summary);
+        if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, 'All planned meals')) {
+          setSuccess(res.message);
+        }
+      } catch (e) {
+        if (isOfflineError(e)) {
+          enqueueMealPlanLog({ kind: 'all' });
+          setSuccess('All planned meals queued — will log when online');
+          return;
+        }
+        setError(e instanceof Error ? e.message : 'Meal log failed');
+      } finally {
+        setLoggingMeals(false);
+      }
+    })();
+  }, [serverOnline, data, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError]);
 
   const loadSavedRecipe = useCallback(async () => {
     if (!serverOnline) return;
@@ -230,7 +344,8 @@ export function Log({ serverOnline }: LogProps) {
   useEffect(() => {
     void refresh();
     if (tab === 'recipes') void loadSavedRecipe();
-  }, [refresh, tab, loadSavedRecipe]);
+    if (tab === 'mealplan') void loadMealPlan();
+  }, [refresh, tab, loadSavedRecipe, loadMealPlan]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -565,7 +680,16 @@ export function Log({ serverOnline }: LogProps) {
 
       <div className="sub-tabs" role="tablist" aria-label="Log food views">
         {LOG_TABS.map((t, index) => {
-          const label = t === 'scan' ? 'Scan' : t === 'type' ? 'Type' : t === 'recipes' ? 'Recipes' : 'History';
+          const label =
+            t === 'scan'
+              ? 'Scan'
+              : t === 'type'
+                ? 'Type'
+                : t === 'mealplan'
+                  ? 'Plan'
+                  : t === 'recipes'
+                    ? 'Recipes'
+                    : 'History';
           return (
           <button
             key={t}
@@ -588,7 +712,7 @@ export function Log({ serverOnline }: LogProps) {
 
       {showShortcutHint && (
         <p className="log-shortcut-hint muted" role="note">
-          Tip: press <kbd>{shortcutModifierLabel()}1</kbd>–<kbd>{shortcutModifierLabel()}4</kbd> to switch tabs.{' '}
+          Tip: press <kbd>{shortcutModifierLabel()}1</kbd>–<kbd>{shortcutModifierLabel()}5</kbd> to switch tabs.{' '}
           <button type="button" className="link-btn" onClick={dismissShortcutHint}>
             Got it
           </button>
@@ -907,6 +1031,45 @@ export function Log({ serverOnline }: LogProps) {
         </>
       )}
 
+      {tab === 'mealplan' && (
+        <Card>
+          <h2>Today&apos;s meal plan</h2>
+          <p className="muted">From WEEK MEALS sheet · shortcut <kbd>{shortcutModifierLabel()}3</kbd></p>
+          {!mealPlan.length ? (
+            <p className="muted">No meals planned for today.</p>
+          ) : (
+            <>
+              <ul className="food-list">
+                {mealPlan.map((m) => (
+                  <li key={m.meal} className="food-row">
+                    <div>
+                      <strong>{m.label}</strong>
+                      <span className="muted">{m.description}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-small"
+                      disabled={loggingMealKey === m.meal}
+                      aria-label={`Log ${m.label}`}
+                      onClick={() => logMealPlanEntry(m)}
+                    >
+                      {loggingMealKey === m.meal ? 'Logging…' : 'Log'}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                disabled={loggingMeals || !!loggingMealKey}
+                onClick={logAllMealPlan}
+              >
+                {loggingMeals ? 'Logging…' : 'Log all planned meals'}
+              </button>
+            </>
+          )}
+        </Card>
+      )}
+
       {tab === 'history' && (
         <Card>
           <h2>14-day history</h2>
@@ -970,7 +1133,7 @@ export function Log({ serverOnline }: LogProps) {
       </BottomSheet>
 
       <div role="status" aria-live="polite">
-        {success && !undoLog && <div className="banner banner-ok">{success}</div>}
+        {success && !undoLog && !mealPlanUndo && <div className="banner banner-ok">{success}</div>}
       </div>
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
 
@@ -980,6 +1143,14 @@ export function Log({ serverOnline }: LogProps) {
           onUndo={() => void handleUndoLog()}
           onDismiss={dismissUndo}
           undoing={undoing}
+        />
+      )}
+      {mealPlanUndo && (
+        <UndoToast
+          message={`Logged ${mealPlanUndo.label}`}
+          onUndo={() => void handleMealPlanUndo(() => setSuccess('Log undone'))}
+          onDismiss={dismissMealPlanUndo}
+          undoing={mealPlanUndoing}
         />
       )}
     </section>
