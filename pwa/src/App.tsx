@@ -1,25 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import { useServerStatus } from './hooks/useServerStatus';
-import { FutureSelf } from './sections/FutureSelf';
+import { Home } from './sections/Home';
+import { Log } from './sections/Log';
+import { Day } from './sections/Day';
+import { Cards } from './sections/Cards';
 import { Agent } from './sections/Agent';
-import { Food } from './sections/Food';
 import { Settings } from './sections/Settings';
 import './App.css';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'future', label: 'Future', icon: '✦' },
-  { id: 'agent', label: 'Agent', icon: '🎙' },
-  { id: 'food', label: 'Food', icon: '🥗' },
-  { id: 'settings', label: 'Settings', icon: '⚙' },
+  { id: 'home', label: 'Home', icon: '◉' },
+  { id: 'log', label: 'Log', icon: '📷' },
+  { id: 'day', label: 'Day', icon: '📅' },
+  { id: 'cards', label: 'Cards', icon: '📝' },
+  { id: 'agent', label: 'Coach', icon: '✦' },
 ];
 
 function parseInitialTab(): TabId {
   const hash = window.location.hash.replace('#', '');
-  if (hash === 'settings' || hash === 'agent' || hash === 'food' || hash === 'future') {
-    return hash;
-  }
-  return 'food';
+  const valid: TabId[] = ['home', 'log', 'day', 'cards', 'agent', 'settings'];
+  if (valid.includes(hash as TabId)) return hash as TabId;
+  return 'home';
 }
 
 function App() {
@@ -47,7 +49,17 @@ function App() {
     <div className="app">
       <header className="header">
         <span className="logo">Habits</span>
-        <span className={`status-dot status-${status}`} title={status} />
+        <div className="header-actions">
+          <button
+            type="button"
+            className="header-gear"
+            onClick={() => handleTabChange('settings')}
+            aria-label="Settings"
+          >
+            ⚙
+          </button>
+          <span className={`status-dot status-${status}`} title={status} />
+        </div>
       </header>
 
       {status === 'no-config' && (
@@ -63,9 +75,11 @@ function App() {
       )}
 
       <main className="main">
-        {tab === 'future' && <FutureSelf serverOnline={serverOnline} />}
+        {tab === 'home' && <Home serverOnline={serverOnline} />}
+        {tab === 'log' && <Log serverOnline={serverOnline} />}
+        {tab === 'day' && <Day serverOnline={serverOnline} />}
+        {tab === 'cards' && <Cards serverOnline={serverOnline} />}
         {tab === 'agent' && <Agent serverOnline={serverOnline} />}
-        {tab === 'food' && <Food serverOnline={serverOnline} />}
         {tab === 'settings' && (
           <Settings
             serverOnline={serverOnline}
@@ -77,20 +91,22 @@ function App() {
         )}
       </main>
 
-      <nav className="tab-bar" aria-label="Main">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`tab ${tab === t.id ? 'tab-active' : ''}`}
-            onClick={() => handleTabChange(t.id)}
-            aria-current={tab === t.id ? 'page' : undefined}
-          >
-            <span className="tab-icon" aria-hidden>{t.icon}</span>
-            <span className="tab-label">{t.label}</span>
-          </button>
-        ))}
-      </nav>
+      {tab !== 'settings' && (
+        <nav className="tab-bar" aria-label="Main">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`tab ${tab === t.id ? 'tab-active' : ''}`}
+              onClick={() => handleTabChange(t.id)}
+              aria-current={tab === t.id ? 'page' : undefined}
+            >
+              <span className="tab-icon" aria-hidden>{t.icon}</span>
+              <span className="tab-label">{t.label}</span>
+            </button>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }

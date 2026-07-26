@@ -1,0 +1,186 @@
+import { useCallback, useEffect, useState } from 'react';
+import { Card } from '../components/ui/Card';
+import { api, ApiError, type HabitsTodayResponse } from '../lib/api';
+
+interface DayProps {
+  serverOnline: boolean;
+}
+
+const METRICS = [
+  { key: 'sleep', label: 'Sleep', target: 7 },
+  { key: 'work', label: 'Work', target: 4 },
+  { key: 'read', label: 'Read', target: 1 },
+  { key: 'speak', label: 'Speak', target: 0.5 },
+  { key: 'game', label: 'Game', target: 0 },
+  { key: 'wasted', label: 'Wasted', target: 0 },
+] as const;
+
+export function Day({ serverOnline }: DayProps) {
+  const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
+  const [events, setEvents] = useState<{ id: string; summary: string; start: string }[]>([]);
+  const [manageDay, setManageDay] = useState<Record<string, string[]>>({});
+  const [mealPlan, setMealPlan] = useState<{ meal: string; label: string; description: string }[]>([]);
+  const [mealSuccess, setMealSuccess] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState<string | null>(null);
+  const [loggingMeals, setLoggingMeals] = useState(false);
+
+  const refresh = useCallback(async () => {
+    if (!serverOnline) return;
+    try {
+      const [h, cal, md, mp] = await Promise.all([
+        api.getHabitsToday(),
+        api.getCalendarToday(),
+        api.getManageDay(),
+        api.getMealPlanToday(),
+      ]);
+      setHabits(h);
+      setEvents(cal.events ?? []);
+      setManageDay(md.quadrants ?? {});
+      setMealPlan(mp.meals ?? []);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) return;
+      setError(e instanceof Error ? e.message : 'Failed to load day');
+    }
+  }, [serverOnline]);
+
+  useEffect(() => {
+    void refresh();
+    const id = window.setInterval(() => void refresh(), 60_000);
+    return () => window.clearInterval(id);
+  }, [refresh]);
+
+  async function updateMetric(key: string, value: string) {
+    setSaving(key);
+    try {
+      const num = value === '' ? null : Number.parseFloat(value);
+      setHabits(await api.updateHabitMetric(key, num));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Update failed');
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  function formatTime(iso: string): string {
+    try {
+      return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return iso;
+    }
+  }
+
+  function isPastEvent(start: string): boolean {
+    return new Date(start) < new Date();
+  }
+
+  return (
+    <section className="section day-section">
+      <h1>Your Day</h1>
+      <p className="muted">Schedule + habit tracker</p>
+
+      {!serverOnline && <div className="banner banner-warn">Server offline.</div>}
+
+      <Card>
+        <h2>Today&apos;s meal plan</h2>
+        <p className="muted">From WEEK MEALS sheet</p>
+        {!mealPlan.length ? (
+          <p className="muted">No meals planned for today.</p>
+        ) : (
+          <>
+            <ul className="food-list">
+              {mealPlan.map((m) => (
+                <li key={m.meal} className="food-row">
+                  <strong>{m.label}</strong>
+                  <span className="muted">{m.description}</span>
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              disabled={!serverOnline || loggingMeals}
+              onClick={() => {
+                setLoggingMeals(true);
+                setMealSuccess('');
+                setError('');
+                void api
+                  .logMealPlanToday()
+                  .then((res) => setMealSuccess(res.message))
+                  .catch((e) => setError(e instanceof Error ? e.message : 'Meal log failed'))
+                  .finally(() => setLoggingMeals(false));
+              }}
+            >
+              Log all planned meals
+            </button>
+          </>
+        )}
+      </Card>
+
+      <Card>
+        <h2>Timeline</h2>
+        {!events.length ? (
+          <p className="muted">No calendar events today.</p>
+        ) : (
+          <ul className="timeline">
+            {events.map((ev) => (
+              <li
+                key={ev.id}
+                className={`timeline-item ${isPastEvent(ev.start) ? 'timeline-item--past' : ''}`}
+              >
+                <span className="timeline-time">{formatTime(ev.start)}</span>
+                <span className="timeline-title">{ev.summary}</span>
+                {isPastEvent(ev.start) && <span className="timeline-nudge">Passed</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <Card>
+        <h2>Habit hours</h2>
+        <div className="habit-grid">
+          {METRICS.map(({ key, label, target }) => {
+            const val = habits?.metrics?.[key];
+            const behind = target > 0 && (val ?? 0) < target * 0.5;
+            return (
+              <label key={key} className={`habit-chip ${behind ? 'habit-chip--behind' : ''}`}>
+                <span>{label}</span>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  value={val ?? ''}
+                  placeholder="0"
+                  disabled={!serverOnline || saving === key}
+                  onChange={(e) => void updateMetric(key, e.target.value)}
+                />
+                {target > 0 && <span className="habit-target">/{target}h</span>}
+              </label>
+            );
+          })}
+        </div>
+      </Card>
+
+      {Object.keys(manageDay).length > 0 && (
+        <Card>
+          <h2>Manage day</h2>
+          {Object.entries(manageDay).map(([quad, items]) =>
+            items.length > 0 ? (
+              <div key={quad} className="manage-quad">
+                <h3>{quad.replace('_', ' ')}</h3>
+                <ul>
+                  {items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null,
+          )}
+        </Card>
+      )}
+
+      {mealSuccess && <div className="banner banner-ok">{mealSuccess}</div>}
+      {error && <div className="banner banner-warn">{error}</div>}
+    </section>
+  );
+}

@@ -1,0 +1,74 @@
+:root {
+  /* Surfaces */
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface2: #334155;
+  --surface-elevated: #1a2744;
+
+  /* Text */
+  --text: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --muted: #94a3b8;
+
+  /* Brand & semantic */
+  --accent: #38bdf8;
+  --accent-dim: rgba(56, 189, 248, 0.15);
+  --warn: #fbbf24;
+  --ok: #4ade80;
+  --err: #f87171;
+  --protein: #ff6b6b;
+  --calories: #ffa94d;
+  --carbs: #74c0fc;
+  --fat: #ffd43b;
+  --habits: #a78bfa;
+
+  /* Rings (Apple Health inspired) */
+  --ring-protein: #ff375f;
+  --ring-calories: #ff9500;
+  --ring-habits: #bf5af2;
+
+  /* Keep card colors */
+  --keep-yellow: #fef3c7;
+  --keep-blue: #dbeafe;
+  --keep-green: #d1fae5;
+  --keep-pink: #fce7f3;
+  --keep-purple: #ede9fe;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+
+  /* Motion */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+
+  /* Layout */
+  --max-width: 480px;
+  --tab-bar-height: 4rem;
+  --header-height: 3rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+  }
+}

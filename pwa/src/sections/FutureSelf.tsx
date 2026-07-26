@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { CameraCapture } from '../components/CameraCapture';
 import { api, ApiError, type FutureSelfCard, type HabitsTodayResponse } from '../lib/api';
 
 interface FutureSelfProps {
@@ -6,6 +7,11 @@ interface FutureSelfProps {
 }
 
 const METRICS = ['sleep', 'work', 'wasted', 'speak', 'game', 'read'] as const;
+
+interface ProjectionOutcome {
+  label: string;
+  image_url: string | null;
+}
 
 export function FutureSelf({ serverOnline }: FutureSelfProps) {
   const [cards, setCards] = useState<FutureSelfCard[]>([]);
@@ -15,6 +21,10 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [swipeDir, setSwipeDir] = useState<'left' | 'right' | null>(null);
+  const [baselinePhoto, setBaselinePhoto] = useState<string | null>(null);
+  const [declineOutcome, setDeclineOutcome] = useState<ProjectionOutcome | null>(null);
+  const [acceptOutcome, setAcceptOutcome] = useState<ProjectionOutcome | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   const load = useCallback(async () => {
     if (!serverOnline) return;
@@ -48,6 +58,31 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
     }
   }
 
+  async function handlePhotoCapture(dataUrl: string) {
+    setBaselinePhoto(dataUrl);
+    setDeclineOutcome(null);
+    setAcceptOutcome(null);
+  }
+
+  async function generateProjections() {
+    if (!baselinePhoto) return;
+    const card = cards[index];
+    setGenerating(true);
+    setError('');
+    try {
+      const res = await api.generateFutureSelfProjections(
+        baselinePhoto,
+        card?.habit ?? card?.id ?? 'general',
+      );
+      setDeclineOutcome(res.decline_outcome);
+      setAcceptOutcome(res.accept_outcome);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not generate projections');
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   async function handleAccept() {
     const card = cards[index];
     if (!card) return;
@@ -59,6 +94,8 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
       setTimeout(() => {
         setIndex((i) => i + 1);
         setSwipeDir(null);
+        setDeclineOutcome(null);
+        setAcceptOutcome(null);
       }, 300);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Accept failed');
@@ -73,6 +110,8 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
     setTimeout(() => {
       setIndex((i) => i + 1);
       setSwipeDir(null);
+      setDeclineOutcome(null);
+      setAcceptOutcome(null);
     }, 300);
   }
 
@@ -81,13 +120,48 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
   return (
     <section className="section">
       <h1>Future Self</h1>
-      <p className="muted">{summary || 'Daily swipe cards — accept habits to stay on track.'}</p>
+      <p className="muted">{summary || 'Take a photo, see your two futures, then swipe to decide.'}</p>
 
       {!serverOnline && (
         <div className="banner banner-warn">Mac server offline — cards unavailable.</div>
       )}
 
       {error && <div className="banner banner-warn">{error}</div>}
+
+      <div className="card">
+        <h2>Baseline photo</h2>
+        <CameraCapture onCapture={handlePhotoCapture} disabled={generating} />
+        {baselinePhoto && (
+          <button
+            type="button"
+            disabled={generating || !serverOnline}
+            onClick={() => void generateProjections()}
+          >
+            {generating ? 'Generating futures…' : 'Show decline vs accept outcomes'}
+          </button>
+        )}
+      </div>
+
+      {(declineOutcome || acceptOutcome) && (
+        <div className="projection-grid">
+          <div className="projection-card card">
+            <p className="projection-label-decline">{declineOutcome?.label ?? 'Decline path'}</p>
+            {declineOutcome?.image_url ? (
+              <img src={declineOutcome.image_url} alt="Decline future self" />
+            ) : (
+              <div className="card-image-placeholder">No image</div>
+            )}
+          </div>
+          <div className="projection-card card">
+            <p className="projection-label-accept">{acceptOutcome?.label ?? 'Accept path'}</p>
+            {acceptOutcome?.image_url ? (
+              <img src={acceptOutcome.image_url} alt="Accept future self" />
+            ) : (
+              <div className="card-image-placeholder">No image</div>
+            )}
+          </div>
+        </div>
+      )}
 
       {tracker?.sheets_connected && (
         <div className="card">

@@ -1,8 +1,8 @@
-export type TabId = 'future' | 'agent' | 'food' | 'settings';
+export type TabId = 'home' | 'log' | 'day' | 'cards' | 'agent' | 'settings';
 
 export interface HabitsConfig {
   apiUrl: string;
-  livekitUrl: string;
+  voiceUiUrl: string;
 }
 
 declare global {
@@ -11,8 +11,8 @@ declare global {
   }
 }
 
-function envOrRuntime(key: 'apiUrl' | 'livekitUrl'): string {
-  const envKey = key === 'apiUrl' ? 'VITE_HABITS_API_URL' : 'VITE_HABITS_LIVEKIT_URL';
+function envOrRuntime(key: 'apiUrl' | 'voiceUiUrl'): string {
+  const envKey = key === 'apiUrl' ? 'VITE_HABITS_API_URL' : 'VITE_VOICE_UI_URL';
   const fromEnv = import.meta.env[envKey]?.trim();
   if (fromEnv) return fromEnv;
   const fromRuntime = window.HABITS_CONFIG?.[key]?.trim();
@@ -23,9 +23,10 @@ function envOrRuntime(key: 'apiUrl' | 'livekitUrl'): string {
 }
 
 export function getConfig(): HabitsConfig {
+  const voiceUiUrl = envOrRuntime('voiceUiUrl') || 'http://localhost:8080';
   return {
     apiUrl: envOrRuntime('apiUrl'),
-    livekitUrl: envOrRuntime('livekitUrl'),
+    voiceUiUrl,
   };
 }
 

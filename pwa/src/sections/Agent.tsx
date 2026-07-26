@@ -1,60 +1,127 @@
-import { useState } from 'react';
-import { VoiceSession } from '../voice/VoiceSession';
-import {
-  loadVoiceSettings,
-  saveVoiceSettings,
-  type LLMPreset,
-  type STTPreset,
-  type VoicePipelineSettings,
-} from '../lib/voice-settings';
+import { useCallback, useRef, useState } from 'react';
+import { getConfig } from '../lib/config';
+import { api } from '../lib/api';
+import { toOrbVisual } from '../lib/voice-status';
+import { useVoiceIframeStatus } from '../hooks/useVoiceIframeStatus';
+import { AgentActionFeed } from '../components/AgentActionFeed';
+import { AgentContextPanel } from '../components/AgentContextPanel';
+import { VoiceEmbed } from '../components/VoiceEmbed';
+import { VoiceStatusOrb } from '../components/VoiceStatusOrb';
+import { BottomSheet } from '../components/ui/BottomSheet';
+import { useAgentContext } from '../hooks/useAgentContext';
 
 interface AgentProps {
   serverOnline: boolean;
 }
 
-export function Agent({ serverOnline }: AgentProps) {
-  const [pipeline, setPipeline] = useState<VoicePipelineSettings>(loadVoiceSettings);
+interface ChatMsg {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
-  function update(partial: Partial<VoicePipelineSettings>) {
-    const next = { ...pipeline, ...partial };
-    setPipeline(next);
-    saveVoiceSettings(next);
-  }
+export function Agent({ serverOnline }: AgentProps) {
+  const { voiceUiUrl } = getConfig();
+  const context = useAgentContext(serverOnline, true);
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [error, setError] = useState('');
+  const listRef = useRef<HTMLDivElement>(null);
+  const iframeVoiceStatus = useVoiceIframeStatus(voiceUiUrl, voiceOpen);
+  const orbState = toOrbVisual(iframeVoiceStatus, serverOnline);
+
+  const send = useCallback(async () => {
+    const text = input.trim();
+    if (!text || !serverOnline) return;
+    setInput('');
+    setLoading(true);
+    setError('');
+    const userMsg: ChatMsg = { role: 'user', content: text };
+    setMessages((m) => [...m, userMsg]);
+    try {
+      const history = messages.map((m) => ({ role: m.role, content: m.content }));
+      const res = await api.agentChat(text, history);
+      setMessages((m) => [...m, { role: 'assistant', content: res.reply || 'Done.' }]);
+      if (res.tool_results.length) void context.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Chat failed');
+    } finally {
+      setLoading(false);
+      listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+    }
+  }, [input, serverOnline, messages, context]);
 
   return (
-    <section className="section">
-      <h1>Voice Agent</h1>
-      <p className="muted">
-        Realtime voice — Whisper STT, MiniMax LLM, Kokoro TTS over LiveKit.
-      </p>
+    <section className="section agent-section">
+      <header className="agent-header">
+        <div>
+          <h1>Coach</h1>
+          <p className="muted agent-subtitle">Chat, voice, and daily context</p>
+        </div>
+        <VoiceStatusOrb state={voiceOpen ? orbState : toOrbVisual(null, serverOnline)} />
+      </header>
 
-      <div className="card">
-        <h2>Pipeline</h2>
-        <label className="field">
-          STT
-          <select
-            value={pipeline.stt}
-            onChange={(e) => update({ stt: e.target.value as STTPreset })}
-          >
-            <option value="whisper">Whisper</option>
-            <option value="nemotron">Nemotron</option>
-          </select>
-        </label>
-        <label className="field">
-          LLM
-          <select
-            value={pipeline.llm}
-            onChange={(e) => update({ llm: e.target.value as LLMPreset })}
-          >
-            <option value="minimax">MiniMax</option>
-            <option value="gemma4">Gemma 4</option>
-            <option value="llama">Llama</option>
-          </select>
-        </label>
-        <p className="muted">TTS: Kokoro (fixed)</p>
+      {!serverOnline && (
+        <div className="banner banner-warn">habits-api offline — context unavailable.</div>
+      )}
+
+      <AgentContextPanel context={context} />
+
+      <div className="agent-chat" ref={listRef}>
+        {messages.length === 0 && (
+          <p className="muted agent-chat-empty">
+            Ask me to log food, update habits, schedule events, or add health notes.
+          </p>
+        )}
+        {messages.map((m, i) => (
+          <div key={i} className={`chat-bubble chat-bubble--${m.role}`}>
+            {m.content}
+          </div>
+        ))}
+        {loading && <div className="chat-bubble chat-bubble--assistant">Thinking…</div>}
       </div>
 
-      <VoiceSession enabled={serverOnline} />
+      <form
+        className="agent-chat-input"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void send();
+        }}
+      >
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Message your coach…"
+          disabled={!serverOnline || loading}
+        />
+        <button type="submit" disabled={!serverOnline || loading || !input.trim()}>
+          Send
+        </button>
+      </form>
+
+      <div className="agent-actions-row">
+        <button type="button" className="btn-secondary" onClick={() => setVoiceOpen(true)}>
+          Voice
+        </button>
+      </div>
+
+      <div className="agent-feed-label">Recent actions</div>
+      <AgentActionFeed
+        serverOnline={serverOnline}
+        active
+        onDataChange={() => void context.refresh()}
+      />
+
+      <BottomSheet open={voiceOpen} onClose={() => setVoiceOpen(false)} title="Voice coach">
+        {!voiceUiUrl ? (
+          <p className="muted">Set VITE_VOICE_UI_URL in config.</p>
+        ) : (
+          <VoiceEmbed url={voiceUiUrl} agent="habits" />
+        )}
+      </BottomSheet>
+
+      {error && <div className="banner banner-warn">{error}</div>}
     </section>
   );
 }
