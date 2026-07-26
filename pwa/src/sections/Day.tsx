@@ -3,14 +3,14 @@ import { Card } from '../components/ui/Card';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
-import { vibrateFireStreak, vibrateMetricFireStreak } from '../lib/haptics';
+import { vibrateFireStreak, vibrateHotStreak, vibrateMetricFireStreak, vibrateMetricHotStreak } from '../lib/haptics';
 
-const FIRE_HAPTIC_OVERALL_KEY = 'habits-streak-fire-haptic';
-const FIRE_HAPTIC_METRICS_KEY = 'habits-streak-fire-haptic-metrics';
+const STREAK_HAPTIC_OVERALL_KEY = 'habits-streak-haptic-overall';
+const STREAK_HAPTIC_METRICS_KEY = 'habits-streak-haptic-metrics';
 
-function readMetricFireHaptics(): Record<string, number> {
+function readMetricStreakHaptics(): Record<string, number> {
   try {
-    const raw = sessionStorage.getItem(FIRE_HAPTIC_METRICS_KEY);
+    const raw = sessionStorage.getItem(STREAK_HAPTIC_METRICS_KEY);
     if (!raw) return {};
     const parsed = JSON.parse(raw) as Record<string, number>;
     return parsed && typeof parsed === 'object' ? parsed : {};
@@ -100,23 +100,23 @@ export function Day({ serverOnline }: DayProps) {
       didVibrate = true;
     };
 
-    if (streaks.overall >= 14) {
-      const prevOverall = Number(sessionStorage.getItem(FIRE_HAPTIC_OVERALL_KEY) ?? '0');
-      if (prevOverall < 14) vibrateOnce(vibrateFireStreak);
-      if (streaks.overall !== prevOverall) {
-        sessionStorage.setItem(FIRE_HAPTIC_OVERALL_KEY, String(streaks.overall));
-      }
+    const prevOverall = Number(sessionStorage.getItem(STREAK_HAPTIC_OVERALL_KEY) ?? '0');
+    if (streaks.overall >= 14 && prevOverall < 14) vibrateOnce(vibrateFireStreak);
+    else if (streaks.overall >= 7 && prevOverall < 7) vibrateOnce(vibrateHotStreak);
+    if (streaks.overall !== prevOverall) {
+      sessionStorage.setItem(STREAK_HAPTIC_OVERALL_KEY, String(streaks.overall));
     }
 
-    const prevMetrics = readMetricFireHaptics();
+    const prevMetrics = readMetricStreakHaptics();
     const nextMetrics = { ...prevMetrics };
     for (const { key } of METRICS) {
       const days = streaks.metrics?.[key] ?? 0;
       const prev = prevMetrics[key] ?? 0;
       if (days >= 14 && prev < 14) vibrateOnce(vibrateMetricFireStreak);
+      else if (days >= 7 && prev < 7) vibrateOnce(vibrateMetricHotStreak);
       if (days !== prev) nextMetrics[key] = days;
     }
-    sessionStorage.setItem(FIRE_HAPTIC_METRICS_KEY, JSON.stringify(nextMetrics));
+    sessionStorage.setItem(STREAK_HAPTIC_METRICS_KEY, JSON.stringify(nextMetrics));
   }, [streaks]);
 
   function formatTime(iso: string): string {
