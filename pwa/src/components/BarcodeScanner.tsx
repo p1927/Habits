@@ -109,7 +109,7 @@ export function BarcodeScanner({ onScan, disabled }: BarcodeScannerProps) {
             />
             {!live && (
               <div className="barcode-placeholder muted">
-                Scan a product barcode to find food in your database
+                Scan a product barcode — Open Food Facts when not in your sheet
               </div>
             )}
           </div>

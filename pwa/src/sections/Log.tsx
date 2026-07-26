@@ -14,6 +14,7 @@ import {
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { addMealPhoto } from '../lib/mealPhotos';
+import type { OffProduct } from '../lib/openFoodFacts';
 
 interface LogProps {
   serverOnline: boolean;
@@ -54,6 +55,7 @@ export function Log({ serverOnline }: LogProps) {
   const [foodName, setFoodName] = useState('');
   const [quantity, setQuantity] = useState('100');
   const [searchResults, setSearchResults] = useState<FoodSearchResult[]>([]);
+  const [offProduct, setOffProduct] = useState<OffProduct | null>(null);
   const [recipe, setRecipe] = useState<{
     name: string;
     items: { food: string; quantity_g: number; calories: number; protein: number }[];
@@ -145,19 +147,45 @@ export function Log({ serverOnline }: LogProps) {
   async function handleBarcode(code: string) {
     setError('');
     setSuccess('');
+    setOffProduct(null);
     setTab('type');
-    setFoodName(code);
-    if (!serverOnline) return;
     setLoading(true);
     try {
-      const res = await api.searchFood(code);
-      setSearchResults(res.results);
-      if (res.results[0]) {
-        setFoodName(res.results[0].name);
-        setSuccess(`Found: ${res.results[0].name}`);
-      } else {
-        setSuccess(`Barcode ${code} — pick or edit the food name below`);
+      if (serverOnline) {
+        const res = await api.searchFood(code);
+        if (res.results[0]) {
+          setFoodName(res.results[0].name);
+          setSearchResults(res.results);
+          setSuccess(`Found in your database: ${res.results[0].name}`);
+          return;
+        }
       }
+
+      const { lookupOpenFoodFacts } = await import('../lib/openFoodFacts');
+      const off = await lookupOpenFoodFacts(code);
+      if (off) {
+        setOffProduct(off);
+        setFoodName(off.name);
+        setQuantity(String(off.quantityG));
+        if (serverOnline) {
+          const local = await api.searchFood(off.name.split(/\s+/)[0] ?? off.name);
+          setSearchResults(local.results);
+        } else {
+          setSearchResults([]);
+        }
+        setSuccess(
+          `Open Food Facts: ${off.name}${off.brand ? ` (${off.brand})` : ''} — pick the closest match in your sheet to log`,
+        );
+        return;
+      }
+
+      setFoodName(code);
+      setSearchResults([]);
+      if (serverOnline) {
+        const res = await api.searchFood(code);
+        setSearchResults(res.results);
+      }
+      setSuccess(`Barcode ${code} — not found in Open Food Facts or your database`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Barcode lookup failed');
     } finally {
@@ -242,12 +270,28 @@ export function Log({ serverOnline }: LogProps) {
         <>
           <Card>
             <h2>Barcode</h2>
-            <p className="muted">Scan packaged food like MyFitnessPal</p>
+            <p className="muted">Scan packaged food — looks up your sheet, then Open Food Facts</p>
             <BarcodeScanner
-              disabled={!serverOnline || loading}
+              disabled={loading}
               onScan={(code) => void handleBarcode(code)}
             />
           </Card>
+
+          {offProduct && (
+            <Card className="off-product-card">
+              <h2>Open Food Facts</h2>
+              <p className="off-product-name">{offProduct.name}</p>
+              {offProduct.brand && <p className="muted">{offProduct.brand}</p>}
+              <p className="muted">Per 100g · barcode {offProduct.barcode}</p>
+              <div className="off-product-macros">
+                <span>{offProduct.per100g.calories} kcal</span>
+                <span>{offProduct.per100g.protein}g protein</span>
+                <span>{offProduct.per100g.carbs}g carbs</span>
+                <span>{offProduct.per100g.fat}g fat</span>
+              </div>
+              <p className="muted">Suggested serving: {offProduct.quantityG}g — choose a matching food below to log</p>
+            </Card>
+          )}
 
           <form className="card" onSubmit={handleVoiceLog}>
             <h2>Quick log</h2>
