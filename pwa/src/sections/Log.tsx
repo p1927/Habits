@@ -15,6 +15,7 @@ import {
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
+import { useMealPlanQueueCount } from '../hooks/useMealPlanQueueCount';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -26,6 +27,7 @@ import {
 import { isOfflineError } from '../lib/foodQueue';
 import {
   cacheMealPlan,
+  clearMealPlanQueue,
   enqueueMealPlanLog,
   getCachedMealPlan,
   type MealPlanEntry,
@@ -216,6 +218,8 @@ export function Log({ serverOnline }: LogProps) {
     offerUndoFromSummary,
     handleUndo: handleMealPlanUndo,
   } = useMealPlanUndo(serverOnline);
+
+  const mealPlanQueueCount = useMealPlanQueueCount();
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -1032,6 +1036,26 @@ export function Log({ serverOnline }: LogProps) {
       )}
 
       {tab === 'mealplan' && (
+        <>
+          {mealPlanQueueCount > 0 && (
+            <div className="banner banner-warn banner-row" role="status">
+              <span>
+                {mealPlanQueueCount} meal log{mealPlanQueueCount === 1 ? '' : 's'} queued
+                {serverOnline ? ' — sync on Home or Day tab' : ' — will sync when online'}.
+              </span>
+              <button
+                type="button"
+                className="btn-small"
+                aria-label="Dismiss meal plan log queue"
+                onClick={() => {
+                  clearMealPlanQueue();
+                  setSuccess('Meal plan log queue cleared');
+                }}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
         <Card>
           <h2>Today&apos;s meal plan</h2>
           <p className="muted">From WEEK MEALS sheet · shortcut <kbd>{shortcutModifierLabel()}3</kbd></p>
@@ -1068,6 +1092,7 @@ export function Log({ serverOnline }: LogProps) {
             </>
           )}
         </Card>
+        </>
       )}
 
       {tab === 'history' && (
