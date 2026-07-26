@@ -33,6 +33,19 @@ function productName(product: Record<string, unknown>): string {
   return name || generic || 'Unknown product';
 }
 
+export function scaleOffMacros(
+  per100g: OffProduct['per100g'],
+  quantityG: number,
+): { calories: number; carbs: number; protein: number; fat: number } {
+  const factor = quantityG / 100;
+  return {
+    calories: Math.round(per100g.calories * factor * 100) / 100,
+    protein: Math.round(per100g.protein * factor * 1000) / 1000,
+    carbs: Math.round(per100g.carbs * factor * 1000) / 1000,
+    fat: Math.round(per100g.fat * factor * 1000) / 1000,
+  };
+}
+
 export async function lookupOpenFoodFacts(barcode: string): Promise<OffProduct | null> {
   const clean = barcode.replace(/\D/g, '');
   if (!clean) return null;

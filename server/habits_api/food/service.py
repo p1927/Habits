@@ -246,6 +246,55 @@ async def log_food_item(
     }
 
 
+async def log_food_with_macros(
+    settings: Settings,
+    db: TokenDB,
+    food_name: str,
+    quantity_g: float,
+    calories: float,
+    carbs: float,
+    protein: float,
+    fat: float,
+) -> dict:
+    if not await db.google_connected():
+        raise RuntimeError("Google Sheets not connected")
+
+    name = food_name.strip()
+    if not name:
+        raise ValueError("Food name is required")
+
+    row_idx = await _find_next_log_row(settings, db)
+    macros = {
+        "calories": round(calories, 2),
+        "carbs": round(carbs, 4),
+        "protein": round(protein, 4),
+        "fat": round(fat, 4),
+    }
+
+    await update_range(
+        settings,
+        db,
+        settings.habits_sheet_nutrition,
+        settings.habits_tab_food_log,
+        f"A{row_idx}:F{row_idx}",
+        [[name, quantity_g, macros["calories"], macros["carbs"], macros["protein"], macros["fat"]]],
+    )
+
+    summary = await get_today_summary(settings, db)
+    return {
+        "food": name,
+        "quantity_g": quantity_g,
+        **macros,
+        "message": (
+            f"Logged {quantity_g}g {name} ({macros['protein']}g protein) from barcode data. "
+            f"Today: {summary['protein_g']}g protein"
+            + (f" of {summary['protein_target_g']}g target" if summary.get("protein_target_g") else "")
+            + "."
+        ),
+        "summary": summary,
+    }
+
+
 async def log_meal_description(
     settings: Settings,
     db: TokenDB,

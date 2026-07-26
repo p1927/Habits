@@ -200,6 +200,18 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ food, quantity_g }),
     }),
+  logFoodMacros: (payload: {
+    food: string;
+    quantity_g: number;
+    calories: number;
+    carbs: number;
+    protein: number;
+    fat: number;
+  }) =>
+    request<{ message: string; summary: FoodTodayResponse }>('/api/food/item/macros', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
   updateFoodRow: (row: number, food?: string, quantity_g?: number) =>
     request<FoodTodayResponse>(`/api/food/log/${row}`, {
       method: 'PUT',

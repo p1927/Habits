@@ -15,6 +15,7 @@ import {
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { addMealPhoto, getTodayMealPhotos } from '../lib/mealPhotos';
 import type { OffProduct } from '../lib/openFoodFacts';
+import { scaleOffMacros } from '../lib/openFoodFacts';
 
 interface LogProps {
   serverOnline: boolean;
@@ -56,6 +57,7 @@ export function Log({ serverOnline }: LogProps) {
   const [quantity, setQuantity] = useState('100');
   const [searchResults, setSearchResults] = useState<FoodSearchResult[]>([]);
   const [offProduct, setOffProduct] = useState<OffProduct | null>(null);
+  const [offQuantity, setOffQuantity] = useState('100');
   const [recipe, setRecipe] = useState<{
     name: string;
     items: { food: string; quantity_g: number; calories: number; protein: number }[];
@@ -160,6 +162,31 @@ export function Log({ serverOnline }: LogProps) {
     await logItem(name, qty);
   }
 
+  async function handleLogOffProduct() {
+    if (!offProduct || !serverOnline) return;
+    const qty = Number.parseFloat(offQuantity);
+    if (!qty || qty <= 0) return;
+    setLoading(true);
+    setError('');
+    try {
+      const macros = scaleOffMacros(offProduct.per100g, qty);
+      const res = await api.logFoodMacros({
+        food: offProduct.name,
+        quantity_g: qty,
+        ...macros,
+      });
+      setData(res.summary);
+      setSuccess(res.message);
+      setOffProduct(null);
+      setFoodName('');
+      setSearchResults([]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Open Food Facts log failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleBarcode(code: string) {
     setError('');
     setSuccess('');
@@ -181,8 +208,8 @@ export function Log({ serverOnline }: LogProps) {
       const off = await lookupOpenFoodFacts(code);
       if (off) {
         setOffProduct(off);
+        setOffQuantity(String(off.quantityG));
         setFoodName(off.name);
-        setQuantity(String(off.quantityG));
         if (serverOnline) {
           const local = await api.searchFood(off.name.split(/\s+/)[0] ?? off.name);
           setSearchResults(local.results);
@@ -190,7 +217,7 @@ export function Log({ serverOnline }: LogProps) {
           setSearchResults([]);
         }
         setSuccess(
-          `Open Food Facts: ${off.name}${off.brand ? ` (${off.brand})` : ''} — pick the closest match in your sheet to log`,
+          `Open Food Facts: ${off.name}${off.brand ? ` (${off.brand})` : ''} — log directly or pick a sheet match`,
         );
         return;
       }
@@ -305,7 +332,35 @@ export function Log({ serverOnline }: LogProps) {
                 <span>{offProduct.per100g.carbs}g carbs</span>
                 <span>{offProduct.per100g.fat}g fat</span>
               </div>
-              <p className="muted">Suggested serving: {offProduct.quantityG}g — choose a matching food below to log</p>
+              <label className="field">
+                Serving (g)
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={offQuantity}
+                  onChange={(e) => setOffQuantity(e.target.value)}
+                  disabled={loading}
+                />
+              </label>
+              {(() => {
+                const qty = Number.parseFloat(offQuantity);
+                if (!qty || qty <= 0) return null;
+                const scaled = scaleOffMacros(offProduct.per100g, qty);
+                return (
+                  <p className="muted">
+                    For {qty}g: {scaled.calories} kcal · {scaled.protein}g protein
+                  </p>
+                );
+              })()}
+              <button
+                type="button"
+                disabled={!serverOnline || loading}
+                onClick={() => void handleLogOffProduct()}
+              >
+                Log from Open Food Facts
+              </button>
+              <p className="muted">Or pick a matching food from your sheet below</p>
             </Card>
           )}
 

@@ -22,6 +22,15 @@ class FoodItemRequest(BaseModel):
     quantity_g: float = Field(gt=0)
 
 
+class FoodMacrosRequest(BaseModel):
+    food: str = Field(min_length=1)
+    quantity_g: float = Field(gt=0)
+    calories: float = Field(ge=0)
+    carbs: float = Field(ge=0)
+    protein: float = Field(ge=0)
+    fat: float = Field(ge=0)
+
+
 class FoodUpdateRequest(BaseModel):
     food: str | None = None
     quantity_g: float | None = Field(default=None, gt=0)
@@ -75,6 +84,29 @@ async def food_log_item(
 ) -> dict:
     try:
         return await food_service.log_food_item(settings, db, body.food, body.quantity_g)
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+
+
+@router.post("/api/food/item/macros", dependencies=[Depends(require_bearer)])
+async def food_log_item_macros(
+    body: FoodMacrosRequest,
+    db: TokenDB = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> dict:
+    try:
+        return await food_service.log_food_with_macros(
+            settings,
+            db,
+            body.food,
+            body.quantity_g,
+            body.calories,
+            body.carbs,
+            body.protein,
+            body.fat,
+        )
     except RuntimeError as exc:
         raise HTTPException(503, str(exc)) from exc
     except ValueError as exc:
