@@ -1077,6 +1077,17 @@ button:disabled {
 .home-rings-card {
   text-align: center;
   padding: var(--space-lg) var(--space-md);
+  background: linear-gradient(180deg, var(--surface) 0%, color-mix(in srgb, var(--surface) 92%, var(--ring-habits)) 100%);
+}
+
+.home-macros-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.home-macros-card h2 {
+  margin: 0 0 var(--space-xs);
 }
 
 .home-burn {
@@ -1085,7 +1096,11 @@ button:disabled {
 }
 
 .macro-bar {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
+}
+
+.macro-bar + .macro-bar {
+  margin-top: var(--space-sm);
 }
 
 .macro-bar__header {
@@ -1289,6 +1304,32 @@ button:disabled {
   display: flex;
   gap: 0.5rem;
   margin-bottom: var(--space-md);
+}
+
+.log-shortcut-hint {
+  margin: -0.5rem 0 var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.log-shortcut-hint kbd {
+  display: inline-block;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--surface2);
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 0.8125rem;
+}
+
+.link-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .sub-tab {
@@ -1819,6 +1860,24 @@ button:disabled {
 
 .decision-card-wrap {
   overflow: hidden;
+}
+
+.decision-card-wrap--elevated {
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--surface2));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.decision-card-eyebrow {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.decision-card-wrap--elevated h2 {
+  margin-top: 0;
 }
 
 .decision-card-img {

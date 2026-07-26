@@ -29,6 +29,20 @@ interface LogProps {
 
 type LogTab = 'scan' | 'type' | 'history' | 'recipes';
 
+const LOG_TABS: LogTab[] = ['scan', 'type', 'recipes', 'history'];
+const LOG_SHORTCUT_HINT_KEY = 'habits-log-shortcuts-hint-seen';
+
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+}
+
+function shortcutModifierLabel(): string {
+  if (typeof navigator === 'undefined') return 'Ctrl+';
+  return /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl+';
+}
+
 const MEAL_TYPES = [
   { value: 'breakfast', label: 'Breakfast' },
   { value: 'lunch', label: 'Lunch' },
@@ -76,7 +90,15 @@ export function Log({ serverOnline }: LogProps) {
   const [recipeEditName, setRecipeEditName] = useState('');
   const [recipeEditQty, setRecipeEditQty] = useState('100');
   const [recipeScanQueueCount, setRecipeScanQueueCount] = useState(() => getRecipeScanQueue().length);
+  const [showShortcutHint, setShowShortcutHint] = useState(
+    () => localStorage.getItem(LOG_SHORTCUT_HINT_KEY) !== '1',
+  );
   const searchTimer = useRef<number | null>(null);
+
+  const dismissShortcutHint = useCallback(() => {
+    localStorage.setItem(LOG_SHORTCUT_HINT_KEY, '1');
+    setShowShortcutHint(false);
+  }, []);
 
   const { pending, logItem, logMeal, logMacros, retry, dismiss, dismissAllQueued, queuedCount } = useOptimisticFoodLog({
     serverOnline,
@@ -102,6 +124,20 @@ export function Log({ serverOnline }: LogProps) {
       void api.getSavedRecipe().then((r) => setRecipe(r.recipe)).catch(() => setRecipe(null));
     }
   }, [refresh, tab, serverOnline]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey)) return;
+      const num = Number.parseInt(e.key, 10);
+      if (num < 1 || num > LOG_TABS.length) return;
+      if (isTypingTarget(e.target)) return;
+      e.preventDefault();
+      setTab(LOG_TABS[num - 1]);
+      dismissShortcutHint();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [dismissShortcutHint]);
 
   useEffect(() => {
     if (tab !== 'recipes') return;
@@ -393,7 +429,7 @@ export function Log({ serverOnline }: LogProps) {
       )}
 
       <div className="sub-tabs" role="tablist" aria-label="Log food views">
-        {(['scan', 'type', 'recipes', 'history'] as LogTab[]).map((t) => {
+        {LOG_TABS.map((t, index) => {
           const label = t === 'scan' ? 'Scan' : t === 'type' ? 'Type' : t === 'recipes' ? 'Recipes' : 'History';
           return (
           <button
@@ -403,13 +439,26 @@ export function Log({ serverOnline }: LogProps) {
             id={`log-tab-${t}`}
             aria-selected={tab === t}
             aria-controls={`log-panel-${t}`}
+            aria-keyshortcuts={`${shortcutModifierLabel()}${index + 1}`}
             className={`sub-tab ${tab === t ? 'sub-tab-active' : ''}`}
-            onClick={() => setTab(t)}
+            onClick={() => {
+              setTab(t);
+              dismissShortcutHint();
+            }}
           >
             {label}
           </button>
         );})}
       </div>
+
+      {showShortcutHint && (
+        <p className="log-shortcut-hint muted" role="note">
+          Tip: press <kbd>{shortcutModifierLabel()}1</kbd>–<kbd>{shortcutModifierLabel()}4</kbd> to switch tabs.{' '}
+          <button type="button" className="link-btn" onClick={dismissShortcutHint}>
+            Got it
+          </button>
+        </p>
+      )}
 
       <div role="tabpanel" id={`log-panel-${tab}`} aria-labelledby={`log-tab-${tab}`}>
       {tab === 'scan' && (
