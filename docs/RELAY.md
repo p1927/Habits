@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T01:56:00Z |
+| reviewed_at | 2026-07-27T01:58:00Z |
 | git_branch | main |
 | uncommitted_files | docs/RELAY.md checkpoint only |
-| where_we_are | Loop tick #32; relay-038 Home refresh keyboard shortcut shipped. |
+| where_we_are | Loop tick #33; relay-039 food log queue dismiss shipped. |
 | blockers | [] |
-| confirmed_next | relay-039 Food log queue dismiss on banner |
-| brainstorm_notes | relay-038 done; next maintenance item |
+| confirmed_next | relay-040 Hot tier single-pulse haptic |
+| brainstorm_notes | relay-039 done; next maintenance item |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T01:56:00Z |
+| last_wake | 2026-07-27T01:58:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-039 Food log queue dismiss on banner |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-040 Hot tier single-pulse haptic |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-039 | Food log queue dismiss on banner | maintenance
 - [ ] relay-040 | Hot tier single-pulse haptic | maintenance
 - [ ] relay-041 | Log tab keyboard shortcuts hint | maintenance
+- [ ] relay-042 | Habit queue dismiss on Day banner | maintenance
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| ? shortcut help overlay | — | Show all keyboard shortcuts |
+| Confirm before dismiss food queue | — | Prevent accidental clear |
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-038 | done | build | pending |
+| 2026-07-27 | relay-039 | done | build | pending |
+| 2026-07-27 | relay-038 | done | build | 84eba76 |
 | 2026-07-27 | relay-037 | done | build | f26753c |
 | 2026-07-27 | relay-036 | done | build | d60da47 |
 | 2026-07-27 | relay-035 | done | build | f13d681 |
 | 2026-07-27 | relay-034 | done | build | 4dcb101 |
-| 2026-07-27 | relay-033 | done | build | 1cb16cb |
 
 ---
 
