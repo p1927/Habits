@@ -5,6 +5,7 @@ import { SwipeStack } from '../components/ui/SwipeStack';
 import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
 import { UndoToast } from '../components/UndoToast';
+import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import {
@@ -444,7 +445,7 @@ export function Home({ serverOnline }: HomeProps) {
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
-      {(mealPlanQueueCount > 0 || syncingMealPlanQueue) && (
+      {mealPlanQueueCount > 0 || syncingMealPlanQueue ? (
         <div className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}`}>
           <div className="banner banner-warn banner-row" role="status">
             <span>
@@ -494,6 +495,8 @@ export function Home({ serverOnline }: HomeProps) {
             </div>
           )}
         </div>
+      ) : (
+        <MealPlanQueueEmptyHint />
       )}
 
       <Card className="home-export-card">

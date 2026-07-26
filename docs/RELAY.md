@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:36:00Z |
+| reviewed_at | 2026-07-27T02:37:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #61; relay-068 Log Plan auto-sync on online shipped. |
+| where_we_are | Loop tick #62; relay-069 Home empty queue hint shipped. |
 | blockers | [] |
-| confirmed_next | relay-069 Home meal plan empty queue hint |
-| brainstorm_notes | relay-068 done; Plan tab flushes queue when online or on tab focus |
+| confirmed_next | relay-070 Queue badge hide when on active tab |
+| brainstorm_notes | relay-069 done; Home shows empty queue hint like Day/Log Plan |
 
 ---
 
