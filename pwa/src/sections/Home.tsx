@@ -3,6 +3,7 @@ import { ActivityRings } from '../components/ui/Ring';
 import { Card } from '../components/ui/Card';
 import { SwipeStack } from '../components/ui/SwipeStack';
 import { MacroBar, Sparkline } from '../components/MacroChart';
+import { MealPhotoGallery } from '../components/MealPhotoGallery';
 import {
   api,
   ApiError,
@@ -12,6 +13,7 @@ import {
   type HabitsTodayResponse,
   type HabitsWeekResponse,
 } from '../lib/api';
+import { getTodayMealPhotos, type MealPhoto } from '../lib/mealPhotos';
 
 interface HomeProps {
   serverOnline: boolean;
@@ -63,8 +65,10 @@ export function Home({ serverOnline }: HomeProps) {
   const [habitWeek, setHabitWeek] = useState<HabitsWeekResponse | null>(null);
   const [decisionCard, setDecisionCard] = useState<FutureSelfCard | null>(null);
   const [error, setError] = useState('');
+  const [mealPhotos, setMealPhotos] = useState<MealPhoto[]>(() => getTodayMealPhotos());
 
   const refresh = useCallback(async () => {
+    setMealPhotos(getTodayMealPhotos());
     if (!serverOnline) return;
     setError('');
     try {
@@ -135,6 +139,14 @@ export function Home({ serverOnline }: HomeProps) {
         <MacroBar label="Carbs" value={food?.carbs ?? 0} target={250} color="var(--carbs)" />
         <MacroBar label="Fat" value={food?.fat ?? 0} target={80} color="var(--fat)" />
       </Card>
+
+      {mealPhotos.length > 0 && (
+        <Card>
+          <h2>Today&apos;s meal photos</h2>
+          <p className="muted">From food scans on Log and Coach</p>
+          <MealPhotoGallery photos={mealPhotos} />
+        </Card>
+      )}
 
       {history.length > 1 && (
         <Card>

@@ -3,6 +3,7 @@ import { CameraCapture } from '../components/CameraCapture';
 import { getConfig } from '../lib/config';
 import { api, type FoodScanResult } from '../lib/api';
 import { toOrbVisual } from '../lib/voice-status';
+import { addMealPhoto } from '../lib/mealPhotos';
 import { useVoiceIframeStatus } from '../hooks/useVoiceIframeStatus';
 import { AgentActionFeed } from '../components/AgentActionFeed';
 import { AgentContextPanel } from '../components/AgentContextPanel';
@@ -86,6 +87,7 @@ export function Agent({ serverOnline }: AgentProps) {
       const scan = await api.scanFood(dataUrlToFile(dataUrl));
       setAttachImage(dataUrl);
       setInput(scanSummary(scan));
+      addMealPhoto(dataUrl, scan.matched_name ?? scan.detected_name);
     } catch (e) {
       setAttachImage(dataUrl);
       setInput('I attached a food photo — please help me log it.');

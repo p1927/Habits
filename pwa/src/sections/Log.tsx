@@ -13,6 +13,7 @@ import {
   type FoodTodayResponse,
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
+import { addMealPhoto } from '../lib/mealPhotos';
 
 interface LogProps {
   serverOnline: boolean;
@@ -108,6 +109,7 @@ export function Log({ serverOnline }: LogProps) {
       setScanResult(result);
       setEditName(result.matched_name ?? result.detected_name);
       setEditQty(String(result.suggested_grams));
+      addMealPhoto(dataUrl, result.matched_name ?? result.detected_name);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Scan failed');
     } finally {
