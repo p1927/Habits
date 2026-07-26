@@ -88,6 +88,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [mealPlanQueueCount, setMealPlanQueueCount] = useState(() => getMealPlanQueue().length);
   const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
+  const [mealPlanSyncProgress, setMealPlanSyncProgress] = useState<{ done: number; total: number } | null>(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
   const syncMealPlanQueueCount = useCallback(() => {
@@ -150,6 +151,8 @@ export function Home({ serverOnline }: HomeProps) {
     setSyncingMealPlanQueue(true);
     setError('');
     dismissMealPlanUndo();
+    const total = queue.length;
+    setMealPlanSyncProgress({ done: 0, total });
     let synced = 0;
     const labels: string[] = [];
     let lastSummary: FoodTodayResponse | null = null;
@@ -171,6 +174,7 @@ export function Home({ serverOnline }: HomeProps) {
           removeMealPlanQueueItem(item.id);
           lastSummary = summary;
           synced += 1;
+          setMealPlanSyncProgress({ done: synced, total });
           labels.push(
             item.kind === 'all'
               ? 'All planned meals'
@@ -193,6 +197,7 @@ export function Home({ serverOnline }: HomeProps) {
       }
     } finally {
       setSyncingMealPlanQueue(false);
+      setMealPlanSyncProgress(null);
     }
   }, [
     serverOnline,
@@ -439,34 +444,55 @@ export function Home({ serverOnline }: HomeProps) {
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
-      {mealPlanQueueCount > 0 && (
-        <div className="banner banner-warn banner-row" role="status">
-          <span>
-            {mealPlanQueueCount} meal log{mealPlanQueueCount === 1 ? '' : 's'} queued
-            {serverOnline ? ' — tap Sync now' : ' — will sync when online'}.
-          </span>
-          {serverOnline && (
+      {(mealPlanQueueCount > 0 || syncingMealPlanQueue) && (
+        <div className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}`}>
+          <div className="banner banner-warn banner-row" role="status">
+            <span>
+              {syncingMealPlanQueue && mealPlanSyncProgress
+                ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
+                : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued${serverOnline ? ' — tap Sync now' : ' — will sync when online'}.`}
+            </span>
+            {serverOnline && (
+              <button
+                type="button"
+                className="btn-small"
+                disabled={syncingMealPlanQueue}
+                onClick={() => void flushMealPlanQueue()}
+              >
+                {syncingMealPlanQueue ? 'Syncing…' : 'Sync now'}
+              </button>
+            )}
             <button
               type="button"
               className="btn-small"
+              aria-label="Dismiss meal plan log queue"
               disabled={syncingMealPlanQueue}
-              onClick={() => void flushMealPlanQueue()}
+              onClick={() => {
+                clearMealPlanQueue();
+                syncMealPlanQueueCount();
+                setMealPlanMessage('Meal plan log queue cleared');
+              }}
             >
-              {syncingMealPlanQueue ? 'Syncing…' : 'Sync now'}
+              Dismiss
             </button>
+          </div>
+          {syncingMealPlanQueue && mealPlanSyncProgress && mealPlanSyncProgress.total > 0 && (
+            <div
+              className="home-meal-plan-sync-progress"
+              role="progressbar"
+              aria-valuenow={mealPlanSyncProgress.done}
+              aria-valuemin={0}
+              aria-valuemax={mealPlanSyncProgress.total}
+              aria-label="Meal plan sync progress"
+            >
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${(mealPlanSyncProgress.done / mealPlanSyncProgress.total) * 100}%` }}
+                />
+              </div>
+            </div>
           )}
-          <button
-            type="button"
-            className="btn-small"
-            aria-label="Dismiss meal plan log queue"
-            onClick={() => {
-              clearMealPlanQueue();
-              syncMealPlanQueueCount();
-              setMealPlanMessage('Meal plan log queue cleared');
-            }}
-          >
-            Dismiss
-          </button>
         </div>
       )}
 
