@@ -3,6 +3,7 @@ export interface RingShareData {
   calories: { value: number; max: number };
   habits: { value: number; max: number };
   date?: string;
+  streakDays?: number;
 }
 
 const BG = '#0f172a';
@@ -12,6 +13,7 @@ const MUTED = '#94a3b8';
 const RING_HABITS = '#bf5af2';
 const RING_CALORIES = '#ff9500';
 const RING_PROTEIN = '#ff375f';
+const STREAK_OK = '#4ade80';
 
 function drawProgressRing(
   ctx: CanvasRenderingContext2D,
@@ -81,8 +83,27 @@ export function downloadRingShareCard(data: RingShareData): void {
   ctx.font = '22px system-ui, sans-serif';
   ctx.fillText(formatShareDate(data.date), width / 2, 108);
 
+  let ringsTop = 340;
+  if (data.streakDays != null && data.streakDays > 0) {
+    const streakLabel = `${data.streakDays}-day all-target streak`;
+    ctx.font = 'bold 20px system-ui, sans-serif';
+    const textW = ctx.measureText(streakLabel).width;
+    const pillW = textW + 32;
+    const pillH = 36;
+    const pillX = (width - pillW) / 2;
+    const pillY = 124;
+    ctx.fillStyle = 'rgba(74, 222, 128, 0.15)';
+    ctx.beginPath();
+    ctx.roundRect(pillX, pillY, pillW, pillH, 18);
+    ctx.fill();
+    ctx.fillStyle = STREAK_OK;
+    ctx.textAlign = 'center';
+    ctx.fillText(streakLabel, width / 2, pillY + 25);
+    ringsTop = 352;
+  }
+
   const cx = width / 2;
-  const cy = 340;
+  const cy = ringsTop;
   drawProgressRing(ctx, cx, cy, 118, 14, data.habits.value, data.habits.max, RING_HABITS);
   drawProgressRing(ctx, cx, cy, 94, 12, data.calories.value, data.calories.max, RING_CALORIES);
   drawProgressRing(ctx, cx, cy, 70, 10, data.protein.value, data.protein.max, RING_PROTEIN);

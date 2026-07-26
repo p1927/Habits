@@ -106,12 +106,22 @@ export function Home({ serverOnline }: HomeProps) {
     setSharingRings(true);
     setError('');
     try {
+      let streakDays = 0;
+      if (serverOnline) {
+        try {
+          const st = await api.getHabitStreaks();
+          streakDays = st.overall;
+        } catch {
+          /* use 0 when streaks unavailable */
+        }
+      }
       const { downloadRingShareCard } = await import('../lib/ringShareCard');
       downloadRingShareCard({
         protein: { value: food?.protein_g ?? 0, max: proteinTarget },
         calories: { value: food?.calories ?? 0, max: calTarget },
         habits: { value: habitPct, max: 100 },
         date: habits?.date || new Date().toISOString().slice(0, 10),
+        streakDays,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Share card export failed');
