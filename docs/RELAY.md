@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T01:40:00Z |
+| reviewed_at | 2026-07-27T01:42:00Z |
 | git_branch | main |
 | uncommitted_files | docs/RELAY.md checkpoint only |
-| where_we_are | Loop tick #24; relay-030 OFF macros offline queue shipped. |
+| where_we_are | Loop tick #25; relay-031 pull-to-refresh on Home shipped. |
 | blockers | [] |
-| confirmed_next | relay-031 Pull-to-refresh on Home |
-| brainstorm_notes | relay-030 done; next maintenance item |
+| confirmed_next | relay-032 Stale streak cache TTL |
+| brainstorm_notes | relay-031 done; next maintenance item |
 
 ---
 
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T01:40:00Z |
+| last_wake | 2026-07-27T01:42:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-031 Pull-to-refresh on Home |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-032 Stale streak cache TTL |
 | blockers | [] |
-| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, stopped — restart needed) |
+| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
 ---
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-031 | Pull-to-refresh on Home | maintenance
 - [ ] relay-032 | Stale streak cache TTL | maintenance
 - [ ] relay-033 | Recipe scan offline queue | maintenance
+- [ ] relay-034 | Haptic on streak badge fire tier | maintenance
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Haptic on streak badge | iOS | vibration on fire tier |
+| Desktop refresh button on Home | — | Fallback when no touch |
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-031 | done | build | e9b67a1 |
 | 2026-07-27 | relay-030 | done | build | d804b2c |
 | 2026-07-27 | relay-029 | done | build | beaf9c1 |
 | 2026-07-27 | relay-028 | done | build | 7710fa9 |
 | 2026-07-27 | relay-027 | done | build | f4ac0a0 |
 | 2026-07-27 | relay-026 | done | build + api import | 5e1756e |
-| 2026-07-27 | relay-025 | done | build | f6809c0 |
 
 ---
 
