@@ -91,6 +91,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [mealPlanQueueCount, setMealPlanQueueCount] = useState(() => getMealPlanQueue().length);
   const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
   const [mealPlanSyncProgress, setMealPlanSyncProgress] = useState<{ done: number; total: number } | null>(null);
+  const [failedMealPlanIds, setFailedMealPlanIds] = useState<Set<string>>(() => new Set());
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
   const syncMealPlanQueueCount = useCallback(() => {
@@ -174,6 +175,12 @@ export function Home({ serverOnline }: HomeProps) {
             continue;
           }
           removeMealPlanQueueItem(item.id);
+          setFailedMealPlanIds((prev) => {
+            if (!prev.has(item.id)) return prev;
+            const next = new Set(prev);
+            next.delete(item.id);
+            return next;
+          });
           lastSummary = summary;
           synced += 1;
           setMealPlanSyncProgress({ done: synced, total });
@@ -184,6 +191,7 @@ export function Home({ serverOnline }: HomeProps) {
           );
         } catch (e) {
           if (isOfflineError(e)) break;
+          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
           setError(e instanceof Error ? e.message : 'Meal plan sync failed');
           break;
         }
@@ -200,6 +208,10 @@ export function Home({ serverOnline }: HomeProps) {
     } finally {
       setSyncingMealPlanQueue(false);
       setMealPlanSyncProgress(null);
+      if (getMealPlanQueue().length === 0) {
+        setFailedMealPlanIds(new Set());
+        setError('');
+      }
     }
   }, [
     serverOnline,
@@ -416,10 +428,13 @@ export function Home({ serverOnline }: HomeProps) {
   const habitPct = habitCompletionPct(habits);
   const burn = estimateBurn(habits);
   const hasPendingMealPlanQueue = mealPlanQueueCount > 0 || syncingMealPlanQueue;
+  const failedMealPlanCount = getMealPlanQueue().filter((item) => failedMealPlanIds.has(item.id)).length;
   const mealPlanQueueBannerText =
     syncingMealPlanQueue && mealPlanSyncProgress
       ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
       : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued${
+          failedMealPlanCount > 0 ? ` · ${failedMealPlanCount} failed` : ''
+        }${
           mealPlan.length === 0 ? ' — no meals planned today' : ''
         }${serverOnline ? ' — tap Sync now' : ' — will sync when online'}.`;
 
@@ -458,9 +473,9 @@ export function Home({ serverOnline }: HomeProps) {
 
       {hasPendingMealPlanQueue ? (
         <div
-          className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}${mealPlan.length === 0 ? ' home-meal-plan-queue-panel--no-plan' : ''}`}
+          className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}${mealPlan.length === 0 ? ' home-meal-plan-queue-panel--no-plan' : ''}${failedMealPlanCount > 0 ? ' home-meal-plan-queue-panel--has-failed' : ''}`}
         >
-          <div className="banner banner-warn banner-row" role="status">
+          <div className={`banner banner-row${failedMealPlanCount > 0 ? ' banner-err' : ' banner-warn'}`} role="status">
             <span>{mealPlanQueueBannerText}</span>
             {serverOnline && (
               <button
@@ -479,6 +494,7 @@ export function Home({ serverOnline }: HomeProps) {
               disabled={syncingMealPlanQueue}
               onClick={() => {
                 clearMealPlanQueue();
+                setFailedMealPlanIds(new Set());
                 syncMealPlanQueueCount();
                 setMealPlanMessage('Meal plan log queue cleared');
               }}
