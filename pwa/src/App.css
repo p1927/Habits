@@ -1530,6 +1530,15 @@ button:disabled {
   gap: 0.5rem;
 }
 
+.recipe-photo-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  background: var(--surface2);
+}
+
 .off-product-card .off-product-name {
   margin: 0 0 0.25rem;
   font-weight: 600;

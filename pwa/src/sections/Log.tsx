@@ -13,7 +13,7 @@ import {
   type FoodTodayResponse,
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
-import { addMealPhoto } from '../lib/mealPhotos';
+import { addMealPhoto, getTodayMealPhotos } from '../lib/mealPhotos';
 import type { OffProduct } from '../lib/openFoodFacts';
 
 interface LogProps {
@@ -61,6 +61,7 @@ export function Log({ serverOnline }: LogProps) {
     items: { food: string; quantity_g: number; calories: number; protein: number }[];
     totals: { calories: number; protein: number } | null;
   } | null>(null);
+  const [recipePhoto, setRecipePhoto] = useState<string | null>(null);
   const searchTimer = useRef<number | null>(null);
 
   const { pending, logItem, logMeal, retry, dismiss, queuedCount } = useOptimisticFoodLog({
@@ -87,6 +88,13 @@ export function Log({ serverOnline }: LogProps) {
       void api.getSavedRecipe().then((r) => setRecipe(r.recipe)).catch(() => setRecipe(null));
     }
   }, [refresh, tab, serverOnline]);
+
+  useEffect(() => {
+    if (tab !== 'recipes') return;
+    const label = recipe?.name ?? 'Recipe';
+    const match = getTodayMealPhotos().find((p) => p.label === label);
+    setRecipePhoto(match?.dataUrl ?? null);
+  }, [tab, recipe?.name]);
 
   useEffect(() => {
     if (!foodName.trim() || foodName.length < 2) {
@@ -132,6 +140,14 @@ export function Log({ serverOnline }: LogProps) {
     const meal = mealType;
     setDescription('');
     await logMeal(desc, meal);
+  }
+
+  async function handleRecipePhoto(dataUrl: string) {
+    const label = recipe?.name ?? 'Recipe';
+    addMealPhoto(dataUrl, label);
+    setRecipePhoto(dataUrl);
+    setSuccess('Recipe photo saved — visible on Home');
+    setError('');
   }
 
   async function handleManualLog(e: React.FormEvent) {
@@ -395,49 +411,69 @@ export function Log({ serverOnline }: LogProps) {
       )}
 
       {tab === 'recipes' && (
-        <Card>
-          <h2>Saved recipe</h2>
-          <p className="muted">From Save Reciepe tab in Nutrition sheet</p>
-          {!recipe ? (
-            <p className="muted">No saved recipe found.</p>
-          ) : (
-            <>
-              <h3>{recipe.name}</h3>
-              <ul className="food-list">
-                {recipe.items.map((item) => (
-                  <li key={item.food} className="food-row">
-                    <strong>{item.food}</strong>
-                    <span className="muted">
-                      {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {recipe.totals && (
-                <p className="muted">
-                  Total: {recipe.totals.calories.toFixed(0)} kcal · {recipe.totals.protein.toFixed(1)}g protein
-                </p>
-              )}
-              <button
-                type="button"
-                disabled={!serverOnline || loading}
-                onClick={() => {
-                  setLoading(true);
-                  void api
-                    .logSavedRecipe()
-                    .then((res) => {
-                      setData(res.summary);
-                      setSuccess(res.message);
-                    })
-                    .catch((e) => setError(e instanceof Error ? e.message : 'Recipe log failed'))
-                    .finally(() => setLoading(false));
-                }}
-              >
-                Log entire recipe today
-              </button>
-            </>
-          )}
-        </Card>
+        <>
+          <Card>
+            <h2>Recipe photo</h2>
+            <p className="muted">Photograph your prepared meal — appears in Today&apos;s meal photos on Home</p>
+            {recipePhoto && (
+              <img
+                src={recipePhoto}
+                alt={recipe?.name ? `Photo of ${recipe.name}` : 'Recipe photo'}
+                className="recipe-photo-preview"
+              />
+            )}
+            <CameraCapture
+              facingMode="environment"
+              placeholder="Photograph your prepared recipe"
+              onCapture={(url) => void handleRecipePhoto(url)}
+              disabled={loading}
+            />
+          </Card>
+
+          <Card>
+            <h2>Saved recipe</h2>
+            <p className="muted">From Save Reciepe tab in Nutrition sheet</p>
+            {!recipe ? (
+              <p className="muted">No saved recipe found.</p>
+            ) : (
+              <>
+                <h3>{recipe.name}</h3>
+                <ul className="food-list">
+                  {recipe.items.map((item) => (
+                    <li key={item.food} className="food-row">
+                      <strong>{item.food}</strong>
+                      <span className="muted">
+                        {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {recipe.totals && (
+                  <p className="muted">
+                    Total: {recipe.totals.calories.toFixed(0)} kcal · {recipe.totals.protein.toFixed(1)}g protein
+                  </p>
+                )}
+                <button
+                  type="button"
+                  disabled={!serverOnline || loading}
+                  onClick={() => {
+                    setLoading(true);
+                    void api
+                      .logSavedRecipe()
+                      .then((res) => {
+                        setData(res.summary);
+                        setSuccess(res.message);
+                      })
+                      .catch((e) => setError(e instanceof Error ? e.message : 'Recipe log failed'))
+                      .finally(() => setLoading(false));
+                  }}
+                >
+                  Log entire recipe today
+                </button>
+              </>
+            )}
+          </Card>
+        </>
       )}
 
       {tab === 'history' && (
