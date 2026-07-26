@@ -11,14 +11,33 @@ export type VoiceIframeStatus =
 export interface VoiceIframeMessage {
   type: 'habits-voice';
   status: VoiceIframeStatus;
+  micActive?: boolean;
   detail?: string;
 }
 
 export function parseVoiceIframeMessage(data: unknown): VoiceIframeStatus | null {
   if (!data || typeof data !== 'object') return null;
   const msg = data as Record<string, unknown>;
-  if (msg.type !== 'habits-voice') return null;
-  const status = msg.status;
+
+  if (msg.type === 'habits-voice') {
+    if (msg.micActive === true) return 'listening';
+    if (typeof msg.status === 'string') return normalizeVoiceStatus(msg.status);
+  }
+
+  if (msg.source === 'local-voice-ai' && typeof msg.phase === 'string') {
+    return normalizeVoiceStatus(msg.phase);
+  }
+
+  if (msg.type === 'voice-status' && typeof msg.state === 'string') {
+    return normalizeVoiceStatus(msg.state);
+  }
+
+  return null;
+}
+
+function normalizeVoiceStatus(raw: string): VoiceIframeStatus | null {
+  const status = raw.toLowerCase();
+  if (status === 'mic_on' || status === 'mic-on' || status === 'recording') return 'listening';
   if (
     status === 'idle' ||
     status === 'connecting' ||

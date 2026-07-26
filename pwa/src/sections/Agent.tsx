@@ -1,16 +1,16 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
 import { getConfig } from '../lib/config';
 import { api, type FoodScanResult } from '../lib/api';
-import { toOrbVisual } from '../lib/voice-status';
+import { toOrbVisual, type VoiceIframeStatus } from '../lib/voice-status';
 import { addMealPhoto } from '../lib/mealPhotos';
-import { useVoiceIframeStatus } from '../hooks/useVoiceIframeStatus';
 import { AgentActionFeed } from '../components/AgentActionFeed';
 import { AgentContextPanel } from '../components/AgentContextPanel';
 import { VoiceEmbed } from '../components/VoiceEmbed';
 import { VoiceStatusOrb } from '../components/VoiceStatusOrb';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { useAgentContext } from '../hooks/useAgentContext';
+import { StreamingDots } from '../components/StreamingDots';
 
 interface AgentProps {
   serverOnline: boolean;
@@ -21,6 +21,13 @@ interface ChatMsg {
   content: string;
   imageUrl?: string;
 }
+
+const QUICK_PROMPTS = [
+  { label: 'Log food', text: 'Help me log what I ate today' },
+  { label: 'Habits', text: 'How am I doing on habits today?' },
+  { label: 'Schedule', text: 'Add a calendar event for tomorrow' },
+  { label: 'Health note', text: 'Add a note to my health cards' },
+] as const;
 
 function dataUrlToFile(dataUrl: string, name = 'chat-scan.jpg'): File {
   const [header, b64] = dataUrl.split(',');
@@ -47,13 +54,18 @@ export function Agent({ serverOnline }: AgentProps) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [voiceIframeStatus, setVoiceIframeStatus] = useState<VoiceIframeStatus | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [attachImage, setAttachImage] = useState<string | null>(null);
   const [error, setError] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
-  const iframeVoiceStatus = useVoiceIframeStatus(voiceUiUrl, voiceOpen);
-  const orbState = toOrbVisual(iframeVoiceStatus, serverOnline);
+
+  useEffect(() => {
+    if (!voiceOpen) setVoiceIframeStatus(null);
+  }, [voiceOpen]);
+
+  const orbState = toOrbVisual(voiceOpen ? voiceIframeStatus : null, serverOnline);
 
   const send = useCallback(async () => {
     const text = input.trim();
@@ -104,7 +116,7 @@ export function Agent({ serverOnline }: AgentProps) {
           <h1 id="agent-heading">Coach</h1>
           <p className="muted agent-subtitle">Chat, voice, and daily context</p>
         </div>
-        <VoiceStatusOrb state={voiceOpen ? orbState : toOrbVisual(null, serverOnline)} />
+        <VoiceStatusOrb state={orbState} />
       </header>
 
       {!serverOnline && (
@@ -127,7 +139,21 @@ export function Agent({ serverOnline }: AgentProps) {
             {m.content}
           </div>
         ))}
-        {loading && <div className="chat-bubble chat-bubble--assistant" role="status">Thinking…</div>}
+        {loading && <StreamingDots />}
+      </div>
+
+      <div className="agent-tool-chips" role="group" aria-label="Quick prompts">
+        {QUICK_PROMPTS.map(({ label, text }) => (
+          <button
+            key={label}
+            type="button"
+            className="agent-tool-chip"
+            disabled={!serverOnline || loading || scanning}
+            onClick={() => setInput(text)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {attachImage && (
@@ -189,7 +215,7 @@ export function Agent({ serverOnline }: AgentProps) {
         {!voiceUiUrl ? (
           <p className="muted">Set VITE_VOICE_UI_URL in config.</p>
         ) : (
-          <VoiceEmbed url={voiceUiUrl} agent="habits" />
+          <VoiceEmbed url={voiceUiUrl} agent="habits" onStatusChange={setVoiceIframeStatus} />
         )}
       </BottomSheet>
 

@@ -31,7 +31,10 @@ export function useVoiceIframeStatus(voiceUiUrl: string, enabled = true): VoiceI
     };
 
     window.addEventListener('message', onMessage);
-    return () => window.removeEventListener('message', onMessage);
+    return () => {
+      window.removeEventListener('message', onMessage);
+      setStatus(null);
+    };
   }, [voiceUiUrl, enabled]);
 
   return status;

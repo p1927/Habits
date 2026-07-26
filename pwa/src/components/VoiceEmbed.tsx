@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { VoiceIframeStatus } from '../lib/voice-status';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { parseVoiceIframeMessage, type VoiceIframeStatus } from '../lib/voice-status';
 
 interface VoiceEmbedProps {
   url: string;
@@ -11,6 +11,11 @@ interface VoiceEmbedProps {
 export function VoiceEmbed({ url, agent = 'habits', onStatusChange }: VoiceEmbedProps) {
   const [expanded, setExpanded] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const onStatusChangeRef = useRef(onStatusChange);
+
+  useEffect(() => {
+    onStatusChangeRef.current = onStatusChange;
+  }, [onStatusChange]);
 
   const src = useMemo(() => {
     if (!url) return '';
@@ -32,28 +37,30 @@ export function VoiceEmbed({ url, agent = 'habits', onStatusChange }: VoiceEmbed
     }
   }, [src]);
 
+  const sendSubscribe = useCallback(() => {
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: 'habits-voice-parent', action: 'subscribe' },
+      voiceOrigin,
+    );
+  }, [voiceOrigin]);
+
   useEffect(() => {
-    if (!onStatusChange || !voiceOrigin) return;
+    if (!onStatusChangeRef.current || !voiceOrigin) return;
 
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== voiceOrigin) return;
-      const data = event.data as { type?: string; status?: VoiceIframeStatus };
-      if (data?.type === 'habits-voice' && data.status) {
-        onStatusChange(data.status);
-      }
+      const status = parseVoiceIframeMessage(event.data);
+      if (status) onStatusChangeRef.current?.(status);
     };
 
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
-  }, [onStatusChange, voiceOrigin]);
+  }, [voiceOrigin]);
 
   useEffect(() => {
-    if (!iframeRef.current?.contentWindow || !voiceOrigin) return;
-    iframeRef.current.contentWindow.postMessage(
-      { type: 'habits-voice-parent', action: 'subscribe' },
-      voiceOrigin,
-    );
-  }, [src, voiceOrigin, expanded]);
+    if (!expanded) return;
+    sendSubscribe();
+  }, [src, voiceOrigin, expanded, sendSubscribe]);
 
   if (!src) return null;
 
@@ -75,6 +82,10 @@ export function VoiceEmbed({ url, agent = 'habits', onStatusChange }: VoiceEmbed
             title="Voice agent (local-voice-ai)"
             className="voice-embed"
             allow="microphone *; camera *; autoplay; display-capture"
+            onLoad={() => {
+              sendSubscribe();
+              onStatusChangeRef.current?.('connecting');
+            }}
           />
         </div>
       )}
