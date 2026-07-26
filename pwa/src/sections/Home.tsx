@@ -65,6 +65,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [habitWeek, setHabitWeek] = useState<HabitsWeekResponse | null>(null);
   const [decisionCard, setDecisionCard] = useState<FutureSelfCard | null>(null);
   const [error, setError] = useState('');
+  const [exporting, setExporting] = useState(false);
   const [mealPhotos, setMealPhotos] = useState<MealPhoto[]>(() => getTodayMealPhotos());
 
   const refresh = useCallback(async () => {
@@ -100,6 +101,32 @@ export function Home({ serverOnline }: HomeProps) {
     return () => window.clearInterval(id);
   }, [refresh]);
 
+  async function handleExportWeekPdf() {
+    if (!serverOnline) return;
+    setExporting(true);
+    setError('');
+    try {
+      const [hist, week, streaks, targets] = await Promise.all([
+        api.getFoodHistory(7),
+        api.getHabitsWeek(),
+        api.getHabitStreaks(),
+        api.getFoodTargets(),
+      ]);
+      const { downloadWeekReportPdf } = await import('../lib/weekReportPdf');
+      downloadWeekReportPdf({
+        foodDays: hist.days,
+        habitWeek: week,
+        streaks,
+        calorieTarget: targets.calorie_target ?? 2200,
+        proteinTarget: targets.protein_target_g ?? 150,
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'PDF export failed');
+    } finally {
+      setExporting(false);
+    }
+  }
+
   async function handleAcceptCard() {
     if (!decisionCard) return;
     try {
@@ -123,6 +150,23 @@ export function Home({ serverOnline }: HomeProps) {
       {!serverOnline && (
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
+
+      <Card className="home-export-card">
+        <div className="home-export-row">
+          <div>
+            <h2>Weekly report</h2>
+            <p className="muted">Download nutrition and habit summary as PDF</p>
+          </div>
+          <button
+            type="button"
+            className="btn-small"
+            disabled={!serverOnline || exporting}
+            onClick={() => void handleExportWeekPdf()}
+          >
+            {exporting ? 'Exporting…' : 'Export PDF'}
+          </button>
+        </div>
+      </Card>
 
       <Card className="home-rings-card">
         <ActivityRings
