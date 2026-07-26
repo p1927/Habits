@@ -413,6 +413,18 @@ export function Log({ serverOnline }: LogProps) {
   }, [refresh, tab, loadSavedRecipe, loadMealPlan]);
 
   useEffect(() => {
+    if (tab !== 'mealplan' || !serverOnline) return;
+    void flushMealPlanQueue();
+  }, [tab, serverOnline, flushMealPlanQueue]);
+
+  useEffect(() => {
+    if (tab !== 'mealplan') return;
+    const onOnline = () => void flushMealPlanQueue();
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, [tab, flushMealPlanQueue]);
+
+  useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (!(e.metaKey || e.ctrlKey)) return;
       const num = Number.parseInt(e.key, 10);

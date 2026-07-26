@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:16:00Z |
+| reviewed_at | 2026-07-27T02:36:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #42; relay-048 meal plan offline queue shipped. |
+| where_we_are | Loop tick #61; relay-068 Log Plan auto-sync on online shipped. |
 | blockers | [] |
-| confirmed_next | relay-049 Home meal plan widget |
-| brainstorm_notes | relay-048 done; meal plan cache + queue on Day |
+| confirmed_next | relay-069 Home meal plan empty queue hint |
+| brainstorm_notes | relay-068 done; Plan tab flushes queue when online or on tab focus |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:16:00Z |
+| last_wake | 2026-07-27T02:36:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-049 Home meal plan widget |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-069 Home meal plan empty queue hint |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-049 | Home meal plan widget | feature
-- [ ] relay-050 | OFF log undo support | maintenance
-- [ ] relay-051 | Meal plan queue retry UI | maintenance
+- [ ] relay-069 | Home meal plan empty queue hint | maintenance
+- [ ] relay-070 | Queue badge hide when on active tab | maintenance
 
 ---
 
@@ -50,7 +49,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Collapsible streak legend | — | Hide after first visit |
+| — | — | — |
 
 ---
 
@@ -58,12 +57,13 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-048 | done | build | pending |
-| 2026-07-27 | relay-047 | done | build | 340fdcc |
-| 2026-07-27 | relay-046 | done | build | 092973a |
-| 2026-07-27 | relay-045 | done | build+import | ccde35c |
-| 2026-07-27 | relay-044 | done | build | 0128f6f |
-| 2026-07-27 | relay-043 | done | build | d530f03 |
+| 2026-07-27 | relay-068 | done | build | — |
+| 2026-07-27 | relay-067 | done | build | f7772b4 |
+| 2026-07-27 | relay-066 | done | build | ee334bd |
+| 2026-07-27 | relay-065 | done | build | f53b3b5 |
+| 2026-07-27 | relay-064 | done | build | ccbef45 |
+| 2026-07-27 | relay-063 | done | build | 14e1376 |
+| 2026-07-27 | relay-062 | done | build | b24bd2e |
 
 ---
 
