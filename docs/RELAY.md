@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T01:48:00Z |
+| reviewed_at | 2026-07-27T01:50:00Z |
 | git_branch | main |
 | uncommitted_files | docs/RELAY.md checkpoint only |
-| where_we_are | Loop tick #28; relay-034 fire-tier streak haptic shipped. |
+| where_we_are | Loop tick #29; relay-035 desktop refresh button on Home shipped. |
 | blockers | [] |
-| confirmed_next | relay-035 Desktop refresh button on Home |
-| brainstorm_notes | relay-034 done; next maintenance item |
+| confirmed_next | relay-036 Recipe scan queue dismiss button |
+| brainstorm_notes | relay-035 done; next maintenance item |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T01:48:00Z |
+| last_wake | 2026-07-27T01:50:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-035 Desktop refresh button on Home |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-036 Recipe scan queue dismiss button |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-035 | Desktop refresh button on Home | maintenance
 - [ ] relay-036 | Recipe scan queue dismiss button | maintenance
 - [ ] relay-037 | Per-metric fire streak haptic | maintenance
+- [ ] relay-038 | Home refresh keyboard shortcut | maintenance
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Hot tier single pulse haptic | — | Lighter feedback at 7d |
+| Refresh icon instead of text | — | Compact header button |
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-034 | done | build | pending |
+| 2026-07-27 | relay-035 | done | build | pending |
+| 2026-07-27 | relay-034 | done | build | 4dcb101 |
 | 2026-07-27 | relay-033 | done | build | 1cb16cb |
 | 2026-07-27 | relay-032 | done | build | cf359c8 |
 | 2026-07-27 | relay-031 | done | build | e9b67a1 |
 | 2026-07-27 | relay-030 | done | build | d804b2c |
-| 2026-07-27 | relay-029 | done | build | beaf9c1 |
 
 ---
 
