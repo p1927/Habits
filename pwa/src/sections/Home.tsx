@@ -149,19 +149,33 @@ export function Home({ serverOnline }: HomeProps) {
 
     setSyncingMealPlanQueue(true);
     setError('');
+    dismissMealPlanUndo();
     let synced = 0;
+    const labels: string[] = [];
+    let lastSummary: FoodTodayResponse | null = null;
+
     try {
+      const before = food ?? (await api.getFoodToday());
+      const beforeRows = snapshotFoodRows(before);
+
       for (const item of queue) {
         try {
+          let summary: FoodTodayResponse | null = null;
           if (item.kind === 'all') {
-            await api.logMealPlanToday();
+            summary = (await api.logMealPlanToday()).summary;
           } else if (item.meal) {
-            await api.logMealPlanItem(item.meal);
+            summary = (await api.logMealPlanItem(item.meal)).summary;
           } else {
             continue;
           }
           removeMealPlanQueueItem(item.id);
+          lastSummary = summary;
           synced += 1;
+          labels.push(
+            item.kind === 'all'
+              ? 'All planned meals'
+              : item.label ?? item.meal ?? 'Meal',
+          );
         } catch (e) {
           if (isOfflineError(e)) break;
           setError(e instanceof Error ? e.message : 'Meal plan sync failed');
@@ -169,14 +183,26 @@ export function Home({ serverOnline }: HomeProps) {
         }
       }
       syncMealPlanQueueCount();
-      if (synced > 0) {
-        setMealPlanMessage(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
+      if (synced > 0 && lastSummary) {
+        const label = synced === 1 ? labels[0]! : `${synced} queued meal logs`;
+        if (!offerUndoFromSummary(beforeRows, lastSummary, label)) {
+          setMealPlanMessage(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
+        }
+        setFood(lastSummary);
         void refresh();
       }
     } finally {
       setSyncingMealPlanQueue(false);
     }
-  }, [serverOnline, syncMealPlanQueueCount, refresh]);
+  }, [
+    serverOnline,
+    syncMealPlanQueueCount,
+    refresh,
+    food,
+    dismissMealPlanUndo,
+    snapshotFoodRows,
+    offerUndoFromSummary,
+  ]);
 
   const { pullProgress, refreshing, triggerRefresh } = usePullToRefresh({
     onRefresh: refresh,

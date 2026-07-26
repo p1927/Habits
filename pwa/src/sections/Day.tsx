@@ -3,7 +3,7 @@ import { Card } from '../components/ui/Card';
 import { UndoToast } from '../components/UndoToast';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
-import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
+import { api, ApiError, type FoodTodayResponse, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
 import {
   cacheMealPlan,
@@ -93,6 +93,11 @@ function mealPlanQueueLabel(item: QueuedMealPlanLog): string {
   return item.label ?? item.meal ?? 'Meal';
 }
 
+function mealPlanSyncUndoLabel(synced: number, labels: string[]): string {
+  if (synced === 1) return labels[0] ?? 'Queued meal';
+  return `${synced} queued meal logs`;
+}
+
 export function Day({ serverOnline }: DayProps) {
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [events, setEvents] = useState<{ id: string; summary: string; start: string }[]>([]);
@@ -160,13 +165,14 @@ export function Day({ serverOnline }: DayProps) {
   }, []);
 
   const syncOneMealPlanItem = useCallback(
-    async (item: QueuedMealPlanLog): Promise<boolean> => {
+    async (item: QueuedMealPlanLog): Promise<FoodTodayResponse | null> => {
+      let summary: FoodTodayResponse | null = null;
       if (item.kind === 'all') {
-        await api.logMealPlanToday();
+        summary = (await api.logMealPlanToday()).summary;
       } else if (item.meal) {
-        await api.logMealPlanItem(item.meal);
+        summary = (await api.logMealPlanItem(item.meal)).summary;
       } else {
-        return false;
+        return null;
       }
       removeMealPlanQueueItem(item.id);
       setFailedMealPlanIds((prev) => {
@@ -175,7 +181,7 @@ export function Day({ serverOnline }: DayProps) {
         next.delete(item.id);
         return next;
       });
-      return true;
+      return summary;
     },
     [],
   );
@@ -185,32 +191,64 @@ export function Day({ serverOnline }: DayProps) {
     const queue = getMealPlanQueue();
     if (!queue.length) return;
 
+    dismissMealPlanUndo();
     let synced = 0;
-    for (const item of queue) {
-      try {
-        if (await syncOneMealPlanItem(item)) synced += 1;
-      } catch (e) {
-        if (isOfflineError(e)) break;
-        setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
-        setError(e instanceof Error ? e.message : 'Meal plan sync failed');
-        break;
+    const labels: string[] = [];
+    let lastSummary: FoodTodayResponse | null = null;
+
+    try {
+      const before = await api.getFoodToday();
+      const beforeRows = snapshotFoodRows(before);
+
+      for (const item of queue) {
+        try {
+          const summary = await syncOneMealPlanItem(item);
+          if (summary) {
+            lastSummary = summary;
+            synced += 1;
+            labels.push(mealPlanQueueLabel(item));
+          }
+        } catch (e) {
+          if (isOfflineError(e)) break;
+          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
+          setError(e instanceof Error ? e.message : 'Meal plan sync failed');
+          break;
+        }
       }
+      syncMealPlanQueue();
+      if (synced > 0 && lastSummary) {
+        const label = mealPlanSyncUndoLabel(synced, labels);
+        if (!offerUndoFromSummary(beforeRows, lastSummary, label)) {
+          setMealSuccess(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
+        }
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Meal plan sync failed');
     }
-    syncMealPlanQueue();
-    if (synced > 0) {
-      setMealSuccess(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
-    }
-  }, [serverOnline, syncMealPlanQueue, syncOneMealPlanItem]);
+  }, [
+    serverOnline,
+    syncMealPlanQueue,
+    syncOneMealPlanItem,
+    dismissMealPlanUndo,
+    snapshotFoodRows,
+    offerUndoFromSummary,
+  ]);
 
   const retryMealPlanItem = useCallback(
     async (item: QueuedMealPlanLog) => {
       if (!serverOnline || retryingMealPlanId) return;
       setRetryingMealPlanId(item.id);
       setError('');
+      dismissMealPlanUndo();
       try {
-        if (await syncOneMealPlanItem(item)) {
+        const before = await api.getFoodToday();
+        const summary = await syncOneMealPlanItem(item);
+        if (summary) {
           syncMealPlanQueue();
-          setMealSuccess(`Logged ${mealPlanQueueLabel(item)}`);
+          const label = mealPlanQueueLabel(item);
+          if (!offerUndoFromSummary(snapshotFoodRows(before), summary, label)) {
+            setMealSuccess(`Logged ${label}`);
+          }
         }
       } catch (e) {
         if (isOfflineError(e)) {
@@ -223,7 +261,7 @@ export function Day({ serverOnline }: DayProps) {
         setRetryingMealPlanId(null);
       }
     },
-    [serverOnline, retryingMealPlanId, syncMealPlanQueue, syncOneMealPlanItem],
+    [serverOnline, retryingMealPlanId, syncMealPlanQueue, syncOneMealPlanItem, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary],
   );
 
   const dismissMealPlanItem = useCallback(
