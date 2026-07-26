@@ -117,7 +117,7 @@ function App() {
         <nav className="tab-bar" aria-label="Main">
           {TABS.map((t) => {
             const showQueueBadge =
-              mealPlanQueueCount > 0 && (t.id === 'home' || t.id === 'day');
+              mealPlanQueueCount > 0 && (t.id === 'home' || t.id === 'log' || t.id === 'day');
             return (
             <button
               key={t.id}
