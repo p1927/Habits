@@ -10,6 +10,7 @@ import {
   type FoodTodayResponse,
   type FutureSelfCard,
   type HabitsTodayResponse,
+  type HabitsWeekResponse,
 } from '../lib/api';
 
 interface HomeProps {
@@ -25,6 +26,13 @@ const MET_TARGETS: Record<string, number> = {
   game: 0,
   wasted: 0,
 };
+
+const HABIT_SPARKLINES = [
+  { key: 'sleep', label: 'Sleep', target: 7, color: 'var(--ring-habits)' },
+  { key: 'work', label: 'Work', target: 4, color: 'var(--accent)' },
+  { key: 'read', label: 'Read', target: 1, color: 'var(--ok)' },
+  { key: 'speak', label: 'Speak', target: 0.5, color: 'var(--warn)' },
+] as const;
 
 function estimateBurn(habits: HabitsTodayResponse | null): number {
   if (!habits?.metrics) return 0;
@@ -52,6 +60,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [history, setHistory] = useState<FoodHistoryDay[]>([]);
   const [calTarget, setCalTarget] = useState(2200);
+  const [habitWeek, setHabitWeek] = useState<HabitsWeekResponse | null>(null);
   const [decisionCard, setDecisionCard] = useState<FutureSelfCard | null>(null);
   const [error, setError] = useState('');
 
@@ -59,16 +68,18 @@ export function Home({ serverOnline }: HomeProps) {
     if (!serverOnline) return;
     setError('');
     try {
-      const [f, h, hist, targets, cards] = await Promise.all([
+      const [f, h, hist, targets, cards, week] = await Promise.all([
         api.getFoodToday(),
         api.getHabitsToday(),
         api.getFoodHistory(7),
         api.getFoodTargets(),
         api.getFutureSelfCards(true),
+        api.getHabitsWeek(),
       ]);
       setFood(f);
       setHabits(h);
       setHistory(hist.days);
+      setHabitWeek(week);
       setCalTarget(targets.calorie_target ?? 2200);
       if (cards.cards.length > 0) {
         setDecisionCard(cards.cards[0]);
@@ -133,6 +144,35 @@ export function Home({ serverOnline }: HomeProps) {
             {history.map((d) => (
               <span key={d.date}>{d.date.slice(5)}</span>
             ))}
+          </div>
+        </Card>
+      )}
+
+      {habitWeek && habitWeek.recent_days.length > 1 && (
+        <Card>
+          <h2>7-day habits</h2>
+          <p className="muted">Daily hours vs your targets</p>
+          <div className="habit-spark-grid">
+            {HABIT_SPARKLINES.map(({ key, label, target, color }) => {
+              const series = habitWeek.recent_days.map((d) => d.metrics[key] ?? 0);
+              const avg = habitWeek.averages[key];
+              return (
+                <div key={key} className="habit-spark-row">
+                  <div className="habit-spark-header">
+                    <span>{label}</span>
+                    <span className="muted">
+                      avg {avg != null ? `${avg}h` : '—'} / {target}h
+                    </span>
+                  </div>
+                  <Sparkline data={series} color={color} height={36} />
+                  <div className="sparkline-labels">
+                    {habitWeek.recent_days.map((d) => (
+                      <span key={d.date}>{d.date.slice(5)}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </Card>
       )}

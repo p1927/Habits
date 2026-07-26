@@ -93,6 +93,18 @@ export interface FutureSelfCard {
   image_prompt?: string;
 }
 
+export interface HabitsWeekDay {
+  date: string;
+  weekday: string;
+  metrics: Record<string, number | null>;
+}
+
+export interface HabitsWeekResponse {
+  days_tracked: number;
+  averages: Record<string, number | null>;
+  recent_days: HabitsWeekDay[];
+}
+
 export interface HabitsTodayResponse {
   date: string;
   row: number | null;
@@ -209,10 +221,7 @@ export const api = {
       body: JSON.stringify({ photo_base64, habit_id }),
     }),
   getHabitsToday: () => request<HabitsTodayResponse>('/api/habits/today'),
-  getHabitsWeek: () =>
-    request<{ days_tracked: number; averages: Record<string, number | null>; recent_days: unknown[] }>(
-      '/api/habits/week',
-    ),
+  getHabitsWeek: () => request<HabitsWeekResponse>('/api/habits/week'),
   updateHabitMetric: (metric: string, value: number | null) =>
     request<HabitsTodayResponse>(`/api/habits/today/${metric}`, {
       method: 'PUT',
