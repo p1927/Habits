@@ -5,6 +5,7 @@ import {
   getFoodLogQueue,
   isOfflineError,
   removeFoodLogQueueItem,
+  clearFoodLogQueue,
   type QueuedFoodLog,
 } from '../lib/foodQueue';
 
@@ -252,5 +253,20 @@ export function useOptimisticFoodLog({
     setPending((p) => p.filter((x) => x.id !== id));
   }, []);
 
-  return { pending, logItem, logMeal, logMacros, retry, dismiss, flushQueue, queuedCount: pending.filter((x) => x.status === 'queued').length };
+  const dismissAllQueued = useCallback(() => {
+    clearFoodLogQueue();
+    setPending((p) => p.filter((x) => x.status !== 'queued'));
+  }, []);
+
+  return {
+    pending,
+    logItem,
+    logMeal,
+    logMacros,
+    retry,
+    dismiss,
+    dismissAllQueued,
+    flushQueue,
+    queuedCount: pending.filter((x) => x.status === 'queued').length,
+  };
 }

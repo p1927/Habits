@@ -78,7 +78,7 @@ export function Log({ serverOnline }: LogProps) {
   const [recipeScanQueueCount, setRecipeScanQueueCount] = useState(() => getRecipeScanQueue().length);
   const searchTimer = useRef<number | null>(null);
 
-  const { pending, logItem, logMeal, logMacros, retry, dismiss, queuedCount } = useOptimisticFoodLog({
+  const { pending, logItem, logMeal, logMacros, retry, dismiss, dismissAllQueued, queuedCount } = useOptimisticFoodLog({
     serverOnline,
     setData,
     setSuccess,
@@ -119,6 +119,11 @@ export function Log({ serverOnline }: LogProps) {
     syncRecipeScanQueueCount();
     setSuccess('Recipe scan queue cleared');
   }, [syncRecipeScanQueueCount]);
+
+  const dismissFoodLogQueue = useCallback(() => {
+    dismissAllQueued();
+    setSuccess('Offline food log queue cleared');
+  }, [dismissAllQueued]);
 
   const processRecipeScanQueue = useCallback(async () => {
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
@@ -356,8 +361,18 @@ export function Log({ serverOnline }: LogProps) {
       <p className="muted">Scan, type, or review history</p>
 
       {queuedCount > 0 && (
-        <div className="banner banner-warn" role="status">
-          {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
+        <div className="banner banner-warn banner-row" role="status">
+          <span>
+            {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
+          </span>
+          <button
+            type="button"
+            className="btn-small"
+            aria-label="Dismiss offline food log queue"
+            onClick={dismissFoodLogQueue}
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
