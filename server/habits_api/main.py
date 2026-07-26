@@ -8,12 +8,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from habits_api.config import Settings, load_settings
 from habits_api.db import TokenDB
+from habits_api.routes import agent as agent_router
 from habits_api.routes import api as api_router
 from habits_api.routes import calendar as calendar_router
+from habits_api.routes import cards as cards_router
+from habits_api.routes import day as day_router
 from habits_api.routes import food as food_router
+from habits_api.routes import food_extensions as food_ext_router
 from habits_api.routes import future_self as future_self_router
 from habits_api.routes import habits as habits_router
-from habits_api.routes import voice as voice_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -36,11 +39,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(api_router.router)
-    app.include_router(voice_router.router)
     app.include_router(food_router.router)
+    app.include_router(food_ext_router.router)
     app.include_router(habits_router.router)
     app.include_router(future_self_router.router)
     app.include_router(calendar_router.router)
+    app.include_router(day_router.router)
+    app.include_router(cards_router.router)
+    app.include_router(agent_router.router)
     return app
 
 

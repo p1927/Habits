@@ -349,3 +349,72 @@ async def search_food_db(settings: Settings, db: TokenDB, query: str) -> list[di
             e = next(x for x in entries if x.name == match)
             results = [{"name": e.name, "ref_grams": e.ref_grams, "protein": e.protein, "calories": e.calories}]
     return results[:20]
+
+
+async def get_food_history(settings: Settings, db: TokenDB, days: int = 7) -> dict:
+    """Read Followed tab: date, calories, carbs, protein, fat."""
+    connected = await db.google_connected()
+    if not connected:
+        return {"days": [], "sheets_connected": False}
+
+    rows = await read_range(
+        settings,
+        db,
+        settings.habits_sheet_nutrition,
+        settings.habits_tab_food_history,
+        "A3:F500",
+    )
+    from datetime import date, datetime
+
+    history: list[dict] = []
+    for row in rows:
+        if not row or not row[0]:
+            continue
+        d = row[0]
+        if isinstance(d, datetime):
+            day_str = d.date().isoformat()
+        elif isinstance(d, date):
+            day_str = d.isoformat()
+        else:
+            try:
+                day_str = datetime.fromisoformat(str(d)[:10]).date().isoformat()
+            except ValueError:
+                continue
+        calories = _float(row[2] if len(row) > 2 else 0)
+        if calories <= 0:
+            continue
+        history.append({
+            "date": day_str,
+            "calories": round(calories, 1),
+            "carbs": round(_float(row[3] if len(row) > 3 else 0), 1),
+            "protein": round(_float(row[4] if len(row) > 4 else 0), 1),
+            "fat": round(_float(row[5] if len(row) > 5 else 0), 1),
+        })
+
+    history.sort(key=lambda x: x["date"], reverse=True)
+    sliced = history[:days]
+    sliced.reverse()
+    return {"days": sliced, "sheets_connected": True}
+
+
+async def get_body_targets(settings: Settings, db: TokenDB) -> dict:
+    physio = await read_key_value_block(
+        settings,
+        db,
+        settings.habits_sheet_nutrition,
+        settings.habits_tab_body_config,
+        "A1:C30",
+    )
+    def _num(key: str, default: float | None = None) -> float | None:
+        if key not in physio:
+            return default
+        try:
+            return float(str(physio[key]).replace("g", "").replace("kg", "").strip())
+        except ValueError:
+            return default
+
+    return {
+        "weight_kg": _num("Weight"),
+        "protein_target_g": _num("Protein target") or _num("Protein target (g)"),
+        "calorie_target": _num("Calorie target") or _num("Calories target") or 2200.0,
+    }

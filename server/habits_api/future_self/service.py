@@ -144,6 +144,59 @@ async def get_card_deck(settings: Settings, db: TokenDB, with_images: bool = Fal
     return {"cards": cards, "summary": data.get("summary", "")}
 
 
+async def generate_projections(
+    settings: Settings,
+    db: TokenDB,
+    photo_base64: str,
+    habit_id: str = "general",
+) -> dict[str, Any]:
+    """Generate decline vs accept future-self images from baseline photo."""
+    await db.set_setting_cache("baseline_photo", photo_base64)
+
+    decline_prompt = (
+        "Photorealistic full-body portrait of the same person, 6 months later after bad habits: "
+        "sedentary lifestyle, poor sleep, skipped workouts, unhealthy weight gain, tired expression, "
+        "slouched posture, realistic lighting"
+    )
+    accept_prompt = (
+        "Photorealistic full-body portrait of the same person, 6 months later after disciplined habits: "
+        "consistent gym, good nutrition, lean athletic physique, confident posture, energized expression, "
+        "realistic lighting"
+    )
+
+    if habit_id == "sleep":
+        decline_prompt += ", dark circles, exhausted"
+        accept_prompt += ", well rested, vibrant"
+    elif habit_id == "work":
+        decline_prompt += ", stressed, cluttered environment"
+        accept_prompt += ", focused, organized workspace"
+    elif habit_id == "protein":
+        decline_prompt += ", soft physique, fast food"
+        accept_prompt += ", muscular definition, healthy meal"
+
+    decline_url = await generate_body_image(settings, decline_prompt)
+    accept_url = await generate_body_image(settings, accept_prompt)
+
+    return {
+        "baseline_photo_stored": True,
+        "habit_id": habit_id,
+        "decline_outcome": {
+            "label": "If you decline today's habit",
+            "image_url": decline_url,
+            "prompt": decline_prompt,
+        },
+        "accept_outcome": {
+            "label": "If you accept today's habit",
+            "image_url": accept_url,
+            "prompt": accept_prompt,
+        },
+    }
+
+
+async def get_baseline_photo(db: TokenDB) -> str | None:
+    return await db.get_setting_cache("baseline_photo")
+
+
 async def accept_card(settings: Settings, db: TokenDB, card_id: str) -> dict:
     mapping = {
         "sleep": ("sleep", 7.0),

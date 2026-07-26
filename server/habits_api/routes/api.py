@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -9,6 +10,7 @@ from pydantic import BaseModel, Field
 from habits_api.auth import require_admin, require_bearer
 from habits_api.config import Settings
 from habits_api.db import TokenDB
+from habits_api.google.oauth_store import pop_flow, store_flow
 from habits_api.google.sheets import oauth_flow
 from habits_api.routes import settings as settings_routes
 
@@ -59,7 +61,8 @@ async def auth_google(settings: Settings = Depends(get_settings)):
     if not settings.google_client_id:
         raise HTTPException(503, "Google OAuth not configured")
     flow = oauth_flow(settings)
-    url, _ = flow.authorization_url(access_type="offline", prompt="consent")
+    url, state = flow.authorization_url(access_type="offline", prompt="consent")
+    store_flow(state, flow)
     return RedirectResponse(url)
 
 
@@ -71,8 +74,20 @@ async def auth_callback(
 ):
     if not settings.google_client_id:
         raise HTTPException(503, "Google OAuth not configured")
-    flow = oauth_flow(settings)
-    flow.fetch_token(authorization_response=str(request.url))
+
+    query = parse_qs(urlparse(str(request.url)).query)
+    state = query.get("state", [None])[0]
+    if not state:
+        raise HTTPException(400, "Missing OAuth state")
+    flow = pop_flow(state)
+    if not flow:
+        raise HTTPException(400, "OAuth session expired — start Connect Google again")
+
+    try:
+        flow.fetch_token(authorization_response=str(request.url))
+    except Exception as exc:
+        raise HTTPException(400, f"Google OAuth failed: {exc}") from exc
+
     creds = flow.credentials
     if not creds or not creds.refresh_token:
         raise HTTPException(400, "No refresh token — revoke app access and retry")

@@ -41,15 +41,15 @@ class Settings(BaseSettings):
     habits_tab_strategy: str = "Strategy"
     habits_tab_notes: str = "Notes"
     habits_tab_sickness: str = "Sickness"
+    habits_tab_manage_day: str = "Manage Day"
+
+    # Burn estimate MET factors (kcal per hour)
+    burn_met_work: float = 3.5
+    burn_met_read: float = 1.3
 
     minimax_api_key: str = ""
     minimax_base_url: str = "https://api.minimax.io/v1"
     minimax_model: str = "MiniMax-M2.7"
-
-    livekit_url: str = "ws://livekit:7880"
-    livekit_public_url: str = "ws://localhost:7880"
-    livekit_api_key: str = "devkey"
-    livekit_api_secret: str = "secret"
 
     @property
     def cors_origins(self) -> list[str]:

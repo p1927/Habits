@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from typing import Any
 
 from google.oauth2.credentials import Credentials
@@ -45,6 +46,8 @@ def _client_config(settings: Settings) -> dict[str, Any]:
 
 
 def oauth_flow(settings: Settings) -> Flow:
+    if settings.google_redirect_uri.startswith("http://"):
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
     return Flow.from_client_config(
         _client_config(settings),
         scopes=SCOPES,
