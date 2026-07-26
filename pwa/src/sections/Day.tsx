@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { Card } from '../components/ui/Card';
+import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
 import { UndoToast } from '../components/UndoToast';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
@@ -584,7 +585,9 @@ export function Day({ serverOnline }: DayProps) {
           </ul>
           )}
         </div>
-      ) : null}
+      ) : (
+        <MealPlanQueueEmptyHint />
+      )}
 
       <Card>
         <h2>Today&apos;s meal plan</h2>

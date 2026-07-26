@@ -3,6 +3,7 @@ import { CameraCapture } from '../components/CameraCapture';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { UndoToast } from '../components/UndoToast';
+import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import {
@@ -1097,7 +1098,7 @@ export function Log({ serverOnline }: LogProps) {
 
       {tab === 'mealplan' && (
         <>
-          {(mealPlanQueueCount > 0 || syncingMealPlanQueue) && (
+          {(mealPlanQueueCount > 0 || syncingMealPlanQueue) ? (
             <div
               className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}`}
             >
@@ -1148,6 +1149,8 @@ export function Log({ serverOnline }: LogProps) {
                 </div>
               )}
             </div>
+          ) : (
+            <MealPlanQueueEmptyHint />
           )}
         <Card>
           <h2>Today&apos;s meal plan</h2>
