@@ -11,6 +11,7 @@ import {
   type FoodSearchResult,
   type FoodTodayResponse,
 } from '../lib/api';
+import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 
 interface LogProps {
   serverOnline: boolean;
@@ -57,6 +58,12 @@ export function Log({ serverOnline }: LogProps) {
     totals: { calories: number; protein: number } | null;
   } | null>(null);
   const searchTimer = useRef<number | null>(null);
+
+  const { pending, logItem, logMeal, retry, dismiss } = useOptimisticFoodLog({
+    setData,
+    setSuccess,
+    setError,
+  });
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -107,53 +114,28 @@ export function Log({ serverOnline }: LogProps) {
   }
 
   async function logScan(name: string, qty: number) {
-    setLoading(true);
-    try {
-      const res = await api.logFoodItem(name, qty);
-      setData(res.summary);
-      setSuccess(res.message);
-      setScanResult(null);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Log failed');
-    } finally {
-      setLoading(false);
-    }
+    setScanResult(null);
+    await logItem(name, qty);
   }
 
   async function handleVoiceLog(e: React.FormEvent) {
     e.preventDefault();
     if (!description.trim()) return;
-    setLoading(true);
-    setError('');
     setSuccess('');
-    try {
-      const res = await api.logFood(description.trim(), mealType);
-      setData(res.summary);
-      setDescription('');
-      setSuccess(res.message);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Log failed');
-    } finally {
-      setLoading(false);
-    }
+    const desc = description.trim();
+    const meal = mealType;
+    setDescription('');
+    await logMeal(desc, meal);
   }
 
   async function handleManualLog(e: React.FormEvent) {
     e.preventDefault();
     const qty = Number.parseFloat(quantity);
     if (!foodName.trim() || !qty) return;
-    setLoading(true);
-    try {
-      const res = await api.logFoodItem(foodName.trim(), qty);
-      setData(res.summary);
-      setFoodName('');
-      setSearchResults([]);
-      setSuccess(res.message);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Log failed');
-    } finally {
-      setLoading(false);
-    }
+    const name = foodName.trim();
+    setFoodName('');
+    setSearchResults([]);
+    await logItem(name, qty);
   }
 
   async function handleDelete(row: number) {
@@ -279,11 +261,35 @@ export function Log({ serverOnline }: LogProps) {
 
           <Card>
             <h2>Today&apos;s log</h2>
-            {!data?.items.length ? (
+            {!pending.length && !data?.items.length ? (
               <p className="muted">No entries yet.</p>
             ) : (
               <ul className="food-list">
-                {data.items.map((item: FoodLogItem) => (
+                {pending.map((entry) => (
+                  <li
+                    key={entry.id}
+                    className={`food-row food-row--${entry.status}`}
+                  >
+                    <div>
+                      <strong>{entry.food}</strong>
+                      <span className="muted">
+                        {entry.quantity_g > 0 ? ` · ${entry.quantity_g}g` : ''}
+                        {entry.status === 'pending' ? ' · Saving…' : ' · Failed to save'}
+                      </span>
+                    </div>
+                    {entry.status === 'failed' && (
+                      <div className="food-row-actions">
+                        <button type="button" className="btn-small" onClick={() => retry(entry)}>
+                          Retry
+                        </button>
+                        <button type="button" className="btn-small btn-danger" aria-label="Dismiss failed entry" onClick={() => dismiss(entry.id)}>
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+                {data?.items.map((item: FoodLogItem) => (
                   <li key={item.row} className="food-row">
                     <div>
                       <strong>{item.food}</strong>

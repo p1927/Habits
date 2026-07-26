@@ -62,7 +62,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-005 | done | build | pending |
+| 2026-07-27 | relay-005 | done | build | b661c4b |
 | 2026-07-27 | relay-004 | done | build | 2a395cc |
 | 2026-07-27 | relay-v2 | done | build | bd0cc1f + ritual docs |
 | 2026-07-27 | relay-003 | done | build | meal plan API + Day tab |

@@ -376,6 +376,15 @@ button:disabled {
   border-bottom: none;
 }
 
+.food-row--pending {
+  opacity: 0.75;
+}
+
+.food-row--failed {
+  border-left: 3px solid var(--err);
+  padding-left: 0.35rem;
+}
+
 .btn-small {
   padding: 0.25rem 0.5rem;
   font-size: 1rem;
