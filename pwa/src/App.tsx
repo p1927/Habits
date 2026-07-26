@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import { useMealNotifications } from './hooks/useMealNotifications';
+import { bindNotificationNavigation } from './lib/notificationNavigation';
 import { useServerStatus } from './hooks/useServerStatus';
 import { Home } from './sections/Home';
 import { Log } from './sections/Log';
@@ -40,6 +41,15 @@ function App() {
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
 
+  const handleTabChange = useCallback((id: TabId) => {
+    setTab(id);
+    window.location.hash = id;
+  }, []);
+
+  useEffect(() => {
+    return bindNotificationNavigation(handleTabChange);
+  }, [handleTabChange]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('google') === 'connected') {
@@ -49,11 +59,6 @@ function App() {
       window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash || '#settings'}`);
     }
   }, [refresh]);
-
-  const handleTabChange = useCallback((id: TabId) => {
-    setTab(id);
-    window.location.hash = id;
-  }, []);
 
   return (
     <div className="app">

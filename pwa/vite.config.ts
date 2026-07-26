@@ -73,6 +73,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        importScripts: ['sw-notification-click.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
         navigateFallback: `${base}index.html`,
         runtimeCaching: [

@@ -1,3 +1,5 @@
+import { openLogFromNotification } from './notificationNavigation';
+
 export const DEFAULT_NOTIFICATION_TIMES: Record<string, string> = {
   breakfast: '08:00',
   mid_day_snack: '11:00',
@@ -128,7 +130,16 @@ async function showMealNotification(mealKey: string, label: string) {
   }
 
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-    new Notification(title, { body, icon, tag: `meal-${mealKey}-${todayKey()}` });
+    const notification = new Notification(title, {
+      body,
+      icon,
+      tag: `meal-${mealKey}-${todayKey()}`,
+      data: { url: `${import.meta.env.BASE_URL}#log` },
+    });
+    notification.onclick = () => {
+      notification.close();
+      openLogFromNotification();
+    };
   }
 }
 
