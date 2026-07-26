@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T00:58:00Z |
+| reviewed_at | 2026-07-27T01:10:00Z |
 | git_branch | main |
 | uncommitted_files | docs/RELAY.md checkpoint only |
-| where_we_are | Loop tick #3; relay-007 Lighthouse pass — perf 99, a11y/SEO/best-practices 100 on preview. |
+| where_we_are | Loop tick #9; relay-015 meal photo gallery on Home shipped. Backlog refilled. |
 | blockers | [] |
-| confirmed_next | relay-010 Weekly habit sparklines on Home |
-| brainstorm_notes | Backlog at 3 items; refill from BRAINSTORM on next odd cycle |
+| confirmed_next | relay-016 Push notification meal reminders |
+| brainstorm_notes | Added relay-016, relay-017, relay-018 from BRAINSTORM |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T00:58:00Z |
+| last_wake | 2026-07-27T01:10:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | odd (next: maintenance) |
-| next_action | relay-010 Weekly habit sparklines on Home |
+| next_action | relay-016 Push notification meal reminders |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, running) |
 
@@ -40,8 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-010 | Weekly habit sparklines on Home | feature
-- [ ] relay-011 | Offline food log queue | feature
+- [ ] relay-016 | Push notification meal reminders | maintenance
+- [ ] relay-017 | Export week PDF report | feature
+- [ ] relay-018 | Streak badge animations on Day | maintenance
 
 ---
 
@@ -49,10 +50,8 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Streak badges on Day tab | Apple Fitness | Consecutive days hitting targets |
-| Barcode scan | MyFitnessPal | BarcodeDetector API |
-| Sickness timeline | Google Keep + Health | Chart from Sickness sheet |
-| Meal photo gallery | Apple Health | Thumbnails for today's log |
+| Barcode Open Food Facts lookup | MyFitnessPal | External API for unknown barcodes |
+| Habit ring share card | Apple Fitness | PNG export from Home |
 
 ---
 
@@ -60,15 +59,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-007 | done | lighthouse preview 99–100 | 523b01f |
-| 2026-07-27 | relay-006 | done | build | 708aa91 |
-| 2026-07-27 | relay-005 | done | build | b661c4b |
-| 2026-07-27 | relay-004 | done | build | 2a395cc |
-| 2026-07-27 | relay-v2 | done | build | bd0cc1f + ritual docs |
-| 2026-07-27 | relay-003 | done | build | meal plan API + Day tab |
-| 2026-07-27 | git-catchup | done | — | 004a76f, 73adfe1, 11e1f3f, livekit rm |
-| 2026-07-27 | relay-002 | done | build | recipes API + Log tab |
-| 2026-07-27 | relay-001 | done | build | voice postMessage orb |
+| 2026-07-27 | relay-015 | done | build | pending |
+| 2026-07-27 | relay-014 | done | build + api import | 51ef13d |
+| 2026-07-27 | relay-013 | done | build | 6bb3973 |
+| 2026-07-27 | relay-012 | done | build + api import | 3fdd7ce |
+| 2026-07-27 | relay-011 | done | build | 4c5dbb0 |
+| 2026-07-27 | relay-010 | done | build | 95a100c |
 
 ---
 
