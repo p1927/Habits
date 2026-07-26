@@ -235,6 +235,10 @@ export function Day({ serverOnline }: DayProps) {
       setSyncingMealPlanQueue(false);
       setMealPlanSyncProgress(null);
       syncMealPlanQueue();
+      if (getMealPlanQueue().length === 0) {
+        setFailedMealPlanIds(new Set());
+        setError('');
+      }
     }
   }, [
     serverOnline,
