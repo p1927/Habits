@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:37:00Z |
+| reviewed_at | 2026-07-27T02:38:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #62; relay-069 Home empty queue hint shipped. |
+| where_we_are | Loop tick #63; relay-070 queue badge hidden on active tab shipped. |
 | blockers | [] |
-| confirmed_next | relay-070 Queue badge hide when on active tab |
-| brainstorm_notes | relay-069 done; Home shows empty queue hint like Day/Log Plan |
+| confirmed_next | relay-071 Tap Log tab badge opens Plan sub-tab |
+| brainstorm_notes | relay-070 done; badge only on inactive Home/Log/Day tabs |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:37:00Z |
+| last_wake | 2026-07-27T02:38:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-070 Queue badge hide when on active tab |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-071 Tap Log tab badge opens Plan sub-tab |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-070 | Queue badge hide when on active tab | maintenance
+- [ ] relay-071 | Tap Log tab badge opens Plan sub-tab | feature
+- [ ] relay-072 | Home empty queue hint only when meal plan visible | maintenance
+- [ ] relay-073 | Day queue failed-item highlight on sync error | feature
 
 ---
 
@@ -56,14 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-070 | done | build | — |
 | 2026-07-27 | relay-069 | done | build | a6a3c50 |
 | 2026-07-27 | relay-068 | done | build | fb08e83 |
 | 2026-07-27 | relay-067 | done | build | f7772b4 |
 | 2026-07-27 | relay-066 | done | build | ee334bd |
 | 2026-07-27 | relay-065 | done | build | f53b3b5 |
-| 2026-07-27 | relay-064 | done | build | ccbef45 |
-| 2026-07-27 | relay-063 | done | build | 14e1376 |
-| 2026-07-27 | relay-062 | done | build | b24bd2e |
 
 ---
 
