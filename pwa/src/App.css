@@ -1004,6 +1004,10 @@ button:disabled {
   line-height: 1;
 }
 
+.home-rings-card h2 {
+  margin: 0;
+}
+
 .home-export-row {
   display: flex;
   align-items: center;

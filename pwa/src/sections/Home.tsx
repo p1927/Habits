@@ -66,6 +66,7 @@ export function Home({ serverOnline }: HomeProps) {
   const [decisionCard, setDecisionCard] = useState<FutureSelfCard | null>(null);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [sharingRings, setSharingRings] = useState(false);
   const [mealPhotos, setMealPhotos] = useState<MealPhoto[]>(() => getTodayMealPhotos());
 
   const refresh = useCallback(async () => {
@@ -100,6 +101,24 @@ export function Home({ serverOnline }: HomeProps) {
     const id = window.setInterval(() => void refresh(), 60_000);
     return () => window.clearInterval(id);
   }, [refresh]);
+
+  async function handleShareRings() {
+    setSharingRings(true);
+    setError('');
+    try {
+      const { downloadRingShareCard } = await import('../lib/ringShareCard');
+      downloadRingShareCard({
+        protein: { value: food?.protein_g ?? 0, max: proteinTarget },
+        calories: { value: food?.calories ?? 0, max: calTarget },
+        habits: { value: habitPct, max: 100 },
+        date: habits?.date || new Date().toISOString().slice(0, 10),
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Share card export failed');
+    } finally {
+      setSharingRings(false);
+    }
+  }
 
   async function handleExportWeekPdf() {
     if (!serverOnline) return;
@@ -169,6 +188,17 @@ export function Home({ serverOnline }: HomeProps) {
       </Card>
 
       <Card className="home-rings-card">
+        <div className="home-export-row">
+          <h2>Activity rings</h2>
+          <button
+            type="button"
+            className="btn-small"
+            disabled={sharingRings}
+            onClick={() => void handleShareRings()}
+          >
+            {sharingRings ? 'Saving…' : 'Share PNG'}
+          </button>
+        </div>
         <ActivityRings
           protein={{ value: food?.protein_g ?? 0, max: proteinTarget }}
           calories={{ value: food?.calories ?? 0, max: calTarget }}
