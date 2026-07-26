@@ -14,8 +14,7 @@ import {
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { addMealPhoto, getTodayMealPhotos } from '../lib/mealPhotos';
-import type { OffProduct } from '../lib/openFoodFacts';
-import { scaleOffMacros } from '../lib/openFoodFacts';
+import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 
 interface LogProps {
   serverOnline: boolean;
@@ -204,7 +203,6 @@ export function Log({ serverOnline }: LogProps) {
         }
       }
 
-      const { lookupOpenFoodFacts } = await import('../lib/openFoodFacts');
       const off = await lookupOpenFoodFacts(code);
       if (off) {
         setOffProduct(off);

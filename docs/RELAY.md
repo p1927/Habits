@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T01:30:00Z |
+| reviewed_at | 2026-07-27T01:32:00Z |
 | git_branch | main |
 | uncommitted_files | docs/RELAY.md checkpoint only |
-| where_we_are | Loop tick #19; relay-025 recipe photo in Log tab shipped. |
+| where_we_are | Loop tick #20; relay-026 OFF direct log shipped. |
 | blockers | [] |
-| confirmed_next | relay-026 OFF product direct log without sheet match |
-| brainstorm_notes | relay-025 done; next feature item |
+| confirmed_next | relay-027 Habit queue retry UI |
+| brainstorm_notes | relay-026 done; next maintenance item |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T01:30:00Z |
+| last_wake | 2026-07-27T01:32:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-026 OFF product direct log without sheet match |
+| cycle_parity | even (next: feature) |
+| next_action | relay-027 Habit queue retry UI |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 2702, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-026 | OFF product direct log without sheet match | feature
 - [ ] relay-027 | Habit queue retry UI | maintenance
 - [ ] relay-028 | Cache streak for offline share PNG | maintenance
+- [ ] relay-029 | Recipe scan + log from photo | feature
 
 ---
 
@@ -50,7 +50,7 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Recipe scan + log | MyFitnessPal | AI identify prepared recipe from photo |
+| OFF log offline queue | food queue | Queue macros log when server offline |
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-026 | done | build + api import | 5e1756e |
 | 2026-07-27 | relay-025 | done | build | f6809c0 |
 | 2026-07-27 | relay-024 | done | build | 0e44f8e |
 | 2026-07-27 | relay-023 | done | build | 054db1f |
 | 2026-07-27 | relay-022 | done | build | 7f68d35 |
 | 2026-07-27 | relay-021 | done | build | ad69715 |
-| 2026-07-27 | relay-020 | done | build | 0735602 |
 
 ---
 
