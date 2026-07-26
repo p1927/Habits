@@ -2,6 +2,7 @@ import type { HabitsTodayResponse } from './api';
 
 const QUEUE_KEY = 'habits-habit-log-queue';
 const CACHE_KEY = 'habits-today-cache';
+const STREAK_CACHE_KEY = 'habits-streak-cache';
 
 export interface QueuedHabitUpdate {
   id: string;
@@ -55,6 +56,24 @@ export function getCachedHabitsToday(): HabitsTodayResponse | null {
     return JSON.parse(raw) as HabitsTodayResponse;
   } catch {
     return null;
+  }
+}
+
+export function cacheHabitStreak(overall: number) {
+  localStorage.setItem(
+    STREAK_CACHE_KEY,
+    JSON.stringify({ overall, cached_at: new Date().toISOString() }),
+  );
+}
+
+export function getCachedHabitStreak(): number {
+  try {
+    const raw = localStorage.getItem(STREAK_CACHE_KEY);
+    if (!raw) return 0;
+    const parsed = JSON.parse(raw) as { overall?: number };
+    return typeof parsed.overall === 'number' ? parsed.overall : 0;
+  } catch {
+    return 0;
   }
 }
 

@@ -14,6 +14,7 @@ import {
   type HabitsWeekResponse,
 } from '../lib/api';
 import { getTodayMealPhotos, type MealPhoto } from '../lib/mealPhotos';
+import { cacheHabitStreak, getCachedHabitStreak } from '../lib/habitQueue';
 
 interface HomeProps {
   serverOnline: boolean;
@@ -74,18 +75,20 @@ export function Home({ serverOnline }: HomeProps) {
     if (!serverOnline) return;
     setError('');
     try {
-      const [f, h, hist, targets, cards, week] = await Promise.all([
+      const [f, h, hist, targets, cards, week, streaks] = await Promise.all([
         api.getFoodToday(),
         api.getHabitsToday(),
         api.getFoodHistory(7),
         api.getFoodTargets(),
         api.getFutureSelfCards(true),
         api.getHabitsWeek(),
+        api.getHabitStreaks(),
       ]);
       setFood(f);
       setHabits(h);
       setHistory(hist.days);
       setHabitWeek(week);
+      cacheHabitStreak(streaks.overall);
       setCalTarget(targets.calorie_target ?? 2200);
       if (cards.cards.length > 0) {
         setDecisionCard(cards.cards[0]);
@@ -106,13 +109,14 @@ export function Home({ serverOnline }: HomeProps) {
     setSharingRings(true);
     setError('');
     try {
-      let streakDays = 0;
+      let streakDays = getCachedHabitStreak();
       if (serverOnline) {
         try {
           const st = await api.getHabitStreaks();
           streakDays = st.overall;
+          cacheHabitStreak(st.overall);
         } catch {
-          /* use 0 when streaks unavailable */
+          /* use cached streak when fetch fails */
         }
       }
       const { downloadRingShareCard } = await import('../lib/ringShareCard');

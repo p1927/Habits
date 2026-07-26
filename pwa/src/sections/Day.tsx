@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
+import { cacheHabitStreak } from '../lib/habitQueue';
 
 interface DayProps {
   serverOnline: boolean;
@@ -61,6 +62,7 @@ export function Day({ serverOnline }: DayProps) {
       setManageDay(md.quadrants ?? {});
       setMealPlan(mp.meals ?? []);
       setStreaks(st);
+      cacheHabitStreak(st.overall);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return;
       setError(e instanceof Error ? e.message : 'Failed to load day');
