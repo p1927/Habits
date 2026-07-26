@@ -315,6 +315,11 @@ button:disabled {
   animation: tab-badge-pulse 0.65s ease-out;
 }
 
+.tab-badge--actionable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 @keyframes tab-badge-pulse {
   0% {
     transform: scale(1);

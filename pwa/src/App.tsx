@@ -38,6 +38,7 @@ const STATUS_LABELS: Record<string, string> = {
 function App() {
   const [tab, setTab] = useState<TabId>(parseInitialTab);
   const [oauthSuccess, setOauthSuccess] = useState(false);
+  const [openLogMealPlan, setOpenLogMealPlan] = useState(false);
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
@@ -98,7 +99,13 @@ function App() {
 
       <main className="main" id="main-content" role="main">
         {tab === 'home' && <Home serverOnline={serverOnline} />}
-        {tab === 'log' && <Log serverOnline={serverOnline} />}
+        {tab === 'log' && (
+          <Log
+            serverOnline={serverOnline}
+            openMealPlan={openLogMealPlan}
+            onMealPlanOpened={() => setOpenLogMealPlan(false)}
+          />
+        )}
         {tab === 'day' && <Day serverOnline={serverOnline} />}
         {tab === 'cards' && <Cards serverOnline={serverOnline} />}
         {tab === 'agent' && <Agent serverOnline={serverOnline} />}
@@ -132,8 +139,17 @@ function App() {
                 <span className="tab-icon" aria-hidden>{t.icon}</span>
                 {showQueueBadge && (
                   <span
-                    className={`tab-badge${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}`}
+                    className={`tab-badge${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' ? ' tab-badge--actionable' : ''}`}
                     aria-label={`${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`}
+                    onClick={
+                      t.id === 'log'
+                        ? (e) => {
+                            e.stopPropagation();
+                            setOpenLogMealPlan(true);
+                            handleTabChange('log');
+                          }
+                        : undefined
+                    }
                   >
                     {mealPlanQueueCount > 9 ? '9+' : mealPlanQueueCount}
                   </span>

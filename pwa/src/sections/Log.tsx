@@ -38,6 +38,8 @@ import {
 
 interface LogProps {
   serverOnline: boolean;
+  openMealPlan?: boolean;
+  onMealPlanOpened?: () => void;
 }
 
 type LogTab = 'scan' | 'type' | 'mealplan' | 'recipes' | 'history';
@@ -73,7 +75,7 @@ function dataUrlToFile(dataUrl: string, name = 'scan.jpg'): File {
   return new File([arr], name, { type: mime });
 }
 
-export function Log({ serverOnline }: LogProps) {
+export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) {
   const [tab, setTab] = useState<LogTab>('scan');
   const [data, setData] = useState<FoodTodayResponse | null>(null);
   const [history, setHistory] = useState<{ days: { date: string; calories: number; protein: number }[] } | null>(null);
@@ -407,6 +409,12 @@ export function Log({ serverOnline }: LogProps) {
   }, [serverOnline]);
 
   useEffect(() => {
+    if (!openMealPlan) return;
+    setTab('mealplan');
+    onMealPlanOpened?.();
+  }, [openMealPlan, onMealPlanOpened]);
+
+  useEffect(() => {
     void refresh();
     if (tab === 'recipes') void loadSavedRecipe();
     if (tab === 'mealplan') void loadMealPlan();
@@ -456,9 +464,10 @@ export function Log({ serverOnline }: LogProps) {
   }, [syncRecipeScanQueueCount]);
 
   const dismissFoodLogQueue = useCallback(() => {
+    if (!window.confirm(`Discard ${queuedCount} queued food log${queuedCount === 1 ? '' : 's'}? They will not sync.`)) return;
     dismissAllQueued();
     setSuccess('Offline food log queue cleared');
-  }, [dismissAllQueued]);
+  }, [dismissAllQueued, queuedCount]);
 
   const processRecipeScanQueue = useCallback(async () => {
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;

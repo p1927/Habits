@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:38:00Z |
+| reviewed_at | 2026-07-27T02:39:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #63; relay-070 queue badge hidden on active tab shipped. |
+| where_we_are | Loop tick #64; relay-071 Log badge opens Plan sub-tab shipped. |
 | blockers | [] |
-| confirmed_next | relay-071 Tap Log tab badge opens Plan sub-tab |
-| brainstorm_notes | relay-070 done; badge only on inactive Home/Log/Day tabs |
+| confirmed_next | relay-072 Home empty queue hint only when meal plan visible |
+| brainstorm_notes | relay-071 done; tapping Log queue badge jumps to Plan tab |
 
 ---
 
@@ -58,7 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-070 | done | build | — |
+| 2026-07-27 | relay-070 | done | build | 535f7a2 |
 | 2026-07-27 | relay-069 | done | build | a6a3c50 |
 | 2026-07-27 | relay-068 | done | build | fb08e83 |
 | 2026-07-27 | relay-067 | done | build | f7772b4 |
