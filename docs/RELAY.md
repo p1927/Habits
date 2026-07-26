@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:45:00Z |
+| reviewed_at | 2026-07-27T02:46:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #70; relay-077 Home queue sync failed state shipped. |
+| where_we_are | Loop tick #71; relay-078 Home/Day badge tooltips shipped. |
 | blockers | [] |
-| confirmed_next | relay-078 Tab badge tooltips on Home and Day queue counts |
-| brainstorm_notes | relay-077 done; Home queue banner shows failed count + err styling |
+| confirmed_next | relay-079 Day prune stale failed ids after partial sync |
+| brainstorm_notes | relay-078 done; all three queue tab badges have hover tooltips |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:45:00Z |
+| last_wake | 2026-07-27T02:46:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-078 Tab badge tooltips on Home and Day queue counts |
+| cycle_parity | even (next: feature) |
+| next_action | relay-079 Day prune stale failed ids after partial sync |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-078 | Tab badge tooltips on Home and Day queue counts | maintenance
 - [ ] relay-079 | Day prune stale failed ids after partial sync | maintenance
 - [ ] relay-080 | Log Plan queue failed-item highlight on sync error | feature
+- [ ] relay-081 | Home queue per-item list like Day | feature
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-078 | done | build | — |
 | 2026-07-27 | relay-077 | done | build | 9846db0 |
 | 2026-07-27 | relay-076 | done | build | d049090 |
 | 2026-07-27 | relay-075 | done | build | d1f3c59 |
 | 2026-07-27 | relay-074 | done | build | 9622126 |
 | 2026-07-27 | relay-073 | done | build | 2eea036 |
-| 2026-07-27 | relay-072 | done | build | ce5cea3 |
 
 ---
 

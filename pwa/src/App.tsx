@@ -127,6 +127,7 @@ function App() {
               mealPlanQueueCount > 0 &&
               (t.id === 'home' || t.id === 'log' || t.id === 'day') &&
               tab !== t.id;
+            const queueBadgeCountLabel = `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`;
             return (
             <button
               key={t.id}
@@ -143,8 +144,12 @@ function App() {
                     aria-label={`${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`}
                     title={
                       t.id === 'log'
-                        ? `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued — tap to open Plan`
-                        : undefined
+                        ? `${queueBadgeCountLabel} — tap to open Plan`
+                        : t.id === 'home'
+                          ? `${queueBadgeCountLabel} — tap to sync on Home`
+                          : t.id === 'day'
+                            ? `${queueBadgeCountLabel} — tap to sync on Day`
+                            : undefined
                     }
                     onClick={
                       t.id === 'log'
