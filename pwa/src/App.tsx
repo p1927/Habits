@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
+import { useMealNotifications } from './hooks/useMealNotifications';
 import { useServerStatus } from './hooks/useServerStatus';
 import { Home } from './sections/Home';
 import { Log } from './sections/Log';
@@ -37,6 +38,7 @@ function App() {
   const [oauthSuccess, setOauthSuccess] = useState(false);
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
+  useMealNotifications(serverOnline);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

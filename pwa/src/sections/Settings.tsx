@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { api, type SettingsResponse } from '../lib/api';
 import { getBearer, getBuildLabel, getConfig, setBearer } from '../lib/config';
+import {
+  cacheNotificationTimes,
+  getNotificationPermission,
+  isMealRemindersEnabled,
+  requestNotificationPermission,
+  setMealRemindersEnabled,
+} from '../lib/mealNotifications';
 
 interface SettingsProps {
   serverOnline: boolean;
@@ -39,11 +46,16 @@ export function Settings({ serverOnline, googleConnected, onBearerSaved, oauthSu
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [mealDay, setMealDay] = useState('monday');
+  const [remindersEnabled, setRemindersEnabled] = useState(isMealRemindersEnabled);
+  const [notifyPermission, setNotifyPermission] = useState(getNotificationPermission());
 
   useEffect(() => {
     if (!serverOnline || !getBearer()) return;
     api.getSettings()
-      .then(setSettings)
+      .then((s) => {
+        cacheNotificationTimes(s.notification_times);
+        setSettings(s);
+      })
       .catch((e: Error) => setError(e.message));
   }, [serverOnline, googleConnected]);
 
@@ -67,6 +79,7 @@ export function Settings({ serverOnline, googleConnected, onBearerSaved, oauthSu
     setError('');
     try {
       const updated = await api.updateSettings(settings);
+      cacheNotificationTimes(updated.notification_times);
       setSettings(updated);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed');
@@ -152,6 +165,47 @@ export function Settings({ serverOnline, googleConnected, onBearerSaved, oauthSu
 
           <div className="card">
             <h2>Meal notifications</h2>
+            <p className="muted">
+              Browser reminders at each meal time while Habits is installed. Keep the app open or pinned for best results.
+            </p>
+            <label className="field field-row">
+              <span>Enable meal reminders</span>
+              <input
+                type="checkbox"
+                checked={remindersEnabled}
+                disabled={notifyPermission === 'unsupported'}
+                onChange={(e) => {
+                  const on = e.target.checked;
+                  setMealRemindersEnabled(on);
+                  setRemindersEnabled(on);
+                }}
+              />
+            </label>
+            {notifyPermission === 'unsupported' && (
+              <p className="muted">Notifications are not supported in this browser.</p>
+            )}
+            {notifyPermission === 'default' && (
+              <button
+                type="button"
+                onClick={() => {
+                  void requestNotificationPermission().then((p) => {
+                    setNotifyPermission(p);
+                    if (p === 'granted') {
+                      setMealRemindersEnabled(true);
+                      setRemindersEnabled(true);
+                    }
+                  });
+                }}
+              >
+                Allow notifications
+              </button>
+            )}
+            {notifyPermission === 'denied' && (
+              <p className="banner banner-warn">Notifications blocked — enable them in browser settings.</p>
+            )}
+            {notifyPermission === 'granted' && remindersEnabled && (
+              <p className="muted">Reminders active for today&apos;s schedule.</p>
+            )}
             {Object.entries(settings.notification_times).map(([key, val]) => (
               <label key={key} className="field">
                 {NOTIFICATION_LABELS[key] ?? key}
