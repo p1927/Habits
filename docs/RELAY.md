@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-097 | Remote sync banner on Day tab | feature
 - [ ] relay-098 | Clear stale failed ids on queue dismiss all | maintenance
 - [ ] relay-099 | Log remote sync banner on non-Plan tabs | feature
 
@@ -58,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-097 | done | build | e1d9f29 |
 | 2026-07-27 | relay-096 | done | build | 8f5cb6b |
 | 2026-07-27 | relay-095 | done | build | 2557202 |
 | 2026-07-27 | relay-094 | done | build | 1cab646 |
