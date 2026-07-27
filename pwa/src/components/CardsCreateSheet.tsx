@@ -46,6 +46,7 @@ export function CardsCreateSheet({
         </label>
         <button type="submit" disabled={!serverOnline}>Save</button>
       </form>
+      <p className="muted cards-create-sheet-hint">Press Escape to close</p>
     </BottomSheet>
   );
 }
