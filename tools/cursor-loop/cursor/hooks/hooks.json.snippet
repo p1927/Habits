@@ -1,6 +1,23 @@
 {
   "version": 1,
   "hooks": {
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/loop-guard-arm.sh",
+        "matcher": "Shell"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/loop-guard-arm.sh"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": ".cursor/hooks/loop-after-shell-wake.sh",
+        "loop_limit": 25
+      }
+    ],
     "beforeSubmitPrompt": [
       {
         "command": ".cursor/hooks/loop-bind.sh",

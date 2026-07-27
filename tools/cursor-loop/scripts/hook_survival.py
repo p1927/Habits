@@ -161,7 +161,8 @@ def main() -> int:
         msg += f" and {state_file}"
     msg += (
         "; run Ritual deliverable THIS turn (strict phases 1→9, one at a time). "
-        "Then arm next wake with arm-wake.sh only (never start agent-loop.sh in dynamic mode). "
+        "Then arm next wake with prepare_arm_wake.sh --exec only "
+        "(block_until_ms >= SHELL_BLOCK_UNTIL_MS; bare arm-wake.sh is blocked by hook). "
         "Do not defer work to next tick. "
         f"Wake payload: {prompt_json}.{ritual_note}{last_exit_note}"
     )

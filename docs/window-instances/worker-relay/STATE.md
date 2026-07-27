@@ -22,24 +22,24 @@
 | last_wake | `2026-07-27T23:45:00Z` |
 | confirmed_next | `relay-195` |
 | next_action | `relay-195 Agent camera sheet Escape hint` |
-| phase | `9-arm` |
+| phase | `4-execute` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-194 reviewed round 25; committed e11be06` |
 | review_diff_range | `relay-194` |
 | code_changed | `no` |
 | review_round | `25` |
 | last_reviewed_round | `25` |
-| worktree_status | `none` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| worktree_status | `active` |
+| current_item_id | `relay-195` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
+| worktree_branch | `loop/worker-relay/relay-195` |
+| worktree_item_id | `relay-195` |
 | review_changed_files | `pwa/src/App.css,pwa/src/components/AgentAttachSheet.tsx` |
 | review_fingerprint | `e11be06` |
-| ritual_step | `1-wake` |
-| brainstorm_done | `no` |
-| brainstorm_outcome | `—` |
-| execute_started | `no` |
+| ritual_step | `4-execute` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `AgentSectionOverlays camera BottomSheet: add muted Escape hint; BottomSheet already handles keydown` |
+| execute_started | `yes` |
 | fix_verify_done | `no` |
 | reflect_done | `no` |
 | commit_hash | `—` |
@@ -98,6 +98,7 @@
 - [ ] relay-195 | Agent camera sheet Escape hint | polish | Given camera BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
 - [ ] relay-196 | Agent voice sheet Escape hint | polish | Given voice BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
 - [ ] relay-197 | Day event detail sheet Escape hint | polish | Given DayCalendarEventSheet open, When user presses Escape, Then sheet closes + hint text | PO Session #26 — post-196 queue refill
+- [ ] relay-198 | Home meal photo gallery Escape hint | polish | Given MealPhotoGallery lightbox open, When user presses Escape, Then closes + visible hint text (Escape handler exists — hint parity) | PO Session #27
 
 ---
 

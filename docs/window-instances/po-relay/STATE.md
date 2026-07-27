@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:05:00Z |
-| where_we_are | Session #25 — relay-192 shipped; UX ui-056/ui-057 closed; Worker relay-193 last open item |
-| confirmed_next | Worker relay-193 then relay-194–196; Code ch-127; maint-004 |
+| reviewed_at | 2026-07-28T00:00:00Z |
+| where_we_are | Session #27 — relay-194 + ui-058 shipped; Worker relay-195 next; UX idle |
+| confirmed_next | Worker relay-195–197; Code ch-130; maint-004 |
 
 ---
 
@@ -19,15 +19,15 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-07-27T21:05:00Z` |
-| current_item_id | `po-tick-007` |
-| phase | `9-arm` |
-| review_status | `triaged` |
+| current_item_id | `po-tick-009` |
+| phase | `5-verify` |
+| review_status | `pending` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| review_round | `9` |
-| last_reviewed_round | `9` |
+| review_round | `11` |
+| last_reviewed_round | `10` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `Worker relay-193; relay-194–196 fed; Code ch-127; maint-004` |
+| confirmed_next | `Worker relay-195; Code ch-130; maint-004; UX idle` |
 | loops | `arm at end of turn` |
 | worktree_status | `none` |
 | worktree_path | `—` |
@@ -35,14 +35,14 @@
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/po-relay/STATE.md` |
 | review_fingerprint | `e2e702f4e8ee2fa3` |
-| ritual_step | `9-arm` |
+| ritual_step | `5-verify` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `Session #25: prop-ui-042/043 closed; relay-194-196 fed; Worker relay-193 next` |
+| brainstorm_outcome | `Session #27: relay-194/ui-058 closed; relay-198 fed; maint-004 escalate` |
 | execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `—` |
-| receive_review_done | `yes` |
+| receive_review_done | `no` |
 
 ### Loop status (verify with `loop-status.sh`)
 
@@ -70,7 +70,7 @@
 - [x] maint-001 | Confirm before dismiss food queue | from RELAY BRAINSTORM | `Log.tsx` — done tick #7
 - [x] maint-002 | Accessibility audit ARIA/focus/contrast | ROADMAP | ui-008/009/011 done — Settings aria-live shipped
 - [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run Lighthouse after ch-123 api split |
-- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **Code window:** `.card-placeholder`/`.btn-decline` still in `App.css` L201/L838 — delete dead rules |
+- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **Code window:** `.card` L188 + `.card-placeholder`/`.btn-decline` L201/L838 — delete dead rules; UX ux-gap-040 marked shipped prematurely |
 
 ---
 
@@ -107,7 +107,7 @@
 | prop-ui-041 | refined | po | Day | Calendar event detail sheet polish | Shipped relay-173 + ui-055 — Revolut card + time pill + Close CTA | Shipped ui-055 2026-07-27 |
 | prop-ui-042 | refined | po | App shell | Tab bar keyboard shortcut discoverability | relay-187 + ui-057 shipped — dismissible hint + conditional aria-keyshortcuts | Shipped ui-057 2026-07-27 |
 | prop-ui-043 | refined | po | Home → Day | Pull-refresh ring + Day empty Revolut panel | ui-056 shipped — Apple Health ring + Revolut empty schedule panel | Shipped ui-056 2026-07-27 |
-| prop-ui-044 | proposed | po | Settings | Google OAuth card Revolut pass + aria-live | Given Settings OAuth card, When user connects/disconnects, Then Revolut card styling + aria-live status (ux-gap-045) | — |
+| prop-ui-044 | refined | po | Settings | OAuth disconnect success + error aria-live | ui-058 shipped — disconnect success banner + role=alert error path | Shipped ui-058 2026-07-27 |
 
 **Status values:** `proposed` → UX reviews | `agreed` → copied to UX_STATE `UI_POLISH_BACKLOG` | `refined` → UX sent AC changes, PO updates row | `rejected` → dropped with reason in `ux_response`
 
@@ -118,6 +118,26 @@
 ---
 
 ## BRAINSTORM_LOG (newest first)
+
+### 2026-07-28 — Session #27 (PO tick po-tick-009)
+
+**UX lens (ux-heuristics):** prop-ui-044 **closed** — ui-058 Settings disconnect banner shipped (c501969). UX backlog **idle**; no new `ux-proposed` gaps. **maint-004 still open** — dead CSS persists despite ux-gap-040 “shipped” note.
+
+**PO lens (define-prioritization-framework):** Session #26 handoffs **closed** (relay-194, ui-058). RICE open Worker: **relay-195** (camera Escape) > **relay-196** (voice) > **relay-197** (Day event). Fed **relay-198** (meal photo gallery Escape hint — key works, no visible hint). Code ch-131 done → **ch-130** line scan.
+
+**Business lens (jobs-to-be-done):** Escape batch = keyboard investment loop completion. Settings disconnect UX = Sheets unlink trust shipped. Dead CSS debt (maint-004) blocks clean maintainability narrative — escalate Code priority.
+
+---
+
+### 2026-07-27 — Session #26 (PO tick po-tick-008)
+
+**UX lens (ux-heuristics):** relay-193 **closed** (Log food edit Escape). **prop-ui-044 refined** — ux-gap-045 narrowed to disconnect success + error aria-live; **UX agreed ui-058** (worktree active). **maint-004 still open** — dead CSS in App.css L201/L838.
+
+**PO lens (define-prioritization-framework):** Session #25 handoffs **closed** (relay-193). RICE open Worker: **relay-194** (attach sheet Escape) > **relay-195** (camera) > **relay-196** (voice). Fed **relay-197** (Day event sheet Escape). Code ch-128 done → **ch-131** useFutureSelfSection split (ch-129 deferred).
+
+**Business lens (jobs-to-be-done):** BottomSheet Escape batch = keyboard investment loop near completion. Settings disconnect UX = trust hygiene on Sheets unlink. Test coverage (ch-129) = reduce offline sync regressions.
+
+---
 
 ### 2026-07-27 — Session #25 (PO tick po-tick-007)
 
@@ -277,6 +297,12 @@
 | pr-r9-002 | low | docs/window-instances/po-relay/STATE.md — prop-ui-044 proposed for ux-gap-045 Settings OAuth | round-9 /code-review | closed | prop-ui-044 | closed |
 | pr-r9-003 | low | pwa/src/App.css:201 — maint-004 dead `.card-placeholder`/`.btn-decline` still present | round-9 /code-review | backlog | maint-004 | open |
 | pr-r9-004 | low | docs/window-instances/worker-relay/STATE.md — relay-194–196 AC refined with Escape hint pattern | round-9 /code-review | closed | relay-194 | closed |
+| pr-r10-000 | low | Bugbot: no issues in PO STATE.md doc diff | round-10 bugbot | closed | — | closed |
+| pr-r10-001 | low | docs/window-instances/po-relay/STATE.md — prop-ui-044 ux_response synced; UX ui-058 shipping | round-10 /code-review | closed | ui-058 | closed |
+| pr-r10-002 | low | docs/window-instances/po-relay/STATE.md — Session #26 UX narrative corrected (ui-058 active) | round-10 /code-review | closed | — | closed |
+| pr-r10-003 | low | docs/window-instances/code-health/STATE.md — Code next ch-131 (ch-129 deferred) | round-10 /code-review | closed | ch-131 | closed |
+| pr-r10-004 | low | docs/window-instances/po-relay/STATE.md — confirmed_next includes relay-194–197 | round-10 /code-review | closed | relay-197 | closed |
+| pr-r10-005 | low | pwa/src/App.css:201 — maint-004 dead `.card-placeholder`/`.btn-decline` still present | round-10 /code-review | backlog | maint-004 | open |
 
 ---
 
@@ -284,6 +310,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | PO | po-tick-008 | Session #26 + relay-193 sync + prop-ui-044 refine + relay-197 feed + Round 10 review | brainstorm | — |
 | 2026-07-27 | PO | po-tick-007 | Session #25 + prop-ui-042/043 close + relay-194–196 feed + Round 9 review | brainstorm | — |
 | 2026-07-27 | PO | po-tick-006 | Session #24 + relay-187–191 sync + prop-ui-043 + Round 8 review | brainstorm | — |
 | 2026-07-27 | PO | po-tick-005 | Session #23 + relay-174–186 sync + prop-ui-042 | brainstorm | — |

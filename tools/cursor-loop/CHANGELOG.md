@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.2
+
+- **Arm hook enforcement** — `loop-guard-arm` blocks bare `arm-wake.sh` (preToolUse Shell + beforeShellExecution)
+- **Background wake recovery** — `loop-after-shell-wake` auto-submits tick when legacy background arm prints `AGENT_LOOP_WAKE_*`
+- **Survival / contract** — recovery messages point to `prepare_arm_wake.sh --exec` only
+
 ## 0.6.1
 
 - **Wake delivery fix** — Phase 9 prefers `prepare_arm_wake.sh --exec` (foreground); process `AGENT_LOOP_WAKE` from Shell output in same turn

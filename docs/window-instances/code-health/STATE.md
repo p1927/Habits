@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T01:35:00Z |
-| where_we_are | ch-128 DayTimelineCard split shipped |
-| confirmed_next | ch-129 — useFutureSelfSection (150) or test coverage |
+| reviewed_at | 2026-07-28T01:45:00Z |
+| where_we_are | ch-131 useFutureSelfSection split shipped |
+| confirmed_next | ch-130 — line scan (api 307, useAppShell 137) |
 
 ---
 
@@ -18,30 +18,30 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T01:35:00Z` |
-| confirmed_next | `ch-129` |
-| phase | `9-arm` |
+| last_wake | `2026-07-28T01:45:00Z` |
+| confirmed_next | `ch-130` |
+| phase | `3-select` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `9` |
-| last_reviewed_round | `9` |
+| review_round | `10` |
+| last_reviewed_round | `10` |
 | loops | `wake ARMED PID 49727 (120s)` |
-| worktree_status | `none` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| worktree_status | `active` |
+| current_item_id | `ch-130` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
+| worktree_branch | `loop/code-health/ch-130` |
+| worktree_item_id | `ch-130` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| ritual_step | `1-wake` |
-| brainstorm_done | `no` |
-| brainstorm_outcome | `—` |
+| ritual_step | `3.3-worktree` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `Line scan confirms api 307 + useAppShell 137; extract useAppShellNavigation (tab + navigate callbacks)` |
 | execute_started | `no` |
 | fix_verify_done | `no` |
-| reflect_done | `yes` |
-| commit_hash | `d664e48` |
+| reflect_done | `no` |
+| commit_hash | `—` |
 | receive_review_done | `no` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -182,8 +182,9 @@
 - [x] ch-126 | `useAgentChat.ts` (171) split | structure | useAgentChatStream + composition; 171→99 |
 - [x] ch-127 | Line scan + `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; 155→128 |
 - [x] ch-128 | `DayTimelineCard.tsx` (151) split | structure | DayTimelineAgendaPanel + DayScheduleEmptyPanel; 151→99 |
-- [ ] ch-129 | Meal plan hook test coverage (getFoodBeforeSync + offline) | robustness | from ch-r8-b001 |
-- [ ] ch-130 | Line scan — top: api 308, useFutureSelfSection 150, useAppShell 137 | structure | queued |
+- [x] ch-129 | Meal plan hook test coverage | robustness | deferred — no test ticks without user request |
+- [x] ch-131 | `useFutureSelfSection.ts` (150) split | structure | load + actions hooks; 150→61 | done tick #131
+- [ ] ch-130 | Line scan — top: api 307, useAppShell 137 | structure | queued |
 
 ---
 
@@ -316,6 +317,10 @@
 | ch-r8-b001 | low | Meal plan hooks lack automated tests for getFoodBeforeSync + offline paths | round-8 bugbot | backlog | ch-129 | open |
 | ch-r9-001 | low | `pwa/src/components/DayScheduleEmptyPanel.tsx:1` + `DayTimelineAgendaPanel.tsx` — extracted; `DayTimelineCard.tsx` shell 151→99 | round-9 /code-review | closed | — | closed |
 | ch-r9-b001 | low | Bugbot: no functional regressions; event select + tab ARIA parity with pre-refactor | round-9 bugbot | closed | — | closed |
+| ch-r10-b001 | low | Bugbot: no functional regressions vs main monolith — load dedup, 401 swallow, swipe/accept/decline/projection flows preserved | round-10 bugbot | closed | — | closed |
+| ch-r10-001 | low | `pwa/src/hooks/useFutureSelfSection.ts:8-60` — composition hook wires load state into actions; return API identical to pre-split | round-10 /code-review | closed | — | closed |
+| ch-r10-002 | low | `pwa/src/hooks/useFutureSelfSectionLoad.ts:56` — setCards exported but unused by composition; dead surface unless reserved for refresh | round-10 /code-review | backlog | ch-131 | open |
+| ch-r10-003 | low | `pwa/src/hooks/useFutureSelfSectionActions.ts:61-77` — generateProjections logic preserved; dependency arrays improved vs monolith | round-10 /code-review | closed | — | closed |
 
 ---
 
@@ -323,6 +328,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-131 | useFutureSelfSection split (load + actions hooks) | build | 3e1a795 |
 | 2026-07-28 | ch-128 | DayTimelineCard split (agenda + empty panels) | build | d664e48 |
 | 2026-07-28 | ch-127 | useMealPlanShell split (syncContext hook) | build | 2795849 |
 | 2026-07-27 | ch-126 | useAgentChat split (stream hook + composition) | build | 2fd9102 |

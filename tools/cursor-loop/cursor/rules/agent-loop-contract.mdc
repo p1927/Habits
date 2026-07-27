@@ -100,7 +100,9 @@ Run `EXEC_COMMAND` from prep with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`** 
 2. **Mandatory:** `Await` that shell's `task_id` with `pattern=monitor_regex` and `block_until_ms=SHELL_BLOCK_UNTIL_MS`
 3. Process wake from Await output in the same turn
 
-**Forbidden:** background `ARM_COMMAND` without `notify_on_output` **and** without `Await` — sentinel will fire but this chat will not wake.
+**Forbidden:** background `ARM_COMMAND` without `notify_on_output` **and** without `Await` — sentinel will fire but this chat will not wake. **Hooks block bare `arm-wake.sh`** — use `--exec` only.
+
+**Hook enforcement (v0.6.2+):** `loop-guard-arm` denies direct `arm-wake.sh`. `loop-after-shell-wake` auto-submits a tick when a background arm (legacy) completes and prints `AGENT_LOOP_WAKE_*`.
 
 ```bash
 LOOP_ID=<loop_id> WAKE_SENTINEL=<wake_sentinel> INTERVAL=<interval_sec> \

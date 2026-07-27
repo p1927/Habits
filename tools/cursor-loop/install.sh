@@ -76,6 +76,9 @@ if [[ "$UNINSTALL" -eq 1 ]]; then
   rm -f "${TARGET}/.cursor/rules/agent-loop-contract.mdc"
   rm -f "${TARGET}/.cursor/hooks/loop-bind.sh" \
         "${TARGET}/.cursor/hooks/loop-survival.sh" \
+        "${TARGET}/.cursor/hooks/loop-guard-arm.sh" \
+        "${TARGET}/.cursor/hooks/loop-after-shell-wake.sh" \
+        "${TARGET}/.cursor/hooks/loop-guard-edit.sh" \
         "${TARGET}/.cursor/hooks/_common.sh"
   rm -f "${TARGET}/.cursor/cursor-loop.json"
   echo "Removed cursor-loop Cursor artifacts from ${TARGET}"
@@ -122,6 +125,11 @@ install_file "${INSTALL_PACKAGE}/cursor/rules/agent-loop-contract.mdc" "$RULE_DE
 install_file "${INSTALL_PACKAGE}/cursor/hooks/_common.sh" "${HOOK_DEST_DIR}/_common.sh"
 install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-bind.sh" "${HOOK_DEST_DIR}/loop-bind.sh"
 install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-survival.sh" "${HOOK_DEST_DIR}/loop-survival.sh"
+install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-guard-arm.sh" "${HOOK_DEST_DIR}/loop-guard-arm.sh"
+install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-after-shell-wake.sh" "${HOOK_DEST_DIR}/loop-after-shell-wake.sh"
+if [[ -f "${INSTALL_PACKAGE}/cursor/hooks/loop-guard-edit.sh" ]]; then
+  install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-guard-edit.sh" "${HOOK_DEST_DIR}/loop-guard-edit.sh"
+fi
 
 for rule in window-instance-loop.mdc worker-relay-loop.mdc ux-relay-loop.mdc po-relay-loop.mdc code-health-loop.mdc; do
   if [[ -f "${INSTALL_PACKAGE}/cursor/rules/${rule}" ]]; then
@@ -141,6 +149,8 @@ chmod +x \
   "${HOOK_DEST_DIR}/_common.sh" \
   "${HOOK_DEST_DIR}/loop-bind.sh" \
   "${HOOK_DEST_DIR}/loop-survival.sh" \
+  "${HOOK_DEST_DIR}/loop-guard-arm.sh" \
+  "${HOOK_DEST_DIR}/loop-after-shell-wake.sh" \
   "${INSTALL_PACKAGE}/scripts/agent-loop.sh" \
   "${INSTALL_PACKAGE}/scripts/arm-wake.sh" \
   "${INSTALL_PACKAGE}/scripts/verify-wake.sh" \
@@ -222,6 +232,8 @@ cursor-loop v${VERSION} installed into: ${TARGET}
   rule:     ${RULE_DEST}
   hooks:    ${HOOK_DEST_DIR}/loop-bind.sh
             ${HOOK_DEST_DIR}/loop-survival.sh
+            ${HOOK_DEST_DIR}/loop-guard-arm.sh
+            ${HOOK_DEST_DIR}/loop-after-shell-wake.sh
   manifest: ${MANIFEST}
   package:  ${PKG_REL}
 

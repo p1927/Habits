@@ -5,6 +5,10 @@
       {
         "command": ".cursor/hooks/loop-guard-edit.sh",
         "matcher": "Write|StrReplace|EditNotebook|Delete"
+      },
+      {
+        "command": ".cursor/hooks/loop-guard-arm.sh",
+        "matcher": "Shell"
       }
     ],
     "beforeSubmitPrompt": [
@@ -16,6 +20,17 @@
     "stop": [
       {
         "command": ".cursor/hooks/loop-survival.sh",
+        "loop_limit": 25
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/loop-guard-arm.sh"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": ".cursor/hooks/loop-after-shell-wake.sh",
         "loop_limit": 25
       }
     ]
