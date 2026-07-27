@@ -27,3 +27,9 @@ export function vibrateMealPlanSyncSuccess(): void {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   navigator.vibrate([10, 28, 12]);
 }
+
+export function vibrateMealPlanSyncFailure(): void {
+  if (typeof navigator === 'undefined' || !navigator.vibrate) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  navigator.vibrate([16, 36, 20, 36, 16]);
+}

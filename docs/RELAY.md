@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:45:00Z |
+| reviewed_at | 2026-07-27T03:50:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #89; relay-094 Home remote sync banner shipped. |
+| where_we_are | Loop tick #90; relay-095 meal plan sync failure haptic shipped. |
 | blockers | [] |
-| confirmed_next | relay-095 meal plan sync failure haptic |
-| brainstorm_notes | relay-094 done; Home shows banner when Day/Log syncs queue |
+| confirmed_next | relay-096 queue empty hint aria-live on transition |
+| brainstorm_notes | relay-095 done; failure haptic on non-offline sync errors |
 
 ---
 
@@ -57,7 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-094 | done | build | — |
+| 2026-07-27 | relay-094 | done | build | 1cab646 |
 | 2026-07-27 | relay-093 | done | build | 9345536 |
 | 2026-07-27 | relay-092 | done | build | 8d6c73f |
 | 2026-07-27 | relay-091 | done | build | 18f7be6 |

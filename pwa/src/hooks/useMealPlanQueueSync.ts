@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type FoodTodayResponse } from '../lib/api';
-import { vibrateMealPlanSyncSuccess } from '../lib/haptics';
+import { vibrateMealPlanSyncFailure, vibrateMealPlanSyncSuccess } from '../lib/haptics';
 import {
   addMealPlanFailedId,
   clearMealPlanFailedIds,
@@ -134,9 +134,10 @@ export function useMealPlanQueueSync({
               syncMealPlanQueue();
             }
           } catch (e) {
-          if (isOfflineError(e)) break;
-          addMealPlanFailedId(item.id);
-          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
+            if (isOfflineError(e)) break;
+            addMealPlanFailedId(item.id);
+            setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
+            vibrateMealPlanSyncFailure();
             setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
             break;
           }
@@ -151,6 +152,7 @@ export function useMealPlanQueueSync({
           afterSync?.();
         }
       } catch (e) {
+        if (!isOfflineError(e)) vibrateMealPlanSyncFailure();
         setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
       } finally {
         setSyncingMealPlanQueue(false);
@@ -214,6 +216,7 @@ export function useMealPlanQueueSync({
         } else {
           addMealPlanFailedId(item.id);
           setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
+          vibrateMealPlanSyncFailure();
           setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
         }
       } finally {
