@@ -1846,6 +1846,7 @@ button:disabled {
   color: var(--err) !important;
 }
 
+.queue-empty,
 .meal-plan-queue-empty {
   display: flex;
   align-items: center;
@@ -1859,6 +1860,7 @@ button:disabled {
   border-radius: var(--radius-md);
 }
 
+.queue-empty__icon,
 .meal-plan-queue-empty__icon {
   flex-shrink: 0;
   color: var(--ok);
@@ -2700,4 +2702,177 @@ button:disabled {
   color: var(--text);
   font-family: inherit;
   resize: vertical;
+}
+
+/* Settings — Revolut-tier flat cards (ui-011) */
+.settings-page {
+  padding-bottom: var(--space-lg);
+}
+
+.settings-lede {
+  margin-bottom: var(--space-md);
+}
+
+.settings-card {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--surface2) 70%, transparent);
+  border-radius: 20px;
+  padding: 1rem 1.125rem;
+  margin-bottom: 0.75rem;
+  box-shadow: none;
+}
+
+.settings-card h2 {
+  margin: 0 0 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-card-note {
+  margin: 0 0 0.75rem;
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.settings-field {
+  margin-bottom: 0;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--surface2) 45%, transparent);
+  cursor: default;
+}
+
+.settings-row:last-of-type {
+  border-bottom: none;
+}
+
+.settings-row--input {
+  cursor: pointer;
+}
+
+.settings-row-label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text);
+}
+
+.settings-num-input,
+.settings-time-input,
+.settings-text-input,
+.settings-select {
+  flex: 0 1 9rem;
+  min-width: 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: 10px;
+  border: 1px solid var(--surface2);
+  background: var(--bg);
+  color: var(--text);
+  font-size: var(--font-size-sm);
+  text-align: right;
+}
+
+.settings-num-input,
+.settings-time-input {
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-text-input {
+  text-align: left;
+}
+
+.settings-select {
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-toggle {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.settings-status-pill {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--surface2) 80%, transparent);
+  color: var(--muted);
+}
+
+.settings-status-pill--ok {
+  background: color-mix(in srgb, var(--ok) 18%, transparent);
+  color: #86efac;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.settings-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.settings-inline-banner {
+  margin: 0.5rem 0 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: 12px;
+  font-size: var(--font-size-sm);
+}
+
+.btn-pill {
+  border-radius: var(--radius-full);
+  padding: 0.625rem 1.25rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border: none;
+  background: var(--accent);
+  color: var(--bg);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: opacity var(--duration-fast);
+}
+
+.btn-pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-pill-outline {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--surface2));
+  color: var(--accent);
+}
+
+.btn-pill-ghost {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.btn-pill:focus-visible,
+.settings-num-input:focus-visible,
+.settings-time-input:focus-visible,
+.settings-text-input:focus-visible,
+.settings-select:focus-visible,
+.settings-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
