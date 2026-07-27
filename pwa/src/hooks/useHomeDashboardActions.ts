@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   api,
   type FoodTodayResponse,
@@ -6,6 +6,7 @@ import {
   type HabitsTodayResponse,
 } from '../lib/api';
 import { cacheHabitStreak, getCachedHabitStreak } from '../lib/habitQueue';
+import type { RingShareData } from '../lib/ringShareCard';
 
 interface UseHomeDashboardActionsOptions {
   serverOnline: boolean;
@@ -36,6 +37,20 @@ export function useHomeDashboardActions({
   setSharingRings,
   onRefresh,
 }: UseHomeDashboardActionsOptions) {
+  const [ringSharePreviewUrl, setRingSharePreviewUrl] = useState<string | null>(null);
+  const [ringShareDownloadData, setRingShareDownloadData] = useState<RingShareData | null>(null);
+
+  const closeRingShareSheet = useCallback(() => {
+    setRingSharePreviewUrl(null);
+    setRingShareDownloadData(null);
+  }, []);
+
+  const downloadRingShareFromSheet = useCallback(async () => {
+    if (!ringShareDownloadData) return;
+    const { downloadRingShareCard } = await import('../lib/ringShareCard');
+    downloadRingShareCard(ringShareDownloadData);
+  }, [ringShareDownloadData]);
+
   const handleShareRings = useCallback(async () => {
     setSharingRings(true);
     setError('');
@@ -50,14 +65,17 @@ export function useHomeDashboardActions({
           /* use cached streak when fetch fails */
         }
       }
-      const { downloadRingShareCard } = await import('../lib/ringShareCard');
-      downloadRingShareCard({
+      const shareData: RingShareData = {
         protein: { value: food?.protein_g ?? 0, max: proteinTarget },
         calories: { value: food?.calories ?? 0, max: calTarget },
         habits: { value: habitPct, max: 100 },
         date: habits?.date || new Date().toISOString().slice(0, 10),
         streakDays,
-      });
+      };
+      const { createRingShareCanvas } = await import('../lib/ringShareCard');
+      const canvas = createRingShareCanvas(shareData);
+      setRingShareDownloadData(shareData);
+      setRingSharePreviewUrl(canvas.toDataURL('image/png'));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Share card export failed');
     } finally {
@@ -102,5 +120,12 @@ export function useHomeDashboardActions({
     }
   }, [decisionCard, setDecisionCard, setError, onRefresh]);
 
-  return { handleShareRings, handleExportWeekPdf, handleAcceptCard };
+  return {
+    handleShareRings,
+    handleExportWeekPdf,
+    handleAcceptCard,
+    ringSharePreviewUrl,
+    closeRingShareSheet,
+    downloadRingShareFromSheet,
+  };
 }

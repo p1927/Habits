@@ -40,7 +40,14 @@ export function useHomeDashboard({ serverOnline, syncMealPlanQueue }: UseHomeDas
     habitWeek,
   );
 
-  const { handleShareRings, handleExportWeekPdf, handleAcceptCard } = useHomeDashboardActions({
+  const {
+    handleShareRings,
+    handleExportWeekPdf,
+    handleAcceptCard,
+    ringSharePreviewUrl,
+    closeRingShareSheet,
+    downloadRingShareFromSheet,
+  } = useHomeDashboardActions({
     serverOnline,
     food,
     habits,
@@ -83,5 +90,8 @@ export function useHomeDashboard({ serverOnline, syncMealPlanQueue }: UseHomeDas
     handleShareRings,
     handleExportWeekPdf,
     handleAcceptCard,
+    ringSharePreviewUrl,
+    closeRingShareSheet,
+    downloadRingShareFromSheet,
   };
 }

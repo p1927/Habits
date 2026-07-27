@@ -2,6 +2,7 @@ import { useHomeSection } from '../hooks/useHomeSection';
 import { HomeDashboardPanels } from '../components/HomeDashboardPanels';
 import { HomeMealPlanBlock } from '../components/HomeMealPlanBlock';
 import { HomePullRefreshIndicator, HomeSectionHeader } from '../components/HomeSectionChrome';
+import { HomeRingShareSheet } from '../components/HomeRingShareSheet';
 import { FoodFailedBanner } from '../components/FoodFailedBanner';
 import { FoodQueueBanner } from '../components/FoodQueueBanner';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
@@ -54,6 +55,12 @@ export function Home(props: HomeProps) {
           {h.error}
         </div>
       )}
+
+      <HomeRingShareSheet
+        previewUrl={h.ringSharePreviewUrl}
+        onClose={h.closeRingShareSheet}
+        onDownload={() => void h.downloadRingShareFromSheet()}
+      />
     </section>
   );
 }
