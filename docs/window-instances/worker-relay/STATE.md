@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T21:55:00Z |
-| where_we_are | relay-192 shipped |
-| confirmed_next | relay-193 |
-| brainstorm_notes | CardsCreateSheet Escape hint; BottomSheet already handles key |
+| reviewed_at | 2026-07-27T23:05:00Z |
+| where_we_are | relay-193 shipped |
+| confirmed_next | relay-194 |
+| brainstorm_notes | LogFoodEditSheet Escape hint; BottomSheet already handles key |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:55:00Z` |
-| confirmed_next | `relay-193` |
-| next_action | `relay-193 Log food edit sheet Escape to close` |
+| last_wake | `2026-07-27T23:05:00Z` |
+| confirmed_next | `relay-194` |
+| next_action | `relay-194 Agent attach sheet Escape to close` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-192 reviewed round 23; committed 3e03d10` |
-| review_diff_range | `relay-192` |
+| review_skip_reason | `relay-193 reviewed round 24; committed 788b258` |
+| review_diff_range | `relay-193` |
 | code_changed | `no` |
-| review_round | `23` |
-| last_reviewed_round | `23` |
+| review_round | `24` |
+| last_reviewed_round | `24` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css,pwa/src/components/CardsCreateSheet.tsx` |
-| review_fingerprint | `3e03d10` |
+| review_changed_files | `pwa/src/App.css,pwa/src/components/LogFoodEditSheet.tsx` |
+| review_fingerprint | `788b258` |
 | ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -93,7 +93,10 @@
 - [x] relay-190 | Settings OAuth banner aria-live polite on show | polish | role=status aria-live=polite on OAuth success banner
 - [x] relay-191 | Agent tools sheet Escape to close | polish | BottomSheet Escape + hint text (ad3d6a0)
 - [x] relay-192 | Cards create sheet Escape to close | polish | BottomSheet Escape + hint text (3e03d10)
-- [ ] relay-193 | Log food edit sheet Escape to close | polish
+- [x] relay-193 | Log food edit sheet Escape to close | polish | BottomSheet Escape + hint text (788b258)
+- [ ] relay-194 | Agent attach sheet Escape to close | polish | Given attach sheet open, When user presses Escape, Then sheet closes + hint text visible
+- [ ] relay-195 | Agent camera sheet Escape hint | polish | Given camera BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
+- [ ] relay-196 | Agent voice sheet Escape hint | polish | Given voice BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
 
 ---
 
@@ -140,6 +143,9 @@
 | rf-r22-000 | low | No issues in relay-191 Agent tools sheet Escape hint diff | round-22 /code-review | closed | — | closed |
 | rf-r23-001 | low | pwa/src/components/CardsCreateSheet.tsx: Escape hint matches AgentToolsSheet; BottomSheet handles keydown | round-23 /code-review | closed | — | closed |
 | rf-r23-002 | low | pwa/src/App.css: cards-create-sheet-hint spacing mirrors agent-tools-sheet-hint | round-23 /code-review | closed | — | closed |
+| rf-r24-000 | low | No logic, security, or regression bugs in relay-193 diff (2 files) | round-24 bugbot | closed | — | closed |
+| rf-r24-001 | low | pwa/src/components/LogFoodEditSheet.tsx:42 adds Escape hint; close via BottomSheet keydown | round-24 bugbot | closed | relay-193 | closed |
+| rf-r24-002 | low | pwa/src/App.css:2070-2074 log-food-edit-sheet-hint matches cards-create-sheet-hint | round-24 /code-review | closed | — | closed |
 
 ---
 
@@ -147,6 +153,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-193 | done | build | 788b258 |
 | 2026-07-27 | relay-192 | done | build | 3e03d10 |
 | 2026-07-27 | relay-191 | done | build | ad3d6a0 |
 | 2026-07-27 | relay-190 | done | build | 57e63d9 |
