@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:57:00Z |
+| reviewed_at | 2026-07-27T04:58:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #126; relay-132 Plan label for Log queue source shipped. |
+| where_we_are | Loop tick #127; relay-133 habit queue sort by created_at shipped. |
 | blockers | [] |
-| confirmed_next | relay-133 habit queue sort by created_at |
-| brainstorm_notes | mealPlanQueueSourceLabel maps log → Plan in banners and tab hints |
+| confirmed_next | relay-134 food log queue sort by created_at |
+| brainstorm_notes | sortQueueByCreatedAt shared helper in localStorageQueue |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:57:00Z |
+| last_wake | 2026-07-27T04:58:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: maintenance) |
-| next_action | relay-133 habit queue sort by created_at |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-134 food log queue sort by created_at |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-132 | Meal plan queue source label "Plan" for Log tab | feature
-- [ ] relay-133 | Habit queue sort by created_at | maintenance
 - [ ] relay-134 | Food log queue sort by created_at | maintenance
 
 ---
@@ -59,6 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-133 | done | build | 9551e3c |
+| 2026-07-27 | relay-132 | done | build | 65e1755 |
 | 2026-07-27 | relay-131 | done | build | 194ae02 |
 | 2026-07-27 | relay-130 | done | build | cbbbc5e |
 | 2026-07-27 | relay-129 | done | build | f1f65f6 |
