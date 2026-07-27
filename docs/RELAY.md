@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:44:00Z |
+| reviewed_at | 2026-07-27T04:45:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #113; relay-118 queue panel banner reduced motion shipped. |
+| where_we_are | Loop tick #114; relay-119 consolidated meal plan sync pulse CSS shipped. |
 | blockers | [] |
-| confirmed_next | relay-119 consolidate meal plan sync pulse CSS |
-| brainstorm_notes | relay-118 done; queue panel syncing banner pulses; static under prefers-reduced-motion |
+| confirmed_next | relay-120 meal plan queue scroll focus management |
+| brainstorm_notes | relay-119 done; shared selector group for sync banner pulse animation |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:43:00Z |
+| last_wake | 2026-07-27T04:44:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-118 meal plan queue panel banner reduced motion |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-119 consolidate meal plan sync pulse CSS |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-119 | Consolidate meal plan sync pulse CSS | maintenance
 - [ ] relay-120 | Meal plan queue scroll focus management | feature
+- [ ] relay-121 | Meal plan sync progress reduced motion aria | maintenance
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-118 | done | build | — |
+| 2026-07-27 | relay-119 | done | build | — |
+| 2026-07-27 | relay-118 | done | build | 4cb5108 |
 | 2026-07-27 | relay-117 | done | build | 3383ae4 |
 | 2026-07-27 | relay-116 | done | build | acbc27e |
 | 2026-07-27 | relay-115 | done | build | 42580ec |
