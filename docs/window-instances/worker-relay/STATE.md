@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:38:00Z |
-| where_we_are | relay-177 shipped |
-| confirmed_next | relay-178 |
+| reviewed_at | 2026-07-27T14:40:00Z |
+| where_we_are | relay-178 shipped |
+| confirmed_next | relay-179 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -19,16 +19,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:35:00Z |
-| confirmed_next | relay-177 |
-| next_action | relay-177 Log History list show meal count inline |
+| last_wake | 2026-07-27T14:38:00Z |
+| confirmed_next | relay-178 |
+| next_action | relay-178 Agent chat copy assistant message |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 8-close |
+| phase | 9-arm |
 | review_status | done |
 | review_skip_reason | — |
 | review_round | `3` |
 | last_reviewed_round | `3` |
-| review_diff_range | uncommitted STATE relay-176 verify |
+| review_diff_range | `c69908d` |
 | code_changed | `yes` |
 
 ---
