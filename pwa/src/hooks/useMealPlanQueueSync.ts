@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type FoodTodayResponse } from '../lib/api';
 import {
+  addMealPlanFailedId,
+  clearMealPlanFailedIds,
+  getMealPlanFailedIds,
   getMealPlanQueue,
   isOfflineError,
   MEAL_PLAN_QUEUE_CHANGE,
   mealPlanQueueLabel,
   mealPlanSyncUndoLabel,
+  pruneMealPlanFailedIds,
   removeMealPlanQueueItem,
+  setMealPlanFailedIds,
   type QueuedMealPlanLog,
 } from '../lib/mealPlanQueue';
 
@@ -52,7 +57,9 @@ export function useMealPlanQueueSync({
   const [mealPlanQueue, setMealPlanQueue] = useState<QueuedMealPlanLog[]>(() => getMealPlanQueue());
   const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
   const [mealPlanSyncProgress, setMealPlanSyncProgress] = useState<{ done: number; total: number } | null>(null);
-  const [failedMealPlanIds, setFailedMealPlanIds] = useState<Set<string>>(() => new Set());
+  const [failedMealPlanIds, setFailedMealPlanIds] = useState<Set<string>>(
+    () => new Set(getMealPlanFailedIds()),
+  );
   const [retryingMealPlanId, setRetryingMealPlanId] = useState<string | null>(null);
 
   const syncMealPlanQueue = useCallback(() => {
@@ -73,27 +80,21 @@ export function useMealPlanQueueSync({
       if (!prev.has(item.id)) return prev;
       const next = new Set(prev);
       next.delete(item.id);
+      setMealPlanFailedIds(next);
       return next;
     });
     return summary;
   }, []);
 
   const pruneFailedIds = useCallback(() => {
-    const remainingIds = new Set(getMealPlanQueue().map((item) => item.id));
-    if (remainingIds.size === 0) {
+    pruneMealPlanFailedIds();
+    const remaining = getMealPlanFailedIds();
+    if (remaining.length === 0) {
       setFailedMealPlanIds(new Set());
       clearError?.();
       return;
     }
-    setFailedMealPlanIds((prev) => {
-      let changed = false;
-      const next = new Set<string>();
-      for (const id of prev) {
-        if (remainingIds.has(id)) next.add(id);
-        else changed = true;
-      }
-      return changed ? next : prev;
-    });
+    setFailedMealPlanIds(new Set(remaining));
   }, [clearError]);
 
   const runQueueSync = useCallback(
@@ -126,8 +127,9 @@ export function useMealPlanQueueSync({
               syncMealPlanQueue();
             }
           } catch (e) {
-            if (isOfflineError(e)) break;
-            setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
+          if (isOfflineError(e)) break;
+          addMealPlanFailedId(item.id);
+          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
             setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
             break;
           }
@@ -199,6 +201,7 @@ export function useMealPlanQueueSync({
         if (isOfflineError(e)) {
           onItemOffline?.(mealPlanQueueLabel(item));
         } else {
+          addMealPlanFailedId(item.id);
           setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
           setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
         }
@@ -232,6 +235,7 @@ export function useMealPlanQueueSync({
         if (!prev.has(id)) return prev;
         const next = new Set(prev);
         next.delete(id);
+        setMealPlanFailedIds(next);
         return next;
       });
       syncMealPlanQueue();
@@ -240,6 +244,7 @@ export function useMealPlanQueueSync({
   );
 
   const resetFailedIds = useCallback(() => {
+    clearMealPlanFailedIds();
     setFailedMealPlanIds(new Set());
   }, []);
 

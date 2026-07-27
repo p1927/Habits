@@ -42,7 +42,8 @@ function App() {
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
-  const { count: mealPlanQueueCount, badgePulse: mealPlanBadgePulse } = useMealPlanQueueCount();
+  const { count: mealPlanQueueCount, failedCount: mealPlanFailedCount, badgePulse: mealPlanBadgePulse } =
+    useMealPlanQueueCount();
 
   const handleTabChange = useCallback((id: TabId) => {
     setTab(id);
@@ -127,7 +128,11 @@ function App() {
               mealPlanQueueCount > 0 &&
               (t.id === 'home' || t.id === 'log' || t.id === 'day') &&
               tab !== t.id;
-            const queueBadgeCountLabel = `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`;
+            const badgeCount = mealPlanFailedCount > 0 ? mealPlanFailedCount : mealPlanQueueCount;
+            const queueBadgeCountLabel =
+              mealPlanFailedCount > 0
+                ? `${mealPlanFailedCount} meal log${mealPlanFailedCount === 1 ? '' : 's'} failed to sync`
+                : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`;
             return (
             <button
               key={t.id}
@@ -140,8 +145,8 @@ function App() {
                 <span className="tab-icon" aria-hidden>{t.icon}</span>
                 {showQueueBadge && (
                   <span
-                    className={`tab-badge${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' ? ' tab-badge--actionable' : ''}`}
-                    aria-label={`${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`}
+                    className={`tab-badge${mealPlanFailedCount > 0 ? ' tab-badge--failed' : ''}${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' ? ' tab-badge--actionable' : ''}`}
+                    aria-label={queueBadgeCountLabel}
                     title={
                       t.id === 'log'
                         ? `${queueBadgeCountLabel} — tap to open Plan`
@@ -161,7 +166,7 @@ function App() {
                         : undefined
                     }
                   >
-                    {mealPlanQueueCount > 9 ? '9+' : mealPlanQueueCount}
+                    {badgeCount > 9 ? '9+' : badgeCount}
                   </span>
                 )}
               </span>

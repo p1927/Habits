@@ -1,4 +1,5 @@
 const QUEUE_KEY = 'habits-meal-plan-queue';
+const FAILED_KEY = 'habits-meal-plan-queue-failed';
 const CACHE_KEY = 'habits-meal-plan-cache';
 
 export const MEAL_PLAN_QUEUE_CHANGE = 'habits-meal-plan-queue-change';
@@ -44,6 +45,55 @@ export function getMealPlanQueue(): QueuedMealPlanLog[] {
   return readQueue();
 }
 
+function readFailedIds(): string[] {
+  try {
+    const raw = localStorage.getItem(FAILED_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFailedIds(ids: string[]) {
+  if (ids.length === 0) localStorage.removeItem(FAILED_KEY);
+  else localStorage.setItem(FAILED_KEY, JSON.stringify(ids));
+  notifyQueueChange();
+}
+
+export function getMealPlanFailedIds(): string[] {
+  const queueIds = new Set(readQueue().map((item) => item.id));
+  return readFailedIds().filter((id) => queueIds.has(id));
+}
+
+export function getMealPlanFailedCount(): number {
+  return getMealPlanFailedIds().length;
+}
+
+export function setMealPlanFailedIds(ids: Iterable<string>) {
+  writeFailedIds([...ids]);
+}
+
+export function addMealPlanFailedId(id: string) {
+  const next = new Set(readFailedIds());
+  next.add(id);
+  writeFailedIds([...next]);
+}
+
+export function removeMealPlanFailedId(id: string) {
+  writeFailedIds(readFailedIds().filter((x) => x !== id));
+}
+
+export function clearMealPlanFailedIds() {
+  writeFailedIds([]);
+}
+
+export function pruneMealPlanFailedIds() {
+  const queueIds = new Set(readQueue().map((item) => item.id));
+  writeFailedIds(readFailedIds().filter((id) => queueIds.has(id)));
+}
+
 export function enqueueMealPlanLog(
   entry: Omit<QueuedMealPlanLog, 'id' | 'created_at'> & { id?: string },
 ): QueuedMealPlanLog {
@@ -58,10 +108,12 @@ export function enqueueMealPlanLog(
 
 export function removeMealPlanQueueItem(id: string) {
   writeQueue(readQueue().filter((x) => x.id !== id));
+  removeMealPlanFailedId(id);
 }
 
 export function clearMealPlanQueue() {
   localStorage.removeItem(QUEUE_KEY);
+  clearMealPlanFailedIds();
   notifyQueueChange();
 }
 

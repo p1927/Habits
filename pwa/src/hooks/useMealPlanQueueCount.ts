@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getMealPlanQueue, MEAL_PLAN_QUEUE_CHANGE } from '../lib/mealPlanQueue';
+import {
+  getMealPlanFailedCount,
+  getMealPlanQueue,
+  MEAL_PLAN_QUEUE_CHANGE,
+} from '../lib/mealPlanQueue';
 
 export function useMealPlanQueueCount() {
   const [count, setCount] = useState(() => getMealPlanQueue().length);
+  const [failedCount, setFailedCount] = useState(() => getMealPlanFailedCount());
   const [badgePulse, setBadgePulse] = useState(false);
   const prevCountRef = useRef(count);
+  const prevFailedRef = useRef(failedCount);
 
   const sync = useCallback(() => {
     const next = getMealPlanQueue().length;
-    if (next > prevCountRef.current) {
+    const nextFailed = getMealPlanFailedCount();
+    if (next > prevCountRef.current || nextFailed > prevFailedRef.current) {
       setBadgePulse(true);
     }
     prevCountRef.current = next;
+    prevFailedRef.current = nextFailed;
     setCount(next);
+    setFailedCount(nextFailed);
   }, []);
 
   useEffect(() => {
@@ -34,5 +43,5 @@ export function useMealPlanQueueCount() {
     };
   }, [sync]);
 
-  return { count, badgePulse };
+  return { count, failedCount, badgePulse };
 }

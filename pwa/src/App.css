@@ -317,6 +317,10 @@ button:disabled {
   pointer-events: none;
 }
 
+.tab-badge--failed {
+  background: var(--err);
+}
+
 .tab-badge--pulse {
   animation: tab-badge-pulse 0.65s ease-out;
 }
