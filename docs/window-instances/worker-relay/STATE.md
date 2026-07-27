@@ -22,7 +22,7 @@
 | last_wake | `2026-07-27T23:45:00Z` |
 | confirmed_next | `relay-195` |
 | next_action | `relay-195 Agent camera sheet Escape hint` |
-| phase | `2-orient` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-194 reviewed round 25; committed e11be06` |
 | review_diff_range | `relay-194` |
@@ -36,7 +36,7 @@
 | worktree_item_id | `—` |
 | review_changed_files | `pwa/src/App.css,pwa/src/components/AgentAttachSheet.tsx` |
 | review_fingerprint | `e11be06` |
-| ritual_step | `2-orient` |
+| ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
