@@ -16,13 +16,29 @@ export type DayScheduleView = 'agenda' | 'day';
 
 export interface DayTimelineCardProps {
   events: DayCalendarEvent[];
+  onAgentSchedulePrompt?: () => void;
 }
 
-export function DayTimelineCard({ events }: DayTimelineCardProps) {
+export function DayTimelineCard({ events, onAgentSchedulePrompt }: DayTimelineCardProps) {
   const [view, setView] = useState<DayScheduleView>('agenda');
   const [selectedEvent, setSelectedEvent] = useState<DayCalendarEvent | null>(null);
   const sorted = sortEventsByStart(events);
   const dayLabel = formatScheduleDayLabel();
+
+  const emptySchedule = (
+    <div className="day-schedule-empty">
+      <p className="muted">No events on your schedule today.</p>
+      {onAgentSchedulePrompt && (
+        <button
+          type="button"
+          className="btn-pill btn-pill-outline day-schedule-empty__cta"
+          onClick={onAgentSchedulePrompt}
+        >
+          Add with Coach
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -63,11 +79,11 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
       {!events.length ? (
         view === 'day' ? (
           <div role="tabpanel" id="day-schedule-panel-day" aria-labelledby="day-schedule-tab-day">
-            <DayScheduleGrid events={[]} />
+            {emptySchedule}
           </div>
         ) : (
           <div role="tabpanel" id="day-schedule-panel-agenda" aria-labelledby="day-schedule-tab-agenda">
-            <p className="muted day-schedule-empty">No events on your schedule today.</p>
+            {emptySchedule}
           </div>
         )
       ) : view === 'day' ? (

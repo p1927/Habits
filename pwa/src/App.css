@@ -3696,7 +3696,15 @@ form.log-type-card {
 }
 
 .day-schedule-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
   margin: 0;
+}
+
+.day-schedule-empty__cta {
+  flex-shrink: 0;
 }
 
 .day-schedule-view-toggle {

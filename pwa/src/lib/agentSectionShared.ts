@@ -7,6 +7,9 @@ export const AGENT_QUICK_PROMPTS = [
   { label: 'Health note', text: 'Add a note to my health cards' },
 ] as const;
 
+/** Prefill when Day schedule is empty — opens Agent with this message. */
+export const AGENT_SCHEDULE_TODAY_PROMPT = 'Add a calendar event for today';
+
 export const AGENT_GREETING_CATEGORIES = [
   { label: 'Log food', icon: '◉', description: 'Track meals, macros, and portions', text: 'Help me log what I ate today' },
   { label: 'Habits', icon: '☰', description: 'Sleep, work, and daily targets', text: 'How am I doing on habits today?' },

@@ -11,10 +11,11 @@ export function DaySectionScheduleStack({
   habitLog,
   streak,
   metricLabel,
+  onAgentSchedulePrompt,
 }: DaySectionScheduleStackProps) {
   return (
     <>
-      <DayTimelineCard events={events} />
+      <DayTimelineCard events={events} onAgentSchedulePrompt={onAgentSchedulePrompt} />
 
       <DayHabitHoursCard
         habits={habits}

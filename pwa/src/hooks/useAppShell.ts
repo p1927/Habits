@@ -17,6 +17,7 @@ export function useAppShell() {
   const [openLogMealPlan, setOpenLogMealPlan] = useState(false);
   const [openLogHistory, setOpenLogHistory] = useState(false);
   const [openLogRecipes, setOpenLogRecipes] = useState(false);
+  const [agentPrompt, setAgentPrompt] = useState<{ token: number; text: string } | null>(null);
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
@@ -56,6 +57,15 @@ export function useAppShell() {
     setOpenLogRecipes(true);
     handleTabChange('log');
   }, [handleTabChange]);
+
+  const navigateAgentPrompt = useCallback(
+    (prompt: string) => {
+      preloadAppTabChunk('agent');
+      setAgentPrompt((prev) => ({ token: (prev?.token ?? 0) + 1, text: prompt }));
+      handleTabChange('agent');
+    },
+    [handleTabChange],
+  );
 
   useEffect(() => {
     return bindNotificationNavigation(handleTabChange);
@@ -106,6 +116,8 @@ export function useAppShell() {
     navigateMealPlanSyncSource,
     navigateLogHistory,
     navigateLogRecipes,
+    navigateAgentPrompt,
+    agentPrompt,
     handleTabChange,
     refresh,
     mealPlanQueueCount,

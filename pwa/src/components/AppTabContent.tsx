@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Home } from '../sections/Home';
 import { Agent, Cards, Day, Log, Settings } from '../lib/appTabPreload';
+import { AGENT_SCHEDULE_TODAY_PROMPT } from '../lib/agentSectionShared';
 import type { AppShellState } from '../hooks/useAppShell';
 import { TabSectionFallback } from './TabSectionFallback';
 
@@ -21,6 +22,8 @@ type AppTabContentProps = Pick<
   | 'navigateMealPlanSyncSource'
   | 'navigateLogHistory'
   | 'navigateLogRecipes'
+  | 'navigateAgentPrompt'
+  | 'agentPrompt'
   | 'refresh'
 >;
 
@@ -40,6 +43,8 @@ export function AppTabContent({
   navigateMealPlanSyncSource,
   navigateLogHistory,
   navigateLogRecipes,
+  navigateAgentPrompt,
+  agentPrompt,
   refresh,
 }: AppTabContentProps) {
   return (
@@ -71,6 +76,7 @@ export function AppTabContent({
           serverOnline={serverOnline}
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
+          onAgentSchedulePrompt={() => navigateAgentPrompt(AGENT_SCHEDULE_TODAY_PROMPT)}
         />
       )}
       {tab === 'cards' && (
@@ -80,6 +86,7 @@ export function AppTabContent({
         <Agent
           serverOnline={serverOnline}
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
+          agentPrompt={agentPrompt}
         />
       )}
       {tab === 'settings' && (

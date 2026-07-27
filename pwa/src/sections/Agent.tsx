@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AgentChatComposer } from '../components/AgentChatComposer';
 import { AgentSectionBody } from '../components/AgentSectionBody';
 import { AgentSectionHeader } from '../components/AgentSectionHeader';
@@ -7,10 +8,16 @@ import { useAgentSection, type AgentNavigateMealPlanSyncSource } from '../hooks/
 interface AgentProps {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: AgentNavigateMealPlanSyncSource;
+  agentPrompt?: { token: number; text: string } | null;
 }
 
-export function Agent({ serverOnline, onNavigateMealPlanSyncSource }: AgentProps) {
+export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt }: AgentProps) {
   const s = useAgentSection({ serverOnline });
+
+  useEffect(() => {
+    if (!agentPrompt?.token) return;
+    s.setInput(agentPrompt.text);
+  }, [agentPrompt?.token, agentPrompt?.text, s.setInput]);
 
   return (
     <section className="section agent-section agent-section--gemini" aria-labelledby="agent-heading">
