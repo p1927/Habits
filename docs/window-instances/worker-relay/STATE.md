@@ -24,9 +24,9 @@
 | next_action | `relay-187 App tab bar keyboard shortcuts ⌘/Ctrl+1–5` |
 | phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-186 reviewed round 13; committed pending` |
+| review_skip_reason | `relay-186 reviewed round 13; committed 41d31b5` |
 | review_diff_range | `relay-186` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `13` |
 | last_reviewed_round | `13` |
 | worktree_status | `none` |
@@ -121,7 +121,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-186 | done | build | — |
+| 2026-07-27 | relay-186 | done | build | 41d31b5 |
 | 2026-07-27 | relay-185 | done | build | 2303dab |
 | 2026-07-27 | relay-184 | done | build | ac53858 |
 | 2026-07-27 | relay-183 | done | build | 2055d88 |
