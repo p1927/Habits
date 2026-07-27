@@ -19,8 +19,18 @@ def _parse_history_date(raw: object) -> str | None:
         return None
 
 
+def _parse_meal_count(raw: object) -> int | None:
+    if raw is None or raw == "":
+        return None
+    try:
+        val = int(float(str(raw).strip()))
+        return val if val >= 0 else None
+    except (ValueError, TypeError):
+        return None
+
+
 async def get_food_history(settings: Settings, db: TokenDB, days: int = 7) -> dict:
-    """Read Followed tab: date, calories, carbs, protein, fat."""
+    """Read Followed tab: date, meals, calories, carbs, protein, fat."""
     connected = await db.google_connected()
     if not connected:
         return {"days": [], "sheets_connected": False}
@@ -43,13 +53,17 @@ async def get_food_history(settings: Settings, db: TokenDB, days: int = 7) -> di
         calories = parse_float(row[2] if len(row) > 2 else 0)
         if calories <= 0:
             continue
-        history.append({
+        day: dict = {
             "date": day_str,
             "calories": round(calories, 1),
             "carbs": round(parse_float(row[3] if len(row) > 3 else 0), 1),
             "protein": round(parse_float(row[4] if len(row) > 4 else 0), 1),
             "fat": round(parse_float(row[5] if len(row) > 5 else 0), 1),
-        })
+        }
+        meal_count = _parse_meal_count(row[1] if len(row) > 1 else None)
+        if meal_count is not None:
+            day["meal_count"] = meal_count
+        history.append(day)
 
     history.sort(key=lambda x: x["date"], reverse=True)
     sliced = history[:days]

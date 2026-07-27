@@ -3,7 +3,7 @@ import { Card } from './ui/Card';
 import { downloadLogHistoryCsv } from '../lib/logHistoryExport';
 
 export interface LogHistoryPanelProps {
-  days: { date: string; calories: number; protein: number }[];
+  days: { date: string; calories: number; protein: number; meal_count?: number }[];
 }
 
 export function LogHistoryPanel({ days }: LogHistoryPanelProps) {
@@ -29,7 +29,7 @@ export function LogHistoryPanel({ days }: LogHistoryPanelProps) {
         )}
       </div>
       {!days.length ? (
-        <p className="muted">No history in Followed tab.</p>
+        <p className="muted">No history in Followed tab. Export CSV unlocks once you have logged days.</p>
       ) : (
         <>
           {showTrend && (
