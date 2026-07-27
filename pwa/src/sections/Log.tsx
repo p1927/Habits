@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CameraCapture } from '../components/CameraCapture';
 import { FoodQueueBanner } from '../components/FoodQueueBanner';
+import { LogFoodEditSheet } from '../components/LogFoodEditSheet';
+import { LogHistoryPanel } from '../components/LogHistoryPanel';
+import { LogMealPlanTabPanel } from '../components/LogMealPlanTabPanel';
+import { LogRecipesTabPanel } from '../components/LogRecipesTabPanel';
+import { LogScanTabPanel } from '../components/LogScanTabPanel';
+import { LogSubTabs } from '../components/LogSubTabs';
+import { LogTypeTabPanel } from '../components/LogTypeTabPanel';
 import { RecipeScanQueueSection } from '../components/RecipeScanQueueSection';
-import { BarcodeScanner } from '../components/BarcodeScanner';
-import { ScanInlineOverlay } from '../components/ScanInlineOverlay';
-import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
 import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
-import { Card } from '../components/ui/Card';
-import { BottomSheet } from '../components/ui/BottomSheet';
 import {
   api,
   ApiError,
-  type FoodLogItem,
   type FoodScanResult,
   type FoodSearchResult,
   type FoodTodayResponse,
@@ -21,6 +21,7 @@ import {
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
+import { useMealPlanEntryLogging } from '../hooks/useMealPlanEntryLogging';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -30,11 +31,22 @@ import {
   clearRecipeScanQueue,
 } from '../lib/recipeScanQueue';
 import { isOfflineError } from '../lib/foodQueue';
-import { formatRelativeTime } from '../lib/relativeTime';
+import {
+  addScanHistory,
+  clearScanHistory,
+  getScanHistory,
+  type ScanHistoryEntry,
+} from '../lib/scanHistory';
+import {
+  dataUrlToFile,
+  isTypingTarget,
+  LOG_SHORTCUT_HINT_KEY,
+  LOG_TABS,
+  type LogTab,
+} from '../lib/logSectionShared';
 import {
   cacheMealPlan,
   dismissAllMealPlanQueue,
-  enqueueMealPlanLog,
   getCachedMealPlan,
   type MealPlanEntry,
   type MealPlanSyncSource,
@@ -46,39 +58,6 @@ interface LogProps {
   onMealPlanOpened?: () => void;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   scrollToMealPlanQueue?: number;
-}
-
-type LogTab = 'scan' | 'type' | 'mealplan' | 'recipes' | 'history';
-
-const LOG_TABS: LogTab[] = ['scan', 'type', 'mealplan', 'recipes', 'history'];
-const LOG_SHORTCUT_HINT_KEY = 'habits-log-shortcuts-hint-seen';
-
-function isTypingTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-  const tag = target.tagName;
-  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
-}
-
-function shortcutModifierLabel(): string {
-  if (typeof navigator === 'undefined') return 'Ctrl+';
-  return /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl+';
-}
-
-const MEAL_TYPES = [
-  { value: 'breakfast', label: 'Breakfast' },
-  { value: 'lunch', label: 'Lunch' },
-  { value: 'dinner', label: 'Dinner' },
-  { value: 'snack', label: 'Snack' },
-  { value: 'other', label: 'Other' },
-];
-
-function dataUrlToFile(dataUrl: string, name = 'scan.jpg'): File {
-  const [header, b64] = dataUrl.split(',');
-  const mime = header.match(/:(.*?);/)?.[1] ?? 'image/jpeg';
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return new File([arr], name, { type: mime });
 }
 
 export function Log({
@@ -96,6 +75,7 @@ export function Log({
   const [loading, setLoading] = useState(false);
   const [scanResult, setScanResult] = useState<FoodScanResult | null>(null);
   const [scanPreviewUrl, setScanPreviewUrl] = useState<string | null>(null);
+  const [scanHistory, setScanHistory] = useState(() => getScanHistory());
   const [editOpen, setEditOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editQty, setEditQty] = useState('100');
@@ -122,8 +102,6 @@ export function Log({
   const [recipeScanQueue, setRecipeScanQueue] = useState(() => getRecipeScanQueue());
   const [recipeScanQueueSyncClearedToken, setRecipeScanQueueSyncClearedToken] = useState(0);
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
-  const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
-  const [loggingMeals, setLoggingMeals] = useState(false);
   const [showShortcutHint, setShowShortcutHint] = useState(
     () => localStorage.getItem(LOG_SHORTCUT_HINT_KEY) !== '1',
   );
@@ -301,90 +279,18 @@ export function Log({
     }
   }, [serverOnline]);
 
-  const logMealPlanEntry = useCallback(
-    (entry: MealPlanEntry) => {
-      setLoggingMealKey(entry.meal);
-      setSuccess('');
-      setError('');
-      dismissMealPlanUndo();
-
-      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-        enqueueMealPlanLog({
-          kind: 'item',
-          meal: entry.meal,
-          label: entry.label,
-          description: entry.description,
-        }, { source: 'log' });
-        syncMealPlanQueue();
-        setSuccess(`${entry.label} queued — will log when online`);
-        setLoggingMealKey(null);
-        return;
-      }
-
-      void (async () => {
-        try {
-          const before = data ?? (await api.getFoodToday());
-          const res = await api.logMealPlanItem(entry.meal);
-          setData(res.summary);
-          if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, entry.label)) {
-            setSuccess(res.message);
-          }
-        } catch (e) {
-          if (isOfflineError(e)) {
-            enqueueMealPlanLog({
-              kind: 'item',
-              meal: entry.meal,
-              label: entry.label,
-              description: entry.description,
-            }, { source: 'log' });
-            syncMealPlanQueue();
-            setSuccess(`${entry.label} queued — will log when online`);
-            return;
-          }
-          setError(e instanceof Error ? e.message : 'Meal log failed');
-        } finally {
-          setLoggingMealKey(null);
-        }
-      })();
-    },
-    [serverOnline, data, syncMealPlanQueue, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError],
-  );
-
-  const logAllMealPlan = useCallback(() => {
-    setLoggingMeals(true);
-    setSuccess('');
-    setError('');
-    dismissMealPlanUndo();
-
-    if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-      enqueueMealPlanLog({ kind: 'all' }, { source: 'log' });
-      syncMealPlanQueue();
-      setSuccess('All planned meals queued — will log when online');
-      setLoggingMeals(false);
-      return;
-    }
-
-    void (async () => {
-      try {
-        const before = data ?? (await api.getFoodToday());
-        const res = await api.logMealPlanToday();
-        setData(res.summary);
-        if (!offerUndoFromSummary(snapshotFoodRows(before), res.summary, 'All planned meals')) {
-          setSuccess(res.message);
-        }
-      } catch (e) {
-        if (isOfflineError(e)) {
-          enqueueMealPlanLog({ kind: 'all' }, { source: 'log' });
-          syncMealPlanQueue();
-          setSuccess('All planned meals queued — will log when online');
-          return;
-        }
-        setError(e instanceof Error ? e.message : 'Meal log failed');
-      } finally {
-        setLoggingMeals(false);
-      }
-    })();
-  }, [serverOnline, data, syncMealPlanQueue, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError]);
+  const { loggingMealKey, loggingMeals, logMealPlanEntry, logAllMealPlan } = useMealPlanEntryLogging({
+    serverOnline,
+    syncSource: 'log',
+    syncMealPlanQueue,
+    dismissMealPlanUndo,
+    snapshotFoodRows,
+    offerUndoFromSummary,
+    setMessage: setSuccess,
+    setError,
+    getFoodBeforeSync,
+    onFoodUpdated: setData,
+  });
 
   const loadSavedRecipe = useCallback(async () => {
     if (!serverOnline) return;
@@ -542,6 +448,8 @@ export function Log({
       setEditName(result.matched_name ?? result.detected_name);
       setEditQty(String(result.suggested_grams));
       addMealPhoto(dataUrl, result.matched_name ?? result.detected_name);
+      addScanHistory(dataUrl, result);
+      setScanHistory(getScanHistory());
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Scan failed');
     } finally {
@@ -552,6 +460,19 @@ export function Log({
   function clearScanFlow() {
     setScanResult(null);
     setScanPreviewUrl(null);
+  }
+
+  function restoreScanFromHistory(entry: ScanHistoryEntry) {
+    setScanPreviewUrl(entry.imageUrl);
+    setScanResult(entry.scan);
+    setEditName(entry.scan.matched_name ?? entry.scan.detected_name);
+    setEditQty(String(entry.scan.suggested_grams));
+    setError('');
+  }
+
+  function handleClearScanHistory() {
+    clearScanHistory();
+    setScanHistory([]);
   }
 
   async function logScan(name: string, qty: number) {
@@ -755,502 +676,172 @@ export function Log({
         showOwnSource={tab !== 'mealplan'}
       />
 
-      <div className="sub-tabs" role="tablist" aria-label="Log food views">
-        {LOG_TABS.map((t, index) => {
-          const label =
-            t === 'scan'
-              ? 'Scan'
-              : t === 'type'
-                ? 'Type'
-                : t === 'mealplan'
-                  ? 'Plan'
-                  : t === 'recipes'
-                    ? 'Recipes'
-                    : 'History';
-          return (
-          <button
-            key={t}
-            type="button"
-            role="tab"
-            id={`log-tab-${t}`}
-            aria-selected={tab === t}
-            aria-controls={`log-panel-${t}`}
-            aria-keyshortcuts={`${shortcutModifierLabel()}${index + 1}`}
-            className={`sub-tab ${tab === t ? 'sub-tab-active' : ''}`}
-            onClick={() => {
-              setTab(t);
-              dismissShortcutHint();
-            }}
-          >
-            {label}
-          </button>
-        );})}
-      </div>
-
-      {showShortcutHint && (
-        <p className="log-shortcut-hint muted" role="note">
-          Tip: press <kbd>{shortcutModifierLabel()}1</kbd>–<kbd>{shortcutModifierLabel()}5</kbd> to switch tabs.{' '}
-          <button type="button" className="link-btn" onClick={dismissShortcutHint}>
-            Got it
-          </button>
-        </p>
-      )}
+      <LogSubTabs
+        tab={tab}
+        onTabChange={setTab}
+        showShortcutHint={showShortcutHint}
+        onDismissShortcutHint={dismissShortcutHint}
+      />
 
       <div role="tabpanel" id={`log-panel-${tab}`} aria-labelledby={`log-tab-${tab}`}>
-      {tab === 'scan' && (
-        <>
-          {scanPreviewUrl ? (
-            <ScanInlineOverlay
-              imageUrl={scanPreviewUrl}
-              loading={loading}
-              scan={scanResult}
-              onRetake={clearScanFlow}
-              onEdit={() => setEditOpen(true)}
-              onAction={(dir) => {
-                if (dir === 'right' && scanResult) {
-                  void logScan(editName, Number.parseFloat(editQty) || scanResult.suggested_grams);
-                } else if (dir === 'up') {
-                  clearScanFlow();
-                }
-              }}
-            />
-          ) : scanResult ? (
-            <SwipeFoodCard
-              scan={scanResult}
-              onAction={(dir) => {
-                if (dir === 'right') {
-                  void logScan(editName, Number.parseFloat(editQty) || scanResult.suggested_grams);
-                } else if (dir === 'up') {
-                  clearScanFlow();
-                }
-              }}
-              onEdit={() => setEditOpen(true)}
-            />
-          ) : (
-            <Card>
-              <h2>Camera scan</h2>
-              <p className="muted">Point at your food — like Google Translate</p>
-              <CameraCapture
-                facingMode="environment"
-                placeholder="Point at your food — like Google Translate"
-                onCapture={(url) => void handleCapture(url)}
-                disabled={!serverOnline || loading}
-              />
-            </Card>
-          )}
-        </>
-      )}
-
-      {tab === 'type' && (
-        <>
-          <Card>
-            <h2>Barcode</h2>
-            <p className="muted">Scan packaged food — looks up your sheet, then Open Food Facts</p>
-            <BarcodeScanner
-              disabled={loading}
-              onScan={(code) => void handleBarcode(code)}
-            />
-          </Card>
-
-          {offProduct && (
-            <Card className="off-product-card">
-              <h2>Open Food Facts</h2>
-              <p className="off-product-name">{offProduct.name}</p>
-              {offProduct.brand && <p className="muted">{offProduct.brand}</p>}
-              <p className="muted">Per 100g · barcode {offProduct.barcode}</p>
-              <div className="off-product-macros">
-                <span>{offProduct.per100g.calories} kcal</span>
-                <span>{offProduct.per100g.protein}g protein</span>
-                <span>{offProduct.per100g.carbs}g carbs</span>
-                <span>{offProduct.per100g.fat}g fat</span>
-              </div>
-              <label className="field">
-                Serving (g)
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={offQuantity}
-                  onChange={(e) => setOffQuantity(e.target.value)}
-                  disabled={loading}
-                />
-              </label>
-              {(() => {
-                const qty = Number.parseFloat(offQuantity);
-                if (!qty || qty <= 0) return null;
-                const scaled = scaleOffMacros(offProduct.per100g, qty);
-                return (
-                  <p className="muted">
-                    For {qty}g: {scaled.calories} kcal · {scaled.protein}g protein
-                  </p>
-                );
-              })()}
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => void handleLogOffProduct()}
-              >
-                Log from Open Food Facts
-              </button>
-              <p className="muted">Or pick a matching food from your sheet below</p>
-            </Card>
-          )}
-
-          <form className="card" onSubmit={handleVoiceLog}>
-            <h2>Quick log</h2>
-            <label className="field">
-              What did you eat?
-              <input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="200g paneer and 250g broccoli"
-                disabled={!serverOnline || loading}
-              />
-            </label>
-            <label className="field">
-              Meal
-              <select value={mealType} onChange={(e) => setMealType(e.target.value)} disabled={!serverOnline || loading}>
-                {MEAL_TYPES.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </select>
-            </label>
-            <button type="submit" disabled={!serverOnline || loading || !description.trim()}>Log meal</button>
-          </form>
-
-          <form className="card" onSubmit={handleManualLog}>
-            <h2>Manual entry</h2>
-            <label className="field">
-              Food
-              <input
-                value={foodName}
-                onChange={(e) => setFoodName(e.target.value)}
-                placeholder="Arla Paneer"
-                disabled={!serverOnline || loading}
-                autoComplete="off"
-              />
-            </label>
-            {searchResults.length > 0 && (
-              <ul className="search-suggestions">
-                {searchResults.map((r) => (
-                  <li key={r.name}>
-                    <button type="button" onClick={() => { setFoodName(r.name); setSearchResults([]); }}>
-                      {r.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <label className="field">
-              Quantity (g)
-              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} disabled={!serverOnline || loading} />
-            </label>
-            <button type="submit" disabled={!serverOnline || loading || !foodName.trim()}>Add</button>
-          </form>
-
-          <Card>
-            <h2>Today&apos;s log</h2>
-            {!pending.length && !data?.items.length ? (
-              <p className="muted">No entries yet.</p>
-            ) : (
-              <ul className="food-list">
-                {pending.map((entry) => {
-                  const queuedAgo = entry.created_at ? formatRelativeTime(entry.created_at) : '';
-                  const statusSuffix =
-                    entry.status === 'pending'
-                      ? ' · Saving…'
-                      : entry.status === 'queued'
-                        ? queuedAgo
-                          ? ` · Queued ${queuedAgo}`
-                          : ' · Queued offline'
-                        : ' · Failed to save';
-                  return (
-                  <li
-                    key={entry.id}
-                    className={`food-row food-row--${entry.status}`}
-                  >
-                    <div>
-                      <strong>{entry.food}</strong>
-                      <span className="muted">
-                        {entry.quantity_g > 0 ? ` · ${entry.quantity_g}g` : ''}
-                        {entry.source === 'macros' ? ' · Open Food Facts' : ''}
-                        {statusSuffix}
-                      </span>
-                    </div>
-                    {entry.status === 'failed' && (
-                      <div className="food-row-actions">
-                        <button type="button" className="btn-small" onClick={() => retry(entry)}>
-                          Retry
-                        </button>
-                        <button type="button" className="btn-small btn-danger" aria-label="Dismiss failed entry" onClick={() => dismiss(entry.id)}>
-                          ×
-                        </button>
-                      </div>
-                    )}
-                  </li>
-                  );
-                })}
-                {data?.items.map((item: FoodLogItem) => (
-                  <li key={item.row} className="food-row">
-                    <div>
-                      <strong>{item.food}</strong>
-                      <span className="muted"> · {item.quantity_g}g · {item.protein.toFixed(1)}g protein</span>
-                    </div>
-                    <button type="button" className="btn-small btn-danger" aria-label={`Remove ${item.food}`} onClick={() => void handleDelete(item.row)}>×</button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        </>
-      )}
-
-      {tab === 'recipes' && (
-        <>
-          <Card>
-            <h2>Recipe photo</h2>
-            <p className="muted">
-              Photograph your prepared meal — AI identifies it for logging and saves to Home gallery
-            </p>
-            {recipePhoto && (
-              <img
-                src={recipePhoto}
-                alt={recipe?.name ? `Photo of ${recipe.name}` : 'Recipe photo'}
-                className="recipe-photo-preview"
-              />
-            )}
-            {!recipeScanResult && (
-              <CameraCapture
-                facingMode="environment"
-                placeholder="Photograph your prepared recipe"
-                onCapture={(url) => void handleRecipePhoto(url)}
-                disabled={loading || recipeScanning}
-              />
-            )}
-            {recipeScanning && (
-              <p className="muted" role="status" aria-live="polite">Identifying recipe…</p>
-            )}
-          </Card>
-
-          {recipeScanResult && (
-            <SwipeFoodCard
-              scan={recipeScanResult}
-              onAction={(dir) => {
-                if (dir === 'right') {
-                  void logRecipeScan(
-                    recipeEditName,
-                    Number.parseFloat(recipeEditQty) || recipeScanResult.suggested_grams,
-                  );
-                } else if (dir === 'up' || dir === 'left') {
-                  setRecipeScanResult(null);
-                  syncRecipeScanQueue();
-                  void processRecipeScanQueue();
-                }
-              }}
-              onEdit={() => setRecipeEditOpen(true)}
-            />
-          )}
-
-          <Card>
-            <div className="home-export-row">
-              <div>
-                <h2>Saved recipe</h2>
-                <p className="muted">From Save Reciepe tab in Nutrition sheet</p>
-              </div>
-              <button
-                type="button"
-                className="btn-small"
-                disabled={!serverOnline || recipeLoading}
-                aria-label="Refresh saved recipe from sheet"
-                onClick={() => void loadSavedRecipe()}
-              >
-                {recipeLoading ? 'Loading…' : 'Refresh'}
-              </button>
-            </div>
-            {!serverOnline ? (
-              <p className="muted">Connect to server to browse Save Reciepe sheet.</p>
-            ) : recipeSheetsConnected === false ? (
-              <p className="muted">Google Sheets not connected — link in Settings.</p>
-            ) : !recipe ? (
-              <p className="muted">No saved recipe found in Save Reciepe tab.</p>
-            ) : (
-              <>
-                <h3>{recipe.name}</h3>
-                <ul className="food-list">
-                  {recipe.items.map((item) => (
-                    <li key={item.food} className="food-row">
-                      <div>
-                        <strong>{item.food}</strong>
-                        <span className="muted">
-                          {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        className="btn-small"
-                        disabled={!serverOnline || loading}
-                        aria-label={`Log ${item.food}`}
-                        onClick={() =>
-                          void logItem(item.food, item.quantity_g, (summary) => {
-                            offerUndo(summary, item.food, item.quantity_g);
-                          })
-                        }
-                      >
-                        Log
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                {recipe.totals && (
-                  <p className="muted">
-                    Total: {recipe.totals.calories.toFixed(0)} kcal · {recipe.totals.protein.toFixed(1)}g protein
-                  </p>
-                )}
-                <button
-                  type="button"
-                  disabled={!serverOnline || loading}
-                  onClick={() => {
-                    setLoading(true);
-                    void api
-                      .logSavedRecipe()
-                      .then((res) => {
-                        setData(res.summary);
-                        setSuccess(res.message);
-                      })
-                      .catch((e) => setError(e instanceof Error ? e.message : 'Recipe log failed'))
-                      .finally(() => setLoading(false));
-                  }}
-                >
-                  Log entire recipe today
-                </button>
-              </>
-            )}
-          </Card>
-        </>
-      )}
-
-      {tab === 'mealplan' && (
-        <>
-          <MealPlanQueueSection
-            hasMealPlan={mealPlan.length > 0}
+        {tab === 'scan' && (
+          <LogScanTabPanel
             serverOnline={serverOnline}
-            queue={mealPlanQueue}
-            syncing={syncingMealPlanQueue}
-            syncProgress={mealPlanSyncProgress}
-            failedIds={failedMealPlanIds}
-            retryingId={retryingMealPlanId}
-            scrollToQueueToken={scrollToMealPlanQueue}
-            clearAllLabel="Dismiss"
-            onSyncAll={() => void flushMealPlanQueue()}
-            onRetryFailed={() => void retryFailedMealPlanQueue()}
-            onRetry={(item) => void retryMealPlanItem(item)}
-            onDismissItem={dismissMealPlanItem}
+            loading={loading}
+            scanPreviewUrl={scanPreviewUrl}
+            scanResult={scanResult}
+            scanHistory={scanHistory}
+            editName={editName}
+            editQty={editQty}
+            onCapture={(url) => void handleCapture(url)}
+            onClearScan={clearScanFlow}
+            onRestoreScan={restoreScanFromHistory}
+            onClearScanHistory={handleClearScanHistory}
+            onEditOpen={() => setEditOpen(true)}
+            onLogScan={(name, qty) => void logScan(name, qty)}
+          />
+        )}
+
+        {tab === 'type' && (
+          <LogTypeTabPanel
+            serverOnline={serverOnline}
+            loading={loading}
+            offProduct={offProduct}
+            offQuantity={offQuantity}
+            description={description}
+            mealType={mealType}
+            foodName={foodName}
+            quantity={quantity}
+            searchResults={searchResults}
+            pending={pending}
+            data={data}
+            onBarcodeScan={(code) => void handleBarcode(code)}
+            onOffQuantityChange={setOffQuantity}
+            onLogOffProduct={() => void handleLogOffProduct()}
+            onVoiceLog={handleVoiceLog}
+            onDescriptionChange={setDescription}
+            onMealTypeChange={setMealType}
+            onManualLog={handleManualLog}
+            onFoodNameChange={setFoodName}
+            onSelectSearchResult={(name) => {
+              setFoodName(name);
+              setSearchResults([]);
+            }}
+            onQuantityChange={setQuantity}
+            onRetryPending={retry}
+            onDismissPending={dismiss}
+            onDeleteItem={(row) => void handleDelete(row)}
+          />
+        )}
+
+        {tab === 'recipes' && (
+          <LogRecipesTabPanel
+            serverOnline={serverOnline}
+            loading={loading}
+            recipeLoading={recipeLoading}
+            recipeScanning={recipeScanning}
+            recipePhoto={recipePhoto}
+            recipeScanResult={recipeScanResult}
+            recipe={recipe}
+            recipeSheetsConnected={recipeSheetsConnected}
+            onRecipePhotoCapture={(url) => void handleRecipePhoto(url)}
+            onRecipeScanSwipe={(dir) => {
+              if (dir === 'right') {
+                void logRecipeScan(
+                  recipeEditName,
+                  Number.parseFloat(recipeEditQty) || recipeScanResult!.suggested_grams,
+                );
+              } else if (dir === 'up' || dir === 'left') {
+                setRecipeScanResult(null);
+                syncRecipeScanQueue();
+                void processRecipeScanQueue();
+              }
+            }}
+            onRecipeEditOpen={() => setRecipeEditOpen(true)}
+            onRefreshRecipe={() => void loadSavedRecipe()}
+            onLogRecipeItem={(food, quantityG) =>
+              void logItem(food, quantityG, (summary) => {
+                offerUndo(summary, food, quantityG);
+              })
+            }
+            onLogEntireRecipe={() => {
+              setLoading(true);
+              void api
+                .logSavedRecipe()
+                .then((res) => {
+                  setData(res.summary);
+                  setSuccess(res.message);
+                })
+                .catch((e) => setError(e instanceof Error ? e.message : 'Recipe log failed'))
+                .finally(() => setLoading(false));
+            }}
+          />
+        )}
+
+        {tab === 'mealplan' && (
+          <>
+            <MealPlanQueueSection
+              hasMealPlan={mealPlan.length > 0}
+              serverOnline={serverOnline}
+              queue={mealPlanQueue}
+              syncing={syncingMealPlanQueue}
+              syncProgress={mealPlanSyncProgress}
+              failedIds={failedMealPlanIds}
+              retryingId={retryingMealPlanId}
+              scrollToQueueToken={scrollToMealPlanQueue}
+              clearAllLabel="Dismiss"
+              onSyncAll={() => void flushMealPlanQueue()}
+              onRetryFailed={() => void retryFailedMealPlanQueue()}
+              onRetry={(item) => void retryMealPlanItem(item)}
+              onDismissItem={dismissMealPlanItem}
               onClearAll={() => {
                 dismissAllMealPlanQueue();
                 syncMealPlanQueue();
                 setSuccess('Meal plan log queue cleared');
               }}
-          />
-        <Card>
-          <h2>Today&apos;s meal plan</h2>
-          <p className="muted">From WEEK MEALS sheet · shortcut <kbd>{shortcutModifierLabel()}3</kbd></p>
-          {!mealPlan.length ? (
-            <p className="muted">No meals planned for today.</p>
-          ) : (
-            <>
-              <ul className="food-list">
-                {mealPlan.map((m) => (
-                  <li key={m.meal} className="food-row">
-                    <div>
-                      <strong>{m.label}</strong>
-                      <span className="muted">{m.description}</span>
-                    </div>
-                    <button
-                      type="button"
-                      className="btn-small"
-                      disabled={loggingMealKey === m.meal}
-                      aria-label={`Log ${m.label}`}
-                      onClick={() => logMealPlanEntry(m)}
-                    >
-                      {loggingMealKey === m.meal ? 'Logging…' : 'Log'}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                disabled={loggingMeals || !!loggingMealKey}
-                onClick={logAllMealPlan}
-              >
-                {loggingMeals ? 'Logging…' : 'Log all planned meals'}
-              </button>
-            </>
-          )}
-        </Card>
-        </>
-      )}
+            />
+            <LogMealPlanTabPanel
+              mealPlan={mealPlan}
+              loggingMealKey={loggingMealKey}
+              loggingMeals={loggingMeals}
+              onLogEntry={logMealPlanEntry}
+              onLogAll={logAllMealPlan}
+              showShortcut
+              disableLogAllWhenItemLogging
+            />
+          </>
+        )}
 
-      {tab === 'history' && (
-        <Card>
-          <h2>14-day history</h2>
-          {!history?.days.length ? (
-            <p className="muted">No history in Followed tab.</p>
-          ) : (
-            <ul className="food-list">
-              {[...history.days].reverse().map((d) => (
-                <li key={d.date} className="food-row">
-                  <strong>{d.date}</strong>
-                  <span className="muted">
-                    {d.calories.toFixed(0)} kcal · {d.protein.toFixed(1)}g protein
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-      )}
-
+        {tab === 'history' && <LogHistoryPanel days={history?.days ?? []} />}
       </div>
 
-      <BottomSheet open={recipeEditOpen} onClose={() => setRecipeEditOpen(false)} title="Edit recipe scan">
-        <label className="field">
-          Food name
-          <input value={recipeEditName} onChange={(e) => setRecipeEditName(e.target.value)} />
-        </label>
-        <label className="field">
-          Quantity (g)
-          <input type="number" value={recipeEditQty} onChange={(e) => setRecipeEditQty(e.target.value)} />
-        </label>
-        <button
-          type="button"
-          onClick={() => {
-            void logRecipeScan(recipeEditName, Number.parseFloat(recipeEditQty));
-            setRecipeEditOpen(false);
-          }}
-        >
-          Log food
-        </button>
-      </BottomSheet>
+      <LogFoodEditSheet
+        open={recipeEditOpen}
+        title="Edit recipe scan"
+        name={recipeEditName}
+        quantity={recipeEditQty}
+        onClose={() => setRecipeEditOpen(false)}
+        onNameChange={setRecipeEditName}
+        onQuantityChange={setRecipeEditQty}
+        onSubmit={() => {
+          void logRecipeScan(recipeEditName, Number.parseFloat(recipeEditQty));
+          setRecipeEditOpen(false);
+        }}
+      />
 
-      <BottomSheet open={editOpen} onClose={() => setEditOpen(false)} title="Edit scan">
-        <label className="field">
-          Food name
-          <input value={editName} onChange={(e) => setEditName(e.target.value)} />
-        </label>
-        <label className="field">
-          Quantity (g)
-          <input type="number" value={editQty} onChange={(e) => setEditQty(e.target.value)} />
-        </label>
-        <button
-          type="button"
-          onClick={() => {
-            void logScan(editName, Number.parseFloat(editQty));
-            setEditOpen(false);
-          }}
-        >
-          Log food
-        </button>
-      </BottomSheet>
+      <LogFoodEditSheet
+        open={editOpen}
+        title="Edit scan"
+        name={editName}
+        quantity={editQty}
+        onClose={() => setEditOpen(false)}
+        onNameChange={setEditName}
+        onQuantityChange={setEditQty}
+        onSubmit={() => {
+          void logScan(editName, Number.parseFloat(editQty));
+          setEditOpen(false);
+        }}
+      />
 
       <div role="status" aria-live="polite">
         {success && !undoLog && !mealPlanUndo && <div className="banner banner-ok">{success}</div>}
