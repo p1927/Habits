@@ -238,6 +238,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     resetFailedIds,
   } = useMealPlanQueueSync({
     serverOnline,
+    syncSource: 'log',
     active: tab === 'mealplan',
     autoFlushOnMount: true,
     watchOnline: true,

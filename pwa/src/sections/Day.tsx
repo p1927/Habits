@@ -131,6 +131,7 @@ export function Day({ serverOnline }: DayProps) {
     resetFailedIds,
   } = useMealPlanQueueSync({
     serverOnline,
+    syncSource: 'day',
     autoFlushOnMount: true,
     watchOnline: true,
     getFoodBeforeSync: () => api.getFoodToday(),

@@ -3,11 +3,51 @@ const FAILED_KEY = 'habits-meal-plan-queue-failed';
 const CACHE_KEY = 'habits-meal-plan-cache';
 
 export const MEAL_PLAN_QUEUE_CHANGE = 'habits-meal-plan-queue-change';
+export const MEAL_PLAN_SYNC_CHANGE = 'habits-meal-plan-queue-sync-change';
+
+export type MealPlanSyncSource = 'home' | 'day' | 'log';
+
+export interface MealPlanQueueSyncStatus {
+  syncing: boolean;
+  done: number;
+  total: number;
+  source: MealPlanSyncSource;
+}
+
+const SYNC_KEY = 'habits-meal-plan-queue-sync';
 
 function notifyQueueChange() {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event(MEAL_PLAN_QUEUE_CHANGE));
   }
+}
+
+function notifySyncChange() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(MEAL_PLAN_SYNC_CHANGE));
+  }
+}
+
+export function getMealPlanQueueSyncStatus(): MealPlanQueueSyncStatus | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(SYNC_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as MealPlanQueueSyncStatus;
+    if (!parsed?.syncing || typeof parsed.done !== 'number' || typeof parsed.total !== 'number') {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function setMealPlanQueueSyncStatus(status: MealPlanQueueSyncStatus | null) {
+  if (typeof window === 'undefined') return;
+  if (!status?.syncing) sessionStorage.removeItem(SYNC_KEY);
+  else sessionStorage.setItem(SYNC_KEY, JSON.stringify(status));
+  notifySyncChange();
 }
 
 export interface MealPlanEntry {

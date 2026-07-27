@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:40:00Z |
+| reviewed_at | 2026-07-27T03:45:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #88; relay-093 queue panel focus first failed item shipped. |
+| where_we_are | Loop tick #89; relay-094 Home remote sync banner shipped. |
 | blockers | [] |
-| confirmed_next | relay-094 home queue banner sync in progress on other tab |
-| brainstorm_notes | relay-093 done; panel scrolls/focuses first failed row on new failure |
+| confirmed_next | relay-095 meal plan sync failure haptic |
+| brainstorm_notes | relay-094 done; Home shows banner when Day/Log syncs queue |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:40:00Z |
+| last_wake | 2026-07-27T03:45:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-094 home queue banner when sync in progress on other tab |
+| cycle_parity | even (next: feature) |
+| next_action | relay-095 meal plan sync failure haptic |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 

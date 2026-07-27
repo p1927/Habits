@@ -13,11 +13,14 @@ import {
   pruneMealPlanFailedIds,
   removeMealPlanQueueItem,
   setMealPlanFailedIds,
+  setMealPlanQueueSyncStatus,
+  type MealPlanSyncSource,
   type QueuedMealPlanLog,
 } from '../lib/mealPlanQueue';
 
 export interface UseMealPlanQueueSyncOptions {
   serverOnline: boolean;
+  syncSource?: MealPlanSyncSource;
   active?: boolean;
   autoFlushOnMount?: boolean;
   watchOnline?: boolean;
@@ -38,6 +41,7 @@ export interface UseMealPlanQueueSyncOptions {
 
 export function useMealPlanQueueSync({
   serverOnline,
+  syncSource = 'home',
   active = true,
   autoFlushOnMount = false,
   watchOnline = false,
@@ -108,6 +112,7 @@ export function useMealPlanQueueSync({
       dismissMealPlanUndo();
       const total = items.length;
       setMealPlanSyncProgress({ done: 0, total });
+      setMealPlanQueueSyncStatus({ syncing: true, done: 0, total, source: syncSource });
       let synced = 0;
       const labels: string[] = [];
       let lastSummary: FoodTodayResponse | null = null;
@@ -125,6 +130,7 @@ export function useMealPlanQueueSync({
               synced += 1;
               labels.push(mealPlanQueueLabel(item));
               setMealPlanSyncProgress({ done: synced, total });
+              setMealPlanQueueSyncStatus({ syncing: true, done: synced, total, source: syncSource });
               syncMealPlanQueue();
             }
           } catch (e) {
@@ -149,6 +155,7 @@ export function useMealPlanQueueSync({
       } finally {
         setSyncingMealPlanQueue(false);
         setMealPlanSyncProgress(null);
+        setMealPlanQueueSyncStatus(null);
         syncMealPlanQueue();
         pruneFailedIds();
       }
@@ -156,6 +163,7 @@ export function useMealPlanQueueSync({
     [
       active,
       serverOnline,
+      syncSource,
       clearError,
       dismissMealPlanUndo,
       getFoodBeforeSync,

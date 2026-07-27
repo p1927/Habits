@@ -1144,6 +1144,10 @@ button:disabled {
   margin: 0 0 var(--space-xs);
 }
 
+.home-meal-plan-remote-sync {
+  margin-bottom: var(--space-sm);
+}
+
 .home-meal-plan-msg {
   margin: 0 0 0.75rem;
   padding: 0.5rem 0.75rem;
@@ -2445,8 +2449,70 @@ button:disabled {
   width: 100%;
   max-height: 180px;
   object-fit: cover;
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.decision-card-visual {
+  position: relative;
+  height: 140px;
+  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 18%, var(--surface)),
+    color-mix(in srgb, var(--ok) 12%, var(--surface))
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.decision-card-visual-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(
+    circle at 50% 80%,
+    color-mix(in srgb, var(--accent) 35%, transparent),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.decision-card-arc {
+  width: 160px;
+  height: 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.decision-card-arc-progress {
+  animation: decision-arc-pulse 3s ease-in-out infinite;
+}
+
+@keyframes decision-arc-pulse {
+  0%, 100% { stroke-dashoffset: 62; opacity: 1; }
+  50% { stroke-dashoffset: 38; opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decision-card-arc-progress {
+    animation: none;
+    stroke-dashoffset: 50;
+  }
+}
+
+.decision-card-visual-label {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.25rem;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 70%, var(--text));
 }
 
 .decision-card-inner h3 {
