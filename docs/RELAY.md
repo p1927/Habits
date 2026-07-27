@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:18:00Z |
+| reviewed_at | 2026-07-27T08:28:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #140; relay-144 legacy queue-empty CSS aliases removed. |
+| where_we_are | Loop tick #141; relay-145 Coach meal plan queue awareness shipped. |
 | blockers | [] |
-| confirmed_next | relay-145 Agent context panel meal plan queue awareness |
-| brainstorm_notes | scan-history CSS bundled; MealPlanQueueEmptyHint uses QueueEmptyHint only |
+| confirmed_next | refill BACKLOG from BRAINSTORM |
+| brainstorm_notes | single /loop 60s; no duplicate loop processes |
 
 ---
 
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T05:18:00Z |
+| last_wake | 2026-07-27T08:28:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: feature) |
-| next_action | relay-145 Agent context panel meal plan queue awareness |
+| cycle_parity | even (next: maintenance) |
+| next_action | refill BACKLOG from BRAINSTORM |
 | blockers | [] |
-| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
+| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` — single fixed loop (see CHECKPOINT PID after arm) |
 
 ---
 
@@ -40,7 +40,7 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-145 | Agent context panel meal plan queue awareness | feature
+*(empty — refill from BRAINSTORM on next wake)*
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-144 | done | build | — |
+| 2026-07-27 | relay-145 | done | build | 02d531a |
+| 2026-07-27 | relay-144 | done | build | 6269dd1 |
 | 2026-07-27 | relay-143 | done | build | c77ad53 |
 | 2026-07-27 | relay-142 | done | build | 4fe608c |
 | 2026-07-27 | relay-141 | done | build | b4d4e94 |
