@@ -248,17 +248,26 @@ def validate_step_exit(
                 False,
                 step,
                 f"no round-{review_round} REVIEW_FINDINGS",
-                "Log findings from /code-review; run prepare_review_phase.sh --apply",
+                "Launch Bugbot via review-bugbot skill; log findings; "
+                "run prepare_review_phase.sh --apply",
+            )
+        cite = rp.parse_review_changed_files(checkpoint)
+        if cite and not rp.round_has_bugbot_source(state_text, review_round):
+            sf = state_file or f"docs/window-instances/{loop_id}/STATE.md"
+            return StepGateResult(
+                False,
+                step,
+                f"round-{review_round} missing bugbot source (changed_files={len(cite)})",
+                f"Read review-bugbot skill; Task(subagent_type=bugbot); "
+                f"bash tools/cursor-loop/scripts/prepare_bugbot_review.sh . "
+                f"--state-file {sf} --loop-id {loop_id}",
             )
         if review_status == "pending":
-            # Findings logged — prepare_review_phase.sh --apply sets review_status=done
             pass
-        if project_root is not None:
-            cite = rp.parse_review_changed_files(checkpoint)
-            if cite:
-                issues = rp.findings_cite_changed_files(state_text, review_round, cite)
-                if issues:
-                    return StepGateResult(False, step, issues[0], issues[0])
+        if project_root is not None and cite:
+            issues = rp.findings_cite_changed_files(state_text, review_round, cite)
+            if issues:
+                return StepGateResult(False, step, issues[0], issues[0])
         return StepGateResult(True, step, "", "")
 
     if step == "7a-receive":
@@ -448,7 +457,8 @@ def instruction_for_step(
         "4-execute": f"Implement in worktree {wt}; do NOT edit app scope on main",
         "5-verify": f"Run build/tests; run bash {pkg}/prepare_review_tick.sh . "
         f"--state-file {sf} --loop-id {loop_id} --apply",
-        "6-review": "Announce 'Using /code-review to review Round N'; read code-review.md; "
+        "6-review": "Read review-bugbot skill; launch Task(subagent_type=bugbot); "
+        "log REVIEW_FINDINGS source=round-N bugbot; read code-review.md; "
         f"then run bash {pkg}/prepare_review_phase.sh . --state-file {sf} --loop-id {loop_id} --apply",
         "7a-receive": "Read receiving-code-review skill; invoke /receiving-code-review; "
         f"run bash {pkg}/prepare_receive_review.sh . --state-file {sf} --loop-id {loop_id} --apply",

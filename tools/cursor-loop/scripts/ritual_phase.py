@@ -249,6 +249,7 @@ def round_finding_rows_full(state_text: str, review_round: str) -> list[dict[str
             {
                 "id": cells[0],
                 "finding": cells[2] if len(cells) > 2 else "",
+                "source": cells[3] if len(cells) > 3 else "",
                 "action": cells[4] if len(cells) > 4 else "",
                 "backlog_ref": cells[5] if len(cells) > 5 else "",
                 "status": cells[6] if len(cells) > 6 else "",
@@ -331,6 +332,13 @@ def has_round_findings(state_text: str, review_round: str) -> bool:
     pattern = f"round-{rnd}"
     for src in parse_review_findings_sources(state_text):
         if pattern in src:
+            return True
+    return False
+
+
+def round_has_bugbot_source(state_text: str, review_round: str) -> bool:
+    for row in round_finding_rows_full(state_text, review_round):
+        if "bugbot" in (row.get("source") or "").lower():
             return True
     return False
 
@@ -488,8 +496,11 @@ def findings_cite_changed_files(
         r for r in rows if not re.search(rf"-r{re.escape(rnd)}-000$", r.get("id", ""))
     ]
     if not non_sentinel:
+        if rows and all("bugbot" in (r.get("source") or "").lower() for r in rows):
+            return []
         return [
-            f"round-{rnd} is sentinel-only but {len(changed_files)} file(s) changed — invoke /code-review"
+            f"round-{rnd} is sentinel-only but {len(changed_files)} file(s) changed — "
+            "launch Bugbot via review-bugbot skill"
         ]
     uncited: list[str] = []
     for path in changed_files:
