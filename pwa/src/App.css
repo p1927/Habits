@@ -3709,6 +3709,12 @@ form.log-type-card {
   line-height: 1.35;
 }
 
+.agent-tools-sheet-hint {
+  margin: 0.75rem 0 0;
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
 .agent-attach-sheet {
   display: flex;
   flex-direction: column;

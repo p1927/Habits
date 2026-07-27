@@ -27,6 +27,7 @@ export function AgentToolsSheet({ open, onClose, onSelect }: AgentToolsSheetProp
           </li>
         ))}
       </ul>
+      <p className="muted agent-tools-sheet-hint">Press Escape to close</p>
     </BottomSheet>
   );
 }
