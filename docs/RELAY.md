@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:45:00Z |
+| reviewed_at | 2026-07-27T04:46:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #114; relay-119 consolidated meal plan sync pulse CSS shipped. |
+| where_we_are | Loop tick #115; relay-120 queue scroll focus management shipped. |
 | blockers | [] |
-| confirmed_next | relay-120 meal plan queue scroll focus management |
-| brainstorm_notes | relay-119 done; shared selector group for sync banner pulse animation |
+| confirmed_next | relay-121 meal plan sync progress reduced motion aria |
+| brainstorm_notes | relay-120 done; badge scroll focuses failed retry or sync button; double rAF for tab mount |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:44:00Z |
+| last_wake | 2026-07-27T04:45:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-119 consolidate meal plan sync pulse CSS |
+| cycle_parity | even (next: feature) |
+| next_action | relay-120 meal plan queue scroll focus management |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-120 | Meal plan queue scroll focus management | feature
 - [ ] relay-121 | Meal plan sync progress reduced motion aria | maintenance
+- [ ] relay-122 | Extract focusQueueScrollTarget to lib helper | maintenance
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-119 | done | build | — |
+| 2026-07-27 | relay-120 | done | build | — |
+| 2026-07-27 | relay-119 | done | build | 850df2e |
 | 2026-07-27 | relay-118 | done | build | 4cb5108 |
 | 2026-07-27 | relay-117 | done | build | 3383ae4 |
 | 2026-07-27 | relay-116 | done | build | acbc27e |

@@ -49,9 +49,36 @@ export function MealPlanQueuePanel({
   const failedCount = queue.filter((item) => failedIds.has(item.id)).length;
   const prevFailedCountRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
+  const syncBtnRef = useRef<HTMLButtonElement>(null);
   const isHome = variant === 'home';
   const panelClass = isHome ? 'home-meal-plan-queue-panel' : 'meal-plan-queue-panel';
   const progressClass = isHome ? 'home-meal-plan-sync-progress' : 'meal-plan-sync-progress';
+
+  const focusQueueScrollTarget = (reducedMotion: boolean) => {
+    const firstFailed = queue.find((item) => failedIds.has(item.id));
+    if (firstFailed) {
+      const row = document.getElementById(`meal-plan-queue-item-${firstFailed.id}`);
+      if (row) {
+        row.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+        const retryBtn = row.querySelector<HTMLButtonElement>('[data-meal-plan-retry]');
+        if (retryBtn) {
+          retryBtn.focus({ preventScroll: true });
+          return;
+        }
+        if (row instanceof HTMLElement) {
+          row.focus({ preventScroll: true });
+          return;
+        }
+      }
+    }
+
+    panelRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+    if (serverOnline && syncBtnRef.current && !syncing && !retryingId) {
+      syncBtnRef.current.focus({ preventScroll: true });
+    } else {
+      panelRef.current?.focus({ preventScroll: true });
+    }
+  };
 
   useMealPlanQueueShortcuts({
     enabled: queue.length > 0 || syncing,
@@ -92,12 +119,7 @@ export function MealPlanQueuePanel({
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     requestAnimationFrame(() => {
-      const row = document.getElementById(`meal-plan-queue-item-${firstFailed.id}`);
-      if (!row) return;
-      row.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
-      const retryBtn = row.querySelector<HTMLButtonElement>('[data-meal-plan-retry]');
-      if (retryBtn) retryBtn.focus({ preventScroll: true });
-      else if (row instanceof HTMLElement) row.focus({ preventScroll: true });
+      focusQueueScrollTarget(reducedMotion);
     });
   }, [failedCount, syncing, queue, failedIds]);
 
@@ -109,25 +131,17 @@ export function MealPlanQueuePanel({
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     requestAnimationFrame(() => {
-      const firstFailed = queue.find((item) => failedIds.has(item.id));
-      if (firstFailed) {
-        const row = document.getElementById(`meal-plan-queue-item-${firstFailed.id}`);
-        if (row) {
-          row.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
-          const retryBtn = row.querySelector<HTMLButtonElement>('[data-meal-plan-retry]');
-          if (retryBtn) retryBtn.focus({ preventScroll: true });
-          else if (row instanceof HTMLElement) row.focus({ preventScroll: true });
-          return;
-        }
-      }
-      panelRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+      requestAnimationFrame(() => {
+        focusQueueScrollTarget(reducedMotion);
+      });
     });
-  }, [scrollToQueueToken, queue, failedIds]);
+  }, [scrollToQueueToken, queue, failedIds, serverOnline, syncing, retryingId]);
 
   return (
     <div
       ref={panelRef}
       id="meal-plan-queue-panel"
+      tabIndex={-1}
       className={`${panelClass}${syncing ? ` ${panelClass}--syncing` : ''}${
         isHome && noPlanToday ? ` ${panelClass}--no-plan` : ''
       }${failedCount > 0 ? ` ${panelClass}--has-failed` : ''}`}
@@ -155,6 +169,7 @@ export function MealPlanQueuePanel({
             )}
             <button
               type="button"
+              ref={syncBtnRef}
               className="btn-small"
               disabled={syncing || !!retryingId}
               aria-keyshortcuts="S"
