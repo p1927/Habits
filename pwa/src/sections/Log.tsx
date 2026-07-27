@@ -5,6 +5,7 @@ import { ScanInlineOverlay } from '../components/ScanInlineOverlay';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
+import { MealPlanRemoteSyncBanner } from '../components/MealPlanRemoteSyncBanner';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import {
@@ -18,7 +19,7 @@ import {
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
-import { mealPlanSyncSourceLabel, useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
+import { useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -34,12 +35,14 @@ import {
   enqueueMealPlanLog,
   getCachedMealPlan,
   type MealPlanEntry,
+  type MealPlanSyncSource,
 } from '../lib/mealPlanQueue';
 
 interface LogProps {
   serverOnline: boolean;
   openMealPlan?: boolean;
   onMealPlanOpened?: () => void;
+  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
 type LogTab = 'scan' | 'type' | 'mealplan' | 'recipes' | 'history';
@@ -75,7 +78,12 @@ function dataUrlToFile(dataUrl: string, name = 'scan.jpg'): File {
   return new File([arr], name, { type: mime });
 }
 
-export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) {
+export function Log({
+  serverOnline,
+  openMealPlan,
+  onMealPlanOpened,
+  onNavigateMealPlanSyncSource,
+}: LogProps) {
   const [tab, setTab] = useState<LogTab>('scan');
   const [data, setData] = useState<FoodTodayResponse | null>(null);
   const [history, setHistory] = useState<{ days: { date: string; calories: number; protein: number }[] } | null>(null);
@@ -746,11 +754,11 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
         </div>
       )}
 
-      {tab !== 'mealplan' && remoteMealPlanSync && (
-        <div className="banner banner-warn meal-plan-remote-sync" role="status">
-          Syncing meal logs on {mealPlanSyncSourceLabel(remoteMealPlanSync.source)} (
-          {remoteMealPlanSync.done}/{remoteMealPlanSync.total})…
-        </div>
+      {tab !== 'mealplan' && remoteMealPlanSync && onNavigateMealPlanSyncSource && (
+        <MealPlanRemoteSyncBanner
+          sync={remoteMealPlanSync}
+          onGoToSource={onNavigateMealPlanSyncSource}
+        />
       )}
 
       <div className="sub-tabs" role="tablist" aria-label="Log food views">

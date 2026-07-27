@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:20:00Z |
+| reviewed_at | 2026-07-27T04:25:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #96; relay-101 queue count hook failed sync on dismiss shipped. |
+| where_we_are | Loop tick #97; relay-102 remote sync banner navigation shipped. |
 | blockers | [] |
-| confirmed_next | relay-102 remote sync banner tap navigates to source tab |
-| brainstorm_notes | relay-101 done; tab badge failed count clears on dismiss all |
+| confirmed_next | relay-103 meal plan queue badge clear pulse on dismiss |
+| brainstorm_notes | relay-102 done; tap remote sync banner opens source tab/Plan |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:20:00Z |
+| last_wake | 2026-07-27T04:25:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-102 remote sync banner tap navigates to source tab |
+| cycle_parity | even (next: feature) |
+| next_action | relay-103 meal plan queue badge clear pulse on dismiss |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-102 | Remote sync banner tap navigates to source tab | feature
 - [ ] relay-103 | Meal plan queue badge clear pulse on dismiss | maintenance
+- [ ] relay-104 | Cards tab meal plan queue awareness | feature
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-101 | done | build | — |
+| 2026-07-27 | relay-102 | done | build | — |
+| 2026-07-27 | relay-101 | done | build | ddb3d3a |
 | 2026-07-27 | relay-100 | done | build | 8db3dae |
 | 2026-07-27 | relay-099 | done | build | 8f1cd97 |
 | 2026-07-27 | relay-098 | done | build | 74dfcaf |

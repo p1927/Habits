@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
+import type { MealPlanSyncSource } from './lib/mealPlanQueue';
 import { useMealNotifications } from './hooks/useMealNotifications';
 import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
 import { bindNotificationNavigation } from './lib/notificationNavigation';
@@ -50,6 +51,14 @@ function App() {
     window.location.hash = id;
   }, []);
 
+  const navigateMealPlanSyncSource = useCallback(
+    (source: MealPlanSyncSource) => {
+      if (source === 'log') setOpenLogMealPlan(true);
+      handleTabChange(source);
+    },
+    [handleTabChange],
+  );
+
   useEffect(() => {
     return bindNotificationNavigation(handleTabChange);
   }, [handleTabChange]);
@@ -99,15 +108,20 @@ function App() {
       )}
 
       <main className="main" id="main-content" role="main">
-        {tab === 'home' && <Home serverOnline={serverOnline} />}
+        {tab === 'home' && (
+          <Home serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
+        )}
         {tab === 'log' && (
           <Log
             serverOnline={serverOnline}
             openMealPlan={openLogMealPlan}
             onMealPlanOpened={() => setOpenLogMealPlan(false)}
+            onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           />
         )}
-        {tab === 'day' && <Day serverOnline={serverOnline} />}
+        {tab === 'day' && (
+          <Day serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
+        )}
         {tab === 'cards' && <Cards serverOnline={serverOnline} />}
         {tab === 'agent' && <Agent serverOnline={serverOnline} />}
         {tab === 'settings' && (

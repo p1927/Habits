@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { Card } from '../components/ui/Card';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
+import { MealPlanRemoteSyncBanner } from '../components/MealPlanRemoteSyncBanner';
 import { UndoToast } from '../components/UndoToast';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
-import { mealPlanSyncSourceLabel, useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
+import { useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
@@ -15,6 +16,7 @@ import {
   getCachedMealPlan,
   isOfflineError,
   type MealPlanEntry,
+  type MealPlanSyncSource,
 } from '../lib/mealPlanQueue';
 import { vibrateFireStreak, vibrateHotStreak, vibrateMetricFireStreak, vibrateMetricHotStreak } from '../lib/haptics';
 
@@ -41,6 +43,7 @@ function readMetricStreakHaptics(): Record<string, number> {
 
 interface DayProps {
   serverOnline: boolean;
+  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
 const METRIC_COLORS: Record<string, string> = {
@@ -88,7 +91,7 @@ function metricLabel(key: string): string {
   return METRICS.find((m) => m.key === key)?.label ?? key;
 }
 
-export function Day({ serverOnline }: DayProps) {
+export function Day({ serverOnline, onNavigateMealPlanSyncSource }: DayProps) {
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [events, setEvents] = useState<{ id: string; summary: string; start: string }[]>([]);
   const [manageDay, setManageDay] = useState<Record<string, string[]>>({});
@@ -364,11 +367,11 @@ export function Day({ serverOnline }: DayProps) {
         </div>
       )}
 
-      {remoteMealPlanSync && !syncingMealPlanQueue && (
-        <div className="banner banner-warn meal-plan-remote-sync" role="status">
-          Syncing meal logs on {mealPlanSyncSourceLabel(remoteMealPlanSync.source)} (
-          {remoteMealPlanSync.done}/{remoteMealPlanSync.total})…
-        </div>
+      {remoteMealPlanSync && !syncingMealPlanQueue && onNavigateMealPlanSyncSource && (
+        <MealPlanRemoteSyncBanner
+          sync={remoteMealPlanSync}
+          onGoToSource={onNavigateMealPlanSyncSource}
+        />
       )}
 
       <MealPlanQueueSection

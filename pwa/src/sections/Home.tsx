@@ -6,10 +6,12 @@ import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
+import { MealPlanRemoteSyncBanner } from '../components/MealPlanRemoteSyncBanner';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
-import { mealPlanSyncSourceLabel, useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
+import { useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
+import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 import {
   api,
   ApiError,
@@ -32,6 +34,7 @@ import {
 
 interface HomeProps {
   serverOnline: boolean;
+  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
 const METRICS = ['sleep', 'work', 'wasted', 'speak', 'game', 'read'] as const;
@@ -72,7 +75,7 @@ function habitCompletionPct(habits: HabitsTodayResponse | null): number {
   return total > 0 ? Math.round((score / total) * 100) : 0;
 }
 
-export function Home({ serverOnline }: HomeProps) {
+export function Home({ serverOnline, onNavigateMealPlanSyncSource }: HomeProps) {
   const [food, setFood] = useState<FoodTodayResponse | null>(null);
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [history, setHistory] = useState<FoodHistoryDay[]>([]);
@@ -400,11 +403,11 @@ export function Home({ serverOnline }: HomeProps) {
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
-      {remoteMealPlanSync && !syncingMealPlanQueue && (
-        <div className="banner banner-warn meal-plan-remote-sync" role="status">
-          Syncing meal logs on {mealPlanSyncSourceLabel(remoteMealPlanSync.source)} (
-          {remoteMealPlanSync.done}/{remoteMealPlanSync.total})…
-        </div>
+      {remoteMealPlanSync && !syncingMealPlanQueue && onNavigateMealPlanSyncSource && (
+        <MealPlanRemoteSyncBanner
+          sync={remoteMealPlanSync}
+          onGoToSource={onNavigateMealPlanSyncSource}
+        />
       )}
 
       <MealPlanQueueSection

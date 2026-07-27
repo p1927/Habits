@@ -1248,6 +1248,14 @@ button:disabled {
   margin-bottom: var(--space-sm);
 }
 
+.meal-plan-remote-sync--actionable {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
 .home-meal-plan-msg {
   margin: 0 0 0.75rem;
   padding: 0.5rem 0.75rem;
