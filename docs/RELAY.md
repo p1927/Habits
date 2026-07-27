@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:59:00Z |
+| reviewed_at | 2026-07-27T05:00:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #128; relay-134 food log queue sort by created_at shipped. |
+| where_we_are | Loop tick #129; relay-135 meal plan queue sort consolidated onto shared helper. |
 | blockers | [] |
-| confirmed_next | relay-135 consolidate meal plan queue sort onto shared helper |
-| brainstorm_notes | food + habit queues now use sortQueueByCreatedAt from localStorageQueue |
+| confirmed_next | relay-136 queue empty hint on habit sync clear |
+| brainstorm_notes | all three offline queues now share sortQueueByCreatedAt |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:59:00Z |
+| last_wake | 2026-07-27T05:00:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-135 consolidate meal plan queue sort onto shared helper |
+| cycle_parity | odd (next: feature) |
+| next_action | relay-136 queue empty hint on habit sync clear |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-135 | Consolidate meal plan queue sort onto shared helper | maintenance
 - [ ] relay-136 | Queue empty hint on habit sync clear | feature
+- [ ] relay-137 | Recipe scan queue sort by created_at | maintenance
 
 ---
 
@@ -58,6 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-135 | done | build | pending |
 | 2026-07-27 | relay-134 | done | build | 2f35cdb |
 | 2026-07-27 | relay-133 | done | build | 9551e3c |
 | 2026-07-27 | relay-132 | done | build | 65e1755 |
