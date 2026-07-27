@@ -6,7 +6,27 @@ import json
 import os
 import sys
 
+import loop_control
 import loop_hook_lib as mod
+
+
+def _resume_binding(root, conversation_id: str, binding: dict) -> None:
+    binding["paused"] = False
+    binding.pop("bind_blocked", None)
+    binding.pop("bind_error", None)
+    if binding.get("stopped"):
+        binding["stopped"] = False
+    loop_id = binding.get("loop_id")
+    contract_doc = binding.get("contract_doc") or ""
+    if loop_id and contract_doc:
+        ok, err = mod.acquire_loop_lock(root, loop_id, conversation_id, contract_doc)
+        if not ok:
+            binding["bind_blocked"] = True
+            binding["bind_error"] = err
+            binding["stopped"] = True
+    if loop_id:
+        mod.set_lock_paused(root, loop_id, False)
+    mod.write_binding(root, conversation_id, binding)
 
 
 def main() -> int:
@@ -38,27 +58,34 @@ def main() -> int:
         binding = mod.read_binding(root, conversation_id)
         if binding:
             binding["stopped"] = True
+            binding["paused"] = False
             mod.write_binding(root, conversation_id, binding)
             loop_id = binding.get("loop_id")
             if loop_id:
                 mod.release_loop_lock(root, loop_id, conversation_id)
+                loop_control.stop_loop(root, loop_id)
         return 0
 
-    if mod.is_keep_working_request(prompt) and not mod.find_contract_paths(prompt, root, manifest):
+    if mod.is_pause_request(prompt):
         binding = mod.read_binding(root, conversation_id)
-        if binding and binding.get("stopped"):
-            binding["stopped"] = False
-            binding.pop("bind_blocked", None)
-            binding.pop("bind_error", None)
+        if binding:
             loop_id = binding.get("loop_id")
-            contract_doc = binding.get("contract_doc") or ""
-            if loop_id and contract_doc:
-                ok, err = mod.acquire_loop_lock(root, loop_id, conversation_id, contract_doc)
-                if not ok:
-                    binding["bind_blocked"] = True
-                    binding["bind_error"] = err
-                    binding["stopped"] = True
-            mod.write_binding(root, conversation_id, binding)
+            if loop_id:
+                loop_control.pause_loop(root, loop_id)
+            else:
+                binding["paused"] = True
+                binding["stopped"] = False
+                mod.write_binding(root, conversation_id, binding)
+        return 0
+
+    if mod.is_resume_request(prompt) or (
+        mod.is_keep_working_request(prompt) and not mod.find_contract_paths(prompt, root, manifest)
+    ):
+        binding = mod.read_binding(root, conversation_id)
+        if binding and (binding.get("stopped") or binding.get("paused")):
+            _resume_binding(root, conversation_id, binding)
+            return 0
+        if binding and mod.is_keep_working_request(prompt):
             return 0
 
     for rel in mod.find_contract_paths(prompt, root, manifest):
@@ -88,7 +115,9 @@ def main() -> int:
 
         binding.pop("bind_blocked", None)
         binding.pop("bind_error", None)
+        binding["paused"] = False
         mod.write_binding(root, conversation_id, binding)
+        mod.set_lock_paused(root, loop_id, False)
         break
 
     return 0

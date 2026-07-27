@@ -71,6 +71,7 @@ def mandatory_commands(
     loop_id: str = "",
     state_file: str = "",
     archetype: str = "",
+    state_text: str = "",
 ) -> tuple[list[str], list[str], str]:
     """Return (commands, extra_notes, worktree_command) for wake prompt."""
     git_diff = project_root is not None and rp.git_has_code_changes(
@@ -86,26 +87,25 @@ def mandatory_commands(
     notes: list[str] = []
     worktree_cmd = ""
 
-    item_id = ""
-    if project_root and state_file:
-        state_path = project_root / state_file
-        if state_path.is_file():
-            state_text = state_path.read_text(encoding="utf-8")
-            item_id = rp.parse_current_item_id(state_text, checkpoint)
+    item_id = rp.parse_current_item_id(state_text, checkpoint) if state_text else ""
+    if not item_id and state_text:
+        item_id = rp.parse_top_backlog_item(state_text)
 
     worktree_status = (checkpoint.get("worktree_status") or "none").strip().strip("`").lower()
     on_disk = project_root is not None and rp.worktree_on_disk(project_root, loop_id)
     if rp.requires_worktree(archetype) and item_id and (worktree_status != "active" or not on_disk):
         pkg = "tools/cursor-loop/scripts"
         worktree_cmd = (
-            f"bash {pkg}/prepare_select_tick.sh . --state-file {state_file} --loop-id {loop_id}; "
-            f"bash {pkg}/instance_worktree.sh create . --loop-id {loop_id} "
-            f"--item-id {item_id} --state-file {state_file}"
+            f"bash {pkg}/prepare_select_tick.sh . --state-file {state_file} --loop-id {loop_id} --apply"
         )
         notes.append(
-            "Phase 3 MANDATORY: run prepare_select_tick.sh then instance_worktree.sh create "
-            "before any pwa/server edits"
+            "Phase 3 MANDATORY: run prepare_select_tick.sh --apply before any pwa/server edits"
         )
+
+    notes.append(
+        "mandatory_commands are Cursor chat commands to invoke — not shell scripts; "
+        "prepare_review_tick.sh completes Phase 5 only, NOT /code-review"
+    )
 
     if git_diff:
         notes.append("review_status must be pending until Phase 6 /code-review completes")
@@ -175,10 +175,13 @@ def build_prompt(
     checkpoint: dict[str, str] = {}
     allowed_phase = "1-wake"
     stored_phase = "1-wake"
+    state_text = ""
     if root and state_file:
         state_path = root / state_file
         if state_path.is_file():
-            state_text = state_path.read_text(encoding="utf-8")
+            from state_checkpoint import load_state_text
+
+            state_text = load_state_text(state_path)
             checkpoint = rp.parse_checkpoint_table(state_text)
             stored_phase = checkpoint.get("phase", "1-wake")
         allowed_phase = rp.allowed_phase_on_wake(stored_phase)
@@ -204,23 +207,35 @@ def build_prompt(
         loop_id,
         state_file,
         archetype,
+        state_text,
     )
     for note in cmd_notes:
         parts.append(note)
     if worktree_cmd:
         parts.append(f"worktree_command={worktree_cmd}")
     if cmds:
-        parts.append(f"MANDATORY commands this turn: {', '.join(cmds)}")
+        parts.append(f"MANDATORY commands this turn (invoke in chat): {', '.join(cmds)}")
+
+    idle_mode = bool(state_text) and not rp.has_open_backlog_item(state_text)
+    next_item_id = rp.parse_top_backlog_item(state_text) if state_text else ""
+    if idle_mode:
+        parts.append(
+            "idle_mode=true — use checkpoint-loop --blocker 'awaiting backlog'; no pwa/server edits"
+        )
+    elif next_item_id:
+        parts.append(f"next_item_id={next_item_id}")
 
     review_paths: list[str] = []
     changed_files: list[str] = []
     review_fingerprint = ""
     review_diff_range = "none"
+    git_diff = False
     git_root = root
     if root and state_file:
         git_root = rp.git_root_for_checkpoint(root, checkpoint)
         review_paths = rs.review_paths(loop_id, state_file)
-        if rp.git_has_code_changes(root, loop_id, state_file, checkpoint):
+        git_diff = rp.git_has_code_changes(root, loop_id, state_file, checkpoint)
+        if git_diff:
             changed_files = rs.list_changed_files(git_root, review_paths)
             review_fingerprint = rs.files_fingerprint(changed_files)
             review_diff_range = rs.git_diff_range_label(git_root, review_paths)
@@ -239,6 +254,16 @@ def build_prompt(
     else:
         parts.append("(then arm next wake at end of turn)")
     parts.append("Do not ask user.")
+
+    phase_6_block: dict = {}
+    if git_diff or code_changed:
+        phase_6_block = {
+            "required": True,
+            "cursor_command": "/code-review",
+            "command_file": "tools/cursor-loop/cursor/commands/code-review.md",
+            "prep_script_does_not_complete_phase": True,
+            "must_read_files": changed_files[:20],
+        }
 
     payload = {
         "loop_id": loop_id,
@@ -259,6 +284,14 @@ def build_prompt(
         "changed_files": changed_files,
         "review_fingerprint": review_fingerprint,
         "review_diff_range": review_diff_range,
+        "idle_mode": idle_mode,
+        "next_item_id": next_item_id,
+        "mandatory_action": (
+            "checkpoint-loop --blocker 'awaiting backlog proposals'"
+            if idle_mode
+            else ""
+        ),
+        "phase_6": phase_6_block,
         "prompt": "; ".join(parts) + ".",
     }
     return json.dumps(payload)

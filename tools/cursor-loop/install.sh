@@ -165,6 +165,7 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/state_checkpoint.py" \
   "${INSTALL_PACKAGE}/scripts/review_scope.py" \
   "${INSTALL_PACKAGE}/scripts/audit_review.py" \
+  "${INSTALL_PACKAGE}/scripts/validate_product_evidence.py" \
   "${INSTALL_PACKAGE}/scripts/instance_worktree.sh" \
   "${INSTALL_PACKAGE}/scripts/instance_worktree.py" \
   "${INSTALL_PACKAGE}/scripts/migrate_state_checkpoint.py" \

@@ -41,6 +41,8 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --apply
 ```
 
+**Important:** `prepare_review_tick.sh` completes **Phase 5 only**. It does **not** invoke `/code-review`. When output shows `PHASE_6_REQUIRED=yes`, you must still run Phase 6 as a separate Cursor command.
+
 Phase 5 **MUST**:
 
 1. Run `prepare_review_tick.sh --apply` (writes `review_changed_files`, `review_fingerprint`, `code_changed`, `review_round`)
@@ -69,10 +71,11 @@ If `no`: may skip Phase 6/7 with `review_status=skipped` and non-empty `review_s
 ```bash
 bash tools/cursor-loop/scripts/prepare_select_tick.sh . \
   --state-file <STATE.md path> \
-  --loop-id <loop_id>
+  --loop-id <loop_id> \
+  --apply
 ```
 
-When `requires_worktree=yes`, create before Phase 4:
+When `requires_worktree=yes`, create before Phase 4 (or use `--apply` to auto-create):
 
 ```bash
 bash tools/cursor-loop/scripts/instance_worktree.sh create . \

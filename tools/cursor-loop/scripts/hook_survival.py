@@ -67,7 +67,7 @@ def main() -> int:
         return 0
 
     binding = mod.read_binding(root, conversation_id)
-    if not binding or binding.get("stopped") or binding.get("bind_blocked"):
+    if not binding or binding.get("stopped") or binding.get("paused") or binding.get("bind_blocked"):
         return 0
 
     loop_id = binding.get("loop_id") or ""

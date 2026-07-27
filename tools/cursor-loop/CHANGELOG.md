@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.9
+
+- **Hard main-branch gate** — arm/checkpoint fails when engineer/designer/qa have app-scope diff on `main` without active worktree
+- **`prepare_select_tick.sh --apply`** — auto-creates worktree + patches CHECKPOINT; resolves item from top backlog
+- **`validate_product_evidence.py`** — wired into `checkpoint-loop.py --product`; rejects chore/STATE-only evidence
+- **Code-review compliance** — `findings_cite_changed_files`, blocks `code_changed=no` when git diff exists, wires `audit_review` into arm/checkpoint + `--strict-review`
+- **`prepare_review_tick.sh`** — prints `PHASE_6_REQUIRED=yes` / `PHASE_6_NOT_SATISFIED_BY_THIS_SCRIPT=yes` (prep ≠ Phase 6)
+- **Wake JSON** — `idle_mode`, `next_item_id`, `phase_6` block, `prepare_select_tick --apply` worktree command
+- **`state_checkpoint.repair_checkpoint_section`** — auto-repair orphan CHECKPOINT rows on gate read
+- **Transition gate** — blocks skipping Phase 6 when `code_changed=yes`
+- **Live STATE** — repaired worker/ux/code-health/po-relay CHECKPOINT consistency
+- **Tests** — `test_review_compliance.sh`, `test_product_evidence.sh`; extended ritual/prepare_select gates
+
 ## 0.5.8
 
 - **`--mode steady`** — `validate_instance.py --strict-review` accepts completed `phase=9-arm` between ticks

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 
 def parse_checkpoint_fields(state_text: str) -> dict[str, str]:
@@ -67,3 +68,74 @@ def update_checkpoint_fields(state_text: str, updates: dict[str, str]) -> str:
                 out.append(f"| {key} | `{val}` |")
 
     return "\n".join(out) + ("\n" if state_text.endswith("\n") else "")
+
+
+def repair_checkpoint_section(state_text: str) -> str:
+    """Merge orphan CHECKPOINT rows (after --- or blank lines) into the table."""
+    if "## CHECKPOINT" not in state_text:
+        return state_text
+
+    before, rest = state_text.split("## CHECKPOINT", 1)
+    after_header = rest.lstrip("\n")
+    if after_header.startswith("\n"):
+        after_header = after_header[1:]
+
+    lines = after_header.splitlines()
+    table_rows: dict[str, str] = {}
+    trailing_lines: list[str] = []
+    in_table = False
+    past_table = False
+    row_re = re.compile(r"^\|\s*`?([^|`]+)`?\s*\|\s*`?([^|`]*)`?\s*\|")
+
+    for line in lines:
+        if past_table:
+            trailing_lines.append(line)
+            continue
+        if line.strip().startswith("## "):
+            past_table = True
+            trailing_lines.append(line)
+            continue
+        if line.strip() in ("---", "----", "------"):
+            continue
+        m = row_re.match(line.strip())
+        if m:
+            key = m.group(1).strip()
+            val = m.group(2).strip()
+            if key.lower() in ("field", "-------"):
+                in_table = True
+                continue
+            if key and val:
+                table_rows[key] = val
+                in_table = True
+            continue
+        if in_table and not line.strip():
+            continue
+        if in_table and line.strip() and not line.strip().startswith("|"):
+            past_table = True
+            trailing_lines.append(line)
+            continue
+        if not in_table:
+            trailing_lines.append(line)
+
+    if not table_rows:
+        return state_text
+
+    rebuilt = ["## CHECKPOINT", "", "| Field | Value |", "|-------|-------|"]
+    for key, val in table_rows.items():
+        rebuilt.append(f"| {key} | `{val}` |")
+    rebuilt.append("")
+    if trailing_lines:
+        rebuilt.extend(trailing_lines)
+
+    return before + "\n".join(rebuilt) + ("\n" if state_text.endswith("\n") else "")
+
+
+def load_state_text(state_path: Path, *, repair: bool = True) -> str:
+    """Read STATE.md; optionally repair and persist CHECKPOINT layout."""
+    text = state_path.read_text(encoding="utf-8")
+    if not repair:
+        return text
+    repaired = repair_checkpoint_section(text)
+    if repaired != text:
+        state_path.write_text(repaired, encoding="utf-8")
+    return repaired

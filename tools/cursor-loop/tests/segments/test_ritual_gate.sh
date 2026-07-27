@@ -185,4 +185,38 @@ else
   echo "WARN: could not verify wake prompt in Habits project (optional)"
 fi
 
+rm -rf "$GIT_TMP"
+
+# Main-branch app diff blocks arm for engineer without worktree
+GIT_WT="$(mktemp -d)"
+(
+  cd "$GIT_WT"
+  git init -q
+  git config user.email test@test.com
+  git config user.name Test
+  mkdir -p pwa
+  echo "v1" > pwa/main.ts
+  git add .
+  git commit -q -m init
+  echo "v2" >> pwa/main.ts
+)
+cat > "${GIT_WT}/STATE.md" <<'EOF'
+## CHECKPOINT
+| Field | Value |
+| phase | `8-close` |
+| review_status | skipped |
+| review_skip_reason | test |
+| code_changed | no |
+| worktree_status | none |
+| current_item_id | relay-1 |
+EOF
+
+if python3 "${SCRIPTS}/validate_ritual_gate.py" \
+  --project "$GIT_WT" --loop-id worker-relay --state-file STATE.md --mode arm 2>/dev/null; then
+  echo "FAIL: gate should reject main-branch app diff without worktree"
+  exit 1
+fi
+echo "OK gate rejects main-branch app diff without worktree"
+rm -rf "$GIT_WT"
+
 echo "OK ritual gate segment"

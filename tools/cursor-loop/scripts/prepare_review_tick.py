@@ -95,7 +95,9 @@ def main() -> int:
         print(f"PREPARE_REVIEW_ERROR missing state file: {args.state_file}", file=sys.stderr)
         return 1
 
-    state_text = state_path.read_text(encoding="utf-8")
+    from state_checkpoint import load_state_text
+
+    state_text = load_state_text(state_path)
     checkpoint = rp.parse_checkpoint_table(state_text)
     paths = rs.review_paths(args.loop_id, args.state_file)
     git_root = rp.git_root_for_checkpoint(root, checkpoint)
@@ -143,9 +145,17 @@ def main() -> int:
         if suggested_round > last_reviewed:
             print(
                 f"ACTION=increment review_round to {suggested_round}; "
-                f"set review_status=pending; run /code-review Round {suggested_round}"
+                f"set review_status=pending; invoke /code-review Round {suggested_round} in chat"
             )
-        print("RUN=/code-review on review_paths scope; then /receiving-code-review before Phase 8")
+        print("PHASE_5_PREP=complete")
+        print("PHASE_6_REQUIRED=yes")
+        print("PHASE_6_NOT_SATISFIED_BY_THIS_SCRIPT=yes")
+        print("MANDATORY_CURSOR_COMMAND=/code-review")
+        print("MANDATORY_READ=tools/cursor-loop/cursor/commands/code-review.md")
+        print(
+            "NEXT_ACTION=Announce 'Using /code-review to review Round "
+            f"{suggested_round}'; read command file; open every changed_files path"
+        )
     else:
         suggested_round = current_round
         print(f"suggested_review_round={current_round}")
@@ -153,6 +163,8 @@ def main() -> int:
         print("suggested_code_changed=no")
         skip_reason = f"No diff in window scope ({' '.join(paths)}) this tick"
         print(f"suggested_review_skip_reason={skip_reason}")
+        print("PHASE_6_SKIPPED=yes")
+        print("PHASE_6_NOT_SATISFIED_BY_THIS_SCRIPT=yes")
         print("ACTION=set code_changed=no; review_status=skipped with reason; skip Phase 6-7")
         updates["code_changed"] = "no"
         updates["review_status"] = "skipped"

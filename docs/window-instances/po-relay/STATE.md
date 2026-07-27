@@ -18,17 +18,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:28:00Z |
-| current_item_id | po-tick-004 |
-| phase | `8-close` |
-| review_status | `triaged` |
-| review_skip_reason | — |
+| last_wake | `2026-07-27T12:28:00Z` |
+| current_item_id | `po-tick-004` |
+| phase | `1-wake` |
+| review_status | skipped |
+| review_skip_reason | PO docs-only prior tick; next wake Phase 1 |
 | review_round | `6` |
 | last_reviewed_round | `6` |
-| review_diff_range | uncommitted STATE Session #22 |
-| code_changed | `yes` |
-| confirmed_next | Worker relay-174; Code maint-003 |
-| loops | arm at end of turn |
+| review_diff_range | none |
+| code_changed | no |
+| confirmed_next | `Worker relay-174; Code maint-003` |
+| loops | `arm at end of turn` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |

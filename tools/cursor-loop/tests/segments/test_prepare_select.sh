@@ -36,6 +36,34 @@ echo "$OUT" | grep -q "requires_worktree=no" || {
 }
 echo "OK prepare_select skips worktree for product archetype"
 
+GIT_TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP" "$GIT_TMP"' EXIT
+(
+  cd "$GIT_TMP"
+  git init -q
+  git config user.email test@test.com
+  git config user.name Test
+  echo ".worktrees/" > .gitignore
+  mkdir -p docs/window-instances/worker-relay
+  git add .
+  git commit -q -m init
+)
+cat > "${GIT_TMP}/docs/window-instances/worker-relay/STATE.md" <<'EOF'
+## CHECKPOINT
+| Field | Value |
+| current_item_id | relay-999 |
+| worktree_status | none |
+EOF
+
+bash "${SCRIPTS}/prepare_select_tick.sh" "$GIT_TMP" \
+  --state-file docs/window-instances/worker-relay/STATE.md \
+  --loop-id worker-relay --apply
+test -d "${GIT_TMP}/.worktrees/worker-relay" || {
+  echo "FAIL: --apply should create .worktrees/worker-relay"
+  exit 1
+}
+echo "OK prepare_select --apply creates worktree"
+
 if [[ -d "$PROJECT/.git" ]]; then
   bash "${SCRIPTS}/prepare_select_tick.sh" "$PROJECT" \
     --state-file docs/window-instances/worker-relay/STATE.md \

@@ -8,8 +8,8 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:51:47Z |
-| where_we_are | prop-ui-041 shipped — Day event detail Revolut card + time pill |
+| reviewed_at | 2026-07-27T13:06:14Z |
+| where_we_are | Backlog complete (ui-001–055); prop-ui-041 shipped; awaiting PO proposals |
 | confirmed_next | await new PO UI_PROPOSALS |
 
 ---
@@ -18,24 +18,24 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:51:47Z |
+| last_wake | 2026-07-27T13:06:14Z |
 | next_mode | `C` |
-| current_item_id | ui-055 |
-| phase | `9-arm` |
-| review_status | `done` |
-| review_skip_reason | — |
-| review_round | `6` |
-| last_reviewed_round | `6` |
-| review_diff_range | DayCalendarEventSheet Revolut pass (prop-ui-041) |
-| code_changed | `yes` |
-| confirmed_next | await new PO UI_PROPOSALS beyond prop-ui-041 |
+| current_item_id | — |
+| phase | `1-wake` |
+| review_status | skipped |
+| review_skip_reason | await new PO UI_PROPOSALS — idle window; use checkpoint-loop --blocker |
+| review_round | `8` |
+| last_reviewed_round | `8` |
+| review_diff_range | none |
+| code_changed | no |
+| confirmed_next | await new PO UI_PROPOSALS |
 | loops | dynamic wake — paste `@docs/window-instances/ux-relay/INSTANCE.md keep working` |
-| worktree_status | `none` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
+| worktree_status | none |
+| worktree_path | — |
+| worktree_branch | — |
+| worktree_item_id | — |
+| review_changed_files | — |
+| review_fingerprint | — |
 
 ## IN_PROGRESS
 
@@ -52,6 +52,7 @@
 | ux-gap-039 | po-agreed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | shipped ui-053 |
 | ux-gap-040 | po-agreed | Global CSS | Remove unused legacy `.card`, `.card-placeholder`, `.btn-decline` rules | — | shipped this tick |
 | ux-gap-041 | po-agreed | Log History | prop-ui-040 verified — Export CSV pill shipped | Google Sheets export | shipped ui-054 |
+| ux-gap-042 | ux-proposed | Day | prop-ui-041 verified — DayCalendarEventSheet Revolut card + time pill shipped ui-055 | Google Calendar popup | PO: close prop-ui-041 |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -123,6 +124,8 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r8-001 | low | Audit tick — no new pwa diff; backlog idle; build pass | round-8 /code-review | closed | — | closed |
+| ux-r7-001 | low | Audit tick — no new pwa diff; ui-055 prop-ui-041 verified; build pass | round-7 /code-review | closed | ui-055 | closed |
 | ux-r6-001 | low | ui-055 DayCalendarEventSheet Revolut card + time pill; build pass | round-6 /code-review | closed | ui-055 | closed |
 | ux-r5-001 | low | Round 5: STATE-only diff — ui-054/prop-ui-040 closed; no pwa changes this tick | round-5 /code-review | closed | ui-054 | closed |
 | ux-r5-000 | low | No new pwa/ diff in window scope; review_scope v0.5.4 cross-window diff excluded from UX scope | round-5 /code-review | closed | — | closed |
@@ -140,6 +143,8 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | C | audit | Idle backlog; build verify; await PO | build | pending |
+| 2026-07-27 | C | audit | Backlog idle; prop-ui-041 close note (ux-gap-042); build verify | build | pending |
 | 2026-07-27 | C | ui-055 | Day event detail Revolut pass (prop-ui-041) | build | pending |
 | 2026-07-27 | C | ui-054 | prop-ui-040 verify + dead CSS cleanup | build | pending |
 | 2026-07-27 | C | audit | LogFoodEditSheet pill CTAs + recipe deep-link hint; ux-gap-040 proposed | build | pending |

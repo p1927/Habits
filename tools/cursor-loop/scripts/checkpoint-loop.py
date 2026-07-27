@@ -76,6 +76,32 @@ def main() -> int:
         if not args.evidence.strip():
             print("CHECKPOINT_ERROR --product requires --evidence", file=sys.stderr)
             return 1
+        loop_id = binding.get("loop_id") or ""
+        state_file = binding.get("state_file") or ""
+        if loop_id and state_file:
+            scripts = root / mod.load_manifest(root)["package_root"] / "scripts"
+            pe = scripts / "validate_product_evidence.py"
+            if pe.is_file():
+                r = subprocess.run(
+                    [
+                        "python3",
+                        str(pe),
+                        str(root),
+                        "--loop-id",
+                        loop_id,
+                        "--state-file",
+                        state_file,
+                        "--evidence",
+                        args.evidence.strip(),
+                    ],
+                    cwd=root,
+                )
+                if r.returncode != 0:
+                    print(
+                        "CHECKPOINT_ERROR product evidence validation failed",
+                        file=sys.stderr,
+                    )
+                    return 1
         if not run_ritual_gate(root, binding):
             print(
                 "CHECKPOINT_ERROR ritual gate failed — complete phases 1→8 before --product",

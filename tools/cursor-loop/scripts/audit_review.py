@@ -62,7 +62,6 @@ def audit_state(
     state_text: str,
     project_root: Path,
 ) -> list[str]:
-    issues: list[str] = []
     checkpoint = rp.parse_checkpoint_table(state_text)
     review_round = (checkpoint.get("review_round") or "0").strip().strip("`")
     review_status = (checkpoint.get("review_status") or "pending").strip().strip("`").lower()
@@ -71,39 +70,21 @@ def audit_state(
         "true",
         "1",
     )
-    last_reviewed = rp.max_reviewed_round(state_text)
-    round_num = rp.parse_review_round(review_round)
-    git_diff = rp.git_has_code_changes(project_root, loop_id, state_file)
     last_wake = checkpoint.get("last_wake", "")
 
-    if git_diff and review_status in ("done", "triaged"):
-        if not rp.has_round_findings(state_text, review_round):
-            issues.append(
-                f"git diff present, review_status={review_status}, "
-                f"but no round-{review_round} REVIEW_FINDINGS"
-            )
-        elif round_num < last_reviewed:
-            issues.append(
-                f"git diff present, review_round={round_num} stale "
-                f"(last_reviewed_round={last_reviewed})"
-            )
-
-    if code_changed and review_status in ("done", "triaged"):
-        if not rp.has_round_findings(state_text, review_round):
-            issues.append(
-                f"code_changed=yes, review_status={review_status}, "
-                f"no round-{review_round} findings logged"
-            )
-
-    if review_status in ("done", "triaged") and round_num > last_reviewed:
-        if not rp.has_round_findings(state_text, review_round):
-            issues.append(
-                f"review_round={round_num} > last_reviewed_round={last_reviewed} "
-                f"but no matching REVIEW_FINDINGS"
-            )
+    issues = rp.collect_review_audit_issues(
+        loop_id=loop_id,
+        state_file=state_file,
+        state_text=state_text,
+        project_root=project_root,
+        checkpoint=checkpoint,
+    )
 
     code_history = [r for r in parse_history_rows(state_text) if history_suggests_code(r)]
-    if code_history and last_reviewed < 0 and review_status in ("done", "triaged"):
+    if code_history and rp.max_reviewed_round(state_text) < 0 and review_status in (
+        "done",
+        "triaged",
+    ):
         issues.append("HISTORY shows code ships but REVIEW_FINDINGS is empty")
 
     recent = code_history[-5:]
@@ -118,34 +99,6 @@ def audit_state(
             f"last_wake={last_wake}: code_changed=yes but review still pending "
             "(Phase 6 /code-review not completed)"
         )
-
-    worktree_status = (checkpoint.get("worktree_status") or "none").strip().strip("`").lower()
-    if worktree_status == "active" and review_status in ("done", "triaged"):
-        issues.append(
-            "worktree_status=active with review complete — merge+remove worktree before Phase 8"
-        )
-
-    if git_diff:
-        issues.extend(
-            rp.manifest_gate_issues(checkpoint, project_root, loop_id, state_file)
-        )
-
-    if git_diff and review_status in ("done", "triaged"):
-        import review_scope as rs
-
-        live_files = rs.list_changed_files(
-            project_root, rs.review_paths(loop_id, state_file)
-        )
-        if live_files and rp.is_sentinel_only_review(state_text, review_round):
-            issues.append(
-                f"sentinel-only round-{review_round} review with {len(live_files)} changed file(s)"
-            )
-
-    for row in rp.parse_round_finding_rows(state_text, review_round):
-        if (row.get("action") or "").strip().strip("`").lower() == "backlog":
-            ref = (row.get("backlog_ref") or "").strip().strip("`")
-            if not ref or ref in ("—", "-"):
-                issues.append(f"{row.get('id')}: action=backlog without backlog_ref")
 
     return issues
 
@@ -181,7 +134,9 @@ def main() -> int:
             report.append({"loop_id": loop_id, "ok": False, "issues": [f"missing {state_file}"]})
             exit_code = 1
             continue
-        state_text = state_path.read_text(encoding="utf-8")
+        from state_checkpoint import load_state_text
+
+        state_text = load_state_text(state_path)
         issues = audit_state(
             loop_id=loop_id,
             state_file=state_file,

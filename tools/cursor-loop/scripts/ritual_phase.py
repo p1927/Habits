@@ -98,11 +98,15 @@ def phase_exit_criteria(phase: str, code_changed: bool) -> list[str]:
     criteria: dict[str, list[str]] = {
         "1-wake": ["Read INSTANCE → IDENTITY → STATE → RITUAL", "Set CHECKPOINT.phase=1-wake"],
         "2-orient": ["Update LAST_REVIEW", "Read CHECKPOINT + git status", "Set phase=2-orient"],
-        "3-select": ["Pick top backlog item or resume IN_PROGRESS", "Set phase=3-select"],
+        "3-select": [
+            "Pick top backlog item or resume IN_PROGRESS",
+            "Run prepare_select_tick.sh --apply then instance_worktree.sh create when required",
+            "Set phase=3-select",
+        ],
         "4-execute": ["Ship execute/brainstorm work for selected item", "Set phase=4-execute"],
         "5-verify": [
             "Run build/tests",
-            "Run detect_code_changed.sh",
+            "Run prepare_review_tick.sh --apply (Phase 5 only — does NOT complete /code-review)",
             "Set code_changed yes/no",
             "Set phase=5-verify",
         ],
@@ -387,7 +391,7 @@ def parse_current_item_id(state_text: str, checkpoint: dict[str, str]) -> str:
     if item and item not in ("—", "-", ""):
         return item
     if "## IN_PROGRESS" not in state_text:
-        return ""
+        return parse_top_backlog_item(state_text) or ""
     section = state_text.split("## IN_PROGRESS", 1)[1]
     if "\n## " in section:
         section = section.split("\n## ", 1)[0]
@@ -403,7 +407,193 @@ def parse_current_item_id(state_text: str, checkpoint: dict[str, str]) -> str:
             continue
         if key == "id" or (parts[1] and val):
             return val
+    return parse_top_backlog_item(state_text) or ""
+
+
+BACKLOG_SECTIONS: tuple[str, ...] = (
+    "BACKLOG",
+    "UI_POLISH_BACKLOG",
+    "REFACTOR_BACKLOG",
+    "BUG_BACKLOG",
+)
+
+
+def parse_top_backlog_item(state_text: str) -> str:
+    """First unchecked backlog row id (e.g. relay-185, ui-056)."""
+    for section_name in BACKLOG_SECTIONS:
+        marker = f"## {section_name}"
+        if marker not in state_text:
+            continue
+        section = state_text.split(marker, 1)[1]
+        if "\n## " in section:
+            section = section.split("\n## ", 1)[0]
+        for line in section.splitlines():
+            m = re.match(r"^\s*-\s*\[\s*\]\s*(\S+)", line)
+            if m:
+                return m.group(1)
     return ""
+
+
+def has_open_backlog_item(state_text: str) -> bool:
+    return bool(parse_top_backlog_item(state_text))
+
+
+def main_scope_app_paths(loop_id: str, state_file: str) -> list[str]:
+    """App code paths on main branch (excludes instance STATE bundle)."""
+    bundle = Path(state_file).parent.as_posix().rstrip("/") + "/" if state_file else ""
+    return [p for p in rs.review_paths(loop_id, state_file) if p != bundle]
+
+
+def main_scope_app_diff(project_root: Path, loop_id: str, state_file: str) -> bool:
+    """True when main branch has uncommitted/cached diff in app scope."""
+    paths = main_scope_app_paths(loop_id, state_file)
+    return rs.git_has_changes(project_root, paths) if paths else False
+
+
+def parse_review_changed_files(checkpoint: dict[str, str]) -> list[str]:
+    raw = (checkpoint.get("review_changed_files") or "").strip().strip("`")
+    if not raw or raw in ("—", "-", ""):
+        return []
+    return [f for f in raw.split() if f and f not in ("—", "-")]
+
+
+GENERIC_REVIEW_PATTERNS = re.compile(
+    r"\b(audit tick|build pass|no new pwa|verify-only|no issues in reviewed diff)\b",
+    re.IGNORECASE,
+)
+
+
+def _finding_cites_file(finding_text: str, file_path: str) -> bool:
+    text = finding_text.lower()
+    path = file_path.replace("\\", "/")
+    if path.lower() in text:
+        return True
+    basename = Path(path).name.lower()
+    return bool(basename and basename in text)
+
+
+def findings_cite_changed_files(
+    state_text: str,
+    review_round: str,
+    changed_files: list[str],
+) -> list[str]:
+    """Return issues when round-N findings fail to cite changed files."""
+    if not changed_files:
+        return []
+    rows = round_finding_rows_full(state_text, review_round)
+    if not rows:
+        return [f"round-{review_round} has changed files but no REVIEW_FINDINGS rows"]
+    rnd = (review_round or "").strip().strip("`")
+    non_sentinel = [
+        r for r in rows if not re.search(rf"-r{re.escape(rnd)}-000$", r.get("id", ""))
+    ]
+    if not non_sentinel:
+        return [
+            f"round-{rnd} is sentinel-only but {len(changed_files)} file(s) changed — invoke /code-review"
+        ]
+    uncited: list[str] = []
+    for path in changed_files:
+        if not any(_finding_cites_file(r.get("finding", ""), path) for r in non_sentinel):
+            uncited.append(path)
+    if uncited:
+        return [
+            f"round-{rnd} findings missing file citations for: {', '.join(uncited[:5])}"
+            + (f" (+{len(uncited) - 5} more)" if len(uncited) > 5 else "")
+        ]
+    generic_only = all(
+        GENERIC_REVIEW_PATTERNS.search(r.get("finding", ""))
+        and not any(_finding_cites_file(r.get("finding", ""), p) for p in changed_files)
+        for r in non_sentinel
+    )
+    if generic_only:
+        return [
+            f"round-{rnd} findings are generic narrative without path citations — read changed_files in /code-review"
+        ]
+    return []
+
+
+def collect_review_audit_issues(
+    *,
+    loop_id: str,
+    state_file: str,
+    state_text: str,
+    project_root: Path,
+    checkpoint: dict[str, str] | None = None,
+) -> list[str]:
+    """Shared review compliance checks for arm gate and audit_review CLI."""
+    cp = checkpoint or parse_checkpoint_table(state_text)
+    review_round = (cp.get("review_round") or "0").strip().strip("`")
+    review_status = (cp.get("review_status") or "pending").strip().strip("`").lower()
+    code_changed = _yes(cp.get("code_changed", "no"))
+    round_num = parse_review_round(review_round)
+    last_reviewed = max_reviewed_round(state_text)
+    git_diff = git_has_code_changes(project_root, loop_id, state_file, cp)
+    issues: list[str] = []
+
+    if git_diff and review_status in ("done", "triaged"):
+        if not has_round_findings(state_text, review_round):
+            issues.append(
+                f"git diff present, review_status={review_status}, "
+                f"but no round-{review_round} REVIEW_FINDINGS"
+            )
+        elif round_num < last_reviewed:
+            issues.append(
+                f"git diff present, review_round={round_num} stale "
+                f"(last_reviewed_round={last_reviewed})"
+            )
+
+    if code_changed and review_status in ("done", "triaged"):
+        if not has_round_findings(state_text, review_round):
+            issues.append(
+                f"code_changed=yes, review_status={review_status}, "
+                f"no round-{review_round} findings logged"
+            )
+
+    if review_status in ("done", "triaged") and round_num > last_reviewed:
+        if not has_round_findings(state_text, review_round):
+            issues.append(
+                f"review_round={round_num} > last_reviewed_round={last_reviewed} "
+                f"but no matching REVIEW_FINDINGS"
+            )
+
+    if git_diff:
+        issues.extend(manifest_gate_issues(cp, project_root, loop_id, state_file))
+
+    if git_diff and review_status in ("done", "triaged"):
+        live_files = rs.list_changed_files(
+            git_root_for_checkpoint(project_root, cp),
+            rs.review_paths(loop_id, state_file),
+        )
+        if live_files and is_sentinel_only_review(state_text, review_round):
+            issues.append(
+                f"sentinel-only round-{review_round} review with {len(live_files)} changed file(s)"
+            )
+
+    stored_files = parse_review_changed_files(cp)
+    cite_files = stored_files or (
+        rs.list_changed_files(
+            git_root_for_checkpoint(project_root, cp),
+            rs.review_paths(loop_id, state_file),
+        )
+        if code_changed
+        else []
+    )
+    if code_changed and review_status in ("done", "triaged") and cite_files:
+        issues.extend(findings_cite_changed_files(state_text, review_round, cite_files))
+
+    worktree_status = (cp.get("worktree_status") or "none").strip().strip("`").lower()
+    if worktree_status == "active" and review_status in ("done", "triaged"):
+        issues.append(
+            "worktree_status=active with review complete — merge+remove worktree before Phase 8"
+        )
+
+    for row in parse_round_finding_rows(state_text, review_round):
+        if (row.get("action") or "").strip().strip("`").lower() == "backlog":
+            ref = (row.get("backlog_ref") or "").strip().strip("`")
+            if not ref or ref in ("—", "-"):
+                issues.append(f"{row.get('id')}: action=backlog without backlog_ref")
+
+    return issues
 
 
 def worktree_on_disk(project_root: Path, loop_id: str) -> bool:
@@ -429,21 +619,41 @@ def worktree_gate_issues(
     if not requires_worktree(archetype):
         return None
     item_id = parse_current_item_id(state_text, checkpoint)
-    if not item_id:
-        return None
     worktree_status = (checkpoint.get("worktree_status") or "none").strip().strip("`").lower()
+    code_changed = _yes(checkpoint.get("code_changed", "no"))
     idx = phase_index(phase)
     exec_idx = phase_index("4-execute")
+    close_idx = phase_index("8-close")
+    sf = state_file or f"docs/window-instances/{loop_id}/STATE.md"
+
+    if project_root is not None and idx >= close_idx:
+        if main_scope_app_diff(project_root, loop_id, state_file) and worktree_status != "active":
+            return GateResult(
+                False,
+                "3-select",
+                f"app-scope diff on main with worktree_status={worktree_status}",
+                f"Run prepare_select_tick.sh --apply --state-file {sf}; "
+                f"instance_worktree.sh create; move edits into worktree or reset main",
+            )
+        if code_changed and worktree_status == "none" and item_id:
+            return GateResult(
+                False,
+                "3-select",
+                f"code_changed=yes with worktree_status=none for {item_id}",
+                f"Run prepare_select_tick.sh --apply --state-file {sf}; create worktree before Phase 4",
+            )
+
+    if not item_id:
+        return None
     triage_idx = phase_index("7-triage")
     if exec_idx <= idx <= triage_idx:
         on_disk = project_root is not None and worktree_on_disk(project_root, loop_id)
         if worktree_status != "active" or not on_disk:
-            sf = state_file or f"docs/window-instances/{loop_id}/STATE.md"
             return GateResult(
                 False,
                 "3-select",
                 f"worktree required for {item_id} at {phase} (status={worktree_status})",
-                f"Run prepare_select_tick.sh --state-file {sf}; "
+                f"Run prepare_select_tick.sh --apply --state-file {sf}; "
                 f"instance_worktree.sh create . --loop-id {loop_id} --item-id {item_id} --state-file {sf}",
             )
     return None
@@ -615,6 +825,18 @@ def required_phase_before_arm(
                         f"sentinel-only review with {len(live_files)} changed file(s)",
                         "Invoke /code-review; log findings citing each changed file or fix issues",
                     )
+                stored_files = parse_review_changed_files(checkpoint)
+                cite_files = stored_files or live_files
+                cite_issues = findings_cite_changed_files(
+                    state_text, review_round, cite_files
+                )
+                if cite_issues:
+                    return GateResult(
+                        False,
+                        "6-review",
+                        cite_issues[0],
+                        "Invoke /code-review; log findings with path:line citations for each changed file",
+                    )
         else:
             if review_status == "done":
                 return GateResult(
@@ -660,6 +882,26 @@ def required_phase_before_arm(
                 "Run instance_worktree.sh merge then remove; set worktree_status=none",
             )
 
+        if (
+            project_root is not None
+            and mode in ("arm", "checkpoint")
+            and not skip_git_checks
+        ):
+            audit_issues = collect_review_audit_issues(
+                loop_id=loop_id,
+                state_file=state_file,
+                state_text=state_text,
+                project_root=project_root,
+                checkpoint=checkpoint,
+            )
+            if audit_issues:
+                return GateResult(
+                    False,
+                    "6-review" if code_changed else "5-verify",
+                    audit_issues[0],
+                    "Complete Phase 6 /code-review and Phase 7 triage; fix CHECKPOINT review fields",
+                )
+
         if mode == "arm":
             return GateResult(True, "9-arm", "", "Run arm-wake.sh; after verify-wake exit 0 set phase=9-arm")
 
@@ -672,42 +914,3 @@ def required_phase_before_arm(
         return GateResult(True, "1-wake", "", "Next wake starts at 1-wake")
 
     return GateResult(False, "8-close", f"unexpected phase={phase}", "Complete Phase 8 close checklist")
-    p = normalize_phase(phase)
-    criteria: dict[str, list[str]] = {
-        "1-wake": ["Read INSTANCE → IDENTITY → STATE → RITUAL", "Set CHECKPOINT.phase=1-wake"],
-        "2-orient": ["Update LAST_REVIEW", "Read CHECKPOINT + git status", "Set phase=2-orient"],
-        "3-select": [
-            "Pick top backlog item or resume IN_PROGRESS",
-            "Run prepare_select_tick.sh then instance_worktree.sh create when required",
-            "Set phase=3-select",
-        ],
-        "4-execute": ["Ship execute/brainstorm work for selected item", "Set phase=4-execute"],
-        "5-verify": [
-            "Run build/tests",
-            "Run prepare_review_tick.sh --apply --state-file STATE.md",
-            "Apply suggested review_round / review_status / code_changed / review_changed_files",
-            "Set phase=5-verify",
-        ],
-        "6-review": [
-            "Invoke /code-review command (read full file first)",
-            "Log REVIEW_FINDINGS",
-            "Set phase=6-review",
-        ],
-        "7-triage": [
-            "Read receiving-code-review skill + invoke /receiving-code-review (7a)",
-            "Backlog reflect: deferred → backlog id + AC + backlog_ref (7b)",
-            "Set review_status",
-            "Set phase=7-triage",
-        ],
-        "8-close": [
-            "Merge+remove worktree when active",
-            "HISTORY row",
-            "Clear IN_PROGRESS",
-            "Set phase=8-close",
-        ],
-        "9-arm": ["checkpoint-loop --product", "arm-wake.sh + verify-wake exit 0", "Set phase=9-arm"],
-    }
-    items = list(criteria.get(p, []))
-    if p == "5-verify" and not code_changed:
-        items.append("May skip 6-7 with review_status=skipped + reason")
-    return items

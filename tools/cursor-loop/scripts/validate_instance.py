@@ -328,6 +328,24 @@ def main() -> int:
                 detail = (r.stderr or r.stdout or "").strip().splitlines()
                 msg = detail[0] if detail else "ritual gate failed"
                 errors.append(f"{loop_id}: {msg}")
+            audit_script = root / "tools/cursor-loop/scripts/audit_review.py"
+            if not audit_script.is_file():
+                try:
+                    pkg = mod.load_manifest(root)["package_root"]
+                    audit_script = root / pkg / "scripts/audit_review.py"
+                except (FileNotFoundError, ValueError, KeyError):
+                    pass
+            if audit_script.is_file():
+                ar = subprocess.run(
+                    ["python3", str(audit_script), str(root), "--loop-id", loop_id],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                )
+                if ar.returncode != 0:
+                    detail = (ar.stderr or ar.stdout or "").strip().splitlines()
+                    msg = detail[-1] if detail else "review audit failed"
+                    errors.append(f"{loop_id}: audit {msg}")
 
     manifest = load_instances_manifest(root)
     count = len(manifest.get("instances") or [])

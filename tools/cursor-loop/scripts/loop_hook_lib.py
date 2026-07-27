@@ -261,6 +261,14 @@ def is_stop_request(prompt: str) -> bool:
     return bool(re.search(r"\bstop\s+(the\s+)?loop\b|\bstop\s+working\b", prompt, re.I))
 
 
+def is_pause_request(prompt: str) -> bool:
+    return bool(re.search(r"\bpause\s+(the\s+)?loop\b", prompt, re.I))
+
+
+def is_resume_request(prompt: str) -> bool:
+    return bool(re.search(r"\bresume\s+(the\s+)?loop\b", prompt, re.I))
+
+
 def is_keep_working_request(prompt: str) -> bool:
     return bool(re.search(r"\bkeep\s+working\b", prompt, re.I))
 
@@ -323,6 +331,7 @@ def build_binding(root: Path, manifest: dict, rel: str, cfg: dict) -> dict:
         "pidfile": str(pidfile),
         "wake_pidfile": str(resolve_wake_pidfile_path(loop_id)),
         "stopped": False,
+        "paused": False,
         "survival_turns": 0,
         "recovery_turns": 0,
     }
@@ -381,6 +390,53 @@ def acquire_loop_lock(
         encoding="utf-8",
     )
     return True, None
+
+
+def iter_bindings(root: Path, loop_id: str | None = None) -> list[tuple[str, dict]]:
+    """Return (conversation_id, binding) pairs, optionally filtered by loop_id."""
+    bindings_dir = root / ".cursor" / "loop-bindings"
+    if not bindings_dir.is_dir():
+        return []
+    out: list[tuple[str, dict]] = []
+    for path in bindings_dir.glob("*.json"):
+        if path.name.startswith("."):
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        if loop_id and data.get("loop_id") != loop_id:
+            continue
+        out.append((path.stem, data))
+    return out
+
+
+def set_lock_paused(root: Path, loop_id: str, paused: bool) -> None:
+    path = loop_lock_path(root, loop_id)
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    if not path.is_file():
+        if not paused:
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps({"loop_id": loop_id, "paused": True, "updated_at": now}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return
+    lock = read_loop_lock(root, loop_id) or {}
+    if paused:
+        lock["paused"] = True
+    else:
+        lock.pop("paused", None)
+    lock["updated_at"] = now
+    path.write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8")
+
+
+def is_loop_paused(root: Path, loop_id: str) -> bool:
+    lock = read_loop_lock(root, loop_id)
+    if lock and lock.get("paused"):
+        return True
+    return any(binding.get("paused") for _, binding in iter_bindings(root, loop_id))
 
 
 def release_loop_lock(root: Path, loop_id: str, conversation_id: str) -> None:

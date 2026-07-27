@@ -144,14 +144,38 @@ def cmd_bootstrap(project: Path, preset: str, mode: str, refresh: bool) -> int:
     return subprocess.call(cmd, cwd=project)
 
 
+def cmd_loop_control(project: Path, action: str, loop_id: str | None, all_loops: bool) -> int:
+    script = scripts_dir(project) / "loop_control.py"
+    cmd = ["python3", str(script), str(project), action]
+    if all_loops or not loop_id:
+        cmd.append("--all")
+    elif loop_id:
+        cmd.extend(["--loop-id", loop_id])
+    return subprocess.call(cmd, cwd=project)
+
+
+def cmd_pause(project: Path, loop_id: str | None, all_loops: bool) -> int:
+    return cmd_loop_control(project, "pause", loop_id, all_loops)
+
+
+def cmd_resume(project: Path, loop_id: str | None, all_loops: bool) -> int:
+    return cmd_loop_control(project, "resume", loop_id, all_loops)
+
+
+def cmd_stop(project: Path, loop_id: str | None, all_loops: bool) -> int:
+    return cmd_loop_control(project, "stop", loop_id, all_loops)
+
+
+def control_state(project: Path, loop_id: str) -> str:
+    sys.path.insert(0, str(scripts_dir(project)))
+    import loop_control
+
+    return loop_control.loop_control_state(project, loop_id)
 def cmd_refresh(project: Path, loop_id: str | None) -> int:
     cmd = ["bash", str(scripts_dir(project) / "refresh-loops.sh"), str(project)]
     if loop_id:
         cmd.extend(["--loop-id", loop_id])
     return subprocess.call(cmd, cwd=project)
-
-
-def cmd_sync(project: Path) -> int:
     manifest = load_json(project / ".cursor" / "cursor-loop.json")
     preset = manifest.get("instances_preset") or ""
     if not preset:

@@ -18,15 +18,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:28:00Z |
-| confirmed_next | ch-124 |
-| phase | `8-close` |
-| code_changed | yes |
-| review_status | done |
+| last_wake | `2026-07-27T14:28:00Z` |
+| confirmed_next | `ch-124` |
+| phase | `1-wake` |
+| code_changed | no |
+| review_status | skipped |
+| review_skip_reason | prior ch-123 tick closed; next wake Phase 1 |
 | review_round | `2` |
 | last_reviewed_round | `2` |
-| review_diff_range | uncommitted tools/cursor-loop v0.5.4 |
-| loops | wake **ARMED** PID 77058 (120s) |
+| review_diff_range | none |
+| loops | `wake **ARMED** PID 77058 (120s)` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | review_skip_reason | `—` |

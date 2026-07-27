@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 import ritual_phase as rp
+from state_checkpoint import load_state_text
 
 
 def load_archetype(project_root: Path, loop_id: str) -> str:
@@ -72,9 +73,15 @@ def main() -> int:
         print(f"RITUAL_GATE_FAIL loop_id={args.loop_id} reason=missing state file", file=sys.stderr)
         return 1
 
-    state_text = state_path.read_text(encoding="utf-8")
-    checkpoint = rp.parse_checkpoint_table(state_text)
-    archetype = load_archetype(root, args.loop_id)
+    import loop_hook_lib as mod
+
+    if args.mode in ("arm", "checkpoint", "steady") and mod.is_loop_paused(root, args.loop_id):
+        print(
+            f"RITUAL_GATE_FAIL loop_id={args.loop_id} reason=LOOP_PAUSED",
+            file=sys.stderr,
+        )
+        print("FIX: Run cwin resume or say resume loop / keep working in the bound chat", file=sys.stderr)
+        return 1
 
     if args.mode == "transition":
         if not args.from_phase or not args.to_phase:
@@ -90,8 +97,33 @@ def main() -> int:
             )
             print(f"PHASE_LINE: {rp.phase_line_marker(args.from_phase)}", file=sys.stderr)
             return 1
+        state_text = load_state_text(state_path)
+        checkpoint = rp.parse_checkpoint_table(state_text)
+        code_changed = (checkpoint.get("code_changed") or "no").strip().strip("`").lower() in (
+            "yes",
+            "true",
+            "1",
+        )
+        from_idx = rp.phase_index(args.from_phase)
+        to_idx = rp.phase_index(args.to_phase)
+        if (
+            code_changed
+            and from_idx == rp.phase_index("5-verify")
+            and to_idx >= rp.phase_index("7-triage")
+        ):
+            print(
+                f"RITUAL_GATE_FAIL loop_id={args.loop_id} allowed_phase=6-review "
+                'reason="code_changed=yes cannot skip Phase 6 /code-review"',
+                file=sys.stderr,
+            )
+            print("FIX: Invoke /code-review Round N before Phase 7", file=sys.stderr)
+            return 1
         print(f"RITUAL_GATE_OK loop_id={args.loop_id} mode=transition")
         return 0
+
+    state_text = load_state_text(state_path)
+    checkpoint = rp.parse_checkpoint_table(state_text)
+    archetype = load_archetype(root, args.loop_id)
 
     if args.mode == "wake":
         allowed = rp.allowed_phase_on_wake(checkpoint.get("phase", "1-wake"))

@@ -13,11 +13,13 @@ fi
 
 STATE_FILE=""
 LOOP_ID=""
+APPLY=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --state-file) STATE_FILE="${2:?}"; shift 2 ;;
     --loop-id) LOOP_ID="${2:?}"; shift 2 ;;
+    --apply) APPLY=1; shift ;;
     *) echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
@@ -30,4 +32,5 @@ fi
 ROOT="$(cd "$ROOT" && pwd)"
 args=(python3 "${SCRIPT_DIR}/prepare_select_tick.py" "$ROOT" --state-file "$STATE_FILE")
 [[ -n "$LOOP_ID" ]] && args+=(--loop-id "$LOOP_ID")
+[[ -n "$APPLY" ]] && args+=(--apply)
 "${args[@]}"

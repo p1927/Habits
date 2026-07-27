@@ -19,25 +19,24 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:02:10Z |
-| confirmed_next | relay-185 |
-| next_action | relay-185 Cards tab keyboard shortcut hint on first visit |
-| loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
-| review_status | skipped |
-| review_skip_reason | round-11 checkpoint hygiene; committed ee7580c |
-| review_diff_range | `ee7580c` |
+| last_wake | `2026-07-27T13:02:10Z` |
+| confirmed_next | `relay-185` |
+| next_action | `relay-185 Cards tab keyboard shortcut hint on first visit` |
+| phase | `1-wake` |
+| review_status | `skipped` |
+| review_skip_reason | `prior tick closed; next wake starts Phase 1` |
+| review_diff_range | `none` |
 | code_changed | `no` |
-
----
-
+| review_round | `11` |
+| last_reviewed_round | `11` |
 | worktree_status | `none` |
-| current_item_id | `—` |
+| current_item_id | `relay-185` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
+
 ## IN_PROGRESS
 
 *(empty)*
