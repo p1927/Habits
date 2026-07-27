@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-094 | Home queue banner when sync in progress on other tab | feature
 - [ ] relay-095 | Meal plan sync failure haptic | feature
 - [ ] relay-096 | Queue empty hint aria-live on transition | maintenance
 
@@ -58,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-094 | done | build | — |
 | 2026-07-27 | relay-093 | done | build | 9345536 |
 | 2026-07-27 | relay-092 | done | build | 8d6c73f |
 | 2026-07-27 | relay-091 | done | build | 18f7be6 |
