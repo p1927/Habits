@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T05:04:00Z |
+| last_wake | 2026-07-27T05:05:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-141 recipe scan queue empty hint on sync clear |
+| cycle_parity | even (next: maintenance) |
+| next_action | relay-142 shared QueueEmptyHint base styles |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-141 | Recipe scan queue empty hint on sync clear | feature
 - [ ] relay-142 | Shared QueueEmptyHint base styles | maintenance
 - [ ] relay-143 | Log tab refactor finish (sub-panels) | feature
+- [ ] relay-144 | Consolidate queue empty hint components | maintenance
 
 ---
 
@@ -59,6 +59,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-141 | done | build | b4d4e94 |
 | 2026-07-27 | relay-140 | done | build | f38fffb |
 | 2026-07-27 | relay-139 | done | build | c71a71a |
 | 2026-07-27 | relay-138 | done | build | c71a71a |
