@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:50:00Z |
+| reviewed_at | 2026-07-27T02:51:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #75; relay-083 Log Plan empty hint gated on meal plan shipped. |
+| where_we_are | Loop tick #76; relay-084 shared MealPlanQueuePanel shipped. |
 | blockers | [] |
-| confirmed_next | relay-084 Shared meal plan queue panel component |
-| brainstorm_notes | relay-083 done; Plan tab skips empty hint when no meals planned |
+| confirmed_next | relay-085 Home/Day/Log queue keyboard shortcuts |
+| brainstorm_notes | relay-084 done; Home/Day/Log use shared panel + lib label helpers |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:50:00Z |
+| last_wake | 2026-07-27T02:51:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-084 Shared meal plan queue panel component |
+| cycle_parity | even (next: feature) |
+| next_action | relay-085 Home/Day/Log queue keyboard shortcuts |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-084 | Shared meal plan queue panel component | feature
 - [ ] relay-085 | Home/Day/Log queue keyboard shortcuts | maintenance
 - [ ] relay-086 | Day empty queue hint only when meal plan loaded | maintenance
+- [ ] relay-087 | useMealPlanQueueSync shared hook | feature
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-084 | done | build | — |
 | 2026-07-27 | relay-083 | done | build | 0b3e827 |
 | 2026-07-27 | relay-082 | done | build | 4210522 |
 | 2026-07-27 | relay-081 | done | build | 4210522 |
 | 2026-07-27 | relay-080 | done | build | 79fac2e |
 | 2026-07-27 | relay-079 | done | build | 0439596 |
-| 2026-07-27 | relay-078 | done | build | 8f80018 |
 
 ---
 

@@ -85,4 +85,14 @@ export function getCachedMealPlan(): MealPlanEntry[] {
   }
 }
 
+export function mealPlanQueueLabel(item: QueuedMealPlanLog): string {
+  if (item.kind === 'all') return 'All planned meals';
+  return item.label ?? item.meal ?? 'Meal';
+}
+
+export function mealPlanSyncUndoLabel(synced: number, labels: string[]): string {
+  if (synced === 1) return labels[0] ?? 'Queued meal';
+  return `${synced} queued meal logs`;
+}
+
 export { isOfflineError } from './foodQueue';

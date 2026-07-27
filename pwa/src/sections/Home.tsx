@@ -6,6 +6,7 @@ import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
+import { MealPlanQueuePanel } from '../components/MealPlanQueuePanel';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import {
@@ -27,6 +28,8 @@ import {
   getMealPlanQueue,
   isOfflineError,
   MEAL_PLAN_QUEUE_CHANGE,
+  mealPlanQueueLabel,
+  mealPlanSyncUndoLabel,
   removeMealPlanQueueItem,
   type MealPlanEntry,
   type QueuedMealPlanLog,
@@ -34,16 +37,6 @@ import {
 
 interface HomeProps {
   serverOnline: boolean;
-}
-
-function mealPlanQueueLabel(item: QueuedMealPlanLog): string {
-  if (item.kind === 'all') return 'All planned meals';
-  return item.label ?? item.meal ?? 'Meal';
-}
-
-function mealPlanSyncUndoLabel(synced: number, labels: string[]): string {
-  if (synced === 1) return labels[0] ?? 'Queued meal';
-  return `${synced} queued meal logs`;
 }
 
 const METRICS = ['sleep', 'work', 'wasted', 'speak', 'game', 'read'] as const;
@@ -513,15 +506,6 @@ export function Home({ serverOnline }: HomeProps) {
   const habitPct = habitCompletionPct(habits);
   const burn = estimateBurn(habits);
   const hasPendingMealPlanQueue = mealPlanQueue.length > 0 || syncingMealPlanQueue;
-  const failedMealPlanCount = mealPlanQueue.filter((item) => failedMealPlanIds.has(item.id)).length;
-  const mealPlanQueueBannerText =
-    syncingMealPlanQueue && mealPlanSyncProgress
-      ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
-      : `${mealPlanQueue.length} meal log${mealPlanQueue.length === 1 ? '' : 's'} queued${
-          failedMealPlanCount > 0 ? ` · ${failedMealPlanCount} failed` : ''
-        }${
-          mealPlan.length === 0 ? ' — no meals planned today' : ''
-        }${serverOnline ? ' — tap Retry or Sync now' : ' — will sync when online'}.`;
 
   return (
     <section className="section home-section" aria-labelledby="home-heading">
@@ -557,102 +541,26 @@ export function Home({ serverOnline }: HomeProps) {
       )}
 
       {hasPendingMealPlanQueue ? (
-        <div
-          className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}${mealPlan.length === 0 ? ' home-meal-plan-queue-panel--no-plan' : ''}${failedMealPlanCount > 0 ? ' home-meal-plan-queue-panel--has-failed' : ''}`}
-        >
-          <div className={`banner banner-row${failedMealPlanCount > 0 ? ' banner-err' : ' banner-warn'}`} role="status">
-            <span>{mealPlanQueueBannerText}</span>
-            {serverOnline && (
-              <button
-                type="button"
-                className="btn-small"
-                disabled={syncingMealPlanQueue || !!retryingMealPlanId}
-                onClick={() => void flushMealPlanQueue()}
-              >
-                {syncingMealPlanQueue ? 'Syncing…' : 'Sync now'}
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn-small"
-              aria-label="Dismiss meal plan log queue"
-              disabled={syncingMealPlanQueue}
-              onClick={() => {
-                clearMealPlanQueue();
-                setFailedMealPlanIds(new Set());
-                syncMealPlanQueue();
-                setMealPlanMessage('Meal plan log queue cleared');
-              }}
-            >
-              Dismiss all
-            </button>
-          </div>
-          {syncingMealPlanQueue && mealPlanSyncProgress && mealPlanSyncProgress.total > 0 && (
-            <div
-              className="home-meal-plan-sync-progress"
-              role="progressbar"
-              aria-valuenow={mealPlanSyncProgress.done}
-              aria-valuemin={0}
-              aria-valuemax={mealPlanSyncProgress.total}
-              aria-label="Meal plan sync progress"
-            >
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${(mealPlanSyncProgress.done / mealPlanSyncProgress.total) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-          {mealPlanQueue.length > 0 && (
-            <ul className="food-list meal-plan-queue-list" aria-label="Queued meal logs">
-              {mealPlanQueue.map((item) => {
-                const failed = failedMealPlanIds.has(item.id);
-                const retrying = retryingMealPlanId === item.id;
-                return (
-                  <li
-                    key={item.id}
-                    className={`food-row food-row--${failed ? 'failed' : 'queued'}`}
-                    role={failed ? 'alert' : undefined}
-                  >
-                    <div>
-                      <strong>{mealPlanQueueLabel(item)}</strong>
-                      <span className={`muted${failed ? ' meal-plan-queue-item-failed' : ''}`}>
-                        {item.description ? ` · ${item.description}` : ''}
-                        {retrying
-                          ? ' · Syncing…'
-                          : failed
-                            ? ' · Failed to sync'
-                            : ' · Queued offline'}
-                      </span>
-                    </div>
-                    <div className="food-row-actions">
-                      {serverOnline && (
-                        <button
-                          type="button"
-                          className="btn-small"
-                          disabled={syncingMealPlanQueue || !!retryingMealPlanId}
-                          onClick={() => void retryMealPlanItem(item)}
-                        >
-                          {retrying ? 'Syncing…' : 'Retry'}
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="btn-small btn-danger"
-                        aria-label={`Dismiss queued ${mealPlanQueueLabel(item)}`}
-                        disabled={retrying || syncingMealPlanQueue}
-                        onClick={() => dismissMealPlanItem(item.id)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+        <MealPlanQueuePanel
+          serverOnline={serverOnline}
+          queue={mealPlanQueue}
+          syncing={syncingMealPlanQueue}
+          syncProgress={mealPlanSyncProgress}
+          failedIds={failedMealPlanIds}
+          retryingId={retryingMealPlanId}
+          variant="home"
+          noPlanToday={mealPlan.length === 0}
+          bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
+          onSyncAll={() => void flushMealPlanQueue()}
+          onRetry={(item) => void retryMealPlanItem(item)}
+          onDismissItem={dismissMealPlanItem}
+          onClearAll={() => {
+            clearMealPlanQueue();
+            setFailedMealPlanIds(new Set());
+            syncMealPlanQueue();
+            setMealPlanMessage('Meal plan log queue cleared');
+          }}
+        />
       ) : mealPlan.length > 0 ? (
         <MealPlanQueueEmptyHint />
       ) : null}
