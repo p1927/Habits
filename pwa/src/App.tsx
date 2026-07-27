@@ -4,7 +4,7 @@ import type { MealPlanSyncSource } from './lib/mealPlanQueue';
 import { getMealPlanQueueLastSource, mealPlanQueueSourceLabel } from './lib/mealPlanQueue';
 import { useMealNotifications } from './hooks/useMealNotifications';
 import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
-import { useMealPlanQueueRemoteSync } from './hooks/useMealPlanQueueRemoteSync';
+import { useMealPlanQueueRemoteSync } from './lib/mealPlanQueueRemoteSyncStore';
 import { useMealPlanQueueScroll } from './hooks/useMealPlanQueueScroll';
 import { bindNotificationNavigation } from './lib/notificationNavigation';
 import { useServerStatus } from './hooks/useServerStatus';
@@ -146,7 +146,12 @@ function App() {
         {tab === 'cards' && (
           <Cards serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
         )}
-        {tab === 'agent' && <Agent serverOnline={serverOnline} />}
+        {tab === 'agent' && (
+          <Agent
+            serverOnline={serverOnline}
+            onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
+          />
+        )}
         {tab === 'settings' && (
           <Settings
             serverOnline={serverOnline}

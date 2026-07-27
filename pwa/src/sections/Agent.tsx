@@ -1,56 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
 import { getConfig } from '../lib/config';
-import { api, type FoodScanResult } from '../lib/api';
-import { toOrbVisual, type VoiceIframeStatus } from '../lib/voice-status';
+import { api } from '../lib/api';
+import { toOrbVisual, type VoiceIframeStatus } from '../lib/voiceStatus';
 import { addMealPhoto } from '../lib/mealPhotos';
+import { dataUrlToFile } from '../lib/logSectionShared';
+import { foodScanChatSummary, type AgentChatMessage } from '../lib/agentSectionShared';
 import { AgentActionFeed } from '../components/AgentActionFeed';
 import { AgentContextPanel } from '../components/AgentContextPanel';
+import { AgentChatPanel } from '../components/AgentChatPanel';
+import { AgentChatComposer } from '../components/AgentChatComposer';
 import { VoiceEmbed } from '../components/VoiceEmbed';
 import { VoiceStatusOrb } from '../components/VoiceStatusOrb';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { useAgentContext } from '../hooks/useAgentContext';
-import { StreamingDots } from '../components/StreamingDots';
+import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 interface AgentProps {
   serverOnline: boolean;
+  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
-interface ChatMsg {
-  role: 'user' | 'assistant';
-  content: string;
-  imageUrl?: string;
-}
-
-const QUICK_PROMPTS = [
-  { label: 'Log food', text: 'Help me log what I ate today' },
-  { label: 'Habits', text: 'How am I doing on habits today?' },
-  { label: 'Schedule', text: 'Add a calendar event for tomorrow' },
-  { label: 'Health note', text: 'Add a note to my health cards' },
-] as const;
-
-function dataUrlToFile(dataUrl: string, name = 'chat-scan.jpg'): File {
-  const [header, b64] = dataUrl.split(',');
-  const mime = header.match(/:(.*?);/)?.[1] ?? 'image/jpeg';
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return new File([arr], name, { type: mime });
-}
-
-function scanSummary(scan: FoodScanResult): string {
-  const name = scan.matched_name ?? scan.detected_name;
-  const macros = scan.macros;
-  const macroText = macros
-    ? ` — ${macros.calories.toFixed(0)} kcal, ${macros.protein.toFixed(1)}g protein`
-    : '';
-  return `Log this food from my photo: ${name}, ${scan.suggested_grams}g${macroText}`;
-}
-
-export function Agent({ serverOnline }: AgentProps) {
+export function Agent({ serverOnline, onNavigateMealPlanSyncSource }: AgentProps) {
   const { voiceUiUrl } = getConfig();
   const context = useAgentContext(serverOnline, true);
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [messages, setMessages] = useState<AgentChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
@@ -76,7 +50,7 @@ export function Agent({ serverOnline }: AgentProps) {
     setError('');
     const imageUrl = attachImage ?? undefined;
     setAttachImage(null);
-    const userMsg: ChatMsg = { role: 'user', content: message, imageUrl };
+    const userMsg: AgentChatMessage = { role: 'user', content: message, imageUrl };
     setMessages((m) => [...m, userMsg]);
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }));
@@ -96,9 +70,9 @@ export function Agent({ serverOnline }: AgentProps) {
     setScanning(true);
     setError('');
     try {
-      const scan = await api.scanFood(dataUrlToFile(dataUrl));
+      const scan = await api.scanFood(dataUrlToFile(dataUrl, 'chat-scan.jpg'));
       setAttachImage(dataUrl);
-      setInput(scanSummary(scan));
+      setInput(foodScanChatSummary(scan));
       addMealPhoto(dataUrl, scan.matched_name ?? scan.detected_name);
     } catch (e) {
       setAttachImage(dataUrl);
@@ -123,77 +97,25 @@ export function Agent({ serverOnline }: AgentProps) {
         <div className="banner banner-warn" role="alert">habits-api offline — context unavailable.</div>
       )}
 
-      <AgentContextPanel context={context} />
+      <AgentContextPanel context={context} onNavigateMealPlanSyncSource={onNavigateMealPlanSyncSource} />
 
-      <div className="agent-chat" ref={listRef} role="log" aria-live="polite" aria-label="Chat messages">
-        {messages.length === 0 && (
-          <p className="muted agent-chat-empty">
-            Ask me to log food, update habits, schedule events, or add health notes.
-          </p>
-        )}
-        {messages.map((m, i) => (
-          <div key={i} className={`chat-bubble chat-bubble--${m.role}`} aria-label={m.role === 'user' ? 'You' : 'Coach'}>
-            {m.imageUrl && (
-              <img src={m.imageUrl} alt="" className="chat-bubble-image" />
-            )}
-            {m.content}
-          </div>
-        ))}
-        {loading && <StreamingDots />}
-      </div>
+      <AgentChatPanel messages={messages} loading={loading} listRef={listRef} />
 
-      <div className="agent-tool-chips" role="group" aria-label="Quick prompts">
-        {QUICK_PROMPTS.map(({ label, text }) => (
-          <button
-            key={label}
-            type="button"
-            className="agent-tool-chip"
-            disabled={!serverOnline || loading || scanning}
-            onClick={() => setInput(text)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {attachImage && (
-        <div className="agent-attach-preview">
-          <img src={attachImage} alt="Attached food photo" className="agent-attach-thumb" />
-          <button type="button" className="btn-small" onClick={() => { setAttachImage(null); setInput(''); }}>
-            Remove
-          </button>
-        </div>
-      )}
-
-      <form
-        className="agent-chat-input"
-        aria-label="Send a message"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send();
+      <AgentChatComposer
+        serverOnline={serverOnline}
+        loading={loading}
+        scanning={scanning}
+        input={input}
+        attachImage={attachImage}
+        onInputChange={setInput}
+        onSubmit={() => void send()}
+        onClearAttach={() => {
+          setAttachImage(null);
+          setInput('');
         }}
-      >
-        <label className="sr-only" htmlFor="agent-chat-input">Message</label>
-        <input
-          id="agent-chat-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Message your coach…"
-          disabled={!serverOnline || loading || scanning}
-        />
-        <button type="submit" disabled={!serverOnline || loading || scanning || (!input.trim() && !attachImage)}>
-          Send
-        </button>
-      </form>
-
-      <div className="agent-actions-row">
-        <button type="button" className="btn-secondary" onClick={() => setCameraOpen(true)} disabled={!serverOnline || scanning}>
-          {scanning ? 'Scanning…' : 'Camera'}
-        </button>
-        <button type="button" className="btn-secondary" onClick={() => setVoiceOpen(true)}>
-          Voice
-        </button>
-      </div>
+        onOpenCamera={() => setCameraOpen(true)}
+        onOpenVoice={() => setVoiceOpen(true)}
+      />
 
       <div className="agent-feed-label">Recent actions</div>
       <AgentActionFeed

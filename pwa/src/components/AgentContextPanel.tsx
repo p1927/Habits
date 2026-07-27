@@ -1,8 +1,11 @@
 import type { CSSProperties } from 'react';
 import type { AgentContextState } from '../hooks/useAgentContext';
+import { MealPlanSyncAwarenessSlot } from './MealPlanSyncAwarenessSlot';
+import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 interface AgentContextPanelProps {
   context: AgentContextState;
+  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
 const HABIT_LABELS: Record<string, string> = {
@@ -22,7 +25,7 @@ function formatTime(iso: string): string {
   }
 }
 
-export function AgentContextPanel({ context }: AgentContextPanelProps) {
+export function AgentContextPanel({ context, onNavigateMealPlanSyncSource }: AgentContextPanelProps) {
   const { food, habits, calendar, summary, loading, error } = context;
 
   if (loading && !food) {
@@ -42,6 +45,12 @@ export function AgentContextPanel({ context }: AgentContextPanelProps) {
 
   return (
     <div className="agent-context">
+      <MealPlanSyncAwarenessSlot
+        viewer="external"
+        onNavigate={onNavigateMealPlanSyncSource}
+        showPendingWhenIdle
+      />
+
       <div className="agent-context-row">
         <div className="agent-protein-ring" style={{ '--pct': `${pct}%` } as CSSProperties}>
           <div className="agent-protein-ring-inner">

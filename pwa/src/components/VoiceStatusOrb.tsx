@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { VoiceOrbVisualState } from '../lib/voice-status';
+import type { VoiceOrbVisualState } from '../lib/voiceStatus';
 
 interface VoiceStatusOrbProps {
   state?: VoiceOrbVisualState;

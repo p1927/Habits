@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { parseVoiceIframeMessage, type VoiceIframeStatus } from '../lib/voice-status';
+import { parseVoiceIframeMessage, type VoiceIframeStatus } from '../lib/voiceStatus';
 
 interface VoiceEmbedProps {
   url: string;
