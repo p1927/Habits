@@ -42,6 +42,7 @@
 
 - [ ] relay-097 | Remote sync banner on Day tab | feature
 - [ ] relay-098 | Clear stale failed ids on queue dismiss all | maintenance
+- [ ] relay-099 | Log remote sync banner on non-Plan tabs | feature
 
 ---
 
