@@ -19,12 +19,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:24:00Z |
-| status | ready |
-| phase | `9-arm` |
-| review_status | `done` |
+| last_wake | 2026-07-27T13:21:00Z |
+| phase | 9-arm |
+| review_status | done |
 | confirmed_next | ch-118 |
-| loops | **code-health** PID 96936 (120s) — UP |
+| loops | dynamic wake re-armed after SIGTERM recovery |
 
 ---
 
@@ -236,8 +235,8 @@
 | `pwa/src/sections/FutureSelf.tsx` | 2026-07-27 tick #71 | ch-092: useFutureSelfSection; 168→84 |
 | `pwa/src/sections/Day.tsx` | 2026-07-27 tick #72 | ch-093: useDaySection; 168→156 |
 | `pwa/src/lib/mealNotifications.ts` | 2026-07-27 tick #75 | ch-096: storage + permission + scheduler; 163→12 |
-| `pwa/src/sections/Agent.tsx` | 2026-07-27 tick #94 | ch-115: header + body + overlays; 139→71 |
-| `pwa/src/sections/*` + hooks + lib | 2026-07-27 tick #94 | scan: api 302, App 296, Day 156, ringShareCardCanvas 143, useCameraCapture 137 |
+| `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
+| `pwa/src/sections/*` + hooks + lib | 2026-07-27 tick #95 | scan: api 302, Day 156, ringShareCardCanvas 143, useCameraCapture 137 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -451,6 +450,8 @@
 | 2026-07-27 | ch-112 | useLogRecipeScan split | build | pending |
 | `pwa/src/hooks/useOptimisticFoodLog.ts` | 2026-07-27 tick #92 | ch-113: actions + hook types; 140→51 |
 | 2026-07-27 | ch-113 | useOptimisticFoodLog split | build | pending |
+| 2026-07-27 | ch-116 | App shell split (useAppShell + tab chrome) | build | pending |
+| `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: 296→28; appShellShared + appTabPreload |
 | 2026-07-27 | ch-115 | Agent section split (header/body/overlays) | build | pending |
 | `pwa/src/sections/Agent.tsx` | 2026-07-27 tick #94 | ch-115: 139→71; 3 panel components |
 | 2026-07-27 | ch-117 | line scan tick #95 | — | pending |
