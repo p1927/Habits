@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:16:00Z |
-| where_we_are | Session #21 — relay-149–170 + ui-053 shipped; Worker relay-171–173 open |
-| confirmed_next | Worker relay-172; Code maint-003 + ch-batch; scan UX_GAPS |
+| reviewed_at | 2026-07-27T12:28:00Z |
+| where_we_are | Session #22 — relay-171–173 shipped; Worker relay-174–176 open |
+| confirmed_next | Worker relay-174; UX triage prop-ui-041; Code maint-003/004 |
 
 ---
 
@@ -18,16 +18,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:16:00Z |
-| current_item_id | po-tick-003 |
-| phase | `9-arm` |
+| last_wake | 2026-07-27T12:28:00Z |
+| current_item_id | po-tick-004 |
+| phase | `8-close` |
 | review_status | `triaged` |
 | review_skip_reason | — |
-| review_round | `4` |
-| review_diff_range | `uncommitted WIP` |
+| review_round | `6` |
+| last_reviewed_round | `6` |
+| review_diff_range | uncommitted STATE Session #22 |
 | code_changed | `yes` |
-| confirmed_next | Worker relay-172; Code maint-003 |
+| confirmed_next | Worker relay-174; Code maint-003 |
 | loops | arm at end of turn |
+| worktree_status | `none` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 
 ### Loop status (verify with `loop-status.sh`)
 
@@ -37,8 +44,6 @@
 | UX | `ux-relay` | `AGENT_LOOP_WAKE_UX_RELAY` | dynamic — UX chat |
 | Code | `code-health` | `AGENT_LOOP_WAKE_CODE_HEALTH` | dynamic — Code chat |
 | PO | `po-relay` | `AGENT_LOOP_WAKE_PO_RELAY` | dynamic — **this chat** |
-
----
 
 ## IN_PROGRESS
 
@@ -56,7 +61,8 @@
 
 - [x] maint-001 | Confirm before dismiss food queue | from RELAY BRAINSTORM | `Log.tsx` — done tick #7
 - [x] maint-002 | Accessibility audit ARIA/focus/contrast | ROADMAP | ui-008/009/011 done — Settings aria-live shipped
-- [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run mobile Lighthouse after ch-119/120 lands; ch-batch still uncommitted |
+- [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run Lighthouse after ch-123 api split |
+- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **Code window:** grep confirms no TSX refs; delete dead rules |
 
 ---
 
@@ -89,7 +95,8 @@
 |----|--------|--------|---------|----------|---------------------|-------------|
 | prop-ui-038 | refined | po | Agent | Token-by-token streaming assistant bubble | Backend live; UX ui-038 verified | Verified done ui-038 2026-07-27 |
 | prop-ui-039 | refined | po | Home → Log | Saved recipe “See full recipe” deep link | Shipped relay-150 + ui-053 — `navigateLogRecipes` + refresh on open | Shipped ui-053 + relay-150 |
-| prop-ui-040 | proposed | po | Log History | CSV export header action UX | Given Log History tab, When user taps Export CSV pill in header, Then download `.csv` with date/meal/macros columns (Google Sheets export pattern) | — |
+| prop-ui-040 | refined | po | Log History | CSV export header action UX | Shipped relay-172 — Export CSV pill + `downloadLogHistoryCsv` | Shipped relay-172 |
+| prop-ui-041 | proposed | po | Day | Calendar event detail sheet polish | Given Day timeline event, When user taps block, Then bottom sheet shows title/time/location with Revolut card surface (relay-173 shipped — UX verify) | — |
 
 **Status values:** `proposed` → UX reviews | `agreed` → copied to UX_STATE `UI_POLISH_BACKLOG` | `refined` → UX sent AC changes, PO updates row | `rejected` → dropped with reason in `ux_response`
 
@@ -101,7 +108,15 @@
 
 ## BRAINSTORM_LOG (newest first)
 
-### 2026-07-27 — Session #21 (PO tick po-tick-003)
+### 2026-07-27 — Session #22 (PO tick po-tick-004)
+
+**UX lens (ux-heuristics):** prop-ui-040 **closed** — relay-172 CSV export shipped. **prop-ui-041 proposed** — `DayCalendarEventSheet` needs Revolut bottom-sheet parity vs Google Calendar event popup. ux-gap-040 = Code cleanup (dead CSS), not UX polish.
+
+**PO lens (define-prioritization-framework):** Session #21 handoffs **closed** (relay-171–173). RICE open: **relay-174** (empty Day → Agent prompt, high engagement) > **relay-176** (pull-to-refresh Home) > **relay-175** (CSV meal count polish). Worker backlog healthy at 3.
+
+**Business lens (jobs-to-be-done):** Empty Day → Agent prompt = trigger for scheduling job. Pull-to-refresh = investment in daily dashboard habit. Dead CSS removal = Code maintainability (maint-004).
+
+---
 
 **UX lens (ux-heuristics):** prop-ui-039 **closed** — ui-053 + relay-150 shipped “See full recipe” deep link. **prop-ui-040 proposed** — relay-172 CSV export needs visible header affordance (Sheets/Revolut export pattern). relay-173 Day event detail = Google Calendar event popup on timeline tap.
 
@@ -196,10 +211,17 @@
 | pr-r2-004 | low | prop-ui-039 refined AC; ux-gap-039 po-agreed | round-2 /code-review | closed | relay-150 | closed |
 | pr-r2-005 | low | Code ch-119/120 landed in WIP; maint-003 Lighthouse re-run still Code-owned | round-2 /code-review | backlog | maint-003 | open |
 | pr-r3-001 | low | relay-149–170 + ui-053 shipped since Session #20 | round-3 /code-review | closed | — | closed |
-| pr-r3-002 | low | Worker backlog refilled relay-171–173; RICE top relay-172 | round-3 /code-review | backlog | relay-172 | open |
-| pr-r3-003 | low | prop-ui-040 proposed for relay-172 CSV export UX | round-3 /code-review | backlog | prop-ui-040 | open |
+| pr-r3-002 | low | Worker backlog refilled relay-171–173; RICE top relay-172 | round-3 /code-review | closed | relay-172 | closed |
+| pr-r3-003 | low | prop-ui-040 proposed for relay-172 CSV export UX | round-3 /code-review | closed | prop-ui-040 | closed |
 | pr-r3-004 | low | Code ch-batch still uncommitted; maint-003 Lighthouse re-run pending | round-3 /code-review | backlog | maint-003 | open |
 | pr-r4-000 | low | Uncommitted code-health WIP reviewed; no new PO blockers | round-4 /code-review | closed | — | closed |
+| pr-r5-001 | low | relay-171–173 shipped (context refresh, CSV export, event sheet) | round-5 /code-review | closed | — | closed |
+| pr-r5-002 | low | prop-ui-040 closed; prop-ui-041 proposed for Day event sheet UX | round-5 /code-review | backlog | prop-ui-041 | open |
+| pr-r5-003 | low | ux-gap-040 routed to Code maint-004 (dead CSS) | round-5 /code-review | backlog | maint-004 | open |
+| pr-r5-004 | low | Code ch-122 done; ch-123 api.ts split in progress | round-5 /code-review | backlog | maint-003 | open |
+| pr-r6-001 | low | Round 6: STATE Session #22 refresh — relay-174–176 Worker next; prop-ui-041 UX proposal | round-6 /code-review | closed | relay-174 | closed |
+| pr-r6-002 | low | cursor-loop v0.5.4 window-scoped review paths — PO scope docs-only; product review still main...HEAD on app code | round-6 /code-review | closed | — | closed |
+| pr-r6-003 | low | maint-003 Lighthouse + maint-004 dead CSS remain Code-owned open items from pr-r5 | round-6 /code-review | backlog | maint-003 | open |
 
 ---
 
@@ -207,6 +229,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | PO | po-tick-004 | Session #22 + relay-171–173 close + prop-ui-041 | brainstorm | — |
 | 2026-07-27 | PO | po-tick-003 | Session #21 + prop-ui-039 close + prop-ui-040 + dd-004 resolved | brainstorm | — |
 | 2026-07-27 | PO | po-tick-002 | Session #20 + relay-170 verify + prop-ui-038 close | brainstorm | — |
 | 2026-07-27 | PO | po-tick-001 | Session #19 + relay-149/150 feed + ui-038 refined | brainstorm | — |

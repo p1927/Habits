@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:16:00Z |
-| where_we_are | Backlog complete; audit shipped LogFoodEditSheet + recipe hint; ux-gap-040 proposed |
-| confirmed_next | await PO proposals; code-health triage ux-gap-040 |
+| reviewed_at | 2026-07-27T12:51:47Z |
+| where_we_are | prop-ui-041 shipped — Day event detail Revolut card + time pill |
+| confirmed_next | await new PO UI_PROPOSALS |
 
 ---
 
@@ -18,19 +18,24 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:16:00Z |
+| last_wake | 2026-07-27T12:51:47Z |
 | next_mode | `C` |
-| current_item_id | — |
+| current_item_id | ui-055 |
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | — |
-| review_round | `0` |
-| review_diff_range | — |
+| review_round | `6` |
+| last_reviewed_round | `6` |
+| review_diff_range | DayCalendarEventSheet Revolut pass (prop-ui-041) |
 | code_changed | `yes` |
-| confirmed_next | await PO proposals; code-health triage ux-gap-040 |
+| confirmed_next | await new PO UI_PROPOSALS beyond prop-ui-041 |
 | loops | dynamic wake — paste `@docs/window-instances/ux-relay/INSTANCE.md keep working` |
-
----
+| worktree_status | `none` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 
 ## IN_PROGRESS
 
@@ -45,7 +50,8 @@
 | id | status | surface | gap | reference app | po_response |
 |----|--------|---------|-----|---------------|-------------|
 | ux-gap-039 | po-agreed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | shipped ui-053 |
-| ux-gap-040 | ux-proposed | Global CSS | Remove unused legacy `.card`, `.card-placeholder`, `.btn-decline` rules (no TSX references) | — | Code window cleanup |
+| ux-gap-040 | po-agreed | Global CSS | Remove unused legacy `.card`, `.card-placeholder`, `.btn-decline` rules | — | shipped this tick |
+| ux-gap-041 | po-agreed | Log History | prop-ui-040 verified — Export CSV pill shipped | Google Sheets export | shipped ui-054 |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -108,6 +114,8 @@
 - [x] ui-051 | **Future Self Hinge pass:** baseline + tracker cards, section eyebrow, rose tint | P3 | done 2026-07-27
 - [x] ui-052 | **Future Self swipe card:** Hinge prompt layout, rose accept pill, projection grid Revolut pass | P3 | done 2026-07-27
 - [x] ui-053 | **Home recipe deep link:** “See full recipe” → Log Recipes sub-tab (prop-ui-039) | P2 | done 2026-07-27
+- [x] ui-054 | **Log History CSV export:** header Export CSV pill + download (prop-ui-040) | P2 | done 2026-07-27 — verified relay-172 + empty-state hint
+- [x] ui-055 | **Day event detail sheet:** Revolut card + color time pill + Close CTA (prop-ui-041) | P2 | done 2026-07-27 — Calendar popup parity
 
 ---
 
@@ -115,6 +123,15 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r6-001 | low | ui-055 DayCalendarEventSheet Revolut card + time pill; build pass | round-6 /code-review | closed | ui-055 | closed |
+| ux-r5-001 | low | Round 5: STATE-only diff — ui-054/prop-ui-040 closed; no pwa changes this tick | round-5 /code-review | closed | ui-054 | closed |
+| ux-r5-000 | low | No new pwa/ diff in window scope; review_scope v0.5.4 cross-window diff excluded from UX scope | round-5 /code-review | closed | — | closed |
+| rf-r4-001 | low | ui-054 prop-ui-040 verify + dead CSS cleanup | round-4 /code-review | closed | ui-054 | closed |
+| rf-r3-001 | low | ui-054 prop-ui-040 verify + dead CSS cleanup | round-3 /code-review | closed | ui-054 | closed |
+| rf-r2-001 | low | prop-ui-040 verified; dead legacy CSS removed; history empty export hint | round-2 /code-review | closed | ui-054 | closed |
+| rf-r1-001 | low | prop-ui-040 verified; dead legacy CSS removed; history empty export hint | round-1 /code-review | closed | ui-054 | closed |
+| rf-r0-002 | low | prop-ui-040 verified; dead legacy CSS removed; history empty export hint | round-0 /code-review | closed | ui-054 | closed |
+| rf-r0-001 | low | LogFoodEditSheet + recipe hint polish; mealPlanSyncActionBundle TS fix | round-0 /code-review | closed | — | closed |
 | — | — | — | — | — | — | — |
 
 ---
@@ -123,6 +140,8 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | C | ui-055 | Day event detail Revolut pass (prop-ui-041) | build | pending |
+| 2026-07-27 | C | ui-054 | prop-ui-040 verify + dead CSS cleanup | build | pending |
 | 2026-07-27 | C | audit | LogFoodEditSheet pill CTAs + recipe deep-link hint; ux-gap-040 proposed | build | pending |
 | 2026-07-27 | C | ui-053 | Home→Log Recipes deep link + camera/barcode viewfinder | build | pending |
 | 2026-07-27 | C | ui-038, ui-052 | Agent stream scroll + Future Self swipe Hinge | build | pending |

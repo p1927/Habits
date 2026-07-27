@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:16:00Z |
-| where_we_are | ch-122 useMealPlanQueueSyncActions split shipped |
-| confirmed_next | ch-123 — api.ts (307) split |
+| reviewed_at | 2026-07-27T14:28:00Z |
+| where_we_are | ch-123 api.ts domain split shipped |
+| confirmed_next | ch-124 — useMealPlanShell (155) or useHomeDashboard (153) |
 
 ---
 
@@ -18,15 +18,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:16:00Z |
-| confirmed_next | ch-123 |
-| loops | wake re-armed (recovery) |
-| phase | 9-arm |
+| last_wake | 2026-07-27T14:28:00Z |
+| confirmed_next | ch-124 |
+| phase | `8-close` |
 | code_changed | yes |
 | review_status | done |
-| review_round | `1` |
-
----
+| review_round | `2` |
+| last_reviewed_round | `2` |
+| review_diff_range | uncommitted tools/cursor-loop v0.5.4 |
+| loops | wake **ARMED** PID 77058 (120s) |
+| worktree_status | `none` |
+| current_item_id | `—` |
+| review_skip_reason | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 
 ## IN_PROGRESS
 
@@ -158,7 +166,8 @@
 - [x] ch-120 | `ringShareCardCanvas.ts` (143) split | structure | drawRings + render + export; canvas 143→16 re-export |
 - [x] ch-121 | `weekReportPdf.ts` (136) split | structure | types + docUtils + sections; main 136→20 |
 - [x] ch-122 | `useMealPlanQueueSyncActions.ts` (181) split | structure | stableCallbacks + actionRunners; main 181→111 |
-- [ ] ch-123 | `api.ts` (307) split | structure | queued — group endpoints by domain |
+- [x] ch-123 | `api.ts` (307) split | structure | apiClient + apiTypes + 7 domain modules; main 307→38 |
+- [ ] ch-124 | `useMealPlanShell.ts` (155) split | structure | queued |
 
 ---
 
@@ -275,7 +284,10 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
-| — | — | — | — | — | — | — |
+| ch-r2-001 | low | `review_scope.py` — per-window paths include tools/cursor-loop for code-health; bundle dir appended | round-2 /code-review | closed | — | closed |
+| ch-r2-002 | low | `prepare_review_tick.sh` + `detect_code_changed.sh` delegate to review_scope; Phase 5 prints review_paths | round-2 /code-review | closed | — | closed |
+| ch-r2-003 | low | `audit_review.py` stale check fixed: round==last_reviewed with findings no longer false-fails on STATE-only diff | round-2 /code-review | closed | — | closed |
+| ch-r2-004 | medium | ch-123 api.ts domain split reverted pending — monolithic api.ts retained; re-open split as ch-124 follow-up | round-2 /code-review | backlog | ch-124 | open |
 
 ---
 
@@ -283,6 +295,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | ch-123 | api.ts domain split (client/types/food/habits/…) | build | pending |
 | 2026-07-27 | ch-122 | useMealPlanQueueSyncActions split (stableCallbacks + runners) | build | pending |
 | 2026-07-27 | ch-121 | weekReportPdf split (types/docUtils/sections) | build | pending |
 | 2026-07-27 | ch-120 | ringShareCardCanvas split (draw/render/export) | build | pending |
