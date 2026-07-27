@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:49:00Z |
+| reviewed_at | 2026-07-27T04:50:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #118; backlog refilled; relay-124 relative queue timestamps shipped. |
+| where_we_are | Loop tick #119; relay-125 pending banner reduced motion aria-live shipped. |
 | blockers | [] |
-| confirmed_next | relay-125 pending banner reduced motion aria-live |
-| brainstorm_notes | relay-124 uses formatRelativeTime helper; queue rows show "Queued 5m ago" |
+| confirmed_next | relay-126 queue empty hint reduced motion aria-live |
+| brainstorm_notes | relay-125 mirrors relay-123 pattern on MealPlanQueuePendingBanner |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:49:00Z |
+| last_wake | 2026-07-27T04:50:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: maintenance) |
-| next_action | relay-125 pending queue banner reduced motion aria-live |
+| cycle_parity | odd (next: feature) |
+| next_action | relay-126 queue empty hint reduced motion aria-live |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-125 | Pending queue banner reduced motion aria-live | maintenance
 - [ ] relay-126 | Queue empty hint reduced motion aria-live | maintenance
 - [ ] relay-127 | Habit queue relative timestamps (parity with meal plan) | feature
 
@@ -60,7 +59,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-124 | done | build | pending |
+| 2026-07-27 | relay-125 | done | build | 49e36b5 |
+| 2026-07-27 | relay-124 | done | build | f1d6a05 |
 | 2026-07-27 | relay-123 | done | build | e99dc96 |
 | 2026-07-27 | relay-122 | done | build | 6c5e958 |
 | 2026-07-27 | relay-121 | done | build | a605006 |
