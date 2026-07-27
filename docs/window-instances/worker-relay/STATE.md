@@ -24,7 +24,7 @@
 | next_action | `relay-193 Log food edit sheet Escape to close` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-192 reviewed round 23; committed 9ed904f` |
+| review_skip_reason | `relay-192 reviewed round 23; committed 3e03d10` |
 | review_diff_range | `relay-192` |
 | code_changed | `no` |
 | review_round | `23` |
@@ -35,7 +35,7 @@
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `pwa/src/App.css,pwa/src/components/CardsCreateSheet.tsx` |
-| review_fingerprint | `9ed904f` |
+| review_fingerprint | `3e03d10` |
 | ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -92,7 +92,7 @@
 - [x] relay-189 | Home rings share sheet keyboard Escape to close | polish | HomeRingShareSheet + BottomSheet Escape
 - [x] relay-190 | Settings OAuth banner aria-live polite on show | polish | role=status aria-live=polite on OAuth success banner
 - [x] relay-191 | Agent tools sheet Escape to close | polish | BottomSheet Escape + hint text (ad3d6a0)
-- [x] relay-192 | Cards create sheet Escape to close | polish | BottomSheet Escape + hint text (9ed904f)
+- [x] relay-192 | Cards create sheet Escape to close | polish | BottomSheet Escape + hint text (3e03d10)
 - [ ] relay-193 | Log food edit sheet Escape to close | polish
 
 ---
@@ -147,7 +147,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-192 | done | build | 9ed904f |
+| 2026-07-27 | relay-192 | done | build | 3e03d10 |
 | 2026-07-27 | relay-191 | done | build | ad3d6a0 |
 | 2026-07-27 | relay-190 | done | build | 57e63d9 |
 | 2026-07-27 | relay-189 | done | build | 9fb62aa |
