@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T15:00:00Z |
-| where_we_are | relay-181 shipped |
-| confirmed_next | relay-182 |
-| brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
+| reviewed_at | 2026-07-27T12:50:00Z |
+| where_we_are | relay-182 verify-only (already shipped f3af1b5) |
+| confirmed_next | relay-183 |
+| brainstorm_notes | Log shortcut hint wired via useLogTabShortcuts + LogSubTabs; backlog marked done |
 
 ---
 
@@ -19,16 +19,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:46:13Z |
-| confirmed_next | relay-182 |
-| next_action | relay-182 Log tab keyboard shortcut hint on first visit |
+| last_wake | 2026-07-27T12:50:00Z |
+| confirmed_next | relay-183 |
+| next_action | relay-183 Day tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
+| phase | 8-close |
 | review_status | skipped |
-| review_skip_reason | relay-181 reviewed round 7; committed f8cbe92 |
+| review_skip_reason | relay-182 verify-only; no pwa/server diff this tick |
 | review_round | `7` |
 | last_reviewed_round | `7` |
-| review_diff_range | `f8cbe92` |
+| review_diff_range | `none` |
 | code_changed | `no` |
 
 ---
@@ -73,7 +73,10 @@
 - [x] relay-179 | Day manage-day quadrant tap → expand task list | feature | accordion toggle + task preview when collapsed
 - [x] relay-180 | Agent chat regenerate last reply | polish | Regenerate pill re-streams last user turn
 - [x] relay-181 | Home decision card tap → Future Self tab | feature | `#futureself` deep link + Open Future Self on decision card
-- [ ] relay-182 | Log tab keyboard shortcut hint on first visit | polish
+- [x] relay-182 | Log tab keyboard shortcut hint on first visit | polish | verify-only — `useLogTabShortcuts` + LogSubTabs hint (f3af1b5)
+- [ ] relay-183 | Day tab keyboard shortcut hint on first visit | polish
+- [ ] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish
+- [ ] relay-185 | Cards tab keyboard shortcut hint on first visit | polish
 
 ---
 
@@ -84,6 +87,7 @@
 | Queue sort parity | relay-130 | done |
 | Lighthouse PWA | ROADMAP | relay-160 done (97/100/100) |
 | ui-038 Agent SSE streaming | maintenance | done relay-165 |
+| Tab shortcut hints | relay-182 | extend to Day/Cards |
 
 ---
 
@@ -107,6 +111,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-182 | done | build | f3af1b5 |
 | 2026-07-27 | relay-181 | done | build | f8cbe92 |
 | 2026-07-27 | relay-180 | done | build | f32d5a1 |
 | 2026-07-27 | relay-179 | done | build | d9fcad8 |
