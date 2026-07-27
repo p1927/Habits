@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T21:22:00Z |
-| where_we_are | round 16 review — useHomeDashboard refactor |
-| confirmed_next | relay-188 |
-| brainstorm_notes | split refresh hook + derived metrics helper |
+| reviewed_at | 2026-07-27T23:15:00Z |
+| where_we_are | relay-188 shipped |
+| confirmed_next | relay-189 |
+| brainstorm_notes | OAuth banner auto-dismiss 5s + manual Dismiss preserved |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:25:00Z` |
-| confirmed_next | `relay-188` |
-| next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
-| phase | `9-arm` |
+| last_wake | `2026-07-27T23:15:00Z` |
+| confirmed_next | `relay-189` |
+| next_action | `relay-189 Home rings share sheet keyboard Escape to close` |
+| phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `round 16 review done; refactor 3757406 + duplicate removal` |
-| review_diff_range | `useHomeDashboard-refactor-r16` |
-| code_changed | `no` |
-| review_round | `16` |
-| last_reviewed_round | `16` |
+| review_skip_reason | `relay-188 reviewed round 17; committed pending` |
+| review_diff_range | `relay-188` |
+| code_changed | `yes` |
+| review_round | `17` |
+| last_reviewed_round | `17` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/hooks/useHomeDashboard.ts pwa/src/hooks/useHomeDashboardRefresh.ts pwa/src/lib/homeDashboardDerived.ts pwa/src/hooks/homeDashboardDerived.ts` |
-| review_fingerprint | `fe53348d94250e48` |
+| review_changed_files | `pwa/src/sections/Settings.tsx` |
+| review_fingerprint | `82735cbea1355c19` |
 
 ## IN_PROGRESS
 

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { SettingsBodyTargetsCard } from '../components/SettingsBodyTargetsCard';
 import { SettingsConnectionCard } from '../components/SettingsConnectionCard';
 import { SettingsGoogleCard } from '../components/SettingsGoogleCard';
@@ -41,6 +42,12 @@ export function Settings({
     handleRemindersChange,
     handleRequestPermission,
   } = useSettingsSection({ serverOnline, googleConnected, onBearerSaved });
+
+  useEffect(() => {
+    if (!oauthSuccess || !onDismissOauth) return;
+    const id = window.setTimeout(onDismissOauth, 5000);
+    return () => window.clearTimeout(id);
+  }, [oauthSuccess, onDismissOauth]);
 
   return (
     <section className="section settings-page">

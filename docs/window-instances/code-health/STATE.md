@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:28:00Z |
-| where_we_are | ch-123 api.ts domain split shipped |
-| confirmed_next | ch-124 — useMealPlanShell (155) or useHomeDashboard (153) |
+| reviewed_at | 2026-07-27T21:10:00Z |
+| where_we_are | ch-125 useHomeDashboard split shipped |
+| confirmed_next | ch-126 — useAgentChat (171) split |
 
 ---
 
@@ -18,24 +18,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T14:28:00Z` |
-| confirmed_next | `ch-124` |
-| phase | `1-wake` |
-| code_changed | no |
-| review_status | skipped |
-| review_skip_reason | prior ch-123 tick closed; next wake Phase 1 |
-| review_round | `2` |
-| last_reviewed_round | `2` |
-| review_diff_range | none |
-| loops | `wake **ARMED** PID 77058 (120s)` |
+| last_wake | `2026-07-27T21:10:00Z` |
+| confirmed_next | `ch-126` |
+| phase | `9-arm` |
+| code_changed | `no` |
+| review_status | `skipped` |
+| review_round | `5` |
+| last_reviewed_round | `4` |
+| loops | `wake ARMED (120s)` |
 | worktree_status | `none` |
 | current_item_id | `—` |
-| review_skip_reason | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md` |
+| review_fingerprint | `2b91e7074ac58d73` |
+| review_diff_range | `uncommitted` |
+| review_skip_reason | `pwa shipped in ch-125 commits; tick close STATE-only` |
 
 ## IN_PROGRESS
 
@@ -168,7 +167,9 @@
 - [x] ch-121 | `weekReportPdf.ts` (136) split | structure | types + docUtils + sections; main 136→20 |
 - [x] ch-122 | `useMealPlanQueueSyncActions.ts` (181) split | structure | stableCallbacks + actionRunners; main 181→111 |
 - [x] ch-123 | `api.ts` (307) split | structure | apiClient + apiTypes + 7 domain modules; main 307→38 |
-- [ ] ch-124 | `useMealPlanShell.ts` (155) split | structure | queued |
+- [x] ch-124 | `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; main 155→122 |
+- [x] ch-125 | `useHomeDashboard.ts` (153) split | structure | refresh hook + homeDashboardDerived; main 153→87 |
+- [ ] ch-126 | `useAgentChat.ts` (171) split | structure | queued |
 
 ---
 
@@ -289,6 +290,9 @@
 | ch-r2-002 | low | `prepare_review_tick.sh` + `detect_code_changed.sh` delegate to review_scope; Phase 5 prints review_paths | round-2 /code-review | closed | — | closed |
 | ch-r2-003 | low | `audit_review.py` stale check fixed: round==last_reviewed with findings no longer false-fails on STATE-only diff | round-2 /code-review | closed | — | closed |
 | ch-r2-004 | medium | ch-123 api.ts domain split reverted pending — monolithic api.ts retained; re-open split as ch-124 follow-up | round-2 /code-review | backlog | ch-124 | open |
+| ch-r3-001 | low | `pwa/src/hooks/useHomeDashboard.ts:1` — refresh/state extracted to useHomeDashboardRefresh; derived metrics to homeDashboardDerived; composition hook stays thin | round-3 /code-review | closed | — | closed |
+| ch-r3-002 | low | `tools/cursor-loop/scripts/ritual_phase.py:1` — review gate manifest + worktree close checks; no behavior change in pwa runtime | round-3 /code-review | closed | — | closed |
+| ch-r4-001 | low | `pwa/src/hooks/homeDashboardDerived.ts:1` — duplicate misplaced during worktree cp; removed; canonical module stays at pwa/src/lib/homeDashboardDerived.ts | round-4 /code-review | closed | — | closed |
 
 ---
 
@@ -296,7 +300,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | ch-123 | api.ts domain split (client/types/food/habits/…) | build | pending |
+| 2026-07-27 | ch-125 | useHomeDashboard split (refresh hook + derived) | build | pending |
+| 2026-07-27 | ch-124 | useMealPlanShell split (syncContext hook) | build | pending |
 | 2026-07-27 | ch-122 | useMealPlanQueueSyncActions split (stableCallbacks + runners) | build | pending |
 | 2026-07-27 | ch-121 | weekReportPdf split (types/docUtils/sections) | build | pending |
 | 2026-07-27 | ch-120 | ringShareCardCanvas split (draw/render/export) | build | pending |
