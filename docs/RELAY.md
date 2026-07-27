@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:52:00Z |
+| reviewed_at | 2026-07-27T04:53:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #121; relay-127 habit queue relative timestamps shipped. |
+| where_we_are | Loop tick #122; relay-128 food log queue relative timestamps shipped. |
 | blockers | [] |
-| confirmed_next | relay-128 food log queue relative timestamps |
-| brainstorm_notes | Day tab lists queued habit updates with "Queued 5m ago" via formatRelativeTime |
+| confirmed_next | relay-129 pending banner dynamic tab label |
+| brainstorm_notes | Log tab pending rows show "Queued 5m ago" via formatRelativeTime |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:52:00Z |
+| last_wake | 2026-07-27T04:53:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-128 food log queue relative timestamps |
+| cycle_parity | even (next: feature) |
+| next_action | relay-129 pending banner dynamic tab label |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-127 | Habit queue relative timestamps (parity with meal plan) | feature
+- [ ] relay-129 | Pending banner dynamic tab label | feature
+- [ ] relay-130 | Meal plan queue sort by created_at | maintenance
 
 ---
 
@@ -48,9 +49,9 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Habit queue relative timestamps | relay-124 | reuse formatRelativeTime |
 | Pending banner dynamic tab label | Cards awareness | open Home vs source tab |
 | Queue sort by created_at | UX | oldest first for sync order visibility |
+| Food log relative timestamps | relay-127 | reuse formatRelativeTime in Log.tsx |
 
 ---
 
@@ -58,6 +59,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-128 | done | build | pending |
+| 2026-07-27 | relay-127 | done | build | 745e1fd |
 | 2026-07-27 | relay-126 | done | build | e2b7b12 |
 | 2026-07-27 | relay-125 | done | build | 49e36b5 |
 | 2026-07-27 | relay-124 | done | build | f1d6a05 |
