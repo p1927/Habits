@@ -11,10 +11,10 @@
 | reviewed_at | 2026-07-27T08:31:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Prior loop aborted; restarted single `/loop`. |
+| where_we_are | Inline agent loop aborted; script loops running in dedicated terminals. |
 | blockers | [] |
 | confirmed_next | relay-146 Coach tab meal plan queue badge |
-| brainstorm_notes | brainstorm items Plan label + queue sort already shipped |
+| brainstorm_notes | monitor ^AGENT_LOOP_WAKE_HABITS for relay script, not TICK |
 
 ---
 
