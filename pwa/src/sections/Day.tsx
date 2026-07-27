@@ -43,6 +43,7 @@ function readMetricStreakHaptics(): Record<string, number> {
 interface DayProps {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
+  scrollToMealPlanQueue?: number;
 }
 
 const METRIC_COLORS: Record<string, string> = {
@@ -90,7 +91,7 @@ function metricLabel(key: string): string {
   return METRICS.find((m) => m.key === key)?.label ?? key;
 }
 
-export function Day({ serverOnline, onNavigateMealPlanSyncSource }: DayProps) {
+export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPlanQueue }: DayProps) {
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [events, setEvents] = useState<{ id: string; summary: string; start: string }[]>([]);
   const [manageDay, setManageDay] = useState<Record<string, string[]>>({});
@@ -378,6 +379,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource }: DayProps) {
         syncProgress={mealPlanSyncProgress}
         failedIds={failedMealPlanIds}
         retryingId={retryingMealPlanId}
+        scrollToQueueToken={scrollToMealPlanQueue}
         syncAllLabel="Sync all"
         syncActionHint="Sync all"
         onSyncAll={() => void flushMealPlanQueue()}

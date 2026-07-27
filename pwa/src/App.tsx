@@ -132,7 +132,11 @@ function App() {
           />
         )}
         {tab === 'day' && (
-          <Day serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
+          <Day
+            serverOnline={serverOnline}
+            onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
+            scrollToMealPlanQueue={mealPlanQueueScrollToken}
+          />
         )}
         {tab === 'cards' && (
           <Cards serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
@@ -162,6 +166,8 @@ function App() {
                 ? `${mealPlanFailedCount} meal log${mealPlanFailedCount === 1 ? '' : 's'} failed to sync`
                 : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`) +
               mealPlanSyncSourceHint;
+            const queueBadgeActionable =
+              t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards';
             return (
             <button
               key={t.id}
@@ -174,15 +180,15 @@ function App() {
                 <span className="tab-icon" aria-hidden>{t.icon}</span>
                 {showQueueBadge && (
                   <span
-                    className={`tab-badge${mealPlanFailedCount > 0 ? ' tab-badge--failed' : ''}${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' || t.id === 'cards' ? ' tab-badge--actionable' : ''}`}
+                    className={`tab-badge${mealPlanFailedCount > 0 ? ' tab-badge--failed' : ''}${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${queueBadgeActionable ? ' tab-badge--actionable' : ''}`}
                     aria-label={queueBadgeCountLabel}
                     title={
                       t.id === 'log'
                         ? `${queueBadgeCountLabel} — tap to open Plan`
                         : t.id === 'home'
-                          ? `${queueBadgeCountLabel} — tap to sync on Home`
+                          ? `${queueBadgeCountLabel} — tap to open queue`
                           : t.id === 'day'
-                            ? `${queueBadgeCountLabel} — tap to sync on Day`
+                            ? `${queueBadgeCountLabel} — tap to open queue`
                             : t.id === 'cards'
                               ? `${queueBadgeCountLabel} — tap to open Home queue`
                               : undefined
@@ -194,13 +200,19 @@ function App() {
                             setOpenLogMealPlan(true);
                             handleTabChange('log');
                           }
-                        : t.id === 'cards'
+                        : t.id === 'home' || t.id === 'day'
                           ? (e) => {
                               e.stopPropagation();
-                              handleTabChange('home');
+                              handleTabChange(t.id);
                               setMealPlanQueueScrollToken((token) => token + 1);
                             }
-                          : undefined
+                          : t.id === 'cards'
+                            ? (e) => {
+                                e.stopPropagation();
+                                handleTabChange('home');
+                                setMealPlanQueueScrollToken((token) => token + 1);
+                              }
+                            : undefined
                     }
                   >
                     {badgeCount > 9 ? '9+' : badgeCount}
