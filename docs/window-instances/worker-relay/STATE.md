@@ -8,8 +8,8 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:15:00Z |
-| where_we_are | relay-188 shipped |
+| reviewed_at | 2026-07-27T23:20:00Z |
+| where_we_are | relay-188 closed; checkpoint sync round 18 |
 | confirmed_next | relay-189 |
 | brainstorm_notes | OAuth banner auto-dismiss 5s + manual Dismiss preserved |
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:15:00Z` |
+| last_wake | `2026-07-27T23:18:00Z` |
 | confirmed_next | `relay-189` |
 | next_action | `relay-189 Home rings share sheet keyboard Escape to close` |
-| phase | `8-close` |
-| review_status | `skipped` |
+| phase | `9-arm` |
+| review_status | `pending` |
 | review_skip_reason | `relay-188 reviewed round 17; committed 9d012ca` |
-| review_diff_range | `relay-188` |
-| code_changed | `no` |
-| review_round | `17` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `18` |
 | last_reviewed_round | `17` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/sections/Settings.tsx` |
-| review_fingerprint | `82735cbea1355c19` |
+| review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
+| review_fingerprint | `76bc7ac4d2c88063` |
 
 ## IN_PROGRESS
 
