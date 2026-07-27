@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-090 | Tab badge show failed meal plan count | feature
 - [ ] relay-091 | Log offline enqueue refresh queue UI immediately | maintenance
 - [ ] relay-092 | Meal plan sync success haptic | feature
 
@@ -58,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-090 | done | build | — |
 | 2026-07-27 | relay-089 | done | build | a11a247 |
 | 2026-07-27 | relay-088 | done | build | b63a49f |
 | 2026-07-27 | relay-087 | done | build | 4d623e3 |
