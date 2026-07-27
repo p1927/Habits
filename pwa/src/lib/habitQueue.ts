@@ -1,6 +1,8 @@
+import { createLocalStorageQueue, makeQueueId, sortQueueByCreatedAt } from './localStorageQueue';
 import type { HabitsTodayResponse } from './api';
 
 const QUEUE_KEY = 'habits-habit-log-queue';
+const habitQueue = createLocalStorageQueue<QueuedHabitUpdate>(QUEUE_KEY);
 const CACHE_KEY = 'habits-today-cache';
 const STREAK_CACHE_KEY = 'habits-streak-cache';
 const STREAK_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -12,42 +14,27 @@ export interface QueuedHabitUpdate {
   created_at: string;
 }
 
-function readQueue(): QueuedHabitUpdate[] {
-  try {
-    const raw = localStorage.getItem(QUEUE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as QueuedHabitUpdate[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeQueue(items: QueuedHabitUpdate[]) {
-  localStorage.setItem(QUEUE_KEY, JSON.stringify(items));
-}
-
 export function getHabitLogQueue(): QueuedHabitUpdate[] {
-  return readQueue();
+  return sortQueueByCreatedAt(habitQueue.read());
 }
 
 export function enqueueHabitUpdate(metric: string, value: number | null, id?: string): QueuedHabitUpdate {
   const item: QueuedHabitUpdate = {
-    id: id ?? `hq-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: id ?? makeQueueId('hq'),
     metric,
     value,
     created_at: new Date().toISOString(),
   };
-  writeQueue([...readQueue().filter((x) => x.metric !== metric), item]);
+  habitQueue.write(habitQueue.read().filter((x) => x.metric !== metric).concat(item));
   return item;
 }
 
 export function removeHabitQueueItem(id: string) {
-  writeQueue(readQueue().filter((x) => x.id !== id));
+  habitQueue.write(habitQueue.read().filter((x) => x.id !== id));
 }
 
 export function clearHabitLogQueue() {
-  localStorage.removeItem(QUEUE_KEY);
+  habitQueue.clear();
 }
 
 export function cacheHabitsToday(habits: HabitsTodayResponse) {
