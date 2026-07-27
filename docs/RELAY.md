@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:05:00Z |
+| reviewed_at | 2026-07-27T04:10:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #93; relay-098 dismiss-all clears stale failed ids shipped. |
+| where_we_are | Loop tick #94; relay-099 Log remote sync banner shipped. |
 | blockers | [] |
-| confirmed_next | relay-099 Log remote sync banner on non-Plan tabs |
-| brainstorm_notes | relay-098 done; dismissAllMealPlanQueue + hook syncs failed ids from storage |
+| confirmed_next | relay-100 shared meal-plan-remote-sync CSS class |
+| brainstorm_notes | relay-099 done; Log Scan/Type/Recipes/History show cross-tab sync banner |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:05:00Z |
+| last_wake | 2026-07-27T04:10:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-099 Log remote sync banner on non-Plan tabs |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-100 shared meal-plan-remote-sync CSS class |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -57,7 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-098 | done | build | — |
+| 2026-07-27 | relay-098 | done | build | 74dfcaf |
 | 2026-07-27 | relay-097 | done | build | e1d9f29 |
 | 2026-07-27 | relay-096 | done | build | 8f5cb6b |
 | 2026-07-27 | relay-095 | done | build | 2557202 |

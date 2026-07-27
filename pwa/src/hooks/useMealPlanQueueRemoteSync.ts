@@ -16,12 +16,18 @@ export function mealPlanSyncSourceLabel(source: MealPlanSyncSource): string {
   return SOURCE_LABELS[source];
 }
 
-export function useMealPlanQueueRemoteSync(viewer: MealPlanSyncSource) {
+export function useMealPlanQueueRemoteSync(
+  viewer: MealPlanSyncSource,
+  opts?: { showOwnSource?: boolean },
+) {
+  const showOwnSource = opts?.showOwnSource ?? false;
+
   const readRemote = useCallback((): MealPlanQueueSyncStatus | null => {
     const status = getMealPlanQueueSyncStatus();
-    if (!status || status.source === viewer) return null;
+    if (!status) return null;
+    if (status.source === viewer && !showOwnSource) return null;
     return status;
-  }, [viewer]);
+  }, [viewer, showOwnSource]);
 
   const [remoteSync, setRemoteSync] = useState<MealPlanQueueSyncStatus | null>(() => readRemote());
 

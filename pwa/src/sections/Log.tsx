@@ -18,6 +18,7 @@ import {
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
+import { mealPlanSyncSourceLabel, useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -260,6 +261,10 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     onItemOffline: (label) => setSuccess(`${label} still queued — offline`),
     setError,
     clearError: () => setError(''),
+  });
+
+  const remoteMealPlanSync = useMealPlanQueueRemoteSync('log', {
+    showOwnSource: tab !== 'mealplan',
   });
 
   const refresh = useCallback(async () => {
@@ -738,6 +743,13 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
           >
             Dismiss
           </button>
+        </div>
+      )}
+
+      {tab !== 'mealplan' && remoteMealPlanSync && (
+        <div className="banner banner-warn home-meal-plan-remote-sync" role="status">
+          Syncing meal logs on {mealPlanSyncSourceLabel(remoteMealPlanSync.source)} (
+          {remoteMealPlanSync.done}/{remoteMealPlanSync.total})…
         </div>
       )}
 
