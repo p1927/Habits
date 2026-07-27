@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:45:00Z |
-| where_we_are | relay-194 shipped |
-| confirmed_next | relay-195 |
-| brainstorm_notes | AgentAttachSheet Escape hint; BottomSheet already handles key |
+| reviewed_at | 2026-07-28T00:00:00Z |
+| where_we_are | relay-195 shipped |
+| confirmed_next | relay-196 |
+| brainstorm_notes | Agent camera sheet Escape hint; BottomSheet already handles key |
 
 ---
 
@@ -19,27 +19,27 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:45:00Z` |
-| confirmed_next | `relay-195` |
-| next_action | `relay-195 Agent camera sheet Escape hint` |
-| phase | `4-execute` |
+| last_wake | `2026-07-28T00:00:00Z` |
+| confirmed_next | `relay-196` |
+| next_action | `relay-196 Agent voice sheet Escape hint` |
+| phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-194 reviewed round 25; committed e11be06` |
-| review_diff_range | `relay-194` |
+| review_skip_reason | `relay-195 reviewed round 26; committed 4305775` |
+| review_diff_range | `relay-195` |
 | code_changed | `no` |
-| review_round | `25` |
-| last_reviewed_round | `25` |
-| worktree_status | `active` |
-| current_item_id | `relay-195` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-195` |
-| worktree_item_id | `relay-195` |
-| review_changed_files | `pwa/src/App.css,pwa/src/components/AgentAttachSheet.tsx` |
-| review_fingerprint | `e11be06` |
-| ritual_step | `4-execute` |
-| brainstorm_done | `yes` |
-| brainstorm_outcome | `AgentSectionOverlays camera BottomSheet: add muted Escape hint; BottomSheet already handles keydown` |
-| execute_started | `yes` |
+| review_round | `26` |
+| last_reviewed_round | `26` |
+| worktree_status | `none` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `pwa/src/App.css,pwa/src/components/AgentSectionOverlays.tsx` |
+| review_fingerprint | `4305775` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | `—` |
+| execute_started | `no` |
 | fix_verify_done | `no` |
 | reflect_done | `no` |
 | commit_hash | `—` |
@@ -95,7 +95,7 @@
 - [x] relay-192 | Cards create sheet Escape to close | polish | BottomSheet Escape + hint text (3e03d10)
 - [x] relay-193 | Log food edit sheet Escape to close | polish | BottomSheet Escape + hint text (788b258)
 - [x] relay-194 | Agent attach sheet Escape to close | polish | BottomSheet Escape + hint text (e11be06)
-- [ ] relay-195 | Agent camera sheet Escape hint | polish | Given camera BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
+- [x] relay-195 | Agent camera sheet Escape hint | polish | BottomSheet Escape + hint text (4305775)
 - [ ] relay-196 | Agent voice sheet Escape hint | polish | Given voice BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
 - [ ] relay-197 | Day event detail sheet Escape hint | polish | Given DayCalendarEventSheet open, When user presses Escape, Then sheet closes + hint text | PO Session #26 — post-196 queue refill
 - [ ] relay-198 | Home meal photo gallery Escape hint | polish | Given MealPhotoGallery lightbox open, When user presses Escape, Then closes + visible hint text (Escape handler exists — hint parity) | PO Session #27
@@ -151,6 +151,9 @@
 | rf-r25-000 | low | No logic, security, or regression bugs in relay-194 diff (2 files) | round-25 bugbot | closed | — | closed |
 | rf-r25-001 | low | pwa/src/components/AgentAttachSheet.tsx:94 adds Escape hint; BottomSheet handles keydown | round-25 bugbot | closed | relay-194 | closed |
 | rf-r25-002 | low | pwa/src/App.css:3772-3776 agent-attach-sheet-hint mirrors agent-tools-sheet-hint | round-25 /code-review | closed | — | closed |
+| rf-r26-000 | low | No logic, security, or regression bugs in relay-195 diff (2 files) | round-26 bugbot | closed | — | closed |
+| rf-r26-001 | low | pwa/src/components/AgentSectionOverlays.tsx:65 Escape hint; BottomSheet handles keydown | round-26 bugbot | closed | relay-195 | closed |
+| rf-r26-002 | low | pwa/src/App.css:3778-3782 agent-camera-sheet-hint mirrors agent-attach-sheet-hint | round-26 /code-review | closed | — | closed |
 
 ---
 
@@ -158,6 +161,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | relay-195 | done | build | 4305775 |
 | 2026-07-27 | relay-194 | done | build | e11be06 |
 | 2026-07-27 | relay-193 | done | build | 788b258 |
 | 2026-07-27 | relay-192 | done | build | 3e03d10 |
