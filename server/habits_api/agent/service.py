@@ -92,3 +92,142 @@ async def chat(
             })
 
     return {"reply": reply, "tool_results": tool_results, "context": context}
+
+
+def _sse_event(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+def _parse_minimax_stream_line(line: str) -> tuple[str | None, list[dict]]:
+    line = line.strip()
+    if not line.startswith("data:"):
+        return None, []
+    payload = line[5:].strip()
+    if not payload or payload == "[DONE]":
+        return None, []
+    try:
+        data = json.loads(payload)
+    except json.JSONDecodeError:
+        return None, []
+
+    choices = data.get("choices") or []
+    if not choices:
+        return None, []
+    delta = choices[0].get("delta") or choices[0].get("message") or {}
+    text = delta.get("content") or delta.get("text") or ""
+    tool_calls = delta.get("tool_calls") or []
+    return (text if text else None), tool_calls
+
+
+def _merge_tool_call_deltas(acc: dict[int, dict], deltas: list[dict]) -> None:
+    for tc in deltas:
+        idx = tc.get("index", 0)
+        entry = acc.setdefault(idx, {"id": "", "type": "function", "function": {"name": "", "arguments": ""}})
+        if tc.get("id"):
+            entry["id"] = tc["id"]
+        fn = tc.get("function") or {}
+        if fn.get("name"):
+            entry["function"]["name"] = fn["name"]
+        if fn.get("arguments"):
+            entry["function"]["arguments"] += fn["arguments"]
+
+
+async def _stream_minimax_round(
+    settings: Settings,
+    messages: list[dict[str, Any]],
+) -> Any:
+    """Yield token str chunks, then final assistant message dict."""
+    url = f"{settings.minimax_base_url.rstrip('/')}/text/chatcompletion_v2"
+    headers = {
+        "Authorization": f"Bearer {settings.minimax_api_key}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": settings.minimax_model,
+        "messages": messages,
+        "tools": AGENT_TOOLS,
+        "stream": True,
+    }
+
+    content_parts: list[str] = []
+    tool_acc: dict[int, dict] = {}
+
+    async with httpx.AsyncClient(timeout=90.0) as client:
+        async with client.stream("POST", url, headers=headers, json=payload) as resp:
+            if resp.status_code != 200:
+                body = await resp.aread()
+                raise ValueError(f"Chat API error: {resp.status_code} {body[:200]!r}")
+
+            async for line in resp.aiter_lines():
+                text, tool_deltas = _parse_minimax_stream_line(line)
+                if text:
+                    content_parts.append(text)
+                    yield text
+                if tool_deltas:
+                    _merge_tool_call_deltas(tool_acc, tool_deltas)
+
+    msg: dict[str, Any] = {"role": "assistant", "content": "".join(content_parts)}
+    if tool_acc:
+        msg["tool_calls"] = [tool_acc[i] for i in sorted(tool_acc)]
+    yield msg
+
+
+async def chat_stream(
+    settings: Settings,
+    db: TokenDB,
+    message: str,
+    history: list[dict] | None = None,
+    image_base64: str | None = None,
+):
+    if not settings.minimax_api_key:
+        yield _sse_event("error", {"message": "MINIMAX_API_KEY not configured"})
+        return
+
+    context = await build_agent_context(settings, db)
+    system = (
+        "You are the Habits coach assistant. Help with food logging, habits, calendar, and health notes. "
+        "Use tools when the user wants to log data or take action. Be concise and motivating.\n\n"
+        f"Today's context:\n{json.dumps(context, indent=2)}"
+    )
+
+    messages: list[dict[str, Any]] = [{"role": "system", "content": system}]
+    if history:
+        messages.extend(history[-10:])
+    messages.append(_build_user_message(message, image_base64))
+
+    tool_results: list[dict] = []
+    reply = ""
+
+    for _ in range(3):
+        assistant_msg: dict[str, Any] | None = None
+        async for chunk in _stream_minimax_round(settings, messages):
+            if isinstance(chunk, str):
+                yield _sse_event("token", {"text": chunk})
+            else:
+                assistant_msg = chunk
+
+        if assistant_msg is None:
+            break
+
+        reply = assistant_msg.get("content") or assistant_msg.get("text") or ""
+        tool_calls = assistant_msg.get("tool_calls") or []
+        if not tool_calls:
+            break
+
+        messages.append(assistant_msg)
+        for tc in tool_calls:
+            fn = tc.get("function") or {}
+            name = fn.get("name", "")
+            try:
+                args = json.loads(fn.get("arguments") or "{}")
+            except json.JSONDecodeError:
+                args = {}
+            result = await execute_tool(settings, db, name, args)
+            tool_results.append({"tool": name, "args": args, "result": result})
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.get("id", name),
+                "content": json.dumps(result),
+            })
+
+    yield _sse_event("done", {"reply": reply or "Done.", "tool_results": tool_results})

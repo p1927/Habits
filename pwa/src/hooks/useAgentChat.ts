@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { api } from '../lib/api';
+import { agentChatStream } from '../lib/agentChatStream';
 import type { AgentChatMessage } from '../lib/agentSectionShared';
 
 interface UseAgentChatOptions {
@@ -25,13 +25,34 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
     const imageUrl = attachImage ?? undefined;
     setAttachImage(null);
     const userMsg: AgentChatMessage = { role: 'user', content: message, imageUrl };
-    setMessages((m) => [...m, userMsg]);
+    setMessages((m) => [...m, userMsg, { role: 'assistant', content: '' }]);
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }));
-      const res = await api.agentChat(message, history, imageUrl);
-      setMessages((m) => [...m, { role: 'assistant', content: res.reply || 'Done.' }]);
-      if (res.tool_results.length) onToolResults?.();
+      await agentChatStream(message, history, imageUrl, {
+        onToken: (text) => {
+          setMessages((m) => {
+            const copy = [...m];
+            const last = copy[copy.length - 1];
+            if (last?.role !== 'assistant') return m;
+            copy[copy.length - 1] = { ...last, content: last.content + text };
+            return copy;
+          });
+        },
+        onDone: (res) => {
+          setMessages((m) => {
+            const copy = [...m];
+            const last = copy[copy.length - 1];
+            if (last?.role === 'assistant') {
+              copy[copy.length - 1] = { ...last, content: res.reply || last.content || 'Done.' };
+            }
+            return copy;
+          });
+          if (res.tool_results.length) onToolResults?.();
+        },
+        onError: (msg) => setError(msg),
+      });
     } catch (e) {
+      setMessages((m) => (m[m.length - 1]?.role === 'assistant' && !m[m.length - 1]?.content ? m.slice(0, -1) : m));
       setError(e instanceof Error ? e.message : 'Chat failed');
     } finally {
       setLoading(false);

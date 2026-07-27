@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from habits_api.agent import service as agent_service
@@ -29,3 +32,21 @@ async def agent_chat(
         agent_service.chat(settings, db, body.message, body.history, body.image_base64),
         map_value_error=True,
     )
+
+
+@router.post("/api/agent/chat/stream", dependencies=[Depends(require_bearer)])
+async def agent_chat_stream(
+    body: ChatMessage,
+    db: TokenDB = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> StreamingResponse:
+    async def events():
+        try:
+            async for chunk in agent_service.chat_stream(
+                settings, db, body.message, body.history, body.image_base64,
+            ):
+                yield chunk
+        except ValueError as exc:
+            yield f"event: error\ndata: {json.dumps({'message': str(exc)})}\n\n"
+
+    return StreamingResponse(events(), media_type="text/event-stream")

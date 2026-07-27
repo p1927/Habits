@@ -39,12 +39,17 @@ export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt }: A
         <div key={i} className={`chat-bubble chat-bubble--${m.role}`} aria-label={m.role === 'user' ? 'You' : 'Coach'}>
           {m.imageUrl && <img src={m.imageUrl} alt="" className="chat-bubble-image" />}
           {m.content}
+          {m.role === 'assistant' && loading && i === messages.length - 1 && m.content && (
+            <span className="chat-stream-cursor" aria-hidden="true" />
+          )}
           {m.role === 'assistant' && i === messages.length - 1 && !loading && (
             <p className="chat-bubble-disclaimer muted">Coach can make mistakes — double-check important details.</p>
           )}
         </div>
       ))}
-      {loading && <StreamingDots />}
+      {loading && (messages.length === 0 || messages[messages.length - 1]?.role !== 'assistant' || !messages[messages.length - 1]?.content) && (
+        <StreamingDots />
+      )}
     </div>
   );
 }
