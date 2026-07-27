@@ -11,10 +11,10 @@
 | reviewed_at | 2026-07-27T04:47:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #116; relay-121 sync progress reduced motion aria shipped. |
+| where_we_are | Loop tick #117; relay-122 focus helper extracted; relay-123 remote sync banner aria-live. |
 | blockers | [] |
-| confirmed_next | relay-122 extract focusQueueScrollTarget to lib helper |
-| brainstorm_notes | relay-121 done; aria-live disabled on sync progress/banner under prefers-reduced-motion |
+| confirmed_next | refill backlog (BACKLOG < 3) |
+| brainstorm_notes | relay-123 mirrors relay-121 — aria-live off under prefers-reduced-motion |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:46:00Z |
+| last_wake | 2026-07-27T04:48:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-121 meal plan sync progress reduced motion aria |
+| cycle_parity | odd (next: feature) |
+| next_action | refill backlog from brainstorm + web research |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,7 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-122 | Extract focusQueueScrollTarget to lib helper | maintenance
-- [ ] relay-123 | Remote sync banner reduced motion aria-live | maintenance
+*(empty — refill on next wake)*
 
 ---
 
@@ -57,7 +56,9 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-121 | done | build | — |
+| 2026-07-27 | relay-123 | done | build | ac7ac22 |
+| 2026-07-27 | relay-122 | done | build | 6c5e958 |
+| 2026-07-27 | relay-121 | done | build | a605006 |
 | 2026-07-27 | relay-120 | done | build | 15492bc |
 | 2026-07-27 | relay-119 | done | build | 850df2e |
 | 2026-07-27 | relay-118 | done | build | 4cb5108 |

@@ -1,5 +1,6 @@
 import type { MealPlanQueueSyncStatus, MealPlanSyncSource } from '../lib/mealPlanQueue';
 import { mealPlanSyncSourceLabel } from '../lib/mealPlanQueue';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export interface MealPlanRemoteSyncBannerProps {
   sync: MealPlanQueueSyncStatus;
@@ -8,13 +9,14 @@ export interface MealPlanRemoteSyncBannerProps {
 
 export function MealPlanRemoteSyncBanner({ sync, onGoToSource }: MealPlanRemoteSyncBannerProps) {
   const label = mealPlanSyncSourceLabel(sync.source);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   return (
     <button
       type="button"
       className="banner banner-warn meal-plan-remote-sync meal-plan-remote-sync--actionable"
       role="status"
-      aria-live="polite"
+      aria-live={prefersReducedMotion ? undefined : 'polite'}
       aria-atomic="true"
       onClick={() => onGoToSource(sync.source)}
     >
