@@ -47,7 +47,7 @@ export function VoiceCoachLayer({ url, open, onClose, onStatusChange }: VoiceCoa
             <h2 className="ui-sheet__title">Voice coach</h2>
           </>
         )}
-        <VoiceEmbed url={url} agent="habits" onStatusChange={onStatusChange} />
+        <VoiceEmbed url={url} agent="habits" persist={!open} onStatusChange={onStatusChange} />
       </div>
     </div>
   );

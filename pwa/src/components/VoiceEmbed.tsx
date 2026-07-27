@@ -5,10 +5,12 @@ interface VoiceEmbedProps {
   url: string;
   agent?: string;
   onStatusChange?: (status: VoiceIframeStatus) => void;
+  /** Keep iframe mounted and listening while parent is visually hidden (header orb sync). */
+  persist?: boolean;
 }
 
 /** Embeds the local-voice-ai frontend (Docker, default :8080). */
-export function VoiceEmbed({ url, agent = 'habits', onStatusChange }: VoiceEmbedProps) {
+export function VoiceEmbed({ url, agent = 'habits', onStatusChange, persist = false }: VoiceEmbedProps) {
   const [expanded, setExpanded] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const onStatusChangeRef = useRef(onStatusChange);
@@ -58,23 +60,27 @@ export function VoiceEmbed({ url, agent = 'habits', onStatusChange }: VoiceEmbed
   }, [voiceOrigin]);
 
   useEffect(() => {
-    if (!expanded) return;
+    if (!expanded && !persist) return;
     sendSubscribe();
-  }, [src, voiceOrigin, expanded, sendSubscribe]);
+  }, [src, voiceOrigin, expanded, persist, sendSubscribe]);
 
   if (!src) return null;
 
+  const showIframe = persist || expanded;
+
   return (
-    <div className={`voice-embed-section ${expanded ? 'voice-embed-expanded' : 'voice-embed-collapsed'}`}>
-      <button
-        type="button"
-        className="voice-embed-toggle"
-        onClick={() => setExpanded((v) => !v)}
-        aria-expanded={expanded}
-      >
-        {expanded ? 'Hide voice controls' : 'Show voice controls'}
-      </button>
-      {expanded && (
+    <div className={`voice-embed-section ${showIframe ? 'voice-embed-expanded' : 'voice-embed-collapsed'}`}>
+      {!persist && (
+        <button
+          type="button"
+          className="voice-embed-toggle"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+        >
+          {expanded ? 'Hide voice controls' : 'Show voice controls'}
+        </button>
+      )}
+      {showIframe && (
         <div className="voice-embed-wrap">
           <iframe
             ref={iframeRef}

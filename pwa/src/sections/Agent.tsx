@@ -1,156 +1,71 @@
-import { useState } from 'react';
-import { CameraCapture } from '../components/CameraCapture';
-import { getConfig } from '../lib/config';
-import { toOrbVisual, type VoiceIframeStatus } from '../lib/voiceStatus';
-import { AgentAttachSheet } from '../components/AgentAttachSheet';
-import { AgentActionFeed } from '../components/AgentActionFeed';
-import { AgentToolsSheet } from '../components/AgentToolsSheet';
-import { AgentContextPanel } from '../components/AgentContextPanel';
-import { AgentChatPanel } from '../components/AgentChatPanel';
 import { AgentChatComposer } from '../components/AgentChatComposer';
-import { VoiceCoachLayer } from '../components/VoiceCoachLayer';
-import { VoiceStatusOrb } from '../components/VoiceStatusOrb';
-import { BottomSheet } from '../components/ui/BottomSheet';
-import { useAgentContext } from '../hooks/useAgentContext';
-import { useAgentChat } from '../hooks/useAgentChat';
-import { useAgentPhotoAttach } from '../hooks/useAgentPhotoAttach';
-import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
+import { AgentSectionBody } from '../components/AgentSectionBody';
+import { AgentSectionHeader } from '../components/AgentSectionHeader';
+import { AgentSectionOverlays } from '../components/AgentSectionOverlays';
+import { useAgentSection, type AgentNavigateMealPlanSyncSource } from '../hooks/useAgentSection';
 
 interface AgentProps {
   serverOnline: boolean;
-  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
+  onNavigateMealPlanSyncSource?: AgentNavigateMealPlanSyncSource;
 }
 
 export function Agent({ serverOnline, onNavigateMealPlanSyncSource }: AgentProps) {
-  const { voiceUiUrl } = getConfig();
-  const context = useAgentContext(serverOnline, true);
-  const [voiceOpen, setVoiceOpen] = useState(false);
-  const [voiceIframeStatus, setVoiceIframeStatus] = useState<VoiceIframeStatus | null>(null);
-  const [toolsOpen, setToolsOpen] = useState(false);
-
-  const orbState = toOrbVisual(voiceIframeStatus, serverOnline);
-
-  const {
-    messages,
-    input,
-    setInput,
-    loading,
-    attachImage,
-    setAttachImage,
-    error,
-    setError,
-    listRef,
-    send,
-    clearAttach,
-  } = useAgentChat({
-    serverOnline,
-    onToolResults: () => void context.refresh(),
-  });
-
-  const {
-    cameraOpen,
-    setCameraOpen,
-    attachOpen,
-    setAttachOpen,
-    recentPhotos,
-    scanning,
-    handlePhotoCapture,
-  } = useAgentPhotoAttach({ setAttachImage, setInput, setError });
+  const s = useAgentSection({ serverOnline });
 
   return (
     <section className="section agent-section agent-section--gemini" aria-labelledby="agent-heading">
-      <header className="agent-header agent-header--gemini">
-        <div>
-          <p className="section-eyebrow">Assistant</p>
-          <h1 id="agent-heading">Coach</h1>
-        </div>
-        <button type="button" className="agent-voice-orb-btn" aria-label="Open voice coach" onClick={() => setVoiceOpen(true)}>
-          <VoiceStatusOrb state={orbState} />
-        </button>
-      </header>
+      <AgentSectionHeader orbState={s.orbState} onOpenVoice={() => s.setVoiceOpen(true)} />
 
       {!serverOnline && (
         <div className="banner banner-warn banner-revolut" role="alert">habits-api offline — context unavailable.</div>
       )}
 
-      <div className="agent-body">
-        <AgentChatPanel
-          messages={messages}
-          loading={loading}
-          listRef={listRef}
-          onSelectPrompt={setInput}
-        />
-
-        <details className="agent-context-drawer">
-          <summary className="agent-context-drawer__summary">Today&apos;s context</summary>
-          <AgentContextPanel context={context} onNavigateMealPlanSyncSource={onNavigateMealPlanSyncSource} />
-        </details>
-
-        {messages.length > 0 && (
-          <>
-            <p className="section-eyebrow">Activity</p>
-            <AgentActionFeed
-              serverOnline={serverOnline}
-              active
-              onDataChange={() => void context.refresh()}
-            />
-          </>
-        )}
-      </div>
+      <AgentSectionBody
+        serverOnline={serverOnline}
+        messages={s.messages}
+        loading={s.loading}
+        listRef={s.listRef}
+        onSelectPrompt={s.setInput}
+        context={s.context}
+        onNavigateMealPlanSyncSource={onNavigateMealPlanSyncSource}
+      />
 
       <AgentChatComposer
         serverOnline={serverOnline}
-        loading={loading}
-        scanning={scanning}
-        input={input}
-        attachImage={attachImage}
-        showDisclaimer={messages.length === 0 && !input.trim()}
-        onInputChange={setInput}
-        onSubmit={() => void send()}
-        onClearAttach={clearAttach}
-        onOpenCamera={() => setAttachOpen(true)}
-        onOpenVoice={() => setVoiceOpen(true)}
-        onOpenTools={() => setToolsOpen(true)}
-        voiceOrbState={voiceOpen ? (orbState !== 'idle' ? orbState : 'active') : undefined}
+        loading={s.loading}
+        scanning={s.scanning}
+        input={s.input}
+        attachImage={s.attachImage}
+        showDisclaimer={s.messages.length === 0 && !s.input.trim()}
+        onInputChange={s.setInput}
+        onSubmit={() => void s.send()}
+        onClearAttach={s.clearAttach}
+        onOpenCamera={() => s.setAttachOpen(true)}
+        onOpenVoice={() => s.setVoiceOpen(true)}
+        onOpenTools={() => s.setToolsOpen(true)}
+        voiceOrbState={s.composerVoiceOrbState}
       />
 
-      <AgentToolsSheet
-        open={toolsOpen}
-        onClose={() => setToolsOpen(false)}
-        onSelect={setInput}
+      <AgentSectionOverlays
+        voiceUiUrl={s.voiceUiUrl}
+        voiceOpen={s.voiceOpen}
+        onVoiceOpenChange={s.setVoiceOpen}
+        onVoiceStatusChange={s.setVoiceIframeStatus}
+        toolsOpen={s.toolsOpen}
+        onToolsOpenChange={s.setToolsOpen}
+        onSelectToolPrompt={s.setInput}
+        attachOpen={s.attachOpen}
+        onAttachOpenChange={s.setAttachOpen}
+        cameraOpen={s.cameraOpen}
+        onCameraOpenChange={s.setCameraOpen}
+        recentPhotos={s.recentPhotos}
+        onPickImage={(dataUrl, label) => void s.handlePhotoCapture(dataUrl, label)}
+        onCapture={(url) => void s.handlePhotoCapture(url)}
+        serverOnline={serverOnline}
+        scanning={s.scanning}
       />
 
-      <AgentAttachSheet
-        open={attachOpen}
-        onClose={() => setAttachOpen(false)}
-        recentPhotos={recentPhotos}
-        onOpenCamera={() => setCameraOpen(true)}
-        onPickImage={(dataUrl, label) => void handlePhotoCapture(dataUrl, label)}
-      />
-
-      <BottomSheet open={cameraOpen} onClose={() => setCameraOpen(false)} title="Camera">
-        <CameraCapture
-          facingMode="environment"
-          placeholder="Point at your food"
-          disabled={!serverOnline || scanning}
-          onCapture={(url) => void handlePhotoCapture(url)}
-        />
-      </BottomSheet>
-
-      {voiceUiUrl ? (
-        <VoiceCoachLayer
-          url={voiceUiUrl}
-          open={voiceOpen}
-          onClose={() => setVoiceOpen(false)}
-          onStatusChange={setVoiceIframeStatus}
-        />
-      ) : (
-        <BottomSheet open={voiceOpen} onClose={() => setVoiceOpen(false)} title="Voice coach">
-          <p className="muted">Set VITE_VOICE_UI_URL in config.</p>
-        </BottomSheet>
-      )}
-
-      {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
+      {s.error && <div className="banner banner-warn banner-revolut" role="alert">{s.error}</div>}
     </section>
   );
 }
