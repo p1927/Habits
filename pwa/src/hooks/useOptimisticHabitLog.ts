@@ -49,6 +49,7 @@ export function useOptimisticHabitLog({
     getHabitLogQueue().map(queueToEntry),
   );
   const [saving, setSaving] = useState<string | null>(null);
+  const [queueSyncClearedToken, setQueueSyncClearedToken] = useState(0);
 
   useEffect(() => {
     if (habits) cacheHabitsToday(habits);
@@ -91,6 +92,9 @@ export function useOptimisticHabitLog({
     }
     if (synced > 0) {
       setSyncMessage(`Synced ${synced} queued habit update${synced === 1 ? '' : 's'}`);
+      if (getHabitLogQueue().length === 0) {
+        setQueueSyncClearedToken((token) => token + 1);
+      }
     }
   }, [serverOnline, setHabits, setError, setSyncMessage]);
 
@@ -167,5 +171,5 @@ export function useOptimisticHabitLog({
     [updateMetric],
   );
 
-  return { pending, saving, updateMetric, queuedCount, retry, dismiss, dismissAllQueued };
+  return { pending, saving, updateMetric, queuedCount, retry, dismiss, dismissAllQueued, queueSyncClearedToken };
 }

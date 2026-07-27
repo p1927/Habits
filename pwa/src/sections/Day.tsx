@@ -17,7 +17,7 @@ import {
   type MealPlanEntry,
   type MealPlanSyncSource,
 } from '../lib/mealPlanQueue';
-import { formatRelativeTime } from '../lib/relativeTime';
+import { HabitQueueSection } from '../components/HabitQueueSection';
 import { vibrateFireStreak, vibrateHotStreak, vibrateMetricFireStreak, vibrateMetricHotStreak } from '../lib/haptics';
 
 const STREAK_HAPTIC_OVERALL_KEY = 'habits-streak-haptic-overall';
@@ -105,7 +105,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
   const [streaks, setStreaks] = useState<HabitsStreaksResponse | null>(null);
   const [streakLegendOpen, setStreakLegendOpen] = useState(readStreakLegendOpen);
 
-  const { saving, updateMetric, queuedCount, pending, retry, dismiss, dismissAllQueued } = useOptimisticHabitLog({
+  const { saving, updateMetric, queuedCount, pending, retry, dismiss, dismissAllQueued, queueSyncClearedToken } = useOptimisticHabitLog({
     serverOnline,
     habits,
     setHabits,
@@ -347,45 +347,16 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
 
       {!serverOnline && <div className="banner banner-warn" role="alert">Server offline — habit edits save locally.</div>}
 
-      {queuedCount > 0 && (
-        <>
-          <div className="banner banner-warn banner-row" role="status">
-            <span>
-              {queuedCount} habit update{queuedCount === 1 ? '' : 's'} queued — will sync when online.
-            </span>
-            <button
-              type="button"
-              className="btn-small"
-              aria-label="Dismiss offline habit update queue"
-              onClick={() => {
-                dismissAllQueued();
-                setHabitSyncMessage('Offline habit update queue cleared');
-              }}
-            >
-              Dismiss
-            </button>
-          </div>
-          <ul className="food-list habit-sync-list" aria-label="Queued habit updates">
-            {pending
-              .filter((e) => e.status === 'queued')
-              .map((entry) => {
-                const queuedAgo = formatRelativeTime(entry.created_at);
-                return (
-                  <li key={entry.id} className="food-row food-row--queued">
-                    <div>
-                      <strong>{metricLabel(entry.metric)}</strong>
-                      <span className="muted">
-                        {' '}
-                        · {entry.value ?? 0}h
-                        {queuedAgo ? ` · Queued ${queuedAgo}` : ' · Queued offline'}
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-          </ul>
-        </>
-      )}
+      <HabitQueueSection
+        queuedCount={queuedCount}
+        pending={pending}
+        queueSyncClearedToken={queueSyncClearedToken}
+        metricLabel={metricLabel}
+        onDismissAll={() => {
+          dismissAllQueued();
+          setHabitSyncMessage('Offline habit update queue cleared');
+        }}
+      />
 
       <MealPlanSyncAwarenessSlot
         viewer="day"
