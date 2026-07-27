@@ -56,7 +56,7 @@ export function Settings({
       <p className="muted settings-lede">Everything settable here syncs to your Google Sheets — same as Excel.</p>
 
       {oauthSuccess && (
-        <div className="banner banner-ok banner-revolut banner-row">
+        <div className="banner banner-ok banner-revolut banner-row" role="status" aria-live="polite">
           Google connected successfully.
           <button type="button" className="btn-pill btn-pill-outline" onClick={onDismissOauth}>Dismiss</button>
         </div>
