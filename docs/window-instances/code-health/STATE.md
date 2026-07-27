@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T21:10:00Z |
-| where_we_are | ch-125 useHomeDashboard split shipped |
-| confirmed_next | ch-126 — useAgentChat (171) split |
+| reviewed_at | 2026-07-27T22:00:00Z |
+| where_we_are | ch-126 useAgentChat split shipped |
+| confirmed_next | ch-127 — line scan (api 307, useMealPlanShell 155, DayTimelineCard 151) |
 
 ---
 
@@ -18,31 +18,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:10:00Z` |
-| confirmed_next | `ch-126` |
-| phase | `6-review` |
-| code_changed | `yes` |
-| review_status | `pending` |
+| last_wake | `2026-07-27T22:00:00Z` |
+| confirmed_next | `ch-127` |
+| phase | `9-arm` |
+| code_changed | `no` |
+| review_status | `skipped` |
 | review_round | `7` |
-| last_reviewed_round | `6` |
+| last_reviewed_round | `7` |
 | loops | `wake ARMED PID 49727 (120s)` |
-| worktree_status | `active` |
-| current_item_id | `ch-126` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
-| worktree_branch | `loop/code-health/ch-126` |
-| worktree_item_id | `ch-126` |
-| review_changed_files | `pwa/src/hooks/useAgentChat.ts pwa/src/hooks/useAgentChatStream.ts` |
-| review_fingerprint | `d43599524d311fa2` |
-| review_diff_range | `uncommitted (staged + unstaged)` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
-| ritual_step | `6-review` |
-| brainstorm_done | `yes` |
-| brainstorm_outcome | `Split useAgentChat: useAgentChatStream (runStream + abort refs) + thin composition hook for state/actions` |
-| execute_started | `yes` |
+| worktree_status | `none` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| review_diff_range | `none` |
+| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | `—` |
+| execute_started | `no` |
 | fix_verify_done | `no` |
-| reflect_done | `no` |
-| commit_hash | `—` |
-| receive_review_done | `no` |
+| reflect_done | `yes` |
+| commit_hash | `2fd9102` |
+| receive_review_done | `yes` |
+| commit_done | `yes` |
+| merge_done | `yes` |
 
 ## IN_PROGRESS
 
@@ -177,7 +179,8 @@
 - [x] ch-123 | `api.ts` (307) split | structure | apiClient + apiTypes + 7 domain modules; main 307→38 |
 - [x] ch-124 | `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; main 155→122 |
 - [x] ch-125 | `useHomeDashboard.ts` (153) split | structure | refresh hook + homeDashboardDerived; main 153→87 |
-- [ ] ch-126 | `useAgentChat.ts` (171) split | structure | queued |
+- [x] ch-126 | `useAgentChat.ts` (171) split | structure | useAgentChatStream + composition; 171→99 |
+- [ ] ch-127 | Line scan — top: api 307, useMealPlanShell 155, DayTimelineCard 151 | structure | queued |
 
 ---
 
@@ -261,7 +264,8 @@
 | `pwa/src/sections/Day.tsx` | 2026-07-27 tick #72 | ch-093: useDaySection; 168→156 |
 | `pwa/src/lib/mealNotifications.ts` | 2026-07-27 tick #75 | ch-096: storage + permission + scheduler; 163→12 |
 | `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
-| `pwa/src/sections/*` + hooks + lib | 2026-07-27 tick #95 | scan: api 302, Day 156, ringShareCardCanvas 143, useCameraCapture 137 |
+| `pwa/src/hooks/useAgentChat.ts` | 2026-07-27 tick #97 | ch-126: useAgentChatStream + composition; 171→99 |
+| `pwa/src/sections/*` + hooks + lib | 2026-07-27 tick #97 | scan: api 307, useMealPlanShell 155, DayTimelineCard 151 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -304,6 +308,7 @@
 | ch-r5-001 | low | `docs/window-instances/code-health/STATE.md:1` — tick close checkpoint/backlog sync for ch-125 ship | round-5 /code-review | closed | — | closed |
 | ch-r6-001 | low | `docs/window-instances/code-health/STATE.md:1` — worktree ch-126 prep merge cycle; next execute useAgentChat split | round-6 /code-review | closed | — | closed |
 | ch-r7-001 | low | `pwa/src/hooks/useAgentChatStream.ts:1` — stream/abort + beginStream extracted; `useAgentChat.ts` composition 171→99 | round-7 /code-review | closed | — | closed |
+| ch-r7-001 | low | `pwa/src/hooks/useAgentChatStream.ts:1` — stream/abort + beginStream extracted; `useAgentChat.ts` composition 171→99 | round-7 /code-review | closed | — | closed |
 
 ---
 
@@ -311,6 +316,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | ch-126 | useAgentChat split (stream hook + composition) | build | 2fd9102 |
 | 2026-07-27 | ch-125 | useHomeDashboard split (refresh hook + derived) | build | pending |
 | 2026-07-27 | ch-124 | useMealPlanShell split (syncContext hook) | build | pending |
 | 2026-07-27 | ch-122 | useMealPlanQueueSyncActions split (stableCallbacks + runners) | build | pending |
