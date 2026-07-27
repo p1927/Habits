@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:12:00Z |
+| reviewed_at | 2026-07-27T05:18:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #136; relay-143 Log tab sub-panel refactor shipped. |
+| where_we_are | Loop tick #140; relay-144 legacy queue-empty CSS aliases removed. |
 | blockers | [] |
-| confirmed_next | relay-144 Remove legacy meal-plan-queue-empty CSS aliases |
-| brainstorm_notes | Log.tsx 869 lines; scan history + useMealPlanEntryLogging bundled |
+| confirmed_next | relay-145 Agent context panel meal plan queue awareness |
+| brainstorm_notes | scan-history CSS bundled; MealPlanQueueEmptyHint uses QueueEmptyHint only |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T05:12:00Z |
+| last_wake | 2026-07-27T05:18:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: maintenance) |
-| next_action | relay-144 Remove legacy meal-plan-queue-empty CSS aliases |
+| cycle_parity | odd (next: feature) |
+| next_action | relay-145 Agent context panel meal plan queue awareness |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-144 | Remove legacy meal-plan-queue-empty CSS aliases | maintenance
 - [ ] relay-145 | Agent context panel meal plan queue awareness | feature
 
 ---
@@ -58,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-143 | done | build | f1ee781 |
+| 2026-07-27 | relay-144 | done | build | — |
+| 2026-07-27 | relay-143 | done | build | c77ad53 |
 | 2026-07-27 | relay-142 | done | build | 4fe608c |
 | 2026-07-27 | relay-141 | done | build | b4d4e94 |
 | 2026-07-27 | relay-140 | done | build | f38fffb |
