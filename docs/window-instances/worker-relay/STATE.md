@@ -24,9 +24,9 @@
 | next_action | `relay-189 Home rings share sheet keyboard Escape to close` |
 | phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-188 reviewed round 17; committed pending` |
+| review_skip_reason | `relay-188 reviewed round 17; committed 9d012ca` |
 | review_diff_range | `relay-188` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `17` |
 | last_reviewed_round | `17` |
 | worktree_status | `none` |
@@ -78,8 +78,10 @@
 - [x] relay-185 | Cards tab keyboard shortcut hint on first visit | polish | useCardsFilterShortcuts + CardsFilterBar hint (⌘1–4)
 - [x] relay-186 | Settings tab keyboard shortcut from header gear hint | polish | useSettingsOpenShortcut + AppHeader hint (⌘,)
 - [x] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish | useAppTabShortcuts + AppTabBar hint; defers on Log/Day/Cards
-- [ ] relay-188 | OAuth success banner auto-dismiss after 5s | polish
+- [x] relay-188 | OAuth success banner auto-dismiss after 5s | polish | Settings useEffect 5s auto-dismiss
 - [ ] relay-189 | Home rings share sheet keyboard Escape to close | polish
+- [ ] relay-190 | Settings OAuth banner aria-live polite on show | polish
+- [ ] relay-191 | Agent tools sheet Escape to close | polish
 
 ---
 
@@ -118,6 +120,7 @@
 | rf-r15-001 | low | No issues in relay-187 aria-keyshortcuts alignment diff | round-15 /code-review | closed | — | closed |
 | rf-r16-001 | high | Duplicate hooks/homeDashboardDerived.ts used wrong ./api imports; lib/ copy is canonical | round-16 /code-review | fix-now | — | closed |
 | rf-r16-002 | low | Extraction to useHomeDashboardRefresh + homeDashboardDerived preserves behavior | round-16 /code-review | closed | — | closed |
+| rf-r17-001 | low | No issues in relay-188 OAuth auto-dismiss diff | round-17 /code-review | closed | — | closed |
 
 ---
 
@@ -125,6 +128,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-188 | done | build | — |
 | 2026-07-27 | relay-187 | done | build | 4c3ad70 |
 | 2026-07-27 | relay-186 | done | build | 41d31b5 |
 | 2026-07-27 | relay-185 | done | build | 2303dab |
