@@ -16,7 +16,6 @@ import {
 } from '../lib/api';
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
-import { useMealPlanQueueCount } from '../hooks/useMealPlanQueueCount';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -32,8 +31,10 @@ import {
   enqueueMealPlanLog,
   getCachedMealPlan,
   getMealPlanQueue,
+  MEAL_PLAN_QUEUE_CHANGE,
   removeMealPlanQueueItem,
   type MealPlanEntry,
+  type QueuedMealPlanLog,
 } from '../lib/mealPlanQueue';
 
 interface LogProps {
@@ -75,6 +76,16 @@ function dataUrlToFile(dataUrl: string, name = 'scan.jpg'): File {
   return new File([arr], name, { type: mime });
 }
 
+function mealPlanQueueLabel(item: QueuedMealPlanLog): string {
+  if (item.kind === 'all') return 'All planned meals';
+  return item.label ?? item.meal ?? 'Meal';
+}
+
+function mealPlanSyncUndoLabel(synced: number, labels: string[]): string {
+  if (synced === 1) return labels[0] ?? 'Queued meal';
+  return `${synced} queued meal logs`;
+}
+
 export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) {
   const [tab, setTab] = useState<LogTab>('scan');
   const [data, setData] = useState<FoodTodayResponse | null>(null);
@@ -108,6 +119,9 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
   const [recipeEditQty, setRecipeEditQty] = useState('100');
   const [recipeScanQueueCount, setRecipeScanQueueCount] = useState(() => getRecipeScanQueue().length);
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
+  const [mealPlanQueue, setMealPlanQueue] = useState<QueuedMealPlanLog[]>(() => getMealPlanQueue());
+  const [failedMealPlanIds, setFailedMealPlanIds] = useState<Set<string>>(() => new Set());
+  const [retryingMealPlanId, setRetryingMealPlanId] = useState<string | null>(null);
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
   const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
@@ -226,8 +240,6 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     handleUndo: handleMealPlanUndo,
   } = useMealPlanUndo(serverOnline);
 
-  const { count: mealPlanQueueCount } = useMealPlanQueueCount();
-
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
     try {
@@ -253,6 +265,32 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     }
   }, [serverOnline]);
 
+  const syncMealPlanQueue = useCallback(() => {
+    setMealPlanQueue(getMealPlanQueue());
+  }, []);
+
+  const syncOneMealPlanItem = useCallback(
+    async (item: QueuedMealPlanLog): Promise<FoodTodayResponse | null> => {
+      let summary: FoodTodayResponse | null = null;
+      if (item.kind === 'all') {
+        summary = (await api.logMealPlanToday()).summary;
+      } else if (item.meal) {
+        summary = (await api.logMealPlanItem(item.meal)).summary;
+      } else {
+        return null;
+      }
+      removeMealPlanQueueItem(item.id);
+      setFailedMealPlanIds((prev) => {
+        if (!prev.has(item.id)) return prev;
+        const next = new Set(prev);
+        next.delete(item.id);
+        return next;
+      });
+      return summary;
+    },
+    [],
+  );
+
   const flushMealPlanQueue = useCallback(async () => {
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
     const queue = getMealPlanQueue();
@@ -273,32 +311,24 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
 
       for (const item of queue) {
         try {
-          let summary: FoodTodayResponse | null = null;
-          if (item.kind === 'all') {
-            summary = (await api.logMealPlanToday()).summary;
-          } else if (item.meal) {
-            summary = (await api.logMealPlanItem(item.meal)).summary;
-          } else {
-            continue;
+          const summary = await syncOneMealPlanItem(item);
+          if (summary) {
+            lastSummary = summary;
+            synced += 1;
+            labels.push(mealPlanQueueLabel(item));
+            setMealPlanSyncProgress({ done: synced, total });
+            syncMealPlanQueue();
           }
-          removeMealPlanQueueItem(item.id);
-          lastSummary = summary;
-          synced += 1;
-          setMealPlanSyncProgress({ done: synced, total });
-          labels.push(
-            item.kind === 'all'
-              ? 'All planned meals'
-              : item.label ?? item.meal ?? 'Meal',
-          );
         } catch (e) {
           if (isOfflineError(e)) break;
+          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
           setError(e instanceof Error ? e.message : 'Meal plan sync failed');
           break;
         }
       }
       if (synced > 0 && lastSummary) {
         setData(lastSummary);
-        const label = synced === 1 ? labels[0]! : `${synced} queued meal logs`;
+        const label = mealPlanSyncUndoLabel(synced, labels);
         if (!offerUndoFromSummary(beforeRows, lastSummary, label)) {
           setSuccess(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
         }
@@ -306,8 +336,86 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     } finally {
       setSyncingMealPlanQueue(false);
       setMealPlanSyncProgress(null);
+      syncMealPlanQueue();
+      const remainingIds = new Set(getMealPlanQueue().map((item) => item.id));
+      if (remainingIds.size === 0) {
+        setFailedMealPlanIds(new Set());
+        setError('');
+      } else {
+        setFailedMealPlanIds((prev) => {
+          let changed = false;
+          const next = new Set<string>();
+          for (const id of prev) {
+            if (remainingIds.has(id)) next.add(id);
+            else changed = true;
+          }
+          return changed ? next : prev;
+        });
+      }
     }
-  }, [serverOnline, data, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary]);
+  }, [
+    serverOnline,
+    data,
+    dismissMealPlanUndo,
+    snapshotFoodRows,
+    offerUndoFromSummary,
+    syncOneMealPlanItem,
+    syncMealPlanQueue,
+  ]);
+
+  const retryMealPlanItem = useCallback(
+    async (item: QueuedMealPlanLog) => {
+      if (!serverOnline || retryingMealPlanId) return;
+      setRetryingMealPlanId(item.id);
+      setError('');
+      dismissMealPlanUndo();
+      try {
+        const before = data ?? (await api.getFoodToday());
+        const summary = await syncOneMealPlanItem(item);
+        if (summary) {
+          setData(summary);
+          syncMealPlanQueue();
+          const label = mealPlanQueueLabel(item);
+          if (!offerUndoFromSummary(snapshotFoodRows(before), summary, label)) {
+            setSuccess(`Logged ${label}`);
+          }
+        }
+      } catch (e) {
+        if (isOfflineError(e)) {
+          setSuccess(`${mealPlanQueueLabel(item)} still queued — offline`);
+        } else {
+          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
+          setError(e instanceof Error ? e.message : 'Meal plan sync failed');
+        }
+      } finally {
+        setRetryingMealPlanId(null);
+      }
+    },
+    [
+      serverOnline,
+      retryingMealPlanId,
+      data,
+      syncMealPlanQueue,
+      syncOneMealPlanItem,
+      dismissMealPlanUndo,
+      snapshotFoodRows,
+      offerUndoFromSummary,
+    ],
+  );
+
+  const dismissMealPlanItem = useCallback(
+    (id: string) => {
+      removeMealPlanQueueItem(id);
+      setFailedMealPlanIds((prev) => {
+        if (!prev.has(id)) return prev;
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      syncMealPlanQueue();
+    },
+    [syncMealPlanQueue],
+  );
 
   const logMealPlanEntry = useCallback(
     (entry: MealPlanEntry) => {
@@ -419,6 +527,14 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     if (tab === 'recipes') void loadSavedRecipe();
     if (tab === 'mealplan') void loadMealPlan();
   }, [refresh, tab, loadSavedRecipe, loadMealPlan]);
+
+  useEffect(() => {
+    if (tab !== 'mealplan') return;
+    syncMealPlanQueue();
+    const onQueueChange = () => syncMealPlanQueue();
+    window.addEventListener(MEAL_PLAN_QUEUE_CHANGE, onQueueChange);
+    return () => window.removeEventListener(MEAL_PLAN_QUEUE_CHANGE, onQueueChange);
+  }, [tab, syncMealPlanQueue]);
 
   useEffect(() => {
     if (tab !== 'mealplan' || !serverOnline) return;
@@ -1119,21 +1235,34 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
 
       {tab === 'mealplan' && (
         <>
-          {(mealPlanQueueCount > 0 || syncingMealPlanQueue) ? (
+          {mealPlanQueue.length > 0 || syncingMealPlanQueue ? (
             <div
-              className={`home-meal-plan-queue-panel${syncingMealPlanQueue ? ' home-meal-plan-queue-panel--syncing' : ''}`}
+              className={`meal-plan-queue-panel${syncingMealPlanQueue ? ' meal-plan-queue-panel--syncing' : ''}${
+                mealPlanQueue.filter((item) => failedMealPlanIds.has(item.id)).length > 0
+                  ? ' meal-plan-queue-panel--has-failed'
+                  : ''
+              }`}
+              role="status"
             >
-              <div className="banner banner-warn banner-row" role="status">
+              <div
+                className={`banner banner-row${
+                  mealPlanQueue.some((item) => failedMealPlanIds.has(item.id)) ? ' banner-err' : ' banner-warn'
+                }`}
+              >
                 <span>
                   {syncingMealPlanQueue && mealPlanSyncProgress
                     ? `Syncing meal logs (${mealPlanSyncProgress.done}/${mealPlanSyncProgress.total})…`
-                    : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued${serverOnline ? ' — tap Sync now' : ' — will sync when online'}.`}
+                    : `${mealPlanQueue.length} meal log${mealPlanQueue.length === 1 ? '' : 's'} queued${
+                        mealPlanQueue.filter((item) => failedMealPlanIds.has(item.id)).length > 0
+                          ? ` · ${mealPlanQueue.filter((item) => failedMealPlanIds.has(item.id)).length} failed`
+                          : ''
+                      }${serverOnline ? ' — tap Retry or Sync now' : ' — will sync when online'}.`}
                 </span>
                 {serverOnline && (
                   <button
                     type="button"
                     className="btn-small"
-                    disabled={syncingMealPlanQueue}
+                    disabled={syncingMealPlanQueue || !!retryingMealPlanId}
                     onClick={() => void flushMealPlanQueue()}
                   >
                     {syncingMealPlanQueue ? 'Syncing…' : 'Sync now'}
@@ -1146,6 +1275,8 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
                   disabled={syncingMealPlanQueue}
                   onClick={() => {
                     clearMealPlanQueue();
+                    setFailedMealPlanIds(new Set());
+                    syncMealPlanQueue();
                     setSuccess('Meal plan log queue cleared');
                   }}
                 >
@@ -1154,7 +1285,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
               </div>
               {syncingMealPlanQueue && mealPlanSyncProgress && mealPlanSyncProgress.total > 0 && (
                 <div
-                  className="home-meal-plan-sync-progress"
+                  className="meal-plan-sync-progress"
                   role="progressbar"
                   aria-valuenow={mealPlanSyncProgress.done}
                   aria-valuemin={0}
@@ -1168,6 +1299,54 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
                     />
                   </div>
                 </div>
+              )}
+              {mealPlanQueue.length > 0 && (
+                <ul className="food-list meal-plan-queue-list" aria-label="Queued meal logs">
+                  {mealPlanQueue.map((item) => {
+                    const failed = failedMealPlanIds.has(item.id);
+                    const retrying = retryingMealPlanId === item.id;
+                    return (
+                      <li
+                        key={item.id}
+                        className={`food-row food-row--${failed ? 'failed' : 'queued'}`}
+                        role={failed ? 'alert' : undefined}
+                      >
+                        <div>
+                          <strong>{mealPlanQueueLabel(item)}</strong>
+                          <span className={`muted${failed ? ' meal-plan-queue-item-failed' : ''}`}>
+                            {item.description ? ` · ${item.description}` : ''}
+                            {retrying
+                              ? ' · Syncing…'
+                              : failed
+                                ? ' · Failed to sync'
+                                : ' · Queued offline'}
+                          </span>
+                        </div>
+                        <div className="food-row-actions">
+                          {serverOnline && (
+                            <button
+                              type="button"
+                              className="btn-small"
+                              disabled={syncingMealPlanQueue || !!retryingMealPlanId}
+                              onClick={() => void retryMealPlanItem(item)}
+                            >
+                              {retrying ? 'Syncing…' : 'Retry'}
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className="btn-small btn-danger"
+                            aria-label={`Dismiss queued ${mealPlanQueueLabel(item)}`}
+                            disabled={retrying || syncingMealPlanQueue}
+                            onClick={() => dismissMealPlanItem(item.id)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </div>
           ) : (
