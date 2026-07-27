@@ -6,6 +6,7 @@ import { DayWeekStrip } from '../components/DayWeekStrip';
 import { DayTimelineCard } from '../components/DayTimelineCard';
 import { DayHabitHoursCard } from '../components/DayHabitHoursCard';
 import { DayManageDayCard } from '../components/DayManageDayCard';
+import { StreakMilestoneToast } from '../components/StreakMilestoneToast';
 import { UndoToast } from '../components/UndoToast';
 import { HabitQueueSection } from '../components/HabitQueueSection';
 import { useDaySectionData } from '../hooks/useDaySectionData';
@@ -36,7 +37,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
     setError,
   } = useDaySectionData(serverOnline);
 
-  const { streakLegendOpen, toggleStreakLegend } = useDayStreakHaptics(streaks);
+  const { streakLegendOpen, toggleStreakLegend, milestoneToast, dismissMilestoneToast } = useDayStreakHaptics(streaks);
 
   const { saving, updateMetric, queuedCount, failedCount, pending, retry, retryAllFailed, dismiss, dismissAllQueued, queueSyncClearedToken } = useOptimisticHabitLog({
     serverOnline,
@@ -151,6 +152,9 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
         {habitSyncMessage && <div className="banner banner-ok banner-revolut">{habitSyncMessage}</div>}
       </div>
       {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
+      {milestoneToast && (
+        <StreakMilestoneToast message={milestoneToast} onDismiss={dismissMilestoneToast} />
+      )}
       {mealPlanUndo && (
         <UndoToast
           message={`Logged ${mealPlanUndo.label}`}

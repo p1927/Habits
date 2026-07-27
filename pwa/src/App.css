@@ -349,8 +349,14 @@ button:disabled {
 }
 
 .tab-icon {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   line-height: 1;
+  opacity: 0.85;
+}
+
+.tab-active .tab-icon {
+  opacity: 1;
+  color: var(--gemini-accent);
 }
 
 .tab-icon-wrap {
@@ -3244,6 +3250,41 @@ form.log-type-card {
   margin: 0 0 0.5rem;
 }
 
+.home-trend-card-btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: inherit;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.home-trend-card-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-lg);
+}
+
+.home-trend-card-btn .home-calorie-trend-card {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-trend-card-btn:hover .home-calorie-trend-card,
+.home-trend-card-btn:focus-visible .home-calorie-trend-card {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--surface2));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.home-trend-card-hint {
+  display: block;
+  margin-top: 0.65rem;
+  font-size: var(--font-size-sm);
+}
+
 .agent-composer-dock {
   flex-shrink: 0;
   margin: 0 -1rem -1rem;
@@ -3985,6 +4026,21 @@ form.log-type-card {
   .undo-toast {
     animation: none;
   }
+}
+
+.streak-milestone-toast {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--gemini-surface) 92%, var(--accent)),
+    var(--gemini-surface)
+  );
+}
+
+.streak-milestone-toast__icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .agent-chat-empty {

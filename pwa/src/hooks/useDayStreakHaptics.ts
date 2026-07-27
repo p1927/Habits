@@ -13,6 +13,7 @@ import { vibrateFireStreak, vibrateHotStreak, vibrateMetricFireStreak, vibrateMe
 
 export function useDayStreakHaptics(streaks: HabitsStreaksResponse | null) {
   const [streakLegendOpen, setStreakLegendOpen] = useState(readStreakLegendOpen);
+  const [milestoneToast, setMilestoneToast] = useState<string | null>(null);
 
   useEffect(() => {
     if (localStorage.getItem(STREAK_LEGEND_SEEN_KEY) !== '1') {
@@ -39,8 +40,13 @@ export function useDayStreakHaptics(streaks: HabitsStreaksResponse | null) {
     };
 
     const prevOverall = Number(sessionStorage.getItem(STREAK_HAPTIC_OVERALL_KEY) ?? '0');
-    if (streaks.overall >= 14 && prevOverall < 14) vibrateOnce(vibrateFireStreak);
-    else if (streaks.overall >= 7 && prevOverall < 7) vibrateOnce(vibrateHotStreak);
+    if (streaks.overall >= 14 && prevOverall < 14) {
+      vibrateOnce(vibrateFireStreak);
+      setMilestoneToast(`${streaks.overall}-day all-target streak — two weeks strong!`);
+    } else if (streaks.overall >= 7 && prevOverall < 7) {
+      vibrateOnce(vibrateHotStreak);
+      setMilestoneToast(`${streaks.overall}-day all-target streak — full week complete!`);
+    }
     if (streaks.overall !== prevOverall) {
       sessionStorage.setItem(STREAK_HAPTIC_OVERALL_KEY, String(streaks.overall));
     }
@@ -57,5 +63,7 @@ export function useDayStreakHaptics(streaks: HabitsStreaksResponse | null) {
     sessionStorage.setItem(STREAK_HAPTIC_METRICS_KEY, JSON.stringify(nextMetrics));
   }, [streaks]);
 
-  return { streakLegendOpen, toggleStreakLegend };
+  const dismissMilestoneToast = useCallback(() => setMilestoneToast(null), []);
+
+  return { streakLegendOpen, toggleStreakLegend, milestoneToast, dismissMilestoneToast };
 }
