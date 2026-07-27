@@ -23,12 +23,12 @@
 | confirmed_next | `relay-189` |
 | next_action | `relay-189 Home rings share sheet keyboard Escape to close` |
 | phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `relay-188 reviewed round 17; committed 9d012ca` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| review_status | `skipped` |
+| review_skip_reason | `round 18 STATE checkpoint sync; committed 5d27251` |
+| review_diff_range | `state-checkpoint-r18` |
+| code_changed | `no` |
 | review_round | `18` |
-| last_reviewed_round | `17` |
+| last_reviewed_round | `18` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
@@ -121,6 +121,7 @@
 | rf-r16-001 | high | Duplicate hooks/homeDashboardDerived.ts used wrong ./api imports; lib/ copy is canonical | round-16 /code-review | fix-now | — | closed |
 | rf-r16-002 | low | Extraction to useHomeDashboardRefresh + homeDashboardDerived preserves behavior | round-16 /code-review | closed | — | closed |
 | rf-r17-001 | low | No issues in relay-188 OAuth auto-dismiss diff | round-17 /code-review | closed | — | closed |
+| rf-r18-001 | low | No issues in STATE checkpoint sync diff (last_wake + phase 9-arm) | round-18 /code-review | closed | — | closed |
 
 ---
 
