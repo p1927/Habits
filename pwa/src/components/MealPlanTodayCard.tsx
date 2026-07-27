@@ -37,7 +37,7 @@ export function MealPlanTodayCard({
 
   return (
     <Card className={['home-export-card--health', className].filter(Boolean).join(' ')}>
-      <p className="section-eyebrow">Meal plan</p>
+      <p className="section-eyebrow">Plan</p>
       <h2>Today&apos;s meal plan</h2>
       <p className="muted">
         From WEEK MEALS sheet

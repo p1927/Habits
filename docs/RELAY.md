@@ -8,10 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:25:00Z |
-| where_we_are | relay-154 Lighthouse pass — lazy tab chunks + precache 474 KiB |
-| confirmed_next | brainstorm next backlog items |
-| brainstorm_notes | Worker only in this window — paste other contracts from `docs/START_LOOPS.md` for UX/Code/PO |
+| reviewed_at | 2026-07-27T12:36:00Z |
+| git_branch | main |
+| uncommitted_files | none |
+| where_we_are | relay-153–159 shipped; loops verified (worker 60s, code-health 120s). |
+| blockers | [] |
+| confirmed_next | relay-160 Lighthouse PWA score run |
+| brainstorm_notes | Worker 60s / Code 120s — both UP with confirmed ticks |
 
 ---
 
@@ -19,8 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:55:00Z |
-| loops | **Worker** `cursor-loop` `worker-relay` — re-armed after tick #8 shell abort; tick #8 confirmed. |
+| last_wake | 2026-07-27T12:36:00Z |
+| status | ready |
+| current_item_id | — |
+| cycle_parity | even (next: feature) |
+| next_action | relay-160 Lighthouse PWA score baseline |
+| blockers | [] |
+| loops | **Worker** PID 90274 (60s `AGENT_LOOP_TICK_HABITS`). **Code-health** PID 88459 (120s `AGENT_LOOP_TICK_CODE_HEALTH` — tick confirmed). Verify: `bash tools/cursor-loop/scripts/loop-status.sh`. |
 
 ---
 
@@ -32,14 +40,7 @@
 
 ## BACKLOG (priority ordered)
 
-- [x] relay-152 | Accessibility audit — ARIA, focus rings, contrast on new tabs | maintenance | Day schedule tabpanels + now-line sr-only; Log sub-tabs roving tabindex; Type tab aria-live + failed alerts; meal-plan quick-add focus + aria-busy
-- [x] relay-153 | Optimistic UI + retry on food log failures | feature | auto-retry 1.5s; persist failed to queue; FoodFailedBanner + Retry all; meal_type preserved on retry
-- [x] relay-154 | Lighthouse PWA — lazy tab routes + precache trim | maintenance | React.lazy Log/Day/Cards/Agent/Settings; main chunk 251kB; precache **474 KiB**; exclude pdf/canvas/purify/index.es from precache
-- [x] relay-155 | Home saved recipe → optimistic food log | feature | `useOptimisticFoodLog` on Home; per-item log uses retry/offline queue
-- [x] relay-156 | Habit log retry parity with food queue | maintenance | auto-retry 1.5s; failed persist + Retry all on Day tab
-- [x] relay-157 | Lazy tab chunk preload | maintenance | idle preload Log/Day; hover/focus prefetch on tab bar + settings gear
-- [x] relay-158 | Home food log queue/failed banners | feature | FoodQueueBanner + FoodFailedBanner on Home (parity with Log tab)
-- [x] relay-159 | Home log entire recipe → optimistic + retry | feature | `saved_recipe` queue kind; `logSavedRecipe` in hook; Home uses optimistic path
+- [ ] relay-160 | Lighthouse PWA score baseline | maintenance
 
 ---
 
@@ -47,9 +48,8 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Log tab "Plan" label | UX | align badge title with queue sub-tab |
-| Queue sort parity | relay-130 | habit + food queues oldest-first |
-| Lighthouse PWA score > 90 | ROADMAP | performance pass |
+| Queue sort parity | relay-130 | done — all queues use `sortQueueByCreatedAt` oldest-first |
+| Lighthouse PWA score > 90 | ROADMAP | relay-160 |
 
 ---
 
@@ -57,76 +57,11 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-153–158 | done | build | be39deb |
 | 2026-07-27 | relay-152 | done | build | 4dfc101 |
 | 2026-07-27 | relay-151 | done | build | 0220ba7 |
 | 2026-07-27 | relay-149 | done | build | 3bf2d18 |
 | 2026-07-27 | relay-150 | done | build | 4e10f9b |
-| 2026-07-27 | relay-148 | done | build | 4ab0f17 |
-| 2026-07-27 | relay-147 | done | build | 0e35436 |
-| 2026-07-27 | relay-146 | done | build | 5ba479f |
-| 2026-07-27 | relay-144 | done | build | 6269dd1 |
-| 2026-07-27 | relay-143 | done | build | c77ad53 |
-| 2026-07-27 | relay-142 | done | build | 4fe608c |
-| 2026-07-27 | relay-141 | done | build | b4d4e94 |
-| 2026-07-27 | relay-140 | done | build | f38fffb |
-| 2026-07-27 | relay-139 | done | build | c71a71a |
-| 2026-07-27 | relay-138 | done | build | c71a71a |
-| 2026-07-27 | relay-137 | done | build | 5e4e9fa |
-| 2026-07-27 | relay-136 | done | build | 095e089 |
-| 2026-07-27 | relay-135 | done | build | 6c27112 |
-| 2026-07-27 | relay-134 | done | build | 2f35cdb |
-| 2026-07-27 | relay-133 | done | build | 9551e3c |
-| 2026-07-27 | relay-132 | done | build | 65e1755 |
-| 2026-07-27 | relay-131 | done | build | 194ae02 |
-| 2026-07-27 | relay-130 | done | build | cbbbc5e |
-| 2026-07-27 | relay-129 | done | build | f1f65f6 |
-| 2026-07-27 | relay-128 | done | build | 96f6f3e |
-| 2026-07-27 | relay-127 | done | build | 745e1fd |
-| 2026-07-27 | relay-126 | done | build | e2b7b12 |
-| 2026-07-27 | relay-125 | done | build | 49e36b5 |
-| 2026-07-27 | relay-124 | done | build | f1d6a05 |
-| 2026-07-27 | relay-123 | done | build | e99dc96 |
-| 2026-07-27 | relay-122 | done | build | 6c5e958 |
-| 2026-07-27 | relay-121 | done | build | a605006 |
-| 2026-07-27 | relay-120 | done | build | 15492bc |
-| 2026-07-27 | relay-119 | done | build | 850df2e |
-| 2026-07-27 | relay-118 | done | build | 4cb5108 |
-| 2026-07-27 | relay-117 | done | build | 3383ae4 |
-| 2026-07-27 | relay-116 | done | build | acbc27e |
-| 2026-07-27 | relay-115 | done | build | 42580ec |
-| 2026-07-27 | relay-114 | done | build | cf3ce9e |
-| 2026-07-27 | relay-113 | done | build | 967f3e8 |
-| 2026-07-27 | relay-111 | done | build | 6a97b84 |
-| 2026-07-27 | relay-110 | done | build | 17c9484 |
-| 2026-07-27 | relay-109 | done | build | be01dfe |
-| 2026-07-27 | relay-108 | done | build | cb2d7e2 |
-| 2026-07-27 | relay-107 | done | build | ca1b156 |
-| 2026-07-27 | relay-106 | done | build | 9b3209e |
-| 2026-07-27 | relay-105 | done | build | 56d94a8 |
-| 2026-07-27 | relay-104 | done | build | 9d3232a |
-| 2026-07-27 | relay-103 | done | build | ab8f112 |
-| 2026-07-27 | relay-102 | done | build | c4e149d |
-| 2026-07-27 | relay-101 | done | build | ddb3d3a |
-| 2026-07-27 | relay-100 | done | build | 8db3dae |
-| 2026-07-27 | relay-099 | done | build | 8f1cd97 |
-| 2026-07-27 | relay-098 | done | build | 74dfcaf |
-| 2026-07-27 | relay-097 | done | build | e1d9f29 |
-| 2026-07-27 | relay-096 | done | build | 8f5cb6b |
-| 2026-07-27 | relay-095 | done | build | 2557202 |
-| 2026-07-27 | relay-094 | done | build | 1cab646 |
-| 2026-07-27 | relay-093 | done | build | 9345536 |
-| 2026-07-27 | relay-092 | done | build | 8d6c73f |
-| 2026-07-27 | relay-091 | done | build | 18f7be6 |
-| 2026-07-27 | relay-090 | done | build | 68b6136 |
-| 2026-07-27 | relay-089 | done | build | a11a247 |
-| 2026-07-27 | relay-088 | done | build | b63a49f |
-| 2026-07-27 | relay-087 | done | build | 4d623e3 |
-| 2026-07-27 | relay-086 | done | build | 39f4535 |
-| 2026-07-27 | relay-085 | done | build | 2719131 |
-| 2026-07-27 | relay-084 | done | build | 13dc88c |
-| 2026-07-27 | relay-083 | done | build | 0b3e827 |
-| 2026-07-27 | relay-082 | done | build | 4210522 |
-| 2026-07-27 | relay-081 | done | build | 4210522 |
 
 ---
 
@@ -135,5 +70,5 @@
 1. Every wake: **Review → Brainstorm → Execute → Verify → Commit → Update RELAY**
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
-4. **In-session `/loop`** — 60s `AGENT_LOOP_TICK_HABITS`; chain items while chat is open
+4. **cursor-loop** — one chat per contract; paste from `docs/START_LOOPS.md`
 5. BACKLOG < 3: refill from BRAINSTORM + web research
