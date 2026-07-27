@@ -127,8 +127,19 @@ function writeQueue(items: QueuedMealPlanLog[]) {
   notifyQueueChange();
 }
 
+function sortMealPlanQueue(items: QueuedMealPlanLog[]): QueuedMealPlanLog[] {
+  return [...items].sort((a, b) => {
+    const ta = new Date(a.created_at).getTime();
+    const tb = new Date(b.created_at).getTime();
+    if (Number.isNaN(ta) && Number.isNaN(tb)) return 0;
+    if (Number.isNaN(ta)) return 1;
+    if (Number.isNaN(tb)) return -1;
+    return ta - tb;
+  });
+}
+
 export function getMealPlanQueue(): QueuedMealPlanLog[] {
-  return readQueue();
+  return sortMealPlanQueue(readQueue());
 }
 
 function readFailedIds(): string[] {
