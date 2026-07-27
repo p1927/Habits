@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:02:00Z |
-| where_we_are | Backlog idle (ui-001–057 done); triaged prop-ui-042/043 as shipped |
-| confirmed_next | Propose ux-gap-045 to PO; backlog idle await new UI_PROPOSALS |
+| reviewed_at | 2026-07-27T23:45:00Z |
+| where_we_are | ui-058 shipped — prop-ui-044 / ux-gap-045 closed |
+| confirmed_next | backlog idle; await PO UI_PROPOSALS |
 
 ---
 
@@ -18,33 +18,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:02:00Z` |
+| last_wake | `2026-07-27T23:46:00Z` |
 | next_mode | `C` |
 | current_item_id | `—` |
-| phase | `7-triage` |
-| review_status | `triaged` |
-| review_skip_reason | `—` |
-| review_round | `12` |
-| last_reviewed_round | `12` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| confirmed_next | `backlog idle; ux-gap-045 proposed; await PO triage` |
+| phase | `9-arm` |
+| review_status | `skipped` |
+| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_round | `13` |
+| last_reviewed_round | `13` |
+| review_diff_range | `none` |
+| code_changed | `no` |
+| confirmed_next | `backlog idle; await PO UI_PROPOSALS` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/ux-relay/STATE.md` |
-| review_fingerprint | `08101cac58b1348d` |
-| ritual_step | `7b-fix-verify` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `Idle audit: prop-ui-042/043 verified shipped; ux-gap-045 Settings OAuth polish proposed` |
+| brainstorm_outcome | `Agreed prop-ui-044 → ui-058: disconnect success banner + aria-live error` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
-| reflect_done | `no` |
-| commit_hash | `—` |
+| reflect_done | `yes` |
+| commit_hash | `d97f0e0` |
 | receive_review_done | `yes` |
-| commit_done | `no` |
-| merge_done | `no` |
+| commit_done | `yes` |
+| merge_done | `yes` |
 
 ## IN_PROGRESS
 
@@ -64,7 +64,7 @@
 | ux-gap-042 | po-agreed | Day | prop-ui-041 verified — DayCalendarEventSheet Revolut card + time pill shipped ui-055 | Google Calendar popup | shipped ui-055 |
 | ux-gap-043 | po-agreed | Home | relay-176 pull-refresh — UIRefreshControl ring + label (ui-056) | Apple Health refresh | shipped ui-056 |
 | ux-gap-044 | po-agreed | Global nav | Main tab ⌘1–5 shortcuts + dismissible hint (ui-057) | Gemini keyboard hints | shipped ui-057 |
-| ux-gap-045 | ux-proposed | Settings | Disconnect success banner + aria-live on Settings error path (connect live-region shipped relay-190) | Revolut Settings | PO: triage disconnect UX |
+| ux-gap-045 | po-agreed | Settings | Disconnect success banner + aria-live on Settings error (prop-ui-044) | Revolut Settings | shipped ui-058 |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -131,6 +131,7 @@
 - [x] ui-055 | **Day event detail sheet:** Revolut card + color time pill + Close CTA (prop-ui-041) | P2 | done 2026-07-27 — Calendar popup parity
 - [x] ui-056 | **Home pull-refresh + Day empty:** UIRefreshControl ring indicator + Revolut empty schedule panel | P3 | done 2026-07-27 — Round 11 ring SVG + empty panel
 - [x] ui-057 | **App tab shortcuts:** ⌘1–5 nav + localStorage hint + conditional aria-keyshortcuts | P3 | done 2026-07-27 — prop-ui-042 logic verified
+- [x] ui-058 | **Settings OAuth UX:** disconnect success banner + aria-live error banner (prop-ui-044 / ux-gap-045) | P3 | done 2026-07-27
 
 ---
 
@@ -138,10 +139,15 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r13-005 | low | useSettingsSection.ts passthrough disconnectSuccess + dismissDisconnectSuccess | round-13 bugbot | closed | ui-058 | closed |
+| ux-r13-001 | medium | useSettingsSectionData.ts — disconnectSuccess not cleared when save/load paths set error | round-13 bugbot | fix-now | ui-058 | closed |
+| ux-r13-002 | low | Settings.tsx role=alert + aria-live=polite conflict — use role=alert only | round-13 bugbot | fix-now | ui-058 | closed |
+| ux-r13-003 | low | Settings.tsx disconnect error at page footer — pre-existing layout | round-13 bugbot | closed | ui-058 | closed |
+| ux-r13-004 | low | useSettingsSectionData.ts disconnect banner + Settings.tsx error role=alert; build pass | round-13 /code-review | closed | ui-058 | closed |
 | ux-r12-002 | medium | CHECKPOINT.confirmed_next stale vs brainstorm_outcome — prop-ui-042 already shipped | round-12 bugbot | fix-now | — | closed |
 | ux-r12-003 | medium | ux-gap-042 still ux-proposed though ui-055 shipped | round-12 bugbot | fix-now | ux-gap-042 | closed |
 | ux-r12-004 | low | ux-gap-045 overstated connect aria-live (relay-190 shipped) | round-12 bugbot | backlog | ux-gap-045 | closed |
-| ux-r12-005 | low | Disconnect silent on success; Settings error banner lacks aria-live | round-12 bugbot | backlog | ux-gap-045 | open |
+| ux-r12-005 | low | Disconnect silent on success; Settings error banner lacks aria-live | round-12 bugbot | closed | ux-gap-045 | closed |
 | ux-r12-006 | low | SettingsGoogleCard already Revolut-tier — gap narrowed to disconnect UX | round-12 bugbot | backlog | ux-gap-045 | closed |
 | ux-r12-007 | low | LAST_REVIEW.confirmed_next stale after ux-gap-045 proposed | round-12 bugbot | fix-now | — | closed |
 | ux-r12-008 | low | review_skip_reason populated while code_changed=yes | round-12 bugbot | fix-now | — | closed |
@@ -172,7 +178,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
-| 2026-07-27 | C | audit | Backlog idle; triaged prop-ui-042/043 shipped (ui-057/ui-056); ux-gap-045 proposed | build | — |
+| 2026-07-27 | C | ui-058 | Settings disconnect success banner + error role=alert (prop-ui-044) | build | d97f0e0 |
 | 2026-07-27 | C | ui-057 | Tab shortcuts Round 10 review + aria-keyshortcuts fix | build | pending |
 | 2026-07-27 | C | ui-056 | Pull-refresh ring + Day empty Revolut panel | build | pending |
 | 2026-07-27 | C | idle | Wake checkpoint; backlog idle; await PO | — | pending |
