@@ -55,6 +55,9 @@ export function LogHistoryPanel({ days }: LogHistoryPanelProps) {
                 <strong>{d.date}</strong>
                 <span className="log-history-stats muted">
                   {d.calories.toFixed(0)} kcal · {d.protein.toFixed(1)}g protein
+                  {d.meal_count != null && (
+                    <span className="log-history-meals"> · {d.meal_count} meals</span>
+                  )}
                 </span>
               </li>
             ))}
