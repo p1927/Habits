@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:50:00Z |
-| where_we_are | relay-182 verify-only (already shipped f3af1b5) |
-| confirmed_next | relay-183 |
-| brainstorm_notes | Log shortcut hint wired via useLogTabShortcuts + LogSubTabs; backlog marked done |
+| reviewed_at | 2026-07-27T12:55:00Z |
+| where_we_are | relay-183 shipped |
+| confirmed_next | relay-184 |
+| brainstorm_notes | Day schedule ⌘1/⌘2 shortcuts + first-visit hint on DayTimelineCard |
 
 ---
 
@@ -19,17 +19,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:50:00Z |
-| confirmed_next | relay-183 |
-| next_action | relay-183 Day tab keyboard shortcut hint on first visit |
+| last_wake | 2026-07-27T12:55:00Z |
+| confirmed_next | relay-184 |
+| next_action | relay-184 Agent composer focus shortcut (⌘/Ctrl+K) |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
-| review_status | skipped |
-| review_skip_reason | relay-182 verify-only; no pwa/server diff this tick |
-| review_round | `7` |
-| last_reviewed_round | `7` |
-| review_diff_range | `none` |
-| code_changed | `no` |
+| phase | 8-close |
+| review_status | done |
+| review_skip_reason | — |
+| review_round | `8` |
+| last_reviewed_round | `8` |
+| review_diff_range | `relay-183` |
+| code_changed | `yes` |
 
 ---
 
@@ -38,6 +38,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -74,7 +76,7 @@
 - [x] relay-180 | Agent chat regenerate last reply | polish | Regenerate pill re-streams last user turn
 - [x] relay-181 | Home decision card tap → Future Self tab | feature | `#futureself` deep link + Open Future Self on decision card
 - [x] relay-182 | Log tab keyboard shortcut hint on first visit | polish | verify-only — `useLogTabShortcuts` + LogSubTabs hint (f3af1b5)
-- [ ] relay-183 | Day tab keyboard shortcut hint on first visit | polish
+- [x] relay-183 | Day tab keyboard shortcut hint on first visit | polish | useDayScheduleShortcuts + DayTimelineCard hint (⌘1/⌘2)
 - [ ] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish
 - [ ] relay-185 | Cards tab keyboard shortcut hint on first visit | polish
 
@@ -104,6 +106,7 @@
 | rf-r5-000 | low | No issues in relay-179 diff | round-5 /code-review | closed | — | closed |
 | rf-r6-000 | low | No issues in relay-180 diff | round-6 /code-review | closed | — | closed |
 | rf-r7-000 | low | No issues in relay-181 diff | round-7 /code-review | closed | — | closed |
+| rf-r8-000 | low | No issues in relay-183 diff | round-8 /code-review | closed | — | closed |
 
 ---
 
@@ -111,6 +114,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-183 | done | build | 2055d88 |
 | 2026-07-27 | relay-182 | done | build | f3af1b5 |
 | 2026-07-27 | relay-181 | done | build | f8cbe92 |
 | 2026-07-27 | relay-180 | done | build | f32d5a1 |
