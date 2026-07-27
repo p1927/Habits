@@ -8,12 +8,12 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T09:32:00Z |
+| reviewed_at | 2026-07-27T11:45:00Z |
 | git_branch | main |
-| uncommitted_files | maintenance docs, App.css WIP |
-| where_we_are | relay-147–150 shipped (queue store, Home refactor, saved recipe card). |
+| uncommitted_files | App.css WIP, parallel window refactors (Day/Log/Cards/server) |
+| where_we_are | relay-149 shipped — VoiceCoachLayer + persistent iframe orb state. |
 | blockers | [] |
-| confirmed_next | relay-149 VoiceStatusOrb iframe postMessage |
+| confirmed_next | relay-151 meal plan quick-add from WEEK MEALS |
 | brainstorm_notes | loops optional; keep shipping features |
 
 ---
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T09:32:00Z |
+| last_wake | 2026-07-27T11:45:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-149 VoiceStatusOrb iframe postMessage |
+| cycle_parity | even (next: feature) |
+| next_action | relay-151 meal plan quick-add from WEEK MEALS |
 | blockers | [] |
 | loops | relay `scripts/agent-relay-loop.sh` (^AGENT_LOOP_TICK_HABITS, PID file); restart only in Habits terminal |
 
@@ -40,7 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-149 | VoiceStatusOrb — wire iframe postMessage for real mic/listening state | maintenance
+- [ ] relay-151 | Meal plan quick-add from WEEK MEALS sheet | feature
+- [ ] relay-152 | Accessibility audit — ARIA, focus rings, contrast on new tabs | maintenance
+- [ ] relay-153 | Optimistic UI + retry on food log failures | feature
 
 ---
 
@@ -50,6 +52,7 @@
 |------|-------------|-------|
 | Log tab "Plan" label | UX | align badge title with queue sub-tab |
 | Queue sort parity | relay-130 | habit + food queues oldest-first |
+| Lighthouse PWA score > 90 | ROADMAP | performance pass |
 
 ---
 
@@ -57,6 +60,10 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-149 | done | build | — |
+| 2026-07-27 | relay-150 | done | build | 4e10f9b |
+| 2026-07-27 | relay-148 | done | build | 4ab0f17 |
+| 2026-07-27 | relay-147 | done | build | 0e35436 |
 | 2026-07-27 | relay-146 | done | build | 5ba479f |
 | 2026-07-27 | relay-144 | done | build | 6269dd1 |
 | 2026-07-27 | relay-143 | done | build | c77ad53 |

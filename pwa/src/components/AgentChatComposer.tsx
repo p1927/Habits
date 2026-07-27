@@ -1,4 +1,6 @@
-import { AGENT_QUICK_PROMPTS } from '../lib/agentSectionShared';
+import type { VoiceOrbVisualState } from '../lib/voiceStatus';
+
+import { AgentToolChips } from './AgentToolChips';
 
 export interface AgentChatComposerProps {
   serverOnline: boolean;
@@ -6,11 +8,14 @@ export interface AgentChatComposerProps {
   scanning: boolean;
   input: string;
   attachImage: string | null;
+  showDisclaimer?: boolean;
+  voiceOrbState?: VoiceOrbVisualState;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
   onClearAttach: () => void;
   onOpenCamera: () => void;
   onOpenVoice: () => void;
+  onOpenTools: () => void;
 }
 
 export function AgentChatComposer({
@@ -19,28 +24,19 @@ export function AgentChatComposer({
   scanning,
   input,
   attachImage,
+  showDisclaimer = false,
+  voiceOrbState,
   onInputChange,
   onSubmit,
   onClearAttach,
   onOpenCamera,
   onOpenVoice,
+  onOpenTools,
 }: AgentChatComposerProps) {
-  return (
-    <>
-      <div className="agent-tool-chips" role="group" aria-label="Quick prompts">
-        {AGENT_QUICK_PROMPTS.map(({ label, text }) => (
-          <button
-            key={label}
-            type="button"
-            className="agent-tool-chip"
-            disabled={!serverOnline || loading || scanning}
-            onClick={() => onInputChange(text)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+  const canSend = serverOnline && !loading && !scanning && (input.trim() || attachImage);
 
+  return (
+    <div className="agent-composer-dock" aria-label="Message composer">
       {attachImage && (
         <div className="agent-attach-preview">
           <img src={attachImage} alt="Attached food photo" className="agent-attach-thumb" />
@@ -50,37 +46,74 @@ export function AgentChatComposer({
         </div>
       )}
 
+      <AgentToolChips
+        disabled={!serverOnline || loading || scanning}
+        onSelect={onInputChange}
+      />
+
       <form
-        className="agent-chat-input"
+        className="agent-composer-bar"
         aria-label="Send a message"
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit();
+          if (canSend) onSubmit();
         }}
       >
+        <button
+          type="button"
+          className="agent-composer-icon"
+          aria-label="Attach food photo"
+          disabled={!serverOnline || scanning}
+          onClick={onOpenCamera}
+        >
+          +
+        </button>
+
+        <button
+          type="button"
+          className="agent-composer-tools"
+          aria-label="Open tools"
+          disabled={!serverOnline || loading || scanning}
+          onClick={onOpenTools}
+        >
+          Tools
+        </button>
+
         <label className="sr-only" htmlFor="agent-chat-input">
           Message
         </label>
         <input
           id="agent-chat-input"
+          className="agent-composer-field"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder="Message your coach…"
+          placeholder={scanning ? 'Scanning photo…' : 'Ask Coach'}
           disabled={!serverOnline || loading || scanning}
         />
-        <button type="submit" disabled={!serverOnline || loading || scanning || (!input.trim() && !attachImage)}>
-          Send
-        </button>
+
+        {input.trim() || attachImage ? (
+          <button type="submit" className="agent-composer-send" disabled={!canSend} aria-label="Send message">
+            ↑
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={`agent-composer-mic${voiceOrbState ? ` agent-composer-mic--${voiceOrbState}` : ''}`}
+            aria-label={voiceOrbState === 'listening' ? 'Voice listening' : 'Open voice coach'}
+            aria-pressed={voiceOrbState === 'listening'}
+            disabled={!serverOnline}
+            onClick={onOpenVoice}
+          >
+            <span className="agent-composer-mic-dot" aria-hidden="true" />
+          </button>
+        )}
       </form>
 
-      <div className="agent-actions-row">
-        <button type="button" className="btn-secondary" onClick={onOpenCamera} disabled={!serverOnline || scanning}>
-          {scanning ? 'Scanning…' : 'Camera'}
-        </button>
-        <button type="button" className="btn-secondary" onClick={onOpenVoice}>
-          Voice
-        </button>
-      </div>
-    </>
+      {showDisclaimer && (
+        <p className="agent-composer-disclaimer muted">
+          Coach can make mistakes — double-check food and calendar changes.
+        </p>
+      )}
+    </div>
   );
 }

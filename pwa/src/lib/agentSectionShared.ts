@@ -7,6 +7,22 @@ export const AGENT_QUICK_PROMPTS = [
   { label: 'Health note', text: 'Add a note to my health cards' },
 ] as const;
 
+export const AGENT_GREETING_CATEGORIES = [
+  { label: 'Log food', text: 'Help me log what I ate today' },
+  { label: 'Habits', text: 'How am I doing on habits today?' },
+  { label: 'Schedule', text: 'What is on my calendar today?' },
+  { label: 'Health note', text: 'Add a note to my health cards' },
+] as const;
+
+export const AGENT_TOOLS = [
+  { label: 'Log food', description: 'Track meals, macros, and portions', text: 'Help me log what I ate today' },
+  { label: 'Habit check-in', description: 'Review sleep, work, and daily targets', text: 'How am I doing on habits today?' },
+  { label: 'Calendar', description: 'Schedule events and review your day', text: 'Add a calendar event for tomorrow' },
+  { label: 'Health cards', description: 'Capture notes, sickness, or strategy', text: 'Add a note to my health cards' },
+  { label: 'Meal plan', description: 'Sync or adjust today\'s meal plan', text: 'Help me with my meal plan for today' },
+  { label: 'Weekly summary', description: 'Nutrition and habit trends', text: 'Summarize my week — food and habits' },
+] as const;
+
 export type AgentChatMessage = {
   role: 'user' | 'assistant';
   content: string;
