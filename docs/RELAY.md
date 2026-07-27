@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:15:00Z |
+| last_wake | 2026-07-27T03:20:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-089 meal plan queue section wrapper component |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-090 tab badge show failed meal plan count |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-089 | Meal plan queue section wrapper component | maintenance
+- [ ] relay-090 | Tab badge show failed meal plan count | feature
+- [ ] relay-091 | Log offline enqueue refresh queue UI immediately | maintenance
+- [ ] relay-092 | Meal plan sync success haptic | feature
 
 ---
 
@@ -56,6 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-089 | done | build | — |
 | 2026-07-27 | relay-088 | done | build | b63a49f |
 | 2026-07-27 | relay-087 | done | build | 4d623e3 |
 | 2026-07-27 | relay-086 | done | build | 39f4535 |
