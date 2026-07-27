@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import type { FoodTodayResponse } from '../lib/api';
-import { fetchFoodTodaySnapshot, primeFoodTodaySnapshot } from '../lib/foodTodaySnapshot';
 import { dismissAllMealPlanQueue, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 import { useMealPlanUndo } from './useMealPlanUndo';
 import { useMealPlanQueueSync } from './useMealPlanQueueSync';
 import { useMealPlanEntryLogging } from './useMealPlanEntryLogging';
+import { useMealPlanShellSyncContext } from './useMealPlanShellSyncContext';
 
 interface UseMealPlanShellOptions {
   serverOnline: boolean;
@@ -44,40 +44,13 @@ export function useMealPlanShell({
     handleUndo: handleMealPlanUndo,
   } = useMealPlanUndo(serverOnline);
 
-  const foodRef = useRef(food);
-  foodRef.current = food;
-
-  useEffect(() => {
-    if (food) primeFoodTodaySnapshot(food);
-  }, [food]);
-
-  const getFoodBeforeSync = useCallback(async () => {
-    if (foodRef.current) return foodRef.current;
-    return fetchFoodTodaySnapshot();
-  }, []);
-
-  const clearError = useCallback(() => setError(''), [setError]);
-
-  const onBatchSynced = useCallback(
-    (synced: number, offeredUndo: boolean) => {
-      if (!offeredUndo) {
-        setMessage(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
-      }
-    },
-    [setMessage],
-  );
-
-  const onItemLogged = useCallback(
-    (label: string, offeredUndo: boolean) => {
-      if (!offeredUndo) setMessage(`Logged ${label}`);
-    },
-    [setMessage],
-  );
-
-  const onItemOffline = useCallback(
-    (label: string) => setMessage(`${label} still queued — offline`),
-    [setMessage],
-  );
+  const {
+    getFoodBeforeSync,
+    clearError,
+    onBatchSynced,
+    onItemLogged,
+    onItemOffline,
+  } = useMealPlanShellSyncContext({ food, setMessage, setError });
 
   const {
     mealPlanQueue,
