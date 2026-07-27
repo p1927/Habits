@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import type { MealPlanSyncSource } from './lib/mealPlanQueue';
-import { getMealPlanQueueLastSource, mealPlanSyncSourceLabel } from './lib/mealPlanQueue';
+import { getMealPlanQueueLastSource, mealPlanQueueSourceLabel } from './lib/mealPlanQueue';
 import { useMealNotifications } from './hooks/useMealNotifications';
 import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
 import { useMealPlanQueueRemoteSync } from './hooks/useMealPlanQueueRemoteSync';
@@ -51,7 +51,7 @@ function App() {
   const mealPlanRemoteSync = useMealPlanQueueRemoteSync('external');
   const mealPlanSyncSourceHint =
     mealPlanRemoteSync?.syncing
-      ? ` — syncing on ${mealPlanSyncSourceLabel(mealPlanRemoteSync.source)}`
+      ? ` — syncing on ${mealPlanQueueSourceLabel(mealPlanRemoteSync.source)}`
       : '';
 
   const handleTabChange = useCallback((id: TabId) => {
@@ -196,7 +196,7 @@ function App() {
                           : t.id === 'day'
                             ? `${queueBadgeCountLabel} — tap to open queue`
                             : t.id === 'cards'
-                              ? `${queueBadgeCountLabel} — tap to open ${mealPlanSyncSourceLabel(cardsQueueTarget)} queue`
+                              ? `${queueBadgeCountLabel} — tap to open ${mealPlanQueueSourceLabel(cardsQueueTarget)} queue`
                               : undefined
                     }
                     onClick={

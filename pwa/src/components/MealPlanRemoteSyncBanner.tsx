@@ -1,5 +1,5 @@
 import type { MealPlanQueueSyncStatus, MealPlanSyncSource } from '../lib/mealPlanQueue';
-import { mealPlanSyncSourceLabel } from '../lib/mealPlanQueue';
+import { mealPlanQueueSourceLabel } from '../lib/mealPlanQueue';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export interface MealPlanRemoteSyncBannerProps {
@@ -8,7 +8,7 @@ export interface MealPlanRemoteSyncBannerProps {
 }
 
 export function MealPlanRemoteSyncBanner({ sync, onGoToSource }: MealPlanRemoteSyncBannerProps) {
-  const label = mealPlanSyncSourceLabel(sync.source);
+  const label = mealPlanQueueSourceLabel(sync.source);
   const prefersReducedMotion = usePrefersReducedMotion();
 
   return (

@@ -1,5 +1,5 @@
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
-import { mealPlanSyncSourceLabel, type MealPlanSyncSource } from '../lib/mealPlanQueue';
+import { mealPlanQueueSourceLabel, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 export interface MealPlanQueuePendingBannerProps {
   count: number;
@@ -15,7 +15,7 @@ export function MealPlanQueuePendingBanner({
   onOpenQueue,
 }: MealPlanQueuePendingBannerProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const targetLabel = mealPlanSyncSourceLabel(targetSource);
+  const targetLabel = mealPlanQueueSourceLabel(targetSource);
 
   if (count <= 0) return null;
 

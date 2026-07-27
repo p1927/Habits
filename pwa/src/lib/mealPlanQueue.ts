@@ -17,6 +17,10 @@ export function mealPlanSyncSourceLabel(source: MealPlanSyncSource): string {
   return MEAL_PLAN_SYNC_SOURCE_LABELS[source];
 }
 
+export function mealPlanQueueSourceLabel(source: MealPlanSyncSource): string {
+  return source === 'log' ? 'Plan' : mealPlanSyncSourceLabel(source);
+}
+
 export interface MealPlanQueueSyncStatus {
   syncing: boolean;
   done: number;
