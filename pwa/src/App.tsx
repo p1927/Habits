@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import type { MealPlanSyncSource } from './lib/mealPlanQueue';
-import { mealPlanSyncSourceLabel } from './lib/mealPlanQueue';
+import { getMealPlanQueueLastSource, mealPlanSyncSourceLabel } from './lib/mealPlanQueue';
 import { useMealNotifications } from './hooks/useMealNotifications';
 import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
 import { useMealPlanQueueRemoteSync } from './hooks/useMealPlanQueueRemoteSync';
@@ -173,6 +173,7 @@ function App() {
               mealPlanSyncSourceHint;
             const queueBadgeActionable =
               t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards';
+            const cardsQueueTarget = getMealPlanQueueLastSource() ?? 'home';
             return (
             <button
               key={t.id}
@@ -195,15 +196,15 @@ function App() {
                           : t.id === 'day'
                             ? `${queueBadgeCountLabel} — tap to open queue`
                             : t.id === 'cards'
-                              ? `${queueBadgeCountLabel} — tap to open Home queue`
+                              ? `${queueBadgeCountLabel} — tap to open ${mealPlanSyncSourceLabel(cardsQueueTarget)} queue`
                               : undefined
                     }
                     onClick={
                       queueBadgeActionable
                         ? (e) => {
                             e.stopPropagation();
-                            const targetTab = t.id === 'cards' ? 'home' : t.id;
-                            scrollToMealPlanQueue(targetTab, { openLogPlan: t.id === 'log' });
+                            const targetTab = t.id === 'cards' ? cardsQueueTarget : t.id;
+                            scrollToMealPlanQueue(targetTab, { openLogPlan: targetTab === 'log' });
                           }
                         : undefined
                     }
