@@ -22,6 +22,8 @@ export interface MealPlanQueuePanelProps {
   onRetry: (item: QueuedMealPlanLog) => void;
   onDismissItem: (id: string) => void;
   onClearAll: () => void;
+  /** Increment to scroll this panel into view (e.g. Cards tab badge → Home). */
+  scrollToQueueToken?: number;
 }
 
 export function MealPlanQueuePanel({
@@ -42,9 +44,11 @@ export function MealPlanQueuePanel({
   onRetry,
   onDismissItem,
   onClearAll,
+  scrollToQueueToken = 0,
 }: MealPlanQueuePanelProps) {
   const failedCount = queue.filter((item) => failedIds.has(item.id)).length;
   const prevFailedCountRef = useRef(0);
+  const panelRef = useRef<HTMLDivElement>(null);
   const isHome = variant === 'home';
   const panelClass = isHome ? 'home-meal-plan-queue-panel' : 'meal-plan-queue-panel';
   const progressClass = isHome ? 'home-meal-plan-sync-progress' : 'meal-plan-sync-progress';
@@ -97,8 +101,33 @@ export function MealPlanQueuePanel({
     });
   }, [failedCount, syncing, queue, failedIds]);
 
+  useEffect(() => {
+    if (!scrollToQueueToken) return;
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    requestAnimationFrame(() => {
+      const firstFailed = queue.find((item) => failedIds.has(item.id));
+      if (firstFailed) {
+        const row = document.getElementById(`meal-plan-queue-item-${firstFailed.id}`);
+        if (row) {
+          row.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+          const retryBtn = row.querySelector<HTMLButtonElement>('[data-meal-plan-retry]');
+          if (retryBtn) retryBtn.focus({ preventScroll: true });
+          else if (row instanceof HTMLElement) row.focus({ preventScroll: true });
+          return;
+        }
+      }
+      panelRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+    });
+  }, [scrollToQueueToken, queue, failedIds]);
+
   return (
     <div
+      ref={panelRef}
+      id="meal-plan-queue-panel"
       className={`${panelClass}${syncing ? ` ${panelClass}--syncing` : ''}${
         isHome && noPlanToday ? ` ${panelClass}--no-plan` : ''
       }${failedCount > 0 ? ` ${panelClass}--has-failed` : ''}`}

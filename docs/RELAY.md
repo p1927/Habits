@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:34:00Z |
+| reviewed_at | 2026-07-27T04:35:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #103; relay-107 tab badge pulse reduced motion shipped. |
+| where_we_are | Loop tick #104; relay-108 Cards badge scroll to Home queue shipped. |
 | blockers | [] |
-| confirmed_next | relay-108 scroll to meal plan queue on badge tap from Cards |
-| brainstorm_notes | relay-107 done; tab badge clear pulse disabled under prefers-reduced-motion |
+| confirmed_next | relay-109 pending queue banner aria-live on count change |
+| brainstorm_notes | relay-108 done; Cards tab badge opens Home and scrolls to meal plan queue |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:34:00Z |
+| last_wake | 2026-07-27T04:35:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-108 scroll to meal plan queue on badge tap from Cards |
+| cycle_parity | even (next: feature) |
+| next_action | relay-109 pending queue banner aria-live on count change |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-108 | Scroll to meal plan queue on badge tap from Cards | feature
 - [ ] relay-109 | Pending queue banner aria-live on count change | maintenance
 - [ ] relay-110 | Meal plan sync source label in tab badge title | maintenance
 
@@ -58,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-107 | done | build | — |
+| 2026-07-27 | relay-108 | done | build | — |
+| 2026-07-27 | relay-107 | done | build | ca1b156 |
 | 2026-07-27 | relay-106 | done | build | 9b3209e |
 | 2026-07-27 | relay-105 | done | build | 56d94a8 |
 | 2026-07-27 | relay-104 | done | build | 9d3232a |

@@ -34,6 +34,7 @@ import {
 interface HomeProps {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
+  scrollToMealPlanQueue?: number;
 }
 
 const METRICS = ['sleep', 'work', 'wasted', 'speak', 'game', 'read'] as const;
@@ -74,7 +75,7 @@ function habitCompletionPct(habits: HabitsTodayResponse | null): number {
   return total > 0 ? Math.round((score / total) * 100) : 0;
 }
 
-export function Home({ serverOnline, onNavigateMealPlanSyncSource }: HomeProps) {
+export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPlanQueue }: HomeProps) {
   const [food, setFood] = useState<FoodTodayResponse | null>(null);
   const [habits, setHabits] = useState<HabitsTodayResponse | null>(null);
   const [history, setHistory] = useState<FoodHistoryDay[]>([]);
@@ -415,6 +416,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource }: HomeProps) 
         failedIds={failedMealPlanIds}
         retryingId={retryingMealPlanId}
         variant="home"
+        scrollToQueueToken={scrollToMealPlanQueue}
         noPlanToday={mealPlan.length === 0}
         bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
         onSyncAll={() => void flushMealPlanQueue()}

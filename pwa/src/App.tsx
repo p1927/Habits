@@ -40,6 +40,7 @@ function App() {
   const [tab, setTab] = useState<TabId>(parseInitialTab);
   const [oauthSuccess, setOauthSuccess] = useState(false);
   const [openLogMealPlan, setOpenLogMealPlan] = useState(false);
+  const [mealPlanQueueScrollToken, setMealPlanQueueScrollToken] = useState(0);
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
@@ -109,7 +110,11 @@ function App() {
 
       <main className="main" id="main-content" role="main">
         {tab === 'home' && (
-          <Home serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
+          <Home
+            serverOnline={serverOnline}
+            onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
+            scrollToMealPlanQueue={mealPlanQueueScrollToken}
+          />
         )}
         {tab === 'log' && (
           <Log
@@ -171,7 +176,7 @@ function App() {
                           : t.id === 'day'
                             ? `${queueBadgeCountLabel} — tap to sync on Day`
                             : t.id === 'cards'
-                              ? `${queueBadgeCountLabel} — tap to open Home`
+                              ? `${queueBadgeCountLabel} — tap to open Home queue`
                               : undefined
                     }
                     onClick={
@@ -184,7 +189,8 @@ function App() {
                         : t.id === 'cards'
                           ? (e) => {
                               e.stopPropagation();
-                              navigateMealPlanSyncSource('home');
+                              handleTabChange('home');
+                              setMealPlanQueueScrollToken((token) => token + 1);
                             }
                           : undefined
                     }

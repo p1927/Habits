@@ -6,7 +6,13 @@ export interface MealPlanQueueSectionProps extends MealPlanQueuePanelProps {
   hasMealPlan: boolean;
 }
 
-export function MealPlanQueueSection({ hasMealPlan, queue, syncing, ...panelProps }: MealPlanQueueSectionProps) {
+export function MealPlanQueueSection({
+  hasMealPlan,
+  queue,
+  syncing,
+  scrollToQueueToken,
+  ...panelProps
+}: MealPlanQueueSectionProps) {
   const hasPendingQueue = queue.length > 0 || syncing;
   const prevPendingRef = useRef<boolean | null>(null);
   const [announceEmpty, setAnnounceEmpty] = useState(false);
@@ -23,7 +29,14 @@ export function MealPlanQueueSection({ hasMealPlan, queue, syncing, ...panelProp
   }, [hasPendingQueue, hasMealPlan]);
 
   if (hasPendingQueue) {
-    return <MealPlanQueuePanel queue={queue} syncing={syncing} {...panelProps} />;
+    return (
+      <MealPlanQueuePanel
+        queue={queue}
+        syncing={syncing}
+        scrollToQueueToken={scrollToQueueToken}
+        {...panelProps}
+      />
+    );
   }
 
   if (hasMealPlan) {
