@@ -263,6 +263,14 @@ export function useMealPlanQueueSync({
   }, []);
 
   useEffect(() => {
+    const syncFailedFromStorage = () => {
+      setFailedMealPlanIds(new Set(getMealPlanFailedIds()));
+    };
+    window.addEventListener(MEAL_PLAN_QUEUE_CHANGE, syncFailedFromStorage);
+    return () => window.removeEventListener(MEAL_PLAN_QUEUE_CHANGE, syncFailedFromStorage);
+  }, []);
+
+  useEffect(() => {
     if (!active || !watchQueueChanges) return;
     syncMealPlanQueue();
     const onQueueChange = () => syncMealPlanQueue();

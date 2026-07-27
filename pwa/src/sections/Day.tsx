@@ -10,7 +10,7 @@ import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } f
 import { cacheHabitStreak } from '../lib/habitQueue';
 import {
   cacheMealPlan,
-  clearMealPlanQueue,
+  dismissAllMealPlanQueue,
   enqueueMealPlanLog,
   getCachedMealPlan,
   isOfflineError,
@@ -129,7 +129,6 @@ export function Day({ serverOnline }: DayProps) {
     retryFailedMealPlanQueue,
     retryMealPlanItem,
     dismissMealPlanItem,
-    resetFailedIds,
   } = useMealPlanQueueSync({
     serverOnline,
     syncSource: 'day',
@@ -387,8 +386,7 @@ export function Day({ serverOnline }: DayProps) {
         onRetry={(item) => void retryMealPlanItem(item)}
         onDismissItem={dismissMealPlanItem}
         onClearAll={() => {
-          clearMealPlanQueue();
-          resetFailedIds();
+          dismissAllMealPlanQueue();
           syncMealPlanQueue();
           setMealSuccess('Meal plan log queue cleared');
         }}

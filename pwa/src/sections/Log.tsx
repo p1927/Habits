@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
 import { BarcodeScanner } from '../components/BarcodeScanner';
+import { ScanInlineOverlay } from '../components/ScanInlineOverlay';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
@@ -28,7 +29,7 @@ import {
 import { isOfflineError } from '../lib/foodQueue';
 import {
   cacheMealPlan,
-  clearMealPlanQueue,
+  dismissAllMealPlanQueue,
   enqueueMealPlanLog,
   getCachedMealPlan,
   type MealPlanEntry,
@@ -81,6 +82,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [scanResult, setScanResult] = useState<FoodScanResult | null>(null);
+  const [scanPreviewUrl, setScanPreviewUrl] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [editName, setEditName] = useState('');
   const [editQty, setEditQty] = useState('100');
@@ -235,7 +237,6 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     retryFailedMealPlanQueue,
     retryMealPlanItem,
     dismissMealPlanItem,
-    resetFailedIds,
   } = useMealPlanQueueSync({
     serverOnline,
     syncSource: 'log',
@@ -503,8 +504,10 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
   }, [foodName]);
 
   async function handleCapture(dataUrl: string) {
+    setScanPreviewUrl(dataUrl);
     setLoading(true);
     setError('');
+    setScanResult(null);
     try {
       const file = dataUrlToFile(dataUrl);
       const result = await api.scanFood(file);
@@ -519,11 +522,16 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     }
   }
 
+  function clearScanFlow() {
+    setScanResult(null);
+    setScanPreviewUrl(null);
+  }
+
   async function logScan(name: string, qty: number) {
     const savedScan = scanResult;
     const savedName = editName;
     const savedQty = editQty;
-    setScanResult(null);
+    clearScanFlow();
     await logItem(name, qty, (summary) => {
       offerUndo(summary, name, qty, {
         scan: savedScan,
@@ -777,7 +785,34 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
       <div role="tabpanel" id={`log-panel-${tab}`} aria-labelledby={`log-tab-${tab}`}>
       {tab === 'scan' && (
         <>
-          {!scanResult ? (
+          {scanPreviewUrl ? (
+            <ScanInlineOverlay
+              imageUrl={scanPreviewUrl}
+              loading={loading}
+              scan={scanResult}
+              onRetake={clearScanFlow}
+              onEdit={() => setEditOpen(true)}
+              onAction={(dir) => {
+                if (dir === 'right' && scanResult) {
+                  void logScan(editName, Number.parseFloat(editQty) || scanResult.suggested_grams);
+                } else if (dir === 'up') {
+                  clearScanFlow();
+                }
+              }}
+            />
+          ) : scanResult ? (
+            <SwipeFoodCard
+              scan={scanResult}
+              onAction={(dir) => {
+                if (dir === 'right') {
+                  void logScan(editName, Number.parseFloat(editQty) || scanResult.suggested_grams);
+                } else if (dir === 'up') {
+                  clearScanFlow();
+                }
+              }}
+              onEdit={() => setEditOpen(true)}
+            />
+          ) : (
             <Card>
               <h2>Camera scan</h2>
               <p className="muted">Point at your food — like Google Translate</p>
@@ -787,20 +822,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
                 onCapture={(url) => void handleCapture(url)}
                 disabled={!serverOnline || loading}
               />
-              {loading && <p className="muted" role="status" aria-live="polite">Identifying food…</p>}
             </Card>
-          ) : (
-            <SwipeFoodCard
-              scan={scanResult}
-              onAction={(dir) => {
-                if (dir === 'right') {
-                  void logScan(editName, Number.parseFloat(editQty) || scanResult.suggested_grams);
-                } else if (dir === 'up') {
-                  setScanResult(null);
-                }
-              }}
-              onEdit={() => setEditOpen(true)}
-            />
           )}
         </>
       )}
@@ -1101,12 +1123,11 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
             onRetryFailed={() => void retryFailedMealPlanQueue()}
             onRetry={(item) => void retryMealPlanItem(item)}
             onDismissItem={dismissMealPlanItem}
-            onClearAll={() => {
-              clearMealPlanQueue();
-              resetFailedIds();
-              syncMealPlanQueue();
-              setSuccess('Meal plan log queue cleared');
-            }}
+              onClearAll={() => {
+                dismissAllMealPlanQueue();
+                syncMealPlanQueue();
+                setSuccess('Meal plan log queue cleared');
+              }}
           />
         <Card>
           <h2>Today&apos;s meal plan</h2>

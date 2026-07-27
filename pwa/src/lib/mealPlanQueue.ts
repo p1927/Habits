@@ -131,6 +131,10 @@ export function clearMealPlanFailedIds() {
 
 export function pruneMealPlanFailedIds() {
   const queueIds = new Set(readQueue().map((item) => item.id));
+  if (queueIds.size === 0) {
+    writeFailedIds([]);
+    return;
+  }
   writeFailedIds(readFailedIds().filter((id) => queueIds.has(id)));
 }
 
@@ -154,7 +158,12 @@ export function removeMealPlanQueueItem(id: string) {
 export function clearMealPlanQueue() {
   localStorage.removeItem(QUEUE_KEY);
   clearMealPlanFailedIds();
+  setMealPlanQueueSyncStatus(null);
   notifyQueueChange();
+}
+
+export function dismissAllMealPlanQueue() {
+  clearMealPlanQueue();
 }
 
 export function cacheMealPlan(meals: MealPlanEntry[]) {

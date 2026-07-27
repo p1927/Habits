@@ -23,7 +23,7 @@ import { getTodayMealPhotos, type MealPhoto } from '../lib/mealPhotos';
 import { cacheHabitStreak, getCachedHabitStreak } from '../lib/habitQueue';
 import {
   cacheMealPlan,
-  clearMealPlanQueue,
+  dismissAllMealPlanQueue,
   enqueueMealPlanLog,
   getCachedMealPlan,
   isOfflineError,
@@ -112,7 +112,6 @@ export function Home({ serverOnline }: HomeProps) {
     retryFailedMealPlanQueue,
     retryMealPlanItem,
     dismissMealPlanItem,
-    resetFailedIds,
   } = useMealPlanQueueSync({
     serverOnline,
     syncSource: 'home',
@@ -424,8 +423,7 @@ export function Home({ serverOnline }: HomeProps) {
         onRetry={(item) => void retryMealPlanItem(item)}
         onDismissItem={dismissMealPlanItem}
         onClearAll={() => {
-          clearMealPlanQueue();
-          resetFailedIds();
+          dismissAllMealPlanQueue();
           syncMealPlanQueue();
           setMealPlanMessage('Meal plan log queue cleared');
         }}

@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:00:00Z |
+| reviewed_at | 2026-07-27T04:05:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #92; relay-097 Day remote sync banner shipped. |
+| where_we_are | Loop tick #93; relay-098 dismiss-all clears stale failed ids shipped. |
 | blockers | [] |
-| confirmed_next | relay-098 clear stale failed ids on queue dismiss all |
-| brainstorm_notes | relay-097 done; Day mirrors Home remote sync banner |
+| confirmed_next | relay-099 Log remote sync banner on non-Plan tabs |
+| brainstorm_notes | relay-098 done; dismissAllMealPlanQueue + hook syncs failed ids from storage |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:00:00Z |
+| last_wake | 2026-07-27T04:05:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-098 clear stale failed ids on queue dismiss all |
+| cycle_parity | even (next: feature) |
+| next_action | relay-099 Log remote sync banner on non-Plan tabs |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
