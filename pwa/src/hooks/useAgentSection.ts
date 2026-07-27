@@ -45,6 +45,7 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
     setError,
     listRef,
     send,
+    regenerateLastReply,
     clearAttach,
   } = useAgentChat({
     serverOnline,
@@ -80,6 +81,7 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
     error,
     listRef,
     send,
+    regenerateLastReply,
     clearAttach,
     cameraOpen,
     setCameraOpen,

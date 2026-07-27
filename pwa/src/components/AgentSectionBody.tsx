@@ -13,6 +13,7 @@ interface AgentSectionBodyProps {
   loading: boolean;
   listRef: RefObject<HTMLDivElement | null>;
   onSelectPrompt: (prompt: string) => void;
+  onRegenerateLastReply?: () => void;
   context: AgentSectionContext;
   onNavigateMealPlanSyncSource?: AgentNavigateMealPlanSyncSource;
   toolFeedActions?: AgentAction[];
@@ -25,6 +26,7 @@ export function AgentSectionBody({
   loading,
   listRef,
   onSelectPrompt,
+  onRegenerateLastReply,
   context,
   onNavigateMealPlanSyncSource,
   toolFeedActions,
@@ -43,6 +45,7 @@ export function AgentSectionBody({
         loading={loading}
         listRef={listRef}
         onSelectPrompt={onSelectPrompt}
+        onRegenerateLastReply={onRegenerateLastReply}
       />
 
       <details className="agent-context-drawer">

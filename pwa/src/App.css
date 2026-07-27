@@ -4287,6 +4287,7 @@ form.log-type-card {
 .chat-bubble-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 0.35rem;
   margin-top: 0.45rem;
 }
 

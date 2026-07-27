@@ -7,9 +7,10 @@ export interface AgentChatPanelProps {
   loading: boolean;
   listRef: React.RefObject<HTMLDivElement | null>;
   onSelectPrompt?: (text: string) => void;
+  onRegenerateLastReply?: () => void;
 }
 
-export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt }: AgentChatPanelProps) {
+export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt, onRegenerateLastReply }: AgentChatPanelProps) {
   const showGreeting = messages.length === 0;
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
@@ -53,21 +54,35 @@ export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt }: A
       {messages.map((m, i) => {
         const isStreaming = loading && i === messages.length - 1;
         const canCopy = m.role === 'assistant' && m.content.trim() && !isStreaming;
+        const canRegenerate =
+          canCopy && i === messages.length - 1 && Boolean(onRegenerateLastReply);
 
         return (
         <div key={i} className={`chat-bubble chat-bubble--${m.role}`} aria-label={m.role === 'user' ? 'You' : 'Coach'}>
           {m.imageUrl && <img src={m.imageUrl} alt="" className="chat-bubble-image" />}
           {m.content}
-          {canCopy && (
+          {(canCopy || canRegenerate) && (
             <div className="chat-bubble-actions">
-              <button
-                type="button"
-                className="chat-bubble-copy-btn"
-                aria-label={copiedIndex === i ? 'Copied to clipboard' : 'Copy coach message'}
-                onClick={() => void copyMessage(m.content, i)}
-              >
-                {copiedIndex === i ? 'Copied' : 'Copy'}
-              </button>
+              {canRegenerate && (
+                <button
+                  type="button"
+                  className="chat-bubble-copy-btn"
+                  aria-label="Regenerate coach reply"
+                  onClick={() => onRegenerateLastReply?.()}
+                >
+                  Regenerate
+                </button>
+              )}
+              {canCopy && (
+                <button
+                  type="button"
+                  className="chat-bubble-copy-btn"
+                  aria-label={copiedIndex === i ? 'Copied to clipboard' : 'Copy coach message'}
+                  onClick={() => void copyMessage(m.content, i)}
+                >
+                  {copiedIndex === i ? 'Copied' : 'Copy'}
+                </button>
+              )}
             </div>
           )}
           {m.role === 'assistant' && isStreaming && m.content && (
