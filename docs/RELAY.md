@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:52:00Z |
+| reviewed_at | 2026-07-27T02:53:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #77; relay-085 queue S keyboard shortcut shipped. |
+| where_we_are | Loop tick #78; relay-086 Day empty hint gated on meal plan shipped. |
 | blockers | [] |
-| confirmed_next | relay-086 Day empty queue hint only when meal plan loaded |
-| brainstorm_notes | relay-085 done; press S syncs queue on Home/Day/Log via shared panel |
+| confirmed_next | relay-087 useMealPlanQueueSync shared hook |
+| brainstorm_notes | relay-086 done; Day/ Home/ Log all gate empty hint on meal plan |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:52:00Z |
+| last_wake | 2026-07-27T02:53:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-086 Day empty queue hint only when meal plan loaded |
+| cycle_parity | even (next: feature) |
+| next_action | relay-087 useMealPlanQueueSync shared hook |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-086 | Day empty queue hint only when meal plan loaded | maintenance
 - [ ] relay-087 | useMealPlanQueueSync shared hook | feature
 - [ ] relay-088 | Queue retry failed items only shortcut | maintenance
+- [ ] relay-089 | Meal plan queue section wrapper component | maintenance
 
 ---
 
@@ -58,12 +58,12 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-086 | done | build | — |
 | 2026-07-27 | relay-085 | done | build | 2719131 |
 | 2026-07-27 | relay-084 | done | build | 13dc88c |
 | 2026-07-27 | relay-083 | done | build | 0b3e827 |
 | 2026-07-27 | relay-082 | done | build | 4210522 |
 | 2026-07-27 | relay-081 | done | build | 4210522 |
-| 2026-07-27 | relay-080 | done | build | 79fac2e |
 
 ---
 

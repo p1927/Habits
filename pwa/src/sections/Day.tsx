@@ -512,9 +512,9 @@ export function Day({ serverOnline }: DayProps) {
             setMealSuccess('Meal plan log queue cleared');
           }}
         />
-      ) : (
+      ) : mealPlan.length > 0 ? (
         <MealPlanQueueEmptyHint />
-      )}
+      ) : null}
 
       <Card>
         <h2>Today&apos;s meal plan</h2>
