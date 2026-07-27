@@ -233,6 +233,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
     retryingMealPlanId,
     syncMealPlanQueue,
     flushMealPlanQueue,
+    retryFailedMealPlanQueue,
     retryMealPlanItem,
     dismissMealPlanItem,
     resetFailedIds,
@@ -1093,6 +1094,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
               retryingId={retryingMealPlanId}
               clearAllLabel="Dismiss"
               onSyncAll={() => void flushMealPlanQueue()}
+              onRetryFailed={() => void retryFailedMealPlanQueue()}
               onRetry={(item) => void retryMealPlanItem(item)}
               onDismissItem={dismissMealPlanItem}
               onClearAll={() => {

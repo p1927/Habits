@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:05:00Z |
+| reviewed_at | 2026-07-27T03:15:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #80; relay-087 useMealPlanQueueSync shared hook shipped. |
+| where_we_are | Loop tick #83; relay-088 retry failed queue shortcut shipped. |
 | blockers | [] |
-| confirmed_next | relay-088 queue retry failed items only shortcut |
-| brainstorm_notes | relay-087 done; Home/Day/Log share useMealPlanQueueSync |
+| confirmed_next | relay-089 meal plan queue section wrapper component |
+| brainstorm_notes | relay-088 done; R retries failed items only, S syncs all |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:05:00Z |
+| last_wake | 2026-07-27T03:15:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-088 queue retry failed items only shortcut |
+| cycle_parity | even (next: feature) |
+| next_action | relay-089 meal plan queue section wrapper component |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 

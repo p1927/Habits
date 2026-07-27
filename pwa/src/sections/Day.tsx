@@ -126,6 +126,7 @@ export function Day({ serverOnline }: DayProps) {
     retryingMealPlanId,
     syncMealPlanQueue,
     flushMealPlanQueue,
+    retryFailedMealPlanQueue,
     retryMealPlanItem,
     dismissMealPlanItem,
     resetFailedIds,
@@ -372,6 +373,7 @@ export function Day({ serverOnline }: DayProps) {
           syncAllLabel="Sync all"
           syncActionHint="Sync all"
           onSyncAll={() => void flushMealPlanQueue()}
+          onRetryFailed={() => void retryFailedMealPlanQueue()}
           onRetry={(item) => void retryMealPlanItem(item)}
           onDismissItem={dismissMealPlanItem}
           onClearAll={() => {

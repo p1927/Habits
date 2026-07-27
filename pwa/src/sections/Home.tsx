@@ -109,6 +109,7 @@ export function Home({ serverOnline }: HomeProps) {
     retryingMealPlanId,
     syncMealPlanQueue,
     flushMealPlanQueue,
+    retryFailedMealPlanQueue,
     retryMealPlanItem,
     dismissMealPlanItem,
     resetFailedIds,
@@ -410,6 +411,7 @@ export function Home({ serverOnline }: HomeProps) {
           noPlanToday={mealPlan.length === 0}
           bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
           onSyncAll={() => void flushMealPlanQueue()}
+          onRetryFailed={() => void retryFailedMealPlanQueue()}
           onRetry={(item) => void retryMealPlanItem(item)}
           onDismissItem={dismissMealPlanItem}
           onClearAll={() => {

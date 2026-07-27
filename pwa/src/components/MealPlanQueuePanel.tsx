@@ -17,6 +17,7 @@ export interface MealPlanQueuePanelProps {
   bannerSuffix?: string;
   syncActionHint?: string;
   onSyncAll: () => void;
+  onRetryFailed?: () => void;
   onRetry: (item: QueuedMealPlanLog) => void;
   onDismissItem: (id: string) => void;
   onClearAll: () => void;
@@ -36,6 +37,7 @@ export function MealPlanQueuePanel({
   bannerSuffix = '',
   syncActionHint = 'Sync now',
   onSyncAll,
+  onRetryFailed,
   onRetry,
   onDismissItem,
   onClearAll,
@@ -50,15 +52,22 @@ export function MealPlanQueuePanel({
     serverOnline,
     syncing,
     retrying: !!retryingId,
+    failedCount,
     onSyncAll,
+    onRetryFailed: failedCount > 0 ? onRetryFailed : undefined,
   });
+
+  const shortcutHint =
+    failedCount > 0 && onRetryFailed
+      ? ` · press S or ${syncActionHint} · R retry failed`
+      : ` · press S or ${syncActionHint}`;
 
   const bannerText =
     syncing && syncProgress
       ? `Syncing meal logs (${syncProgress.done}/${syncProgress.total})…`
       : `${queue.length} meal log${queue.length === 1 ? '' : 's'} queued${
           failedCount > 0 ? ` · ${failedCount} failed` : ''
-        }${bannerSuffix}${serverOnline ? ` — tap Retry or ${syncActionHint} · press S` : ' — will sync when online'}.`;
+        }${bannerSuffix}${serverOnline ? shortcutHint : ' — will sync when online'}.`;
 
   return (
     <div
@@ -70,15 +79,28 @@ export function MealPlanQueuePanel({
       <div className={`banner banner-row${failedCount > 0 ? ' banner-err' : ' banner-warn'}`}>
         <span>{bannerText}</span>
         {serverOnline && (
-          <button
-            type="button"
-            className="btn-small"
-            disabled={syncing || !!retryingId}
-            aria-keyshortcuts="S"
-            onClick={() => void onSyncAll()}
-          >
-            {syncing ? 'Syncing…' : syncAllLabel}
-          </button>
+          <>
+            {failedCount > 0 && onRetryFailed && (
+              <button
+                type="button"
+                className="btn-small"
+                disabled={syncing || !!retryingId}
+                aria-keyshortcuts="R"
+                onClick={() => void onRetryFailed()}
+              >
+                Retry failed
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-small"
+              disabled={syncing || !!retryingId}
+              aria-keyshortcuts="S"
+              onClick={() => void onSyncAll()}
+            >
+              {syncing ? 'Syncing…' : syncAllLabel}
+            </button>
+          </>
         )}
         <button
           type="button"
