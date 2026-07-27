@@ -19,11 +19,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:44:00Z |
+| last_wake | 2026-07-27T12:46:13Z |
 | confirmed_next | relay-182 |
 | next_action | relay-182 Log tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 8-close |
+| phase | 9-arm |
 | review_status | skipped |
 | review_skip_reason | relay-181 reviewed round 7; committed f8cbe92 |
 | review_round | `7` |
