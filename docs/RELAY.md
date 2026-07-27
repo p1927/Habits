@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:54:00Z |
+| reviewed_at | 2026-07-27T04:55:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #123; relay-129 pending banner dynamic tab label shipped. |
+| where_we_are | Loop tick #124; relay-130 meal plan queue sort by created_at shipped. |
 | blockers | [] |
-| confirmed_next | relay-130 meal plan queue sort by created_at |
-| brainstorm_notes | Cards pending banner reads last queue source; label + navigation follow Home/Day/Log |
+| confirmed_next | relay-131 Cards tab badge last queue source navigation |
+| brainstorm_notes | getMealPlanQueue returns oldest-first; sync + UI follow same order |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:53:00Z |
+| last_wake | 2026-07-27T04:55:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | even (next: feature) |
-| next_action | relay-129 pending banner dynamic tab label |
+| next_action | relay-131 Cards tab badge navigate to last queue source |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-129 | Pending banner dynamic tab label | feature
-- [ ] relay-130 | Meal plan queue sort by created_at | maintenance
+- [ ] relay-131 | Cards tab badge navigate to last queue source | maintenance
+- [ ] relay-132 | Meal plan queue source label "Plan" for Log tab | feature
 
 ---
 
@@ -49,9 +49,8 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Pending banner dynamic tab label | Cards awareness | open Home vs source tab |
-| Queue sort by created_at | UX | oldest first for sync order visibility |
-| Food log relative timestamps | relay-127 | reuse formatRelativeTime in Log.tsx |
+| Cards badge last-source navigation | relay-129 | match pending banner target |
+| Log tab "Plan" label | UX | align badge title with queue sub-tab |
 
 ---
 
@@ -59,6 +58,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-130 | done | build | pending |
+| 2026-07-27 | relay-129 | done | build | f1f65f6 |
 | 2026-07-27 | relay-128 | done | build | 96f6f3e |
 | 2026-07-27 | relay-127 | done | build | 745e1fd |
 | 2026-07-27 | relay-126 | done | build | e2b7b12 |
