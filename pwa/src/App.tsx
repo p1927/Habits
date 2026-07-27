@@ -129,6 +129,7 @@ function App() {
             openMealPlan={openLogMealPlan}
             onMealPlanOpened={() => setOpenLogMealPlan(false)}
             onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
+            scrollToMealPlanQueue={mealPlanQueueScrollToken}
           />
         )}
         {tab === 'day' && (
@@ -184,7 +185,7 @@ function App() {
                     aria-label={queueBadgeCountLabel}
                     title={
                       t.id === 'log'
-                        ? `${queueBadgeCountLabel} — tap to open Plan`
+                        ? `${queueBadgeCountLabel} — tap to open Plan queue`
                         : t.id === 'home'
                           ? `${queueBadgeCountLabel} — tap to open queue`
                           : t.id === 'day'
@@ -199,6 +200,7 @@ function App() {
                             e.stopPropagation();
                             setOpenLogMealPlan(true);
                             handleTabChange('log');
+                            setMealPlanQueueScrollToken((token) => token + 1);
                           }
                         : t.id === 'home' || t.id === 'day'
                           ? (e) => {

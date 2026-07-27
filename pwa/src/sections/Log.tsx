@@ -42,6 +42,7 @@ interface LogProps {
   openMealPlan?: boolean;
   onMealPlanOpened?: () => void;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
+  scrollToMealPlanQueue?: number;
 }
 
 type LogTab = 'scan' | 'type' | 'mealplan' | 'recipes' | 'history';
@@ -82,6 +83,7 @@ export function Log({
   openMealPlan,
   onMealPlanOpened,
   onNavigateMealPlanSyncSource,
+  scrollToMealPlanQueue,
 }: LogProps) {
   const [tab, setTab] = useState<LogTab>('scan');
   const [data, setData] = useState<FoodTodayResponse | null>(null);
@@ -403,6 +405,11 @@ export function Log({
     setTab('mealplan');
     onMealPlanOpened?.();
   }, [openMealPlan, onMealPlanOpened]);
+
+  useEffect(() => {
+    if (!scrollToMealPlanQueue) return;
+    setTab('mealplan');
+  }, [scrollToMealPlanQueue]);
 
   useEffect(() => {
     void refresh();
@@ -1133,6 +1140,7 @@ export function Log({
             syncProgress={mealPlanSyncProgress}
             failedIds={failedMealPlanIds}
             retryingId={retryingMealPlanId}
+            scrollToQueueToken={scrollToMealPlanQueue}
             clearAllLabel="Dismiss"
             onSyncAll={() => void flushMealPlanQueue()}
             onRetryFailed={() => void retryFailedMealPlanQueue()}
