@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:50:00Z |
+| reviewed_at | 2026-07-27T04:51:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #119; relay-125 pending banner reduced motion aria-live shipped. |
+| where_we_are | Loop tick #120; relay-126 queue empty hint reduced motion aria-live shipped. |
 | blockers | [] |
-| confirmed_next | relay-126 queue empty hint reduced motion aria-live |
-| brainstorm_notes | relay-125 mirrors relay-123 pattern on MealPlanQueuePendingBanner |
+| confirmed_next | relay-127 habit queue relative timestamps |
+| brainstorm_notes | relay-126 gates announce on !prefersReducedMotion in MealPlanQueueEmptyHint |
 
 ---
 
