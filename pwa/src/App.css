@@ -1246,6 +1246,30 @@ button:disabled {
 
 .meal-plan-remote-sync {
   margin-bottom: var(--space-sm);
+  animation: meal-plan-sync-banner-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes meal-plan-sync-banner-pulse {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--warn) 35%, transparent);
+    background: color-mix(in srgb, var(--warn) 12%, transparent);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--warn) 70%, transparent);
+    background: color-mix(in srgb, var(--warn) 22%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meal-plan-remote-sync {
+    animation: none;
+  }
+
+  .home-meal-plan-sync-progress .progress-fill,
+  .meal-plan-sync-progress .progress-fill {
+    transition: none;
+  }
 }
 
 .meal-plan-remote-sync--actionable {
