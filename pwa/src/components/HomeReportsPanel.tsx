@@ -17,7 +17,7 @@ export function HomeReportsPanel({ serverOnline, exporting, onExport }: HomeRepo
         </div>
         <button
           type="button"
-          className="btn-small"
+          className="btn-pill btn-pill-outline"
           disabled={!serverOnline || exporting}
           onClick={onExport}
         >

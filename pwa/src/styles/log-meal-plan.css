@@ -1,14 +1,13 @@
 .meal-plan-quick-add {
   margin-bottom: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--revolut-card-radius);
+  background: var(--gemini-surface);
+  border: 1px solid color-mix(in srgb, var(--surface2) 55%, transparent);
 }
 
 .meal-plan-quick-add__label {
-  margin: 0 0 0.4rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
+  margin: 0 0 0.5rem;
 }
 
 .meal-plan-quick-add__chips {

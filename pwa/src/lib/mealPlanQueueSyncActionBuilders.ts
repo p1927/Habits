@@ -97,6 +97,12 @@ export interface MealPlanSyncActionBundleInput extends MealPlanSyncUndoContextIn
   setRetryingMealPlanId: (id: string | null) => void;
 }
 
+export interface MealPlanSyncActionBundle {
+  undoContext: MealPlanSyncUndoContext;
+  batchControls: MealPlanQueueBatchRunControls;
+  retryControls: MealPlanQueueItemRetryControls;
+}
+
 export function buildMealPlanSyncActionBundle(input: MealPlanSyncActionBundleInput): MealPlanSyncActionBundle {
   return {
     undoContext: buildMealPlanSyncUndoContext(input),
@@ -104,5 +110,3 @@ export function buildMealPlanSyncActionBundle(input: MealPlanSyncActionBundleInp
     retryControls: buildMealPlanQueueItemRetryControls(input),
   };
 }
-
-export type MealPlanSyncActionBundle = ReturnType<typeof buildMealPlanSyncActionBundle>;

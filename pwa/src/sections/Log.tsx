@@ -12,6 +12,10 @@ interface LogProps {
   serverOnline: boolean;
   openMealPlan?: boolean;
   onMealPlanOpened?: () => void;
+  openLogHistory?: boolean;
+  onLogHistoryOpened?: () => void;
+  openLogRecipes?: boolean;
+  onLogRecipesOpened?: () => void;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   scrollToMealPlanQueue?: number;
 }
@@ -20,6 +24,10 @@ export function Log({
   serverOnline,
   openMealPlan,
   onMealPlanOpened,
+  openLogHistory,
+  onLogHistoryOpened,
+  openLogRecipes,
+  onLogRecipesOpened,
   onNavigateMealPlanSyncSource,
   scrollToMealPlanQueue,
 }: LogProps) {
@@ -42,6 +50,10 @@ export function Log({
     serverOnline,
     openMealPlan,
     onMealPlanOpened,
+    openLogHistory,
+    onLogHistoryOpened,
+    openLogRecipes,
+    onLogRecipesOpened,
     scrollToMealPlanQueue,
   });
 

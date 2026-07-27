@@ -18,7 +18,7 @@ export function MealPlanQuickAddBar({
 
   return (
     <div className="meal-plan-quick-add" aria-label="Quick log from meal plan">
-      <p className="meal-plan-quick-add__label">From WEEK MEALS</p>
+      <p className="section-eyebrow meal-plan-quick-add__label">From WEEK MEALS</p>
       <div className="meal-plan-quick-add__chips" role="group" aria-label="Today's planned meals">
         {meals.map((entry) => {
           const busy = loggingMealKey === entry.meal;

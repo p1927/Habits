@@ -1,4 +1,5 @@
 import { getBearer, getConfig } from './config';
+import { dedupedGet } from './apiDedupe';
 
 export class ApiError extends Error {
   status: number;
@@ -26,6 +27,10 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   if (resp.status === 204) return undefined as T;
   return resp.json() as Promise<T>;
+}
+
+function get<T>(path: string): Promise<T> {
+  return dedupedGet(path, () => request<T>(path));
 }
 
 export interface HealthResponse {
@@ -141,8 +146,8 @@ export interface ChatResponse {
 }
 
 export const api = {
-  health: () => request<HealthResponse>('/healthz'),
-  getSettings: () => request<SettingsResponse>('/api/settings'),
+  health: () => get<HealthResponse>('/healthz'),
+  getSettings: () => get<SettingsResponse>('/api/settings'),
   updateSettings: (payload: Partial<SettingsResponse>) =>
     request<SettingsResponse>('/api/settings', {
       method: 'PUT',
@@ -150,13 +155,13 @@ export const api = {
     }),
   disconnectGoogle: () =>
     request<{ ok: boolean }>('/auth/google', { method: 'DELETE' }),
-  getFoodToday: () => request<FoodTodayResponse>('/api/food/today'),
+  getFoodToday: () => get<FoodTodayResponse>('/api/food/today'),
   getFoodHistory: (days = 7) =>
-    request<{ days: FoodHistoryDay[]; sheets_connected: boolean }>(
+    get<{ days: FoodHistoryDay[]; sheets_connected: boolean }>(
       `/api/food/history?days=${days}`,
     ),
   getFoodTargets: () =>
-    request<{ calorie_target: number; protein_target_g: number | null; sheets_connected: boolean }>(
+    get<{ calorie_target: number; protein_target_g: number | null; sheets_connected: boolean }>(
       '/api/food/targets',
     ),
   scanFood: (file: File) => {
@@ -165,7 +170,7 @@ export const api = {
     return request<FoodScanResult>('/api/food/scan', { method: 'POST', body: fd });
   },
   getSavedRecipe: () =>
-    request<{
+    get<{
       recipe: {
         name: string;
         items: { food: string; quantity_g: number; calories: number; protein: number }[];
@@ -179,7 +184,7 @@ export const api = {
       { method: 'POST' },
     ),
   getMealPlanToday: () =>
-    request<{
+    get<{
       date: string;
       weekday: string;
       meals: { meal: string; label: string; description: string }[];
@@ -225,15 +230,15 @@ export const api = {
   deleteFoodRow: (row: number) =>
     request<FoodTodayResponse>(`/api/food/log/${row}`, { method: 'DELETE' }),
   searchFood: (q: string) =>
-    request<{ results: FoodSearchResult[] }>(
+    get<{ results: FoodSearchResult[] }>(
       `/api/food/search?q=${encodeURIComponent(q)}`,
     ),
   getFutureSelfSummary: () =>
-    request<{ summary: string; cards?: FutureSelfCard[]; tracker?: HabitsTodayResponse }>(
+    get<{ summary: string; cards?: FutureSelfCard[]; tracker?: HabitsTodayResponse }>(
       '/api/future-self/summary',
     ),
   getFutureSelfCards: (images = false) =>
-    request<{ cards: FutureSelfCard[]; summary: string }>(
+    get<{ cards: FutureSelfCard[]; summary: string }>(
       `/api/future-self/cards?images=${images}`,
     ),
   acceptFutureSelfCard: (card_id: string) =>
@@ -249,16 +254,16 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ photo_base64, habit_id }),
     }),
-  getHabitsToday: () => request<HabitsTodayResponse>('/api/habits/today'),
-  getHabitsWeek: () => request<HabitsWeekResponse>('/api/habits/week'),
-  getHabitStreaks: () => request<HabitsStreaksResponse>('/api/habits/streaks'),
+  getHabitsToday: () => get<HabitsTodayResponse>('/api/habits/today'),
+  getHabitsWeek: () => get<HabitsWeekResponse>('/api/habits/week'),
+  getHabitStreaks: () => get<HabitsStreaksResponse>('/api/habits/streaks'),
   updateHabitMetric: (metric: string, value: number | null) =>
     request<HabitsTodayResponse>(`/api/habits/today/${metric}`, {
       method: 'PUT',
       body: JSON.stringify({ value }),
     }),
   getCalendarToday: () =>
-    request<{ events: { id: string; summary: string; start: string; end?: string }[] }>(
+    get<{ events: { id: string; summary: string; start: string; end?: string }[] }>(
       '/api/calendar/today',
     ),
   createCalendarEvent: (title: string, start: string, duration_minutes = 60) =>
@@ -267,7 +272,7 @@ export const api = {
       body: JSON.stringify({ title, start, duration_minutes }),
     }),
   getManageDay: () =>
-    request<{ quadrants: Record<string, string[]>; sheets_connected: boolean }>(
+    get<{ quadrants: Record<string, string[]>; sheets_connected: boolean }>(
       '/api/day/manage',
     ),
   updateManageDay: (quadrant: string, items: string[]) =>
@@ -276,11 +281,11 @@ export const api = {
       body: JSON.stringify({ quadrant, items }),
     }),
   getCards: (type?: string) =>
-    request<{ cards: KeepCard[]; sheets_connected: boolean }>(
+    get<{ cards: KeepCard[]; sheets_connected: boolean }>(
       `/api/cards${type ? `?type=${type}` : ''}`,
     ),
   getSicknessTimeline: () =>
-    request<{ events: SicknessTimelineEvent[]; sheets_connected: boolean }>(
+    get<{ events: SicknessTimelineEvent[]; sheets_connected: boolean }>(
       '/api/cards/sickness/timeline',
     ),
   createCard: (card_type: string, title: string, body: string) =>

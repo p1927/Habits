@@ -44,7 +44,10 @@ for pidfile in "${TMP}"/cursor-loop-*.pid; do
   fi
   pid="$(cat "$pidfile" 2>/dev/null || true)"
   if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
-    report_line "persistent" "$name" "UP" "$pid" "$pidfile"
+    report_line "persistent" "$name" "STALE" "$pid" "$pidfile"
+    if [[ "$JSON" -eq 0 ]]; then
+      echo "  ^ legacy agent-loop.sh — run: cwin refresh (window instances use dynamic wake only)"
+    fi
   else
     report_line "persistent" "$name" "DOWN" "" "$pidfile"
   fi

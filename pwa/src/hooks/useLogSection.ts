@@ -13,6 +13,8 @@ interface UseLogSectionOptions {
   onMealPlanOpened?: () => void;
   openLogHistory?: boolean;
   onLogHistoryOpened?: () => void;
+  openLogRecipes?: boolean;
+  onLogRecipesOpened?: () => void;
   scrollToMealPlanQueue?: number;
 }
 
@@ -22,6 +24,8 @@ export function useLogSection({
   onMealPlanOpened,
   openLogHistory,
   onLogHistoryOpened,
+  openLogRecipes,
+  onLogRecipesOpened,
   scrollToMealPlanQueue,
 }: UseLogSectionOptions) {
   const [tab, setTabState] = useState<LogTab>(() => readStoredLogTab());
@@ -45,6 +49,8 @@ export function useLogSection({
     onMealPlanOpened,
     openLogHistory,
     onLogHistoryOpened,
+    openLogRecipes,
+    onLogRecipesOpened,
     scrollToMealPlanQueue,
     onTabRecipes,
   });

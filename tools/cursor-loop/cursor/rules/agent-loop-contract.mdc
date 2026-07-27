@@ -76,6 +76,8 @@ If you cannot pass `--conversation-id`, still complete Ritual and record in `sta
 
 ## Dynamic arming (default — `loop_mode: dynamic`)
 
+**Forbidden in dynamic mode:** do **not** start `agent-loop.sh`, `verify-loop.sh`, or monitor `^AGENT_LOOP_TICK_*`. Window instances use dynamic wake only. A stray persistent loop causes duplicate wakes and `loop-status` STALE warnings — run `cwin refresh` to kill it.
+
 At **end of every turn** (max once; do not stack):
 
 ```bash
@@ -116,13 +118,9 @@ Rules:
 
 ---
 
-## Persistent mode (legacy — `loop_mode: persistent`)
+## Persistent mode (removed for window instances)
 
-Only if contract sets `loop_mode: persistent`. Expect Cursor SIGTERM ~20–40s.
-
-1. `verify-loop.sh <loop_id>` — if UP, skip start
-2. Start `agent-loop.sh` once per turn max with `notify_on_output` on `^<sentinel>`
-3. Still arm `arm-wake.sh` as backup
+**Do not use.** Habits window instances (`docs/window-instances/*/INSTANCE.md`) are **`loop_mode: dynamic` only**. If `loop-status` shows `UP (persistent)`, run `cwin refresh` — an agent started legacy `agent-loop.sh` by mistake.
 
 ---
 
@@ -130,14 +128,16 @@ Only if contract sets `loop_mode: persistent`. Expect Cursor SIGTERM ~20–40s.
 
 **Dynamic mode:**
 
+- [ ] Phases advanced sequentially this turn (`1-wake` through `8-close` before arm)
 - [ ] Ritual deliverable done (or `--blocker` checkpoint)
+- [ ] `validate_ritual_gate.py --mode=arm` exit 0 before `arm-wake.sh`
+- [ ] `checkpoint-loop.py --product` exit 0 (when product work shipped)
 - [ ] `verify-wake.sh <loop_id>` exit 0 **OR** `WAKE_ALREADY_ARMED` this turn (DOWN means re-arm, not success)
 - [ ] Exactly one `arm-wake.sh` attempted
 - [ ] Follow-up / recovery turns re-arm when verify shows DOWN (no duplicate sleep shells)
 - [ ] No `bind_blocked`
 - [ ] Response does **not** defer all work to “next tick”
-
-**Persistent mode:** also `verify-loop.sh` exit 0.
+- [ ] `code_changed=yes` → `/code-review` + `/receiving-code-review` logged in REVIEW_FINDINGS before arm
 
 ---
 

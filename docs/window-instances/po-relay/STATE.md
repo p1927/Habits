@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T11:41:00Z |
-| where_we_are | Session #20 — relay-170 verified shipped; relay-169 WIP; prop-ui-038 closed |
-| confirmed_next | Worker close relay-170 + finish relay-169; Worker relay-150; UX prop-ui-039 polish |
+| reviewed_at | 2026-07-27T12:16:00Z |
+| where_we_are | Session #21 — relay-149–170 + ui-053 shipped; Worker relay-171–173 open |
+| confirmed_next | Worker relay-172; Code maint-003 + ch-batch; scan UX_GAPS |
 
 ---
 
@@ -18,16 +18,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T11:41:00Z |
-| current_item_id | po-tick-002 |
+| last_wake | 2026-07-27T12:16:00Z |
+| current_item_id | po-tick-003 |
 | phase | `9-arm` |
 | review_status | `triaged` |
 | review_skip_reason | — |
-| review_round | `2` |
-| review_diff_range | `main...HEAD` + uncommitted WIP |
-| code_changed | `no` |
-| confirmed_next | Worker relay-170 close + relay-169 commit; Worker relay-150 |
-| loops | po-relay backup wake — arm at end of turn |
+| review_round | `4` |
+| review_diff_range | `uncommitted WIP` |
+| code_changed | `yes` |
+| confirmed_next | Worker relay-172; Code maint-003 |
+| loops | arm at end of turn |
 
 ### Loop status (verify with `loop-status.sh`)
 
@@ -77,7 +77,7 @@
 |----|----------|--------|
 | dd-001 | Swipe undo: toast vs bottom sheet? | resolved — toast (5s) |
 | dd-003 | Skip-to-content vs landmarks only? | resolved — skip link exists; focus ring enhanced ui-008 |
-| dd-004 | VoiceStatusOrb: iframe postMessage vs polling? | **verify** — `VoiceEmbed` + `parseVoiceIframeMessage` shipped; relay-149 scoped to E2E mic-state parity test |
+| dd-004 | VoiceStatusOrb: iframe postMessage vs polling? | resolved — relay-149 shipped; E2E mic parity optional follow-up |
 
 ---
 
@@ -87,8 +87,9 @@
 
 | id | status | origin | surface | proposal | acceptance criteria | ux_response |
 |----|--------|--------|---------|----------|---------------------|-------------|
-| prop-ui-038 | refined | po | Agent | Token-by-token streaming assistant bubble | **Backend live** (relay-165 SSE + `agentChatStream`); UX verified ui-038 done | Verified done ui-038 2026-07-27 |
-| prop-ui-039 | refined | po | Home → Log | Saved recipe “See full recipe” deep link | Given saved recipe on Home, When user taps “See full recipe” secondary link, Then App navigates to Log tab with Recipes sub-tab active and sheet recipe loaded (no full page reload) | UX: ux-gap-039 po-agreed |
+| prop-ui-038 | refined | po | Agent | Token-by-token streaming assistant bubble | Backend live; UX ui-038 verified | Verified done ui-038 2026-07-27 |
+| prop-ui-039 | refined | po | Home → Log | Saved recipe “See full recipe” deep link | Shipped relay-150 + ui-053 — `navigateLogRecipes` + refresh on open | Shipped ui-053 + relay-150 |
+| prop-ui-040 | proposed | po | Log History | CSV export header action UX | Given Log History tab, When user taps Export CSV pill in header, Then download `.csv` with date/meal/macros columns (Google Sheets export pattern) | — |
 
 **Status values:** `proposed` → UX reviews | `agreed` → copied to UX_STATE `UI_POLISH_BACKLOG` | `refined` → UX sent AC changes, PO updates row | `rejected` → dropped with reason in `ux_response`
 
@@ -100,7 +101,15 @@
 
 ## BRAINSTORM_LOG (newest first)
 
-### 2026-07-27 — Session #20 (PO tick po-tick-002)
+### 2026-07-27 — Session #21 (PO tick po-tick-003)
+
+**UX lens (ux-heuristics):** prop-ui-039 **closed** — ui-053 + relay-150 shipped “See full recipe” deep link. **prop-ui-040 proposed** — relay-172 CSV export needs visible header affordance (Sheets/Revolut export pattern). relay-173 Day event detail = Google Calendar event popup on timeline tap.
+
+**PO lens (define-prioritization-framework):** Session #20 handoffs **all closed** (relay-149–170, ui-053). RICE open Worker: **relay-172** (CSV portability, high job relevance) > **relay-173** (Day scheduling depth) > **relay-171** (Agent context stale-after-tool polish). dd-004 **resolved** via relay-149.
+
+**Business lens (jobs-to-be-done):** CSV export = “own your data” vs Sheets lock-in. Day event sheet = calendar trust for habit scheduling. Agent context refresh = Coach credibility after tool calls.
+
+---
 
 **UX lens (ux-heuristics):** prop-ui-038 **closed** — UX verified ui-038 streaming bubble. prop-ui-039 **refined** — Home saved recipe card lacks secondary navigation affordance (recognition over recall vs Log Recipes tab). Day `Week PDF` header button matches Calendar export pattern (390px pill in header row).
 
@@ -174,18 +183,23 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
-| pr-001 | low | relay-165/168 shipped SSE streaming + cancel; ui-038 backend done | round-0 /code-review | backlog | ui-038 | open |
+| pr-001 | low | relay-165/168 shipped SSE streaming + cancel; ui-038 backend done | round-0 /code-review | closed | ui-038 | closed |
 | pr-002 | low | relay-149/150 brainstormed in #18 but missing from Worker BACKLOG | round-0 /code-review | closed | worker BACKLOG | closed |
-| pr-003 | low | Code window ch-006–114 structural refactors uncommitted | round-0 /code-review | backlog | ch-115+ | open |
+| pr-003 | low | Code window ch-006–120 structural refactors uncommitted | round-0 /code-review | backlog | ch-121+ | open |
 | pr-r1-001 | low | Shipped relay-163–168 on main; Worker next relay-169/170 | round-1 /code-review | closed | — | closed |
 | pr-r1-002 | low | prop-ui-038 refined (backend live); prop-ui-039 new Home deep link | round-1 /code-review | closed | prop-ui-039 | closed |
 | pr-r1-003 | low | relay-170 may overlap existing ringShareCard streak pill — confirm delta | round-1 /code-review | closed | relay-170 | closed |
 | pr-r1-004 | low | maint-003 near done (Lighthouse 97); Code ch-batch uncommitted | round-1 /code-review | backlog | maint-003 | open |
-| pr-r2-001 | low | relay-170 shipped — streak pill in `ringShareCard` + Home share | round-2 /code-review | backlog | relay-170 | open |
-| pr-r2-002 | low | relay-169 Day Week PDF wired in uncommitted WIP (`DaySectionHeader`, `weekReportExport`) | round-2 /code-review | backlog | relay-169 | open |
+| pr-r2-001 | low | relay-170 shipped — streak pill in `ringShareCard` + Home share | round-2 /code-review | closed | relay-170 | closed |
+| pr-r2-002 | low | relay-169 Day Week PDF wired in uncommitted WIP (`DaySectionHeader`, `weekReportExport`) | round-2 /code-review | closed | relay-169 | closed |
 | pr-r2-003 | low | prop-ui-038 closed — UX ui-038 verified | round-2 /code-review | closed | prop-ui-038 | closed |
-| pr-r2-004 | low | prop-ui-039 refined AC; ux-gap-039 po-agreed | round-2 /code-review | backlog | relay-150 | open |
+| pr-r2-004 | low | prop-ui-039 refined AC; ux-gap-039 po-agreed | round-2 /code-review | closed | relay-150 | closed |
 | pr-r2-005 | low | Code ch-119/120 landed in WIP; maint-003 Lighthouse re-run still Code-owned | round-2 /code-review | backlog | maint-003 | open |
+| pr-r3-001 | low | relay-149–170 + ui-053 shipped since Session #20 | round-3 /code-review | closed | — | closed |
+| pr-r3-002 | low | Worker backlog refilled relay-171–173; RICE top relay-172 | round-3 /code-review | backlog | relay-172 | open |
+| pr-r3-003 | low | prop-ui-040 proposed for relay-172 CSV export UX | round-3 /code-review | backlog | prop-ui-040 | open |
+| pr-r3-004 | low | Code ch-batch still uncommitted; maint-003 Lighthouse re-run pending | round-3 /code-review | backlog | maint-003 | open |
+| pr-r4-000 | low | Uncommitted code-health WIP reviewed; no new PO blockers | round-4 /code-review | closed | — | closed |
 
 ---
 
@@ -193,6 +207,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | PO | po-tick-003 | Session #21 + prop-ui-039 close + prop-ui-040 + dd-004 resolved | brainstorm | — |
 | 2026-07-27 | PO | po-tick-002 | Session #20 + relay-170 verify + prop-ui-038 close | brainstorm | — |
 | 2026-07-27 | PO | po-tick-001 | Session #19 + relay-149/150 feed + ui-038 refined | brainstorm | — |
 | 2026-07-27 | PO | tick-370210-003 | relay-149 VoiceStatusOrb + dd-004 | brainstorm | — |

@@ -42,7 +42,7 @@ export function HabitQueueSection({
           <span>
             {failedCount} habit update{failedCount === 1 ? '' : 's'} failed to save.
           </span>
-          <button type="button" className="btn-small btn-pill" onClick={onRetryAll}>
+          <button type="button" className="btn-pill btn-pill-outline" onClick={onRetryAll}>
             Retry all
           </button>
         </div>
@@ -58,7 +58,7 @@ export function HabitQueueSection({
                 <div className="food-row-actions">
                   <button
                     type="button"
-                    className="btn-small"
+                    className="btn-pill btn-pill-outline"
                     aria-label={`Retry ${metricLabel(entry.metric)}`}
                     onClick={() => onRetry(entry)}
                   >
@@ -66,7 +66,7 @@ export function HabitQueueSection({
                   </button>
                   <button
                     type="button"
-                    className="btn-small btn-danger"
+                    className="keep-card-delete"
                     aria-label={`Dismiss failed ${metricLabel(entry.metric)}`}
                     onClick={() => onDismiss(entry.id)}
                   >
@@ -89,7 +89,7 @@ export function HabitQueueSection({
           </span>
           <button
             type="button"
-            className="btn-small"
+            className="btn-pill btn-pill-outline"
             aria-label="Dismiss offline habit update queue"
             onClick={onDismissAll}
           >

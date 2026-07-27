@@ -7,12 +7,16 @@ import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 interface UseHomeSectionOptions {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
+  onOpenLogHistory?: () => void;
+  onOpenLogRecipes?: () => void;
   scrollToMealPlanQueue?: number;
 }
 
 export function useHomeSection({
   serverOnline,
   onNavigateMealPlanSyncSource,
+  onOpenLogHistory,
+  onOpenLogRecipes,
   scrollToMealPlanQueue,
 }: UseHomeSectionOptions) {
   const [mealPlanMessage, setMealPlanMessage] = useState('');
@@ -38,12 +42,11 @@ export function useHomeSection({
     syncSource: 'home',
     setMessage: setMealPlanMessage,
     setError: dashboard.setError,
+    autoFlushOnMount: !dashboard.dashboardLoading,
     watchFocus: true,
     watchQueueChanges: true,
     food: dashboard.food,
     onFoodUpdated: dashboard.setFood,
-    afterSync: () => void dashboard.refresh(),
-    onAfterLog: () => void dashboard.refresh(),
   });
 
   syncMealPlanQueueRef.current = mealPlanShell.syncMealPlanQueue;
@@ -51,6 +54,8 @@ export function useHomeSection({
   return {
     serverOnline,
     onNavigateMealPlanSyncSource,
+    onOpenLogHistory,
+    onOpenLogRecipes,
     scrollToMealPlanQueue,
     pullProgress: dashboard.pullProgress,
     refreshing: dashboard.refreshing,

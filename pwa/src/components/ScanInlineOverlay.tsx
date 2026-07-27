@@ -47,7 +47,7 @@ export function ScanInlineOverlay({
       <div className="scan-inline-actions">
         <button
           type="button"
-          className="btn-small scan-inline-retake"
+          className="btn-pill btn-pill-outline scan-inline-retake"
           aria-label="Retake food photo"
           onClick={onRetake}
         >

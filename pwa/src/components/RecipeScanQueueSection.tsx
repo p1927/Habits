@@ -32,7 +32,7 @@ export function RecipeScanQueueSection({
           </span>
           <button
             type="button"
-            className="btn-small"
+            className="btn-pill btn-pill-outline"
             aria-label="Dismiss recipe scan queue"
             onClick={onDismiss}
           >

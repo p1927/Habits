@@ -1,5 +1,5 @@
 ---
-description: Worker relay loop — features backlog only (60s, own sentinel + state)
+description: Worker relay loop — features backlog only (120s dynamic wake, own sentinel + state)
 globs:
   - docs/window-instances/worker-relay/**
   - pwa/src/**
@@ -10,7 +10,7 @@ globs:
 
 This chat is the **Worker / features** window (`loop_id: worker-relay`).
 
-When woken by `AGENT_LOOP_WAKE_HABITS` or `AGENT_LOOP_TICK_HABITS`:
+When woken by `AGENT_LOOP_WAKE_HABITS` (dynamic wake only — ignore legacy `AGENT_LOOP_TICK_HABITS`):
 
 1. Read [`docs/window-instances/worker-relay/INSTANCE.md`](../../docs/window-instances/worker-relay/INSTANCE.md)
 2. Then bundle: IDENTITY → STATE → RITUAL (9-phase ritual)

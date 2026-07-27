@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePullToRefresh } from './usePullToRefresh';
 import { useHomeDashboardActions } from './useHomeDashboardActions';
 import { useHomeRefreshShortcut } from './useHomeRefreshShortcut';
@@ -37,31 +37,50 @@ export function useHomeDashboard({ serverOnline, syncMealPlanQueue }: UseHomeDas
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
+  const syncMealPlanQueueRef = useRef(syncMealPlanQueue);
+  syncMealPlanQueueRef.current = syncMealPlanQueue;
+  const refreshInFlightRef = useRef<Promise<void> | null>(null);
+
   const refresh = useCallback(async () => {
-    setMealPhotos(getTodayMealPhotos());
-    syncMealPlanQueue();
-    if (!serverOnline) {
-      setMealPlan(getCachedMealPlan());
-      setDashboardLoading(false);
-      return;
+    if (refreshInFlightRef.current) {
+      return refreshInFlightRef.current;
     }
-    setError('');
+
+    const run = (async () => {
+      setMealPhotos(getTodayMealPhotos());
+      syncMealPlanQueueRef.current();
+      if (!serverOnline) {
+        setMealPlan(getCachedMealPlan());
+        setDashboardLoading(false);
+        return;
+      }
+      setError('');
+      try {
+        const data = await fetchHomeDashboardData();
+        setFood(data.food);
+        setHabits(data.habits);
+        setHistory(data.history);
+        setHabitWeek(data.habitWeek);
+        setMealPlan(data.mealPlan);
+        setCalTarget(data.calTarget);
+        setDecisionCard(data.decisionCard);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 401) return;
+        setError(e instanceof Error ? e.message : 'Failed to load dashboard');
+      } finally {
+        setDashboardLoading(false);
+      }
+    })();
+
+    refreshInFlightRef.current = run;
     try {
-      const data = await fetchHomeDashboardData();
-      setFood(data.food);
-      setHabits(data.habits);
-      setHistory(data.history);
-      setHabitWeek(data.habitWeek);
-      setMealPlan(data.mealPlan);
-      setCalTarget(data.calTarget);
-      setDecisionCard(data.decisionCard);
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 401) return;
-      setError(e instanceof Error ? e.message : 'Failed to load dashboard');
+      await run;
     } finally {
-      setDashboardLoading(false);
+      if (refreshInFlightRef.current === run) {
+        refreshInFlightRef.current = null;
+      }
     }
-  }, [serverOnline, syncMealPlanQueue]);
+  }, [serverOnline]);
 
   const { pullProgress, refreshing, triggerRefresh } = usePullToRefresh({
     onRefresh: refresh,

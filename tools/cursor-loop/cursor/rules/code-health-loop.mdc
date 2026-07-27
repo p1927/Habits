@@ -6,7 +6,7 @@ globs:
 
 # Code Health Loop Mandate
 
-When woken by `AGENT_LOOP_WAKE_CODE_HEALTH` or `AGENT_LOOP_TICK_CODE_HEALTH`:
+When woken by `AGENT_LOOP_WAKE_CODE_HEALTH` (dynamic wake only — ignore legacy `AGENT_LOOP_TICK_CODE_HEALTH`):
 
 1. Read [`docs/window-instances/code-health/INSTANCE.md`](../../docs/window-instances/code-health/INSTANCE.md)
 2. Bundle: IDENTITY → STATE → RITUAL

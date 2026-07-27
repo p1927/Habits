@@ -24,7 +24,8 @@ export function FoodManualEntryForm({
   onSubmit,
 }: FoodManualEntryFormProps) {
   return (
-    <form className="card" onSubmit={onSubmit}>
+    <form className="ui-card ui-card--default log-type-card home-export-card--health" onSubmit={onSubmit}>
+      <p className="section-eyebrow">Search</p>
       <h2>Manual entry</h2>
       <label className="field">
         Food (from your database)
@@ -60,7 +61,7 @@ export function FoodManualEntryForm({
           disabled={!serverOnline || loading}
         />
       </label>
-      <button type="submit" disabled={!serverOnline || loading || !foodName.trim()}>
+      <button type="submit" className="btn-pill" disabled={!serverOnline || loading || !foodName.trim()}>
         Add
       </button>
     </form>

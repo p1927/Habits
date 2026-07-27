@@ -56,7 +56,7 @@ export function MealPlanQueueList({
               {serverOnline && (
                 <button
                   type="button"
-                  className="btn-small"
+                  className="btn-pill btn-pill-outline"
                   data-meal-plan-retry=""
                   disabled={syncing || !!retryingId}
                   onClick={() => void onRetry(item)}
@@ -66,7 +66,7 @@ export function MealPlanQueueList({
               )}
               <button
                 type="button"
-                className="btn-small btn-danger"
+                className="keep-card-delete"
                 aria-label={`Dismiss queued ${label}`}
                 disabled={retrying || syncing}
                 onClick={() => onDismissItem(item.id)}

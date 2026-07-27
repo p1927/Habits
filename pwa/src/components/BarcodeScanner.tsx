@@ -1,99 +1,33 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 
 interface BarcodeScannerProps {
   onScan: (code: string) => void;
   disabled?: boolean;
 }
 
-function barcodeSupported(): boolean {
-  return typeof window !== 'undefined' && 'BarcodeDetector' in window;
+function BarcodeIcon() {
+  return (
+    <svg className="barcode-placeholder__icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M4 6h2v12H4V6Zm3 0h1v12H7V6Zm2 0h2v12H9V6Zm3 0h1v12h-1V6Zm2 0h3v12h-3V6Zm4 0h1v12h-1V6Zm2 0h2v12h-2V6Z"
+      />
+    </svg>
+  );
 }
 
 export function BarcodeScanner({ onScan, disabled }: BarcodeScannerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const detectorRef = useRef<BarcodeDetector | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const [live, setLive] = useState(false);
-  const [manual, setManual] = useState('');
-  const [error, setError] = useState('');
-  const supported = barcodeSupported();
-
-  const stop = useCallback(() => {
-    if (rafRef.current != null) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-    for (const t of streamRef.current?.getTracks() ?? []) t.stop();
-    streamRef.current = null;
-    if (videoRef.current) videoRef.current.srcObject = null;
-    setLive(false);
-  }, []);
-
-  useEffect(() => () => stop(), [stop]);
-
-  const handleDetected = useCallback(
-    (code: string) => {
-      stop();
-      onScan(code.trim());
-    },
-    [onScan, stop],
-  );
-
-  const scanFrame = useCallback(async () => {
-    const video = videoRef.current;
-    const detector = detectorRef.current;
-    if (!video || !detector || video.readyState < HTMLMediaElement.HAVE_ENOUGH_DATA) {
-      rafRef.current = requestAnimationFrame(() => void scanFrame());
-      return;
-    }
-    try {
-      const codes = await detector.detect(video);
-      if (codes.length > 0 && codes[0].rawValue) {
-        handleDetected(codes[0].rawValue);
-        return;
-      }
-    } catch {
-      // keep scanning
-    }
-    rafRef.current = requestAnimationFrame(() => void scanFrame());
-  }, [handleDetected]);
-
-  async function startScanner() {
-    if (disabled || !supported) return;
-    setError('');
-    stop();
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      detectorRef.current = new BarcodeDetector({
-        formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'qr_code'],
-      });
-      setLive(true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Camera access denied');
-    }
-  }
-
-  useEffect(() => {
-    const video = videoRef.current;
-    const stream = streamRef.current;
-    if (!live || !video || !stream) return;
-
-    video.srcObject = stream;
-    void video.play().then(() => {
-      rafRef.current = requestAnimationFrame(() => void scanFrame());
-    }).catch((e: unknown) => {
-      setError(e instanceof Error ? e.message : 'Could not start barcode scanner');
-    });
-
-    return () => {
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    };
-  }, [live, scanFrame]);
+  const {
+    videoRef,
+    live,
+    manual,
+    setManual,
+    error,
+    supported,
+    stop,
+    startScanner,
+    submitManual,
+  } = useBarcodeScanner({ onScan, disabled });
 
   return (
     <div className="barcode-scanner">
@@ -108,18 +42,21 @@ export function BarcodeScanner({ onScan, disabled }: BarcodeScannerProps) {
               autoPlay
             />
             {!live && (
-              <div className="barcode-placeholder muted">
-                Scan a product barcode — Open Food Facts when not in your sheet
+              <div className="barcode-placeholder">
+                <BarcodeIcon />
+                <p className="barcode-placeholder__text muted">
+                  Scan a product barcode — Open Food Facts when not in your sheet
+                </p>
               </div>
             )}
           </div>
           <div className="barcode-actions">
             {!live ? (
-              <button type="button" onClick={() => void startScanner()} disabled={disabled}>
+              <button type="button" className="btn-pill" onClick={() => void startScanner()} disabled={disabled}>
                 Scan barcode
               </button>
             ) : (
-              <button type="button" onClick={stop}>
+              <button type="button" className="btn-pill btn-pill-outline" onClick={stop}>
                 Stop scanner
               </button>
             )}
@@ -129,15 +66,7 @@ export function BarcodeScanner({ onScan, disabled }: BarcodeScannerProps) {
         <p className="muted">Barcode camera scan is not supported in this browser — enter the code manually.</p>
       )}
 
-      <form
-        className="barcode-manual"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!manual.trim()) return;
-          handleDetected(manual.trim());
-          setManual('');
-        }}
-      >
+      <form className="barcode-manual" onSubmit={submitManual}>
         <label className="field">
           Barcode number
           <input
@@ -148,12 +77,16 @@ export function BarcodeScanner({ onScan, disabled }: BarcodeScannerProps) {
             disabled={disabled}
           />
         </label>
-        <button type="submit" disabled={disabled || !manual.trim()}>
+        <button type="submit" className="btn-pill" disabled={disabled || !manual.trim()}>
           Look up
         </button>
       </form>
 
-      {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
+      {error && (
+        <div className="banner banner-warn banner-revolut" role="alert">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

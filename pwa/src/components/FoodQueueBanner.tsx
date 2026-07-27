@@ -25,7 +25,7 @@ export function FoodQueueBanner({ queuedCount, queueSyncClearedToken, onDismiss 
         </span>
         <button
           type="button"
-          className="btn-small"
+          className="btn-pill btn-pill-outline"
           aria-label="Dismiss offline food log queue"
           onClick={onDismiss}
         >

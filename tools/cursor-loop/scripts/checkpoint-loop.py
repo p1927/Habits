@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,6 +12,33 @@ from pathlib import Path
 import loop_hook_lib as mod
 
 RECOVERY_ESCALATE = 3
+
+
+def run_ritual_gate(root: Path, binding: dict) -> bool:
+    loop_id = binding.get("loop_id") or ""
+    state_file = binding.get("state_file") or ""
+    if not loop_id or not state_file:
+        return True
+    scripts = root / mod.load_manifest(root)["package_root"] / "scripts"
+    gate = scripts / "validate_ritual_gate.py"
+    if not gate.is_file():
+        return True
+    r = subprocess.run(
+        [
+            "python3",
+            str(gate),
+            "--project",
+            str(root),
+            "--loop-id",
+            loop_id,
+            "--state-file",
+            state_file,
+            "--mode",
+            "checkpoint",
+        ],
+        cwd=root,
+    )
+    return r.returncode == 0
 
 
 def main() -> int:
@@ -47,6 +75,12 @@ def main() -> int:
     if args.product:
         if not args.evidence.strip():
             print("CHECKPOINT_ERROR --product requires --evidence", file=sys.stderr)
+            return 1
+        if not run_ritual_gate(root, binding):
+            print(
+                "CHECKPOINT_ERROR ritual gate failed — complete phases 1→8 before --product",
+                file=sys.stderr,
+            )
             return 1
         binding["last_product_wake"] = now
         binding["last_product_evidence"] = args.evidence.strip()

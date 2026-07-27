@@ -33,7 +33,7 @@ export function HomeActivityRingsCard({
         <h2>Activity</h2>
         <button
           type="button"
-          className="btn-small"
+          className="btn-pill btn-pill-outline"
           disabled={sharing || loading}
           onClick={onShare}
         >

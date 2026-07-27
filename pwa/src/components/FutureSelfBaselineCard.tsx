@@ -16,11 +16,17 @@ export function FutureSelfBaselineCard({
   onGenerate,
 }: FutureSelfBaselineCardProps) {
   return (
-    <div className="card">
+    <div className="future-self-card home-export-card--health ui-card ui-card--default future-self-card--hinge">
+      <p className="section-eyebrow">Baseline</p>
       <h2>Baseline photo</h2>
       <CameraCapture onCapture={onCapture} disabled={generating} />
       {baselinePhoto && (
-        <button type="button" disabled={generating || !serverOnline} onClick={onGenerate}>
+        <button
+          type="button"
+          className="btn-pill"
+          disabled={generating || !serverOnline}
+          onClick={onGenerate}
+        >
           {generating ? 'Generating futures…' : 'Show decline vs accept outcomes'}
         </button>
       )}

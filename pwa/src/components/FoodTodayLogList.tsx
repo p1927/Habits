@@ -1,3 +1,4 @@
+import { Card } from './ui/Card';
 import type { FoodLogItem, FoodTodayResponse } from '../lib/api';
 
 interface FoodTodayLogListProps {
@@ -24,7 +25,8 @@ export function FoodTodayLogList({
   onDelete,
 }: FoodTodayLogListProps) {
   return (
-    <div className="card">
+    <Card className="food-today-log-card home-export-card--health">
+      <p className="section-eyebrow">Today</p>
       <h2>Today&apos;s log</h2>
       {!data?.items.length ? (
         <p className="muted">No entries yet today.</p>
@@ -35,8 +37,7 @@ export function FoodTodayLogList({
               <div>
                 <strong>{item.food}</strong>
                 {editingRow === item.row ? (
-                  <span>
-                    {' '}
+                  <span className="food-row-edit">
                     <input
                       type="number"
                       className="inline-edit"
@@ -44,15 +45,15 @@ export function FoodTodayLogList({
                       onChange={(e) => onEditQtyChange(e.target.value)}
                     />
                     g
-                    <button type="button" className="btn-small" onClick={() => onSaveEdit(item)}>
+                    <button type="button" className="btn-pill" onClick={() => onSaveEdit(item)}>
                       Save
                     </button>
-                    <button type="button" className="btn-small" onClick={onCancelEdit}>
+                    <button type="button" className="btn-pill btn-pill-outline" onClick={onCancelEdit}>
                       Cancel
                     </button>
                   </span>
                 ) : (
-                  <span className="muted">
+                  <span className="muted food-row-stats">
                     {' '}
                     · {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
                   </span>
@@ -60,13 +61,19 @@ export function FoodTodayLogList({
               </div>
               <div className="food-row-actions">
                 {editingRow !== item.row && (
-                  <button type="button" className="btn-small" onClick={() => onStartEdit(item)} disabled={loading}>
+                  <button
+                    type="button"
+                    className="btn-pill btn-pill-outline"
+                    onClick={() => onStartEdit(item)}
+                    disabled={loading}
+                  >
                     Edit
                   </button>
                 )}
                 <button
                   type="button"
-                  className="btn-small btn-danger"
+                  className="keep-card-delete"
+                  aria-label={`Remove ${item.food}`}
                   onClick={() => onDelete(item.row)}
                   disabled={loading}
                 >
@@ -77,6 +84,6 @@ export function FoodTodayLogList({
           ))}
         </ul>
       )}
-    </div>
+    </Card>
   );
 }

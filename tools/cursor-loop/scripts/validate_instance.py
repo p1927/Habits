@@ -208,10 +208,53 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Window Instance bundles")
     parser.add_argument("project", nargs="?", default=".", help="Project root")
     parser.add_argument("--json", action="store_true", help="JSON output")
+    parser.add_argument(
+        "--strict-review",
+        action="store_true",
+        help="Fail if ritual gate fails for any instance STATE",
+    )
     args = parser.parse_args()
 
     root = Path(args.project).resolve()
     errors = validate_all_instances(root)
+
+    if args.strict_review:
+        import subprocess
+
+        manifest = load_instances_manifest(root)
+        gate_script = root / "tools/cursor-loop/scripts/validate_ritual_gate.py"
+        if not gate_script.is_file():
+            try:
+                pkg = mod.load_manifest(root)["package_root"]
+                gate_script = root / pkg / "scripts/validate_ritual_gate.py"
+            except (FileNotFoundError, ValueError, KeyError):
+                pass
+        for entry in manifest.get("instances") or []:
+            loop_id = entry.get("loop_id", "")
+            state_file = entry.get("state_file", "")
+            if not loop_id or not state_file:
+                continue
+            r = subprocess.run(
+                [
+                    "python3",
+                    str(gate_script),
+                    "--project",
+                    str(root),
+                    "--loop-id",
+                    loop_id,
+                    "--state-file",
+                    state_file,
+                    "--mode",
+                    "arm",
+                ],
+                cwd=root,
+                capture_output=True,
+                text=True,
+            )
+            if r.returncode != 0:
+                detail = (r.stderr or r.stdout or "").strip().splitlines()
+                msg = detail[0] if detail else "ritual gate failed"
+                errors.append(f"{loop_id}: {msg}")
 
     manifest = load_instances_manifest(root)
     count = len(manifest.get("instances") or [])

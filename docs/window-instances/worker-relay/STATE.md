@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T11:43:00Z |
-| where_we_are | relay-169 Day week PDF export shipped |
-| confirmed_next | relay-149 |
+| reviewed_at | 2026-07-27T14:20:00Z |
+| where_we_are | relay-171–173 shipped |
+| confirmed_next | refill BACKLOG |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -19,14 +19,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T11:43:00Z |
-| confirmed_next | relay-149 |
-| next_action | relay-149 VoiceStatusOrb live mic state from iframe |
+| last_wake | 2026-07-27T14:20:00Z |
+| confirmed_next | relay-174 |
+| next_action | relay-174 Day schedule empty state Agent quick prompt |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 9-arm |
 | review_status | done |
 | review_round | `0` |
-| code_changed | `no` |
+| code_changed | `yes` |
 
 ---
 
@@ -49,8 +49,16 @@
 - [x] relay-168 | Agent chat cancel in-flight stream on new send | polish | AbortController + generation guard; send while streaming
 - [x] relay-169 | Day tab export week report PDF from header action | feature | `DaySectionHeader` Week PDF + `useDayWeekReportExport`
 - [x] relay-170 | Home rings card share image with streak label | feature | PO round-2 verified shipped — `ringShareCard` streak pill + `useHomeDashboardActions`
-- [ ] relay-149 | VoiceStatusOrb reflects live mic state from voice iframe postMessage | feature | Given voice coach iframe open or persisted, When mic toggles, Then header orb matches `listening`/`thinking`/`speaking` within 200ms; pairs dd-004
-- [ ] relay-150 | Home saved recipe → Log Recipes sub-tab deep link | feature | Given `HomeSavedRecipeCard` shows saved recipe, When user taps “See full recipe”, Then App navigates to Log tab Recipes sub-tab and refreshes sheet data
+- [x] relay-149 | VoiceStatusOrb reflects live mic state from voice iframe postMessage | feature | persist iframe + postMessage → header orb
+- [x] relay-150 | Home saved recipe → Log Recipes sub-tab deep link | feature | navigateLogRecipes + refresh on openLogRecipes
+
+- [x] relay-171 | Agent context panel refresh after tool-call stream completes | polish | context.refresh + action feed seed on tool_results
+- [x] relay-172 | Log History export CSV from header | feature | Export CSV pill + downloadLogHistoryCsv
+- [x] relay-173 | Day timeline tap event → calendar detail sheet | feature | DayCalendarEventSheet + tappable agenda/grid events
+
+- [ ] relay-174 | Day schedule empty state → Agent quick add prompt | feature
+- [ ] relay-175 | Log History CSV include meal count per day | polish
+- [ ] relay-176 | Home dashboard pull-to-refresh gesture | polish
 
 ---
 
@@ -76,6 +84,11 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-173 | done | build | — |
+| 2026-07-27 | relay-172 | done | build | ceeeed2 |
+| 2026-07-27 | relay-171 | done | build | 3d602a9 |
+| 2026-07-27 | relay-150 | done | build | d3c3c18 |
+| 2026-07-27 | relay-149 | done | build | 343d27d |
 | 2026-07-27 | relay-169 | done | build | f441e32 |
 | 2026-07-27 | relay-168 | done | build | 990a581 |
 | 2026-07-27 | relay-167 | done | build | cfa947a |

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { api, type HabitsTodayResponse } from '../lib/api';
 import {
   getHabitLogQueue,
@@ -56,15 +56,21 @@ export function useHabitLogQueueFlush({
     }
   }, [serverOnline, setHabits, setError, setSyncMessage, setPending, setQueueSyncClearedToken]);
 
-  useEffect(() => {
-    void flushQueue();
-  }, [flushQueue]);
+  const flushRef = useRef(flushQueue);
+  flushRef.current = flushQueue;
+  const flushedOnMountRef = useRef(false);
 
   useEffect(() => {
-    const onOnline = () => void flushQueue();
+    if (flushedOnMountRef.current) return;
+    flushedOnMountRef.current = true;
+    void flushRef.current();
+  }, []);
+
+  useEffect(() => {
+    const onOnline = () => void flushRef.current();
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [flushQueue]);
+  }, []);
 
   return { flushQueue };
 }

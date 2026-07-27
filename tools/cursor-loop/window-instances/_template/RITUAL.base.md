@@ -1,5 +1,11 @@
 # Universal 9-Phase Ritual (base)
 
+All Window Instances run phases **1–9** in **strict order** — advance one phase at a time; no jumps.
+
+**Phase line:** `1-wake → 2-orient → 3-select → 4-execute → 5-verify → 6-review → 7-triage → 8-close → 9-arm`
+
+Every wake starts at **Phase 1**. `validate_ritual_gate.py` blocks arm if the line is incomplete.
+
 All Window Instances run phases **1–9** with the same names. Phases **4–6** vary by `archetype`.
 
 ## Phase overview

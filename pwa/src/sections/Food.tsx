@@ -37,6 +37,7 @@ export function Food({ serverOnline }: FoodProps) {
 
   return (
     <section className="section">
+      <p className="section-eyebrow">Nutrition</p>
       <h1>Food Tracker</h1>
       <p className="muted">Synced to Daily calculation tab in your Nutrition Google Sheet.</p>
 

@@ -72,9 +72,10 @@ def count_open_backlog(state_text: str) -> int:
     return len(re.findall(r"^\s*-\s*\[\s*\]", state_text, re.MULTILINE))
 
 def has_round_findings(state_text: str, review_round: str) -> bool:
-    if not review_round or review_round in ("?", "—", "-", "0"):
-        return True
-    pattern = f"round-{review_round.lstrip('`').rstrip('`')}"
+    rnd = (review_round or "").strip().strip("`")
+    if not rnd or rnd in ("?", "—", "-"):
+        return False
+    pattern = f"round-{rnd}"
     return pattern in state_text
 
 def parse_phase_num(phase: str) -> int:
@@ -110,6 +111,24 @@ def wake_status(loop_id: str) -> str:
     except Exception:
         return "?"
 
+def persistent_status(loop_id: str) -> str | None:
+    script = scripts_dir / "verify-loop.sh"
+    if not script.is_file():
+        return None
+    try:
+        r = subprocess.run(
+            ["bash", str(script), loop_id],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if r.returncode == 0:
+            return "STALE persistent agent-loop.sh running — run: cwin refresh"
+    except Exception:
+        pass
+    return None
+
 for entry in instances:
     loop_id = entry.get("loop_id", "?")
     bundle = root / entry.get("bundle", "")
@@ -132,16 +151,23 @@ for entry in instances:
         review_round = cp.get("review_round", "0")
         open_items = count_open_backlog(state_text)
         wake = wake_status(loop_id)
+        stale = persistent_status(loop_id)
         phase_num = parse_phase_num(phase)
+        if stale:
+            status = "WARN"
+            notes.append(stale)
+        if code_changed == "yes" and review in ("done", "triaged") and not has_round_findings(state_text, review_round):
+            status = "WARN"
+            notes.append(f"review_status={review} but no round-{review_round.strip('`')} findings")
         if review == "pending" and phase_num >= 4:
             status = "WARN"
             notes.append("review_status=pending past verify")
         if code_changed == "yes" and review == "pending" and phase_num >= 7:
             status = "WARN"
             notes.append("code_changed=yes but review pending at phase>=7")
-        if code_changed == "yes" and review == "done" and not has_round_findings(state_text, review_round):
+        if phase_num >= 9 and "DOWN" in wake:
             status = "WARN"
-            notes.append(f"review_status=done but no round-{review_round.strip('`')} findings")
+            notes.append("phase=9-arm but wake DOWN — re-arm required")
         print(
             f"{loop_id:16} {status:4}  phase={phase:12} review={review:8} "
             f"code_changed={code_changed:3} round={review_round:3} "

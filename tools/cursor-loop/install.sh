@@ -154,6 +154,10 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/merge_hooks.py" \
   "${INSTALL_PACKAGE}/scripts/cleanup_bindings.py" \
   "${INSTALL_PACKAGE}/scripts/force-reset.sh" \
+  "${INSTALL_PACKAGE}/scripts/validate_ritual_gate.py" \
+  "${INSTALL_PACKAGE}/scripts/ritual_phase.py" \
+  "${INSTALL_PACKAGE}/scripts/stop-tests.sh" \
+  "${INSTALL_PACKAGE}/scripts/detect_code_changed.sh" \
   "${INSTALL_PACKAGE}/scripts/validate_contracts.py" \
   "${INSTALL_PACKAGE}/scripts/verify-loop.sh" \
   "${INSTALL_PACKAGE}/scripts/daily-maintenance.sh" \

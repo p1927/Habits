@@ -2,8 +2,10 @@ import { UndoToast } from './UndoToast';
 import { MealPlanQueueSection } from './MealPlanQueueSection';
 import { MealPlanSyncAwarenessSlot } from './MealPlanSyncAwarenessSlot';
 import { MealPlanTodayCard } from './MealPlanTodayCard';
-import type { MealPlanEntry, MealPlanSyncSource, QueuedMealPlanLog } from '../lib/mealPlanQueue';
-import type { MealPlanUndoState } from '../hooks/useMealPlanUndo';
+import type { useMealPlanShell } from '../hooks/useMealPlanShell';
+import type { MealPlanEntry, MealPlanSyncSource } from '../lib/mealPlanQueue';
+
+type MealPlanShell = ReturnType<typeof useMealPlanShell>;
 
 export interface HomeMealPlanBlockProps {
   serverOnline: boolean;
@@ -11,24 +13,8 @@ export interface HomeMealPlanBlockProps {
   scrollToMealPlanQueue?: number;
   mealPlan: MealPlanEntry[];
   mealPlanMessage: string;
-  syncingMealPlanQueue: boolean;
-  mealPlanQueue: QueuedMealPlanLog[];
-  mealPlanSyncProgress: { done: number; total: number } | null;
-  failedMealPlanIds: Set<string>;
-  retryingMealPlanId: string | null;
-  loggingMealKey: string | null;
-  loggingMeals: boolean;
-  mealPlanUndo: MealPlanUndoState | null;
-  mealPlanUndoing: boolean;
-  onFlushQueue: () => void;
-  onRetryFailed: () => void;
-  onRetryItem: (item: QueuedMealPlanLog) => void;
-  onDismissItem: (id: string) => void;
-  onClearAll: () => void;
-  onLogEntry: (entry: MealPlanEntry) => void;
-  onLogAll: () => void;
+  shell: MealPlanShell;
   onMealPlanUndo: () => void;
-  onDismissMealPlanUndo: () => void;
 }
 
 export function HomeMealPlanBlock({
@@ -37,25 +23,29 @@ export function HomeMealPlanBlock({
   scrollToMealPlanQueue,
   mealPlan,
   mealPlanMessage,
-  syncingMealPlanQueue,
-  mealPlanQueue,
-  mealPlanSyncProgress,
-  failedMealPlanIds,
-  retryingMealPlanId,
-  loggingMealKey,
-  loggingMeals,
-  mealPlanUndo,
-  mealPlanUndoing,
-  onFlushQueue,
-  onRetryFailed,
-  onRetryItem,
-  onDismissItem,
-  onClearAll,
-  onLogEntry,
-  onLogAll,
+  shell,
   onMealPlanUndo,
-  onDismissMealPlanUndo,
 }: HomeMealPlanBlockProps) {
+  const {
+    syncingMealPlanQueue,
+    mealPlanQueue,
+    mealPlanSyncProgress,
+    failedMealPlanIds,
+    retryingMealPlanId,
+    loggingMealKey,
+    loggingMeals,
+    mealPlanUndo,
+    mealPlanUndoing,
+    flushMealPlanQueue,
+    retryFailedMealPlanQueue,
+    retryMealPlanItem,
+    dismissMealPlanItem,
+    clearMealPlanQueue,
+    logMealPlanEntry,
+    logAllMealPlan,
+    dismissMealPlanUndo,
+  } = shell;
+
   return (
     <>
       <MealPlanSyncAwarenessSlot
@@ -76,19 +66,19 @@ export function HomeMealPlanBlock({
         scrollToQueueToken={scrollToMealPlanQueue}
         noPlanToday={mealPlan.length === 0}
         bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
-        onSyncAll={onFlushQueue}
-        onRetryFailed={onRetryFailed}
-        onRetry={onRetryItem}
-        onDismissItem={onDismissItem}
-        onClearAll={onClearAll}
+        onSyncAll={() => void flushMealPlanQueue()}
+        onRetryFailed={() => void retryFailedMealPlanQueue()}
+        onRetry={(item) => void retryMealPlanItem(item)}
+        onDismissItem={dismissMealPlanItem}
+        onClearAll={clearMealPlanQueue}
       />
 
       <MealPlanTodayCard
         mealPlan={mealPlan}
         loggingMealKey={loggingMealKey}
         loggingMeals={loggingMeals}
-        onLogEntry={onLogEntry}
-        onLogAll={onLogAll}
+        onLogEntry={logMealPlanEntry}
+        onLogAll={logAllMealPlan}
         hideWhenEmpty
         message={mealPlanMessage}
         hideMessage={!!mealPlanUndo}
@@ -101,7 +91,7 @@ export function HomeMealPlanBlock({
         <UndoToast
           message={`Logged ${mealPlanUndo.label}`}
           onUndo={onMealPlanUndo}
-          onDismiss={onDismissMealPlanUndo}
+          onDismiss={dismissMealPlanUndo}
           undoing={mealPlanUndoing}
         />
       )}

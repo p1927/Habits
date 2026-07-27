@@ -1,6 +1,6 @@
 # cursor-loop
 
-Standalone terminal loop system for **Cursor Agent** chats. One paste per window → agent arms a persistent wake loop and keeps working.
+Standalone terminal loop system for **Cursor Agent** chats. One paste per window → agent arms dynamic wake (`arm-wake.sh`) and keeps working.
 
 No MCP. No server. Works in any repo with bash, python3, and Cursor Editor Agent.
 

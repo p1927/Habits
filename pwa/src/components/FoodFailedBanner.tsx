@@ -11,7 +11,7 @@ export function FoodFailedBanner({ failedCount, onRetryAll }: FoodFailedBannerPr
       <span>
         {failedCount} food log{failedCount === 1 ? '' : 's'} failed to save.
       </span>
-      <button type="button" className="btn-small btn-pill" onClick={onRetryAll}>
+      <button type="button" className="btn-pill btn-pill-outline" onClick={onRetryAll}>
         Retry all
       </button>
     </div>

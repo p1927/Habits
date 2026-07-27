@@ -9,6 +9,7 @@ from pathlib import Path
 
 import build_wake_prompt
 import loop_hook_lib as mod
+import ritual_phase as rp
 
 
 def _is_loop_up(binding: dict) -> bool:
@@ -71,11 +72,25 @@ def main() -> int:
         last_exit_note = f" Last exit: {last_exit.read_text(encoding='utf-8').strip()}."
 
     prompt_json = build_wake_prompt.build_prompt(
+        root=root,
         loop_id=loop_id,
         contract_doc=contract_doc,
         state_file=state_file,
         recovery=True,
     )
+
+    ritual_note = ""
+    if state_file:
+        state_path = root / state_file
+        if state_path.is_file():
+            state_text = state_path.read_text(encoding="utf-8")
+            checkpoint = rp.parse_checkpoint_table(state_text)
+            gate = rp.required_phase_before_arm(checkpoint, state_text, project_root=root, mode="arm")
+            if not gate.ok:
+                ritual_note = (
+                    f" RITUAL INCOMPLETE: allowed_phase={gate.allowed_phase}; {gate.fix}; "
+                    f"Phase line: {rp.phase_line_marker(gate.allowed_phase)}."
+                )
 
     msg = (
         f"Loop {loop_id} wake is DOWN (mode={binding.get('loop_mode', 'dynamic')}). "
@@ -84,9 +99,10 @@ def main() -> int:
     if state_file:
         msg += f" and {state_file}"
     msg += (
-        "; run Ritual deliverable THIS turn (ship backlog item or documented blocker). "
-        "Then arm next wake with arm-wake.sh. Do not defer work to next tick. "
-        f"Wake payload: {prompt_json}.{last_exit_note}"
+        "; run Ritual deliverable THIS turn (strict phases 1→9, one at a time). "
+        "Then arm next wake with arm-wake.sh only (never start agent-loop.sh in dynamic mode). "
+        "Do not defer work to next tick. "
+        f"Wake payload: {prompt_json}.{ritual_note}{last_exit_note}"
     )
     if recovery_turns >= 3:
         msg += (

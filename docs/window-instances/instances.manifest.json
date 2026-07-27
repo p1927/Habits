@@ -10,7 +10,7 @@
       "state_file": "docs/window-instances/worker-relay/STATE.md",
       "sentinel": "AGENT_LOOP_TICK_HABITS",
       "wake_sentinel": "AGENT_LOOP_WAKE_HABITS",
-      "interval_sec": 60,
+      "interval_sec": 120,
       "backlog_sections": [
         "BACKLOG",
         "BRAINSTORM"

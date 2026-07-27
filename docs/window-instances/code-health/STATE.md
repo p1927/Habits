@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:40:00Z |
-| where_we_are | ch-120 ringShareCardCanvas split shipped |
-| confirmed_next | ch-121 — weekReportPdf (136) or api.ts (302) |
+| reviewed_at | 2026-07-27T14:16:00Z |
+| where_we_are | ch-122 useMealPlanQueueSyncActions split shipped |
+| confirmed_next | ch-123 — api.ts (307) split |
 
 ---
 
@@ -18,12 +18,12 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:40:00Z |
-| code_changed | `yes` |
-| confirmed_next | ch-121 |
-| loops | wake **ARMED** PID 36183 (120s) — no duplicate arm this turn |
+| last_wake | 2026-07-27T14:16:00Z |
+| confirmed_next | ch-123 |
+| loops | wake re-armed (recovery) |
 | phase | 9-arm |
-| review_status | triaged |
+| code_changed | yes |
+| review_status | done |
 | review_round | `1` |
 
 ---
@@ -156,7 +156,9 @@
 - [x] ch-118 | `Day.tsx` → header + meal + schedule + alerts stacks (156→54) | structure | done tick #96
 - [x] ch-119 | `useCameraCapture.ts` → stream + actions modules (137→26) | structure | done tick #97
 - [x] ch-120 | `ringShareCardCanvas.ts` (143) split | structure | drawRings + render + export; canvas 143→16 re-export |
-- [ ] ch-121 | `weekReportPdf.ts` (136) split | structure | queued |
+- [x] ch-121 | `weekReportPdf.ts` (136) split | structure | types + docUtils + sections; main 136→20 |
+- [x] ch-122 | `useMealPlanQueueSyncActions.ts` (181) split | structure | stableCallbacks + actionRunners; main 181→111 |
+- [ ] ch-123 | `api.ts` (307) split | structure | queued — group endpoints by domain |
 
 ---
 
@@ -281,6 +283,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | ch-122 | useMealPlanQueueSyncActions split (stableCallbacks + runners) | build | pending |
+| 2026-07-27 | ch-121 | weekReportPdf split (types/docUtils/sections) | build | pending |
 | 2026-07-27 | ch-120 | ringShareCardCanvas split (draw/render/export) | build | pending |
 | 2026-07-27 | loop-setup | AGENT_WAKE.md + dynamic re-arm protocol | docs | pending |
 | 2026-07-27 | ch-001 + ch-002 | MealPlanSyncAwarenessSlot + label in lib | build | pending |

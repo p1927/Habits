@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { api, type FoodTodayResponse } from '../lib/api';
+import type { FoodTodayResponse } from '../lib/api';
+import { fetchFoodTodaySnapshot } from '../lib/foodTodaySnapshot';
 import { executeMealPlanEntryLog } from '../lib/mealPlanEntryLog';
 import type { MealPlanEntry, MealPlanSyncSource } from '../lib/mealPlanQueue';
 
@@ -39,7 +40,7 @@ export function useMealPlanEntryLogging({
 
   const resolveFoodBefore = useCallback(async () => {
     if (getFoodBeforeSync) return getFoodBeforeSync();
-    return api.getFoodToday();
+    return fetchFoodTodaySnapshot();
   }, [getFoodBeforeSync]);
 
   const logCtx = {

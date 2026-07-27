@@ -1,0 +1,2 @@
+export const SWIPE_STACK_THRESHOLD = 80;
+export const SWIPE_STACK_MAX_ROTATION = 12;

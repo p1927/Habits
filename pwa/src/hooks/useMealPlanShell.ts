@@ -1,5 +1,6 @@
-import { useCallback } from 'react';
-import { api, type FoodTodayResponse } from '../lib/api';
+import { useCallback, useEffect, useRef } from 'react';
+import type { FoodTodayResponse } from '../lib/api';
+import { fetchFoodTodaySnapshot, primeFoodTodaySnapshot } from '../lib/foodTodaySnapshot';
 import { dismissAllMealPlanQueue, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 import { useMealPlanUndo } from './useMealPlanUndo';
 import { useMealPlanQueueSync } from './useMealPlanQueueSync';
@@ -11,6 +12,7 @@ interface UseMealPlanShellOptions {
   setMessage: (msg: string) => void;
   setError: (msg: string) => void;
   active?: boolean;
+  autoFlushOnMount?: boolean;
   watchFocus?: boolean;
   watchQueueChanges?: boolean;
   food?: FoodTodayResponse | null;
@@ -25,6 +27,7 @@ export function useMealPlanShell({
   setMessage,
   setError,
   active = true,
+  autoFlushOnMount = true,
   watchFocus = false,
   watchQueueChanges = false,
   food,
@@ -41,10 +44,40 @@ export function useMealPlanShell({
     handleUndo: handleMealPlanUndo,
   } = useMealPlanUndo(serverOnline);
 
-  const getFoodBeforeSync = useCallback(async () => {
-    if (food !== undefined) return food ?? (await api.getFoodToday());
-    return api.getFoodToday();
+  const foodRef = useRef(food);
+  foodRef.current = food;
+
+  useEffect(() => {
+    if (food) primeFoodTodaySnapshot(food);
   }, [food]);
+
+  const getFoodBeforeSync = useCallback(async () => {
+    if (foodRef.current) return foodRef.current;
+    return fetchFoodTodaySnapshot();
+  }, []);
+
+  const clearError = useCallback(() => setError(''), [setError]);
+
+  const onBatchSynced = useCallback(
+    (synced: number, offeredUndo: boolean) => {
+      if (!offeredUndo) {
+        setMessage(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
+      }
+    },
+    [setMessage],
+  );
+
+  const onItemLogged = useCallback(
+    (label: string, offeredUndo: boolean) => {
+      if (!offeredUndo) setMessage(`Logged ${label}`);
+    },
+    [setMessage],
+  );
+
+  const onItemOffline = useCallback(
+    (label: string) => setMessage(`${label} still queued — offline`),
+    [setMessage],
+  );
 
   const {
     mealPlanQueue,
@@ -61,7 +94,7 @@ export function useMealPlanShell({
     serverOnline,
     syncSource,
     active,
-    autoFlushOnMount: true,
+    autoFlushOnMount,
     watchOnline: true,
     watchFocus,
     watchQueueChanges,
@@ -71,17 +104,11 @@ export function useMealPlanShell({
     dismissMealPlanUndo,
     snapshotFoodRows,
     offerUndoFromSummary,
-    onBatchSynced: (synced, offeredUndo) => {
-      if (!offeredUndo) {
-        setMessage(`Synced ${synced} queued meal log${synced === 1 ? '' : 's'}`);
-      }
-    },
-    onItemLogged: (label, offeredUndo) => {
-      if (!offeredUndo) setMessage(`Logged ${label}`);
-    },
-    onItemOffline: (label) => setMessage(`${label} still queued — offline`),
+    onBatchSynced,
+    onItemLogged,
+    onItemOffline,
     setError,
-    clearError: () => setError(''),
+    clearError,
   });
 
   const { loggingMealKey, loggingMeals, logMealPlanEntry, logAllMealPlan } = useMealPlanEntryLogging({

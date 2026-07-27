@@ -1,88 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
 import { Card } from './ui/Card';
-import { api, ApiError } from '../lib/api';
-import type { SavedRecipe } from './LogRecipesTabPanel';
+import { useHomeSavedRecipeCard, type UseHomeSavedRecipeCardOptions } from '../hooks/useHomeSavedRecipeCard';
 
-export interface HomeSavedRecipeCardProps {
-  serverOnline: boolean;
-  onFoodUpdated?: (summary: import('../lib/api').FoodTodayResponse) => void;
-  onError?: (message: string) => void;
-  onLogItem?: (food: string, quantityG: number) => void | Promise<void>;
-  onLogEntireRecipe?: () => void | Promise<void>;
-  logging?: boolean;
+export interface HomeSavedRecipeCardProps extends UseHomeSavedRecipeCardOptions {
+  onOpenLogRecipes?: () => void;
 }
 
-export function HomeSavedRecipeCard({
-  serverOnline,
-  onFoodUpdated,
-  onError,
-  onLogItem: onLogItemProp,
-  onLogEntireRecipe: onLogEntireRecipeProp,
-  logging: loggingProp,
-}: HomeSavedRecipeCardProps) {
-  const [recipe, setRecipe] = useState<SavedRecipe | null>(null);
-  const [sheetsConnected, setSheetsConnected] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loggingLocal, setLoggingLocal] = useState(false);
-  const logging = loggingProp ?? loggingLocal;
-  const [success, setSuccess] = useState('');
-
-  const loadRecipe = useCallback(async () => {
-    if (!serverOnline) return;
-    setLoading(true);
-    try {
-      const res = await api.getSavedRecipe();
-      setRecipe(res.recipe);
-      setSheetsConnected(res.sheets_connected);
-    } catch (e) {
-      setRecipe(null);
-      setSheetsConnected(null);
-      if (e instanceof ApiError && e.status === 401) return;
-      onError?.(e instanceof Error ? e.message : 'Failed to load saved recipe');
-    } finally {
-      setLoading(false);
-    }
-  }, [serverOnline, onError]);
-
-  useEffect(() => {
-    void loadRecipe();
-  }, [loadRecipe]);
-
-  const logItem = async (food: string, quantityG: number) => {
-    if (!serverOnline || logging) return;
-    if (onLogItemProp) {
-      await onLogItemProp(food, quantityG);
-      return;
-    }
-    setLoggingLocal(true);
-    try {
-      const res = await api.logFood(`${quantityG}g ${food}`);
-      onFoodUpdated?.(res.summary);
-      setSuccess(res.message);
-    } catch (e) {
-      onError?.(e instanceof Error ? e.message : 'Recipe item log failed');
-    } finally {
-      setLoggingLocal(false);
-    }
-  };
-
-  const logEntireRecipe = async () => {
-    if (!serverOnline || logging) return;
-    if (onLogEntireRecipeProp) {
-      await onLogEntireRecipeProp();
-      return;
-    }
-    setLoggingLocal(true);
-    try {
-      const res = await api.logSavedRecipe();
-      onFoodUpdated?.(res.summary);
-      setSuccess(res.message);
-    } catch (e) {
-      onError?.(e instanceof Error ? e.message : 'Recipe log failed');
-    } finally {
-      setLoggingLocal(false);
-    }
-  };
+export function HomeSavedRecipeCard(props: HomeSavedRecipeCardProps) {
+  const { serverOnline, onOpenLogRecipes } = props;
+  const {
+    recipe,
+    sheetsConnected,
+    loading,
+    logging,
+    success,
+    loadRecipe,
+    logItem,
+    logEntireRecipe,
+  } = useHomeSavedRecipeCard(props);
 
   if (!serverOnline) return null;
 
@@ -92,7 +26,7 @@ export function HomeSavedRecipeCard({
         <div>
           <p className="section-eyebrow">Recipes</p>
           <h2>Saved recipe</h2>
-          <p className="muted">From Save Reciepe tab · log without opening Log</p>
+          <p className="muted">From Save Recipe tab · log without opening Log</p>
         </div>
         <button
           type="button"
@@ -108,7 +42,7 @@ export function HomeSavedRecipeCard({
       {sheetsConnected === false ? (
         <p className="muted">Google Sheets not connected — link in Settings.</p>
       ) : !recipe ? (
-        <p className="muted">No saved recipe found in Save Reciepe tab.</p>
+        <p className="muted">No saved recipe found in Save Recipe tab.</p>
       ) : (
         <>
           <h3 className="recipes-saved-name">{recipe.name}</h3>
@@ -147,7 +81,21 @@ export function HomeSavedRecipeCard({
             >
               {logging ? 'Logging…' : 'Log entire recipe today'}
             </button>
+            {onOpenLogRecipes && (
+              <button
+                type="button"
+                className="btn-pill btn-pill-outline"
+                disabled={logging}
+                aria-label="Open full saved recipe in Log Recipes tab"
+                onClick={onOpenLogRecipes}
+              >
+                See full recipe
+              </button>
+            )}
           </div>
+          {onOpenLogRecipes && (
+            <p className="home-trend-card-hint muted">Opens Log → Recipes with sheet data loaded</p>
+          )}
         </>
       )}
     </Card>

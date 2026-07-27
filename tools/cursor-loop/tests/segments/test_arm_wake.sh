@@ -12,17 +12,31 @@ test_arm_wake_idempotent() {
   loop_id="seg-arm-$(date +%s)"
   export TMPDIR="$tmp"
 
+  mkdir -p "$tmp/docs"
+  cat > "$tmp/docs/state.md" <<'EOF'
+## CHECKPOINT
+| Field | Value |
+| phase | `8-close` |
+| review_status | skipped |
+| review_skip_reason | test |
+| code_changed | no |
+EOF
+
   LOOP_ID="$loop_id" \
   WAKE_SENTINEL="AGENT_LOOP_WAKE_TEST" \
   INTERVAL=1 \
   CONTRACT_DOC="docs/agents/test.md" \
   STATE_FILE="docs/state.md" \
+  PROJECT_ROOT="$tmp" \
   bash "${ROOT}/scripts/arm-wake.sh" &
   local pid=$!
 
   sleep 0.3
   if ! LOOP_ID="$loop_id" WAKE_SENTINEL="AGENT_LOOP_WAKE_TEST" INTERVAL=1 \
-    CONTRACT_DOC="docs/agents/test.md" bash "${ROOT}/scripts/arm-wake.sh" | grep -q WAKE_ALREADY_ARMED; then
+    CONTRACT_DOC="docs/agents/test.md" \
+    STATE_FILE="docs/state.md" \
+    PROJECT_ROOT="$tmp" \
+    bash "${ROOT}/scripts/arm-wake.sh" | grep -q WAKE_ALREADY_ARMED; then
     kill "$pid" 2>/dev/null || true
     rm -rf "$tmp"
     echo "FAIL expected WAKE_ALREADY_ARMED"

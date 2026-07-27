@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { primeFoodTodaySnapshot } from '../lib/foodTodaySnapshot';
 import {
   api,
   ApiError,
@@ -31,37 +32,55 @@ export function useAgentContext(serverOnline: boolean, active: boolean) {
     error: null,
   });
 
+  const refreshInFlightRef = useRef<Promise<void> | null>(null);
+
   const refresh = useCallback(async () => {
-    if (!serverOnline) {
-      setState((s) => ({ ...s, loading: false, error: 'habits-api offline' }));
-      return;
+    if (refreshInFlightRef.current) {
+      return refreshInFlightRef.current;
     }
-    setState((s) => ({ ...s, loading: true, error: null }));
-    try {
-      const [food, habits, calendar, futureSelf] = await Promise.all([
-        api.getFoodToday(),
-        api.getHabitsToday(),
-        api.getCalendarToday(),
-        api.getFutureSelfSummary(),
-      ]);
-      setState({
-        food,
-        habits,
-        calendar: calendar.events ?? [],
-        summary: futureSelf.summary ?? null,
-        loading: false,
-        error: null,
-      });
-    } catch (e) {
-      if (e instanceof ApiError && e.status === 401) {
-        setState((s) => ({ ...s, loading: false, error: 'Unauthorized — save bearer in Settings' }));
+
+    const run = (async () => {
+      if (!serverOnline) {
+        setState((s) => ({ ...s, loading: false, error: 'habits-api offline' }));
         return;
       }
-      setState((s) => ({
-        ...s,
-        loading: false,
-        error: e instanceof Error ? e.message : 'Failed to load context',
-      }));
+      setState((s) => ({ ...s, loading: true, error: null }));
+      try {
+        const [food, habits, calendar, futureSelf] = await Promise.all([
+          api.getFoodToday(),
+          api.getHabitsToday(),
+          api.getCalendarToday(),
+          api.getFutureSelfSummary(),
+        ]);
+        primeFoodTodaySnapshot(food);
+        setState({
+          food,
+          habits,
+          calendar: calendar.events ?? [],
+          summary: futureSelf.summary ?? null,
+          loading: false,
+          error: null,
+        });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 401) {
+          setState((s) => ({ ...s, loading: false, error: 'Unauthorized — save bearer in Settings' }));
+          return;
+        }
+        setState((s) => ({
+          ...s,
+          loading: false,
+          error: e instanceof Error ? e.message : 'Failed to load context',
+        }));
+      }
+    })();
+
+    refreshInFlightRef.current = run;
+    try {
+      await run;
+    } finally {
+      if (refreshInFlightRef.current === run) {
+        refreshInFlightRef.current = null;
+      }
     }
   }, [serverOnline]);
 

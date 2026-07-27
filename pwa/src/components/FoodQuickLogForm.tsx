@@ -20,7 +20,8 @@ export function FoodQuickLogForm({
   onSubmit,
 }: FoodQuickLogFormProps) {
   return (
-    <form className="card" onSubmit={onSubmit}>
+    <form className="ui-card ui-card--default log-type-card home-export-card--health" onSubmit={onSubmit}>
+      <p className="section-eyebrow">Voice</p>
       <h2>Quick log</h2>
       <label className="field">
         What did you eat?
@@ -39,7 +40,7 @@ export function FoodQuickLogForm({
           ))}
         </select>
       </label>
-      <button type="submit" disabled={!serverOnline || loading || !description.trim()}>
+      <button type="submit" className="btn-pill" disabled={!serverOnline || loading || !description.trim()}>
         Log meal
       </button>
     </form>

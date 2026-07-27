@@ -1,39 +1,13 @@
-import { useCallback, useMemo } from 'react';
-import { type FoodTodayResponse } from '../lib/api';
-import {
-  getMealPlanQueue,
-  type MealPlanSyncSource,
-  type QueuedMealPlanLog,
-} from '../lib/mealPlanQueue';
-import {
-  executeMealPlanQueueBatchRun,
-  executeMealPlanQueueItemRetry,
-  type MealPlanSyncUndoContext,
-} from '../lib/mealPlanQueueSyncRunner';
+import { useMemo } from 'react';
+import { buildMealPlanSyncActionBundle } from '../lib/mealPlanQueueSyncActionBuilders';
 import type { useMealPlanQueueSyncState } from './useMealPlanQueueSyncState';
+import type { UseMealPlanQueueSyncOptions } from './useMealPlanQueueSyncOptions';
+import { useMealPlanSyncStableCallbacks } from './useMealPlanSyncStableCallbacks';
+import { useMealPlanQueueSyncActionRunners } from './useMealPlanQueueSyncActionRunners';
+
+export type { UseMealPlanQueueSyncOptions } from './useMealPlanQueueSyncOptions';
 
 type SyncState = ReturnType<typeof useMealPlanQueueSyncState>;
-
-export interface UseMealPlanQueueSyncOptions {
-  serverOnline: boolean;
-  syncSource?: MealPlanSyncSource;
-  active?: boolean;
-  autoFlushOnMount?: boolean;
-  watchOnline?: boolean;
-  watchFocus?: boolean;
-  watchQueueChanges?: boolean;
-  getFoodBeforeSync: () => FoodTodayResponse | null | Promise<FoodTodayResponse | null>;
-  onFoodUpdated?: (summary: FoodTodayResponse) => void;
-  afterSync?: () => void;
-  dismissMealPlanUndo: () => void;
-  snapshotFoodRows: (summary: FoodTodayResponse | null) => Set<number>;
-  offerUndoFromSummary: (beforeRows: Set<number>, afterSummary: FoodTodayResponse, label: string) => boolean;
-  onBatchSynced?: (synced: number, offeredUndo: boolean) => void;
-  onItemLogged?: (label: string, offeredUndo: boolean) => void;
-  onItemOffline?: (label: string) => void;
-  setError?: (message: string) => void;
-  clearError?: () => void;
-}
 
 interface UseMealPlanQueueSyncActionsOptions extends UseMealPlanQueueSyncOptions {
   syncState: SyncState;
@@ -70,111 +44,67 @@ export function useMealPlanQueueSyncActions({
     resetFailedIds,
   } = syncState;
 
-  const undoContext = useMemo<MealPlanSyncUndoContext>(
-    () => ({
-      getFoodBeforeSync,
-      snapshotFoodRows,
-      offerUndoFromSummary,
-      onFoodUpdated,
-      onBatchSynced,
-      onItemLogged,
-      onItemOffline,
-      afterSync,
-      setError,
-    }),
-    [
-      getFoodBeforeSync,
-      snapshotFoodRows,
-      offerUndoFromSummary,
-      onFoodUpdated,
-      onBatchSynced,
-      onItemLogged,
-      onItemOffline,
-      afterSync,
-      setError,
-    ],
-  );
+  const stableCallbacks = useMealPlanSyncStableCallbacks({
+    getFoodBeforeSync,
+    onFoodUpdated,
+    afterSync,
+    onBatchSynced,
+    onItemLogged,
+    onItemOffline,
+    setError,
+    clearError,
+  });
 
-  const batchControls = useMemo(
-    () => ({
-      dismissMealPlanUndo,
-      clearError,
-      setSyncing: setSyncingMealPlanQueue,
-      setProgress: setMealPlanSyncProgress,
-      onItemSuccess: applySuccessfulSync,
-      onItemFailure: (item: QueuedMealPlanLog, e: unknown) => {
-        markItemFailed(item.id);
-        setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
-      },
-      onQueueRefresh: syncMealPlanQueue,
-      pruneFailedIds,
-    }),
+  const { undoContext, batchControls, retryControls } = useMemo(
+    () =>
+      buildMealPlanSyncActionBundle({
+        getFoodBeforeSync: stableCallbacks.stableGetFoodBeforeSync,
+        snapshotFoodRows,
+        offerUndoFromSummary,
+        onFoodUpdated: stableCallbacks.stableOnFoodUpdated,
+        onBatchSynced: stableCallbacks.stableOnBatchSynced,
+        onItemLogged: stableCallbacks.stableOnItemLogged,
+        onItemOffline: stableCallbacks.stableOnItemOffline,
+        afterSync: stableCallbacks.stableAfterSync,
+        setError: stableCallbacks.stableSetError,
+        dismissMealPlanUndo,
+        clearError: stableCallbacks.stableClearError,
+        setSyncingMealPlanQueue,
+        setMealPlanSyncProgress,
+        applySuccessfulSync,
+        markItemFailed,
+        syncMealPlanQueue,
+        pruneFailedIds,
+        setRetryingMealPlanId,
+      }),
     [
+      stableCallbacks,
+      snapshotFoodRows,
+      offerUndoFromSummary,
       dismissMealPlanUndo,
-      clearError,
       setSyncingMealPlanQueue,
       setMealPlanSyncProgress,
       applySuccessfulSync,
       markItemFailed,
       syncMealPlanQueue,
       pruneFailedIds,
-      setError,
-    ],
-  );
-
-  const runQueueSync = useCallback(
-    async (items: QueuedMealPlanLog[]) => {
-      if (!active || !serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
-      await executeMealPlanQueueBatchRun(items, syncSource, undoContext, batchControls);
-    },
-    [active, serverOnline, syncSource, undoContext, batchControls],
-  );
-
-  const flushMealPlanQueue = useCallback(async () => {
-    await runQueueSync(getMealPlanQueue());
-  }, [runQueueSync]);
-
-  const retryFailedMealPlanQueue = useCallback(async () => {
-    const queue = getMealPlanQueue();
-    const failed = queue.filter((item) => failedMealPlanIds.has(item.id));
-    await runQueueSync(failed);
-  }, [runQueueSync, failedMealPlanIds]);
-
-  const retryMealPlanItem = useCallback(
-    async (item: QueuedMealPlanLog) => {
-      if (!active || !serverOnline || retryingMealPlanId) return;
-      await executeMealPlanQueueItemRetry(item, undoContext, {
-        dismissMealPlanUndo,
-        clearError,
-        setRetryingId: setRetryingMealPlanId,
-        onItemSuccess: applySuccessfulSync,
-        markItemFailed,
-        onQueueRefresh: syncMealPlanQueue,
-        onItemOffline,
-        setError,
-      });
-    },
-    [
-      active,
-      serverOnline,
-      retryingMealPlanId,
-      undoContext,
-      dismissMealPlanUndo,
-      clearError,
       setRetryingMealPlanId,
-      applySuccessfulSync,
-      markItemFailed,
-      syncMealPlanQueue,
-      onItemOffline,
-      setError,
     ],
   );
+
+  const runners = useMealPlanQueueSyncActionRunners({
+    active,
+    serverOnline,
+    syncSource,
+    failedMealPlanIds,
+    retryingMealPlanId,
+    undoContext,
+    batchControls,
+    retryControls,
+  });
 
   return {
-    runQueueSync,
-    flushMealPlanQueue,
-    retryFailedMealPlanQueue,
-    retryMealPlanItem,
+    ...runners,
     dismissMealPlanItem,
     resetFailedIds,
   };

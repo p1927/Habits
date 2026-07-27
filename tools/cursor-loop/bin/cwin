@@ -107,7 +107,7 @@ def cmd_status(project: Path, as_json: bool) -> int:
             f"{r['backlog_open']:<7} {r['paste']}"
         )
     if any(r["wake"] == "DOWN" for r in rows):
-        print('\nTip: send "keep working" in DOWN chats to re-arm, or: cwin refresh')
+        print('\nTip: send "keep working" in DOWN chats to re-arm; or: cwin sync / cwin refresh')
     return 0
 
 
@@ -151,6 +151,18 @@ def cmd_refresh(project: Path, loop_id: str | None) -> int:
     return subprocess.call(cmd, cwd=project)
 
 
+def cmd_sync(project: Path) -> int:
+    manifest = load_json(project / ".cursor" / "cursor-loop.json")
+    preset = manifest.get("instances_preset") or ""
+    if not preset:
+        print("cwin sync: no instances_preset in cursor-loop.json — pass --preset", file=sys.stderr)
+        return 1
+    rc = cmd_install(project, preset)
+    if rc:
+        return rc
+    return cmd_refresh(project, None)
+
+
 def cmd_validate(project: Path) -> int:
     rc1 = subprocess.call(["python3", str(scripts_dir(project) / "validate_instance.py"), str(project)])
     rc2 = subprocess.call(["python3", str(scripts_dir(project) / "validate_contracts.py"), str(project)])
@@ -185,6 +197,7 @@ def main() -> int:
     sub.add_parser("validate")
     sub.add_parser("doctor")
     sub.add_parser("refresh")
+    sub.add_parser("sync", help="Re-link rules/instances from package + kill stale loops")
     p = sub.add_parser("paste")
     p.add_argument("loop_id")
     p = sub.add_parser("bootstrap")
@@ -211,6 +224,7 @@ def main() -> int:
         "validate": lambda: cmd_validate(project),
         "doctor": lambda: cmd_doctor(project),
         "refresh": lambda: cmd_refresh(project, None),
+        "sync": lambda: cmd_sync(project),
         "stop": lambda: cmd_refresh(project, None if args.all or not args.loop_id else args.loop_id),
         "bootstrap": lambda: cmd_bootstrap(project, args.preset, args.mode, args.refresh),
         "install": lambda: cmd_install(project, args.preset or None),

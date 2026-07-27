@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { FoodTodayResponse } from '../lib/api';
 import { getFoodLogQueue, isOfflineError, removeFoodLogQueueItem } from '../lib/foodQueue';
 import { logQueuedFoodItem, type OptimisticFoodEntry } from '../lib/optimisticFoodLog';
@@ -55,18 +55,24 @@ export function useFoodLogQueueFlush({
     }
   }, [serverOnline, setData, setSuccess, setError, setPending, setQueueSyncClearedToken]);
 
+  const flushRef = useRef(flushQueue);
+  flushRef.current = flushQueue;
+  const flushedOnMountRef = useRef(false);
+
   useEffect(() => {
-    void flushQueue();
-  }, [flushQueue]);
+    if (flushedOnMountRef.current) return;
+    flushedOnMountRef.current = true;
+    void flushRef.current();
+  }, []);
 
   useEffect(() => {
     const onOnline = () => {
       syncQueuedFromStorage();
-      void flushQueue();
+      void flushRef.current();
     };
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [flushQueue, syncQueuedFromStorage]);
+  }, [syncQueuedFromStorage]);
 
   return { flushQueue };
 }

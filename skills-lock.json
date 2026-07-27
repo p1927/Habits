@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "skills": {
+    "21st-ai": {
+      "source": "21st-dev/skill",
+      "sourceType": "github",
+      "skillPath": "skills/21st-ai/SKILL.md",
+      "computedHash": "bdebc2372f7543ff9211d9b0b212e482d77690554920e0b13ded15a2bfcebe77"
+    },
+    "21st-cli-use": {
+      "source": "21st-dev/skill",
+      "sourceType": "github",
+      "skillPath": "skills/21st-cli-use/SKILL.md",
+      "computedHash": "bfb6ebf65631a60d837ca6b3db710154f4cfcf313b5e8e4ddaa485b546f021a6"
+    },
+    "21st-design-sync": {
+      "source": "21st-dev/skill",
+      "sourceType": "github",
+      "skillPath": "skills/21st-design-sync/SKILL.md",
+      "computedHash": "668dee53bbf315073de60504ff0c74b8fc2bb3a41dc55e3a128d19351dbeb842"
+    },
+    "21st-registry": {
+      "source": "21st-dev/skill",
+      "sourceType": "github",
+      "skillPath": "skills/21st-registry/SKILL.md",
+      "computedHash": "f052bd49a275784baafc4b083f7852ce9d3d99267cc15aaa69e292a1aba45c9f"
+    },
+    "agile-product-owner": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/agile-product-owner/skills/agile-product-owner/SKILL.md",
+      "computedHash": "bba8b59b943a15eb5e10afddeb6835dc924e192dcdbcf5a7d10d69bd58a863b7"
+    },
+    "competitive-teardown": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/skills/competitive-teardown/SKILL.md",
+      "computedHash": "67e34c1b2f60992e2b0413835166ee2c8786da2cbb50dcbd25713eee7405a7b7"
+    },
+    "continuous-discovery": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "continuous-discovery/SKILL.md",
+      "computedHash": "a3142ce0cfd6bb095fb351de65c984e82fd0d61217b31c0e10f7f432b3452bd0"
+    },
+    "cro-methodology": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "cro-methodology/SKILL.md",
+      "computedHash": "4c8b86029d16a16a3a62c45a0bdde2b45caa20e73a26b4e5ef46129615cc1a9c"
+    },
+    "define-jtbd-canvas": {
+      "source": "product-on-purpose/pm-skills",
+      "sourceType": "github",
+      "skillPath": "skills/define-jtbd-canvas/SKILL.md",
+      "computedHash": "1e5437777e4761e8a8a1fea1b3383e31b388686f86e5e045bb4379aa14482416"
+    },
+    "define-opportunity-tree": {
+      "source": "product-on-purpose/pm-skills",
+      "sourceType": "github",
+      "skillPath": "skills/define-opportunity-tree/SKILL.md",
+      "computedHash": "16ccda39432c0764110a110d7e69e5a4a1f5422cfc0212674097fc7c972391c5"
+    },
+    "define-prioritization-framework": {
+      "source": "product-on-purpose/pm-skills",
+      "sourceType": "github",
+      "skillPath": "skills/define-prioritization-framework/SKILL.md",
+      "computedHash": "500a7f90a80f392995ed5363102cd4487446f8ec86ab71f6e480d99a6a3af0ab"
+    },
+    "define-problem-statement": {
+      "source": "product-on-purpose/pm-skills",
+      "sourceType": "github",
+      "skillPath": "skills/define-problem-statement/SKILL.md",
+      "computedHash": "6001540b44169b795886e40171e3421aaa42e1ddd3f2bb0e7cda5cec38a5539a"
+    },
+    "design-everyday-things": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "design-everyday-things/SKILL.md",
+      "computedHash": "fc4bfa2232939b6e784a12785989e3c56270c9365a3c4e7cfd86dfbde6721e07"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+    },
+    "high-end-visual-design": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/soft-skill/SKILL.md",
+      "computedHash": "7db385e4c5370e5a7fca9704a1361b056e4504ea6a03924bb86f33a4f00b5c73"
+    },
+    "hooked-ux": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "hooked-ux/SKILL.md",
+      "computedHash": "eb9f8580c0308f1352d836060c7307beb52a3146530a745505a521247519fef8"
+    },
+    "improve-app": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "improve-app/SKILL.md",
+      "computedHash": "2f99e0fc55c4bbf954c951747186327f973933ced3f1a149b8f4c0026ada1d11"
+    },
+    "inspired-product": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "inspired-product/SKILL.md",
+      "computedHash": "e334c58c654e3bd073d79febda635f3d8170c42da047b20e2c3d8b2987d1ab24"
+    },
+    "interaction-design": {
+      "source": "podo/design-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/interaction-design/SKILL.md",
+      "computedHash": "1abd2c35d94b3f677c579367c62301d04252d7a1f40c82fdeb4a12973f81330b"
+    },
+    "jobs-to-be-done": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "jobs-to-be-done/SKILL.md",
+      "computedHash": "d2d74d9dafd1a2d7da3542fa330a907d465833689c11a6d6daf214ff4f265fb5"
+    },
+    "mobile-app-ui-design": {
+      "source": "podo/design-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mobile-app-ui-design/SKILL.md",
+      "computedHash": "6ee320195cd24a634caa2df067258fc025d454589b25763fff33f62b43f66f02"
+    },
+    "plan-design-review": {
+      "source": "podo/design-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/plan-design-review/SKILL.md",
+      "computedHash": "973f2ed0c5bee22cc86010919f2ba8ceae4ee062c9dcf7245cee848ce96612b5"
+    },
+    "product-manager-toolkit": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/skills/product-manager-toolkit/SKILL.md",
+      "computedHash": "8fa0c8d20b5d6e908747e5f27ccc602bb9bfff7927aa0bdc1401af082e9c4919"
+    },
+    "product-strategist": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/skills/product-strategist/SKILL.md",
+      "computedHash": "9e372ea31555fc2d7075d2d51c74904ac8bb55719c92e9b3391c41436449a1b8"
+    },
+    "saas-metrics-coach": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "finance/skills/saas-metrics-coach/SKILL.md",
+      "computedHash": "f4af61ab2a09959ce10a46275feb9d8139cd624b73d46e2a68e5b3983a4f61a0"
+    },
+    "ux-heuristics": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "ux-heuristics/SKILL.md",
+      "computedHash": "078959463a4d191d3ff17fd7a0b036697c79da3e86102251c98f76ffa9e66a28"
+    },
+    "ux-researcher-designer": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/skills/ux-researcher-designer/SKILL.md",
+      "computedHash": "cfa951185ddf2d45b2ccbe1027921d6cf79144729a05f772c3b84d3223de2366"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+    }
+  }
+}

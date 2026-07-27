@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:45:00Z |
-| where_we_are | ui-053 shipped (prop-ui-039 deep link); camera/barcode viewfinder polish |
-| confirmed_next | scan for new UX_GAPS; PO triage remaining proposals |
+| reviewed_at | 2026-07-27T14:16:00Z |
+| where_we_are | Backlog complete; audit shipped LogFoodEditSheet + recipe hint; ux-gap-040 proposed |
+| confirmed_next | await PO proposals; code-health triage ux-gap-040 |
 
 ---
 
@@ -18,16 +18,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:45:00Z |
+| last_wake | 2026-07-27T14:16:00Z |
 | next_mode | `C` |
-| current_item_id | ui-053 |
+| current_item_id | — |
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | — |
 | review_round | `0` |
 | review_diff_range | — |
 | code_changed | `yes` |
-| confirmed_next | audit remaining orphan surfaces; await PO on new gaps |
+| confirmed_next | await PO proposals; code-health triage ux-gap-040 |
 | loops | dynamic wake — paste `@docs/window-instances/ux-relay/INSTANCE.md keep working` |
 
 ---
@@ -44,7 +44,8 @@
 
 | id | status | surface | gap | reference app | po_response |
 |----|--------|---------|-----|---------------|-------------|
-| ux-gap-039 | po-agreed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | PO refined AC; Worker relay-150 |
+| ux-gap-039 | po-agreed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | shipped ui-053 |
+| ux-gap-040 | ux-proposed | Global CSS | Remove unused legacy `.card`, `.card-placeholder`, `.btn-decline` rules (no TSX references) | — | Code window cleanup |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -122,6 +123,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | C | audit | LogFoodEditSheet pill CTAs + recipe deep-link hint; ux-gap-040 proposed | build | pending |
 | 2026-07-27 | C | ui-053 | Home→Log Recipes deep link + camera/barcode viewfinder | build | pending |
 | 2026-07-27 | C | ui-038, ui-052 | Agent stream scroll + Future Self swipe Hinge | build | pending |
 | 2026-07-27 | C | ui-016–018 | Gemini theme + Health tiles + Translate scan | build | pending |

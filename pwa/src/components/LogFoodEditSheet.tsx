@@ -31,9 +31,14 @@ export function LogFoodEditSheet({
         Quantity (g)
         <input type="number" value={quantity} onChange={(e) => onQuantityChange(e.target.value)} />
       </label>
-      <button type="button" onClick={onSubmit}>
-        Log food
-      </button>
+      <div className="settings-actions">
+        <button type="button" className="btn-pill" onClick={onSubmit} disabled={!name.trim()}>
+          Log food
+        </button>
+        <button type="button" className="btn-pill btn-pill-outline" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
     </BottomSheet>
   );
 }

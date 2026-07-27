@@ -11,7 +11,8 @@ export function FoodProteinProgressCard({ data }: FoodProteinProgressCardProps) 
   const pct = proteinProgressPct(protein, target);
 
   return (
-    <div className="progress-card card">
+    <div className="progress-card home-export-card--health ui-card ui-card--default">
+      <p className="section-eyebrow">Nutrition</p>
       <div className="progress-label">
         <span>Protein today</span>
         <span>

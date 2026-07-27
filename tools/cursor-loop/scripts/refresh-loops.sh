@@ -55,6 +55,7 @@ else
         "${TMP}"/cursor-loop-*.last_exit \
         "${TMP}"/cursor-loop-*.wake.armed 2>/dev/null || true
   echo "refresh-loops: stopped all cursor-loop and legacy loop processes"
+  echo "refresh-loops: persistent agent-loop.sh removed (window instances use dynamic arm-wake.sh only)"
 fi
 
 if [[ "$FULL" -eq 1 ]]; then

@@ -19,6 +19,19 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 WAKE_PIDFILE="${WAKE_PIDFILE:-${TMPDIR:-/tmp}/cursor-loop-${LOOP_ID}.wake.pid}"
 LAST_ARMED="${TMPDIR:-/tmp}/cursor-loop-${LOOP_ID}.wake.armed"
 
+if [[ -n "$STATE_FILE" && -f "$PROJECT_ROOT/$STATE_FILE" ]]; then
+  gate_args=(
+    --project "$PROJECT_ROOT"
+    --loop-id "$LOOP_ID"
+    --state-file "$STATE_FILE"
+    --mode arm
+  )
+  if [[ -n "${RITUAL_GATE_FORCE:-}" ]]; then
+    gate_args+=(--force)
+  fi
+  python3 "${SCRIPT_DIR}/validate_ritual_gate.py" "${gate_args[@]}" || exit 1
+fi
+
 if [[ -f "$WAKE_PIDFILE" ]]; then
   old_pid="$(cat "$WAKE_PIDFILE" 2>/dev/null || true)"
   if [[ -n "$old_pid" ]] && kill -0 "$old_pid" 2>/dev/null; then
@@ -31,7 +44,8 @@ fi
 PAYLOAD="$(python3 "${SCRIPT_DIR}/build_wake_prompt.py" \
   --loop-id "$LOOP_ID" \
   --contract-doc "$CONTRACT_DOC" \
-  --state-file "$STATE_FILE")"
+  --state-file "$STATE_FILE" \
+  --project "$PROJECT_ROOT")"
 
 echo "$$" > "$WAKE_PIDFILE"
 date -u +"%Y-%m-%dT%H:%M:%SZ" > "$LAST_ARMED" 2>/dev/null || true

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.5.2
+
+- **Strict phase line** — `ritual_phase.py` state machine; phases 1→9 sequential, no jumps
+- **`validate_ritual_gate.py`** — hard block at `arm-wake.sh` and `checkpoint-loop.py --product` with guided `allowed_phase`
+- **Wake prompt** — always `allowed_phase=1-wake`; includes phase line + mandatory_commands
+- **`stop-tests.sh`** — kill hung `run-all.sh` / pytest runners
+- **`detect_code_changed.sh`** — Phase 5 git diff helper
+- **Doctor/validate** — fix round-0 review bypass; `--strict-review` flag
+
+## 0.5.1
+
+- **Dynamic-only enforcement** — agent-loop-contract forbids `agent-loop.sh` in dynamic mode; persistent loops reported as STALE in `loop-status` / `instance-doctor`
+- **`cwin sync`** — re-link rules, bootstrap preset, kill stale loops (run after `git pull`)
+- **Worker interval** — habits-pwa worker-relay 60s → 120s (fewer false DOWN windows during long turns)
+- **Stop-hook** — recovery message says never start `agent-loop.sh` in dynamic mode
+
 ## 0.4.0
 
 - **Dynamic wake default** (`loop_mode: dynamic`) — `arm-wake.sh` one-shot sleeper per turn instead of persistent `while true` (avoids ~35s SIGTERM)

@@ -8,7 +8,8 @@ interface FutureSelfTrackerCardProps {
 
 export function FutureSelfTrackerCard({ tracker, onUpdateMetric }: FutureSelfTrackerCardProps) {
   return (
-    <div className="card">
+    <div className="future-self-card future-self-card--hinge home-export-card--health ui-card ui-card--default">
+      <p className="section-eyebrow">Today</p>
       <h2>Today&apos;s tracker</h2>
       <p className="muted">{tracker.weekday} · {tracker.date}</p>
       <div className="tracker-grid">

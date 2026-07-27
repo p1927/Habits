@@ -1,7 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { getMealPlanFailedIds, MEAL_PLAN_QUEUE_CHANGE } from '../lib/mealPlanQueue';
 
+const mountFlushDone = new Set<string>();
+
 interface UseMealPlanQueueSyncEffectsOptions {
+  syncSource: string;
   active: boolean;
   autoFlushOnMount: boolean;
   watchOnline: boolean;
@@ -13,6 +16,7 @@ interface UseMealPlanQueueSyncEffectsOptions {
 }
 
 export function useMealPlanQueueSyncEffects({
+  syncSource,
   active,
   autoFlushOnMount,
   watchOnline,
@@ -22,6 +26,11 @@ export function useMealPlanQueueSyncEffects({
   flushMealPlanQueue,
   setFailedMealPlanIds,
 }: UseMealPlanQueueSyncEffectsOptions) {
+  const flushRef = useRef(flushMealPlanQueue);
+  const syncRef = useRef(syncMealPlanQueue);
+  flushRef.current = flushMealPlanQueue;
+  syncRef.current = syncMealPlanQueue;
+
   useEffect(() => {
     const syncFailedFromStorage = () => {
       setFailedMealPlanIds(new Set(getMealPlanFailedIds()));
@@ -39,15 +48,16 @@ export function useMealPlanQueueSyncEffects({
   }, [active, watchQueueChanges, syncMealPlanQueue]);
 
   useEffect(() => {
-    if (!active || !autoFlushOnMount) return;
-    void flushMealPlanQueue();
-  }, [active, autoFlushOnMount, flushMealPlanQueue]);
+    if (!active || !autoFlushOnMount || mountFlushDone.has(syncSource)) return;
+    mountFlushDone.add(syncSource);
+    void flushRef.current();
+  }, [active, autoFlushOnMount, syncSource]);
 
   useEffect(() => {
     if (!active || (!watchOnline && !watchFocus)) return;
     const onWake = () => {
-      syncMealPlanQueue();
-      void flushMealPlanQueue();
+      syncRef.current();
+      void flushRef.current();
     };
     if (watchOnline) window.addEventListener('online', onWake);
     if (watchFocus) window.addEventListener('focus', onWake);
@@ -55,5 +65,5 @@ export function useMealPlanQueueSyncEffects({
       if (watchOnline) window.removeEventListener('online', onWake);
       if (watchFocus) window.removeEventListener('focus', onWake);
     };
-  }, [active, watchOnline, watchFocus, syncMealPlanQueue, flushMealPlanQueue]);
+  }, [active, watchOnline, watchFocus]);
 }

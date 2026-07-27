@@ -1,12 +1,12 @@
 {
-  "version": "0.5.0",
+  "version": "0.5.2",
   "package_root": "tools/cursor-loop",
   "contracts_dir": "docs/window-instances",
+  "state_dir": "docs/window-instances",
+  "instances_manifest": "docs/window-instances/instances.manifest.json",
+  "instances_preset": "habits-pwa",
   "contract_globs": [
     "docs/window-instances/*/INSTANCE.md"
   ],
-  "binding_ttl_days": 30,
-  "instances_preset": "habits-pwa",
-  "instances_manifest": "docs/window-instances/instances.manifest.json",
-  "state_dir": "docs/window-instances"
+  "binding_ttl_days": 30
 }

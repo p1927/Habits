@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
+
+import ritual_phase as rp
 
 VALID_LOOP_MODES = frozenset({"dynamic", "persistent", "external"})
 
@@ -60,20 +61,23 @@ def parse_checkpoint_phase(state_path: Path) -> str:
     if not state_path.is_file():
         return "1-wake"
     text = state_path.read_text(encoding="utf-8")
-    if "## CHECKPOINT" not in text:
-        return "1-wake"
-    section = text.split("## CHECKPOINT", 1)[1]
-    if "\n## " in section:
-        section = section.split("\n## ", 1)[0]
-    for line in section.splitlines():
-        if "|" not in line:
-            continue
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) >= 3 and parts[1].strip("`") == "phase":
-            val = parts[2].strip("`").strip()
-            if val and val != "—":
-                return val
-    return "1-wake"
+    return rp.parse_checkpoint_table(text).get("phase", "1-wake") or "1-wake"
+
+
+def mandatory_commands(checkpoint: dict[str, str]) -> list[str]:
+    code_changed = (checkpoint.get("code_changed") or "no").strip().strip("`").lower() in (
+        "yes",
+        "true",
+        "1",
+    )
+    review_status = (checkpoint.get("review_status") or "pending").strip().strip("`").lower()
+    cmds: list[str] = []
+    if code_changed and review_status == "pending":
+        cmds.append("/code-review")
+    if code_changed and review_status in ("pending", "done"):
+        if review_status == "done":
+            cmds.append("/receiving-code-review")
+    return cmds
 
 
 def banner_for(loop_id: str, entry: dict | None) -> str:
@@ -116,10 +120,35 @@ def build_prompt(
         if state_file:
             parts.append(f"and {state_file}")
 
-    resume_phase = "1-wake"
+    checkpoint: dict[str, str] = {}
+    allowed_phase = "1-wake"
+    stored_phase = "1-wake"
     if root and state_file:
-        resume_phase = parse_checkpoint_phase(root / state_file)
-    parts.append(f"Resume at phase {resume_phase} if incomplete")
+        state_path = root / state_file
+        if state_path.is_file():
+            state_text = state_path.read_text(encoding="utf-8")
+            checkpoint = rp.parse_checkpoint_table(state_text)
+            stored_phase = checkpoint.get("phase", "1-wake")
+        allowed_phase = rp.allowed_phase_on_wake(stored_phase)
+
+    parts.append(
+        f"STRICT phase line 1→9: start at {allowed_phase}; advance one phase at a time; no jumps"
+    )
+    parts.append(f"Stored checkpoint phase was {stored_phase}; this wake begins at {allowed_phase}")
+    parts.append(f"Phase line: {rp.phase_line_marker(allowed_phase)}")
+
+    code_changed = (checkpoint.get("code_changed") or "no").strip().strip("`").lower() in (
+        "yes",
+        "true",
+        "1",
+    )
+    criteria = rp.phase_exit_criteria(allowed_phase, code_changed)
+    if criteria:
+        parts.append(f"Phase {allowed_phase} exit: {'; '.join(criteria[:3])}")
+
+    cmds = mandatory_commands(checkpoint)
+    if cmds:
+        parts.append(f"MANDATORY commands this turn if applicable: {', '.join(cmds)}")
 
     parts.append("follow CHECKPOINT.confirmed_next; run Ritual deliverable this turn")
     if recovery:
@@ -135,7 +164,14 @@ def build_prompt(
         "forbidden_loops": forbidden_loops(loop_id, manifest),
         "state_file": state_file,
         "read_order": READ_ORDER,
-        "resume_phase": resume_phase,
+        "resume_phase": allowed_phase,
+        "allowed_phase": allowed_phase,
+        "stored_phase": stored_phase,
+        "phase_line": rp.PHASES,
+        "code_changed": checkpoint.get("code_changed", "no"),
+        "review_status": checkpoint.get("review_status", "pending"),
+        "review_round": checkpoint.get("review_round", "0"),
+        "mandatory_commands": cmds,
         "prompt": "; ".join(parts) + ".",
     }
     return json.dumps(payload)
