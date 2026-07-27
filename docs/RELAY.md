@@ -11,9 +11,9 @@
 | reviewed_at | 2026-07-27T11:45:00Z |
 | git_branch | main |
 | uncommitted_files | App.css WIP, parallel window refactors (Day/Log/Cards/server) |
-| where_we_are | relay-149 shipped — VoiceCoachLayer + persistent iframe orb state. |
+| where_we_are | relay-149–151 shipped (voice orb, meal plan quick-add on Log Type tab). |
 | blockers | [] |
-| confirmed_next | relay-151 meal plan quick-add from WEEK MEALS |
+| confirmed_next | relay-152 accessibility audit |
 | brainstorm_notes | loops optional; keep shipping features |
 
 ---
@@ -26,7 +26,7 @@
 | status | ready |
 | current_item_id | — |
 | cycle_parity | even (next: feature) |
-| next_action | relay-151 meal plan quick-add from WEEK MEALS |
+| next_action | relay-152 accessibility audit |
 | blockers | [] |
 | loops | relay `scripts/agent-relay-loop.sh` (^AGENT_LOOP_TICK_HABITS, PID file); restart only in Habits terminal |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-151 | Meal plan quick-add from WEEK MEALS sheet | feature
 - [ ] relay-152 | Accessibility audit — ARIA, focus rings, contrast on new tabs | maintenance
 - [ ] relay-153 | Optimistic UI + retry on food log failures | feature
 
@@ -60,7 +59,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-149 | done | build | — |
+| 2026-07-27 | relay-151 | done | build | — |
+| 2026-07-27 | relay-149 | done | build | 3bf2d18 |
 | 2026-07-27 | relay-150 | done | build | 4e10f9b |
 | 2026-07-27 | relay-148 | done | build | 4ab0f17 |
 | 2026-07-27 | relay-147 | done | build | 0e35436 |

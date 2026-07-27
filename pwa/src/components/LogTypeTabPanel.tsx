@@ -1,7 +1,9 @@
 import { BarcodeScanner } from './BarcodeScanner';
 import { Card } from './ui/Card';
+import { MealPlanQuickAddBar } from './MealPlanQuickAddBar';
 import type { FoodLogItem, FoodSearchResult, FoodTodayResponse } from '../lib/api';
 import type { OptimisticFoodEntry } from '../hooks/useOptimisticFoodLog';
+import type { MealPlanEntry } from '../lib/mealPlanQueue';
 import { MEAL_TYPES } from '../lib/logSectionShared';
 import { scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import { formatRelativeTime } from '../lib/relativeTime';
@@ -18,6 +20,9 @@ export interface LogTypeTabPanelProps {
   searchResults: FoodSearchResult[];
   pending: OptimisticFoodEntry[];
   data: FoodTodayResponse | null;
+  mealPlan: MealPlanEntry[];
+  loggingMealKey: string | null;
+  onLogMealPlanEntry: (entry: MealPlanEntry) => void;
   onBarcodeScan: (code: string) => void;
   onOffQuantityChange: (value: string) => void;
   onLogOffProduct: () => void;
@@ -45,6 +50,9 @@ export function LogTypeTabPanel({
   searchResults,
   pending,
   data,
+  mealPlan,
+  loggingMealKey,
+  onLogMealPlanEntry,
   onBarcodeScan,
   onOffQuantityChange,
   onLogOffProduct,
@@ -65,6 +73,13 @@ export function LogTypeTabPanel({
 
   return (
     <>
+      <MealPlanQuickAddBar
+        meals={mealPlan}
+        loggingMealKey={loggingMealKey}
+        serverOnline={serverOnline}
+        onLogEntry={onLogMealPlanEntry}
+      />
+
       <Card>
         <h2>Barcode</h2>
         <p className="muted">Scan packaged food — looks up your sheet, then Open Food Facts</p>

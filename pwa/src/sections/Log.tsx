@@ -232,7 +232,7 @@ export function Log({
   } = useMealPlanQueueSync({
     serverOnline,
     syncSource: 'log',
-    active: tab === 'mealplan',
+    active: tab === 'mealplan' || tab === 'type',
     autoFlushOnMount: true,
     watchOnline: true,
     watchQueueChanges: true,
@@ -324,7 +324,7 @@ export function Log({
   useEffect(() => {
     void refresh();
     if (tab === 'recipes') void loadSavedRecipe();
-    if (tab === 'mealplan') void loadMealPlan();
+    if (tab === 'mealplan' || tab === 'type') void loadMealPlan();
   }, [refresh, tab, loadSavedRecipe, loadMealPlan]);
 
   useEffect(() => {
@@ -715,6 +715,9 @@ export function Log({
             searchResults={searchResults}
             pending={pending}
             data={data}
+            mealPlan={mealPlan}
+            loggingMealKey={loggingMealKey}
+            onLogMealPlanEntry={logMealPlanEntry}
             onBarcodeScan={(code) => void handleBarcode(code)}
             onOffQuantityChange={setOffQuantity}
             onLogOffProduct={() => void handleLogOffProduct()}

@@ -1,0 +1,23 @@
+.meal-plan-quick-add {
+  margin-bottom: 0.75rem;
+}
+
+.meal-plan-quick-add__label {
+  margin: 0 0 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.meal-plan-quick-add__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.meal-plan-quick-add__chip {
+  font-size: var(--font-size-xs);
+  padding: 0.35rem 0.75rem;
+}
