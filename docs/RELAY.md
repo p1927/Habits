@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:04:00Z |
+| reviewed_at | 2026-07-27T05:05:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #133; relay-140 recipe scan queue relative timestamps shipped. |
+| where_we_are | Loop tick #134; relay-141 recipe scan queue empty hint on sync clear shipped. |
 | blockers | [] |
-| confirmed_next | relay-141 recipe scan queue empty hint on sync clear |
-| brainstorm_notes | RecipeScanQueueSection lists queued photos with formatRelativeTime |
+| confirmed_next | relay-142 shared QueueEmptyHint base styles |
+| brainstorm_notes | recipeScanQueueSyncClearedToken on queue drain via processRecipeScanQueue |
 
 ---
 
@@ -42,6 +42,7 @@
 
 - [ ] relay-141 | Recipe scan queue empty hint on sync clear | feature
 - [ ] relay-142 | Shared QueueEmptyHint base styles | maintenance
+- [ ] relay-143 | Log tab refactor finish (sub-panels) | feature
 
 ---
 
@@ -58,7 +59,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-140 | done | build | pending |
+| 2026-07-27 | relay-140 | done | build | f38fffb |
 | 2026-07-27 | relay-139 | done | build | c71a71a |
 | 2026-07-27 | relay-138 | done | build | c71a71a |
 | 2026-07-27 | relay-137 | done | build | 5e4e9fa |
