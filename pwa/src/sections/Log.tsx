@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
+import { FoodQueueBanner } from '../components/FoodQueueBanner';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import { ScanInlineOverlay } from '../components/ScanInlineOverlay';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
@@ -219,7 +220,7 @@ export function Log({
     setShowShortcutHint(false);
   }, []);
 
-  const { pending, logItem, logMeal, logMacros, retry, dismiss, dismissAllQueued, queuedCount } = useOptimisticFoodLog({
+  const { pending, logItem, logMeal, logMacros, retry, dismiss, dismissAllQueued, queuedCount, queueSyncClearedToken } = useOptimisticFoodLog({
     serverOnline,
     setData,
     setSuccess,
@@ -725,21 +726,11 @@ export function Log({
       <h1 id="log-heading">Log Food</h1>
       <p className="muted">Scan, type, or review history</p>
 
-      {queuedCount > 0 && (
-        <div className="banner banner-warn banner-row" role="status">
-          <span>
-            {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
-          </span>
-          <button
-            type="button"
-            className="btn-small"
-            aria-label="Dismiss offline food log queue"
-            onClick={dismissFoodLogQueue}
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
+      <FoodQueueBanner
+        queuedCount={queuedCount}
+        queueSyncClearedToken={queueSyncClearedToken}
+        onDismiss={dismissFoodLogQueue}
+      />
 
       {recipeScanQueueCount > 0 && (
         <div className="banner banner-warn banner-row" role="status">

@@ -63,6 +63,7 @@ export function useOptimisticFoodLog({
   const [pending, setPending] = useState<OptimisticFoodEntry[]>(() =>
     getFoodLogQueue().map(queueToEntry),
   );
+  const [queueSyncClearedToken, setQueueSyncClearedToken] = useState(0);
 
   const syncQueuedFromStorage = useCallback(() => {
     setPending((current) => {
@@ -112,6 +113,9 @@ export function useOptimisticFoodLog({
     }
     if (synced > 0) {
       setSuccess(`Synced ${synced} queued food log${synced === 1 ? '' : 's'}`);
+      if (getFoodLogQueue().length === 0) {
+        setQueueSyncClearedToken((token) => token + 1);
+      }
     }
   }, [serverOnline, setData, setSuccess, setError]);
 
@@ -278,5 +282,6 @@ export function useOptimisticFoodLog({
     dismissAllQueued,
     flushQueue,
     queuedCount: pending.filter((x) => x.status === 'queued').length,
+    queueSyncClearedToken,
   };
 }
