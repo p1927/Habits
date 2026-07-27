@@ -1,23 +1,38 @@
-import { useCallback, useEffect, useState } from 'react';
-import type { TabId } from '../lib/config';
-import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
-import { parseInitialAppTab } from '../lib/appShellShared';
+import { useEffect, useState } from 'react';
 import { preloadAppTabChunk } from '../lib/appTabPreload';
 import { bindNotificationNavigation } from '../lib/notificationNavigation';
+import { mealPlanQueueSourceLabel } from '../lib/mealPlanQueue';
+import { useMealPlanQueueRemoteSync } from '../lib/mealPlanQueueRemoteSyncStore';
+import { useAppShellNavigation } from './useAppShellNavigation';
 import { useMealNotifications } from './useMealNotifications';
 import { useMealPlanQueueCount } from './useMealPlanQueueCount';
-import { useMealPlanQueueScroll } from './useMealPlanQueueScroll';
-import { useMealPlanQueueRemoteSync } from '../lib/mealPlanQueueRemoteSyncStore';
-import { mealPlanQueueSourceLabel } from '../lib/mealPlanQueue';
 import { useServerStatus } from './useServerStatus';
 
 export function useAppShell() {
-  const [tab, setTab] = useState<TabId>(parseInitialAppTab);
   const [oauthSuccess, setOauthSuccess] = useState(false);
   const [openLogMealPlan, setOpenLogMealPlan] = useState(false);
   const [openLogHistory, setOpenLogHistory] = useState(false);
   const [openLogRecipes, setOpenLogRecipes] = useState(false);
   const [agentPrompt, setAgentPrompt] = useState<{ token: number; text: string } | null>(null);
+
+  const {
+    tab,
+    setTab,
+    handleTabChange,
+    mealPlanQueueScrollToken,
+    scrollToMealPlanQueue,
+    navigateMealPlanSyncSource,
+    navigateLogHistory,
+    navigateLogRecipes,
+    navigateAgentPrompt,
+    navigateFutureSelf,
+  } = useAppShellNavigation({
+    setOpenLogMealPlan,
+    setOpenLogHistory,
+    setOpenLogRecipes,
+    setAgentPrompt,
+  });
+
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
@@ -28,49 +43,6 @@ export function useAppShell() {
     mealPlanRemoteSync?.syncing
       ? ` — syncing on ${mealPlanQueueSourceLabel(mealPlanRemoteSync.source)}`
       : '';
-
-  const handleTabChange = useCallback((id: TabId) => {
-    setTab(id);
-    window.location.hash = id;
-  }, []);
-
-  const { scrollToken: mealPlanQueueScrollToken, scrollToMealPlanQueue } = useMealPlanQueueScroll(
-    handleTabChange,
-    { onBeforeLogScroll: () => setOpenLogMealPlan(true) },
-  );
-
-  const navigateMealPlanSyncSource = useCallback(
-    (source: MealPlanSyncSource) => {
-      scrollToMealPlanQueue(source, { openLogPlan: source === 'log' });
-    },
-    [scrollToMealPlanQueue],
-  );
-
-  const navigateLogHistory = useCallback(() => {
-    preloadAppTabChunk('log');
-    setOpenLogHistory(true);
-    handleTabChange('log');
-  }, [handleTabChange]);
-
-  const navigateLogRecipes = useCallback(() => {
-    preloadAppTabChunk('log');
-    setOpenLogRecipes(true);
-    handleTabChange('log');
-  }, [handleTabChange]);
-
-  const navigateAgentPrompt = useCallback(
-    (prompt: string) => {
-      preloadAppTabChunk('agent');
-      setAgentPrompt((prev) => ({ token: (prev?.token ?? 0) + 1, text: prompt }));
-      handleTabChange('agent');
-    },
-    [handleTabChange],
-  );
-
-  const navigateFutureSelf = useCallback(() => {
-    preloadAppTabChunk('futureself');
-    handleTabChange('futureself');
-  }, [handleTabChange]);
 
   useEffect(() => {
     return bindNotificationNavigation(handleTabChange);
@@ -84,7 +56,7 @@ export function useAppShell() {
       void refresh();
       window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash || '#settings'}`);
     }
-  }, [refresh]);
+  }, [refresh, setTab]);
 
   useEffect(() => {
     const id = window.requestIdleCallback?.(() => {
