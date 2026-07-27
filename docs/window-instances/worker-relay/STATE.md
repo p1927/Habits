@@ -23,13 +23,13 @@
 | confirmed_next | relay-184 |
 | next_action | relay-184 Agent composer focus shortcut (⌘/Ctrl+K) |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 8-close |
-| review_status | done |
-| review_skip_reason | — |
+| phase | 9-arm |
+| review_status | skipped |
+| review_skip_reason | relay-183 reviewed round 8; committed 2055d88 |
 | review_round | `8` |
 | last_reviewed_round | `8` |
-| review_diff_range | `relay-183` |
-| code_changed | `yes` |
+| review_diff_range | `2055d88` |
+| code_changed | `no` |
 
 ---
 
