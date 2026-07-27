@@ -75,7 +75,13 @@ export default defineConfig({
       workbox: {
         importScripts: ['sw-notification-click.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
-        globIgnores: ['**/html2canvas-*.js', '**/weekReportPdf-*.js'],
+        globIgnores: [
+          '**/html2canvas-*.js',
+          '**/weekReportPdf-*.js',
+          '**/index.es-*.js',
+          '**/purify.es-*.js',
+        ],
+        maximumFileSizeToCacheInBytes: 400 * 1024,
         navigateFallback: `${base}index.html`,
         runtimeCaching: [
           {

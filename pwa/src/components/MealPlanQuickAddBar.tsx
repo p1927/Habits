@@ -28,6 +28,7 @@ export function MealPlanQuickAddBar({
               type="button"
               className="meal-plan-quick-add__chip btn-pill"
               disabled={!serverOnline || busy}
+              aria-busy={busy}
               aria-label={`Log ${entry.label}: ${entry.description}`}
               title={entry.description}
               onClick={() => onLogEntry(entry)}

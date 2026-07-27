@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import type { MealPlanSyncSource } from './lib/mealPlanQueue';
 import { getMealPlanQueueLastSource, mealPlanQueueSourceLabel } from './lib/mealPlanQueue';
@@ -9,12 +9,39 @@ import { useMealPlanQueueScroll } from './hooks/useMealPlanQueueScroll';
 import { bindNotificationNavigation } from './lib/notificationNavigation';
 import { useServerStatus } from './hooks/useServerStatus';
 import { Home } from './sections/Home';
-import { Log } from './sections/Log';
-import { Day } from './sections/Day';
-import { Cards } from './sections/Cards';
-import { Agent } from './sections/Agent';
-import { Settings } from './sections/Settings';
 import './App.css';
+
+const Log = lazy(async () => ({ default: (await import('./sections/Log')).Log }));
+const Day = lazy(async () => ({ default: (await import('./sections/Day')).Day }));
+const Cards = lazy(async () => ({ default: (await import('./sections/Cards')).Cards }));
+const Agent = lazy(async () => ({ default: (await import('./sections/Agent')).Agent }));
+const Settings = lazy(async () => ({ default: (await import('./sections/Settings')).Settings }));
+
+const TAB_CHUNK_PRELOAD: Partial<Record<TabId, () => Promise<unknown>>> = {
+  log: () => import('./sections/Log'),
+  day: () => import('./sections/Day'),
+  cards: () => import('./sections/Cards'),
+  agent: () => import('./sections/Agent'),
+  settings: () => import('./sections/Settings'),
+};
+
+const preloadedTabs = new Set<TabId>();
+
+function preloadTabChunk(id: TabId) {
+  if (preloadedTabs.has(id)) return;
+  const load = TAB_CHUNK_PRELOAD[id];
+  if (!load) return;
+  preloadedTabs.add(id);
+  void load();
+}
+
+function TabSectionFallback() {
+  return (
+    <div className="section-loading muted" role="status" aria-live="polite">
+      Loading…
+    </div>
+  );
+}
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'home', label: 'Home', icon: '◉' },
@@ -85,6 +112,23 @@ function App() {
     }
   }, [refresh]);
 
+  useEffect(() => {
+    const id = window.requestIdleCallback?.(() => {
+      preloadTabChunk('log');
+      preloadTabChunk('day');
+    }) ?? window.setTimeout(() => {
+      preloadTabChunk('log');
+      preloadTabChunk('day');
+    }, 1200);
+    return () => {
+      if (typeof id === 'number' && window.cancelIdleCallback) {
+        window.cancelIdleCallback(id);
+      } else {
+        window.clearTimeout(id);
+      }
+    };
+  }, []);
+
   return (
     <div className="app">
       <a href="#main-content" className="skip-link">Skip to content</a>
@@ -95,6 +139,8 @@ function App() {
             type="button"
             className="header-gear"
             onClick={() => handleTabChange('settings')}
+            onPointerEnter={() => preloadTabChunk('settings')}
+            onFocus={() => preloadTabChunk('settings')}
             aria-label="Settings"
           >
             ⚙
@@ -120,6 +166,7 @@ function App() {
       )}
 
       <main className="main" id="main-content" role="main">
+        <Suspense fallback={<TabSectionFallback />}>
         {tab === 'home' && (
           <Home
             serverOnline={serverOnline}
@@ -161,6 +208,7 @@ function App() {
             onDismissOauth={() => setOauthSuccess(false)}
           />
         )}
+        </Suspense>
       </main>
 
       {tab !== 'settings' && (
@@ -185,6 +233,8 @@ function App() {
               type="button"
               className={`tab ${tab === t.id ? 'tab-active' : ''}`}
               onClick={() => handleTabChange(t.id)}
+              onPointerEnter={() => preloadTabChunk(t.id)}
+              onFocus={() => preloadTabChunk(t.id)}
               aria-current={tab === t.id ? 'page' : undefined}
               aria-label={showQueueBadge ? `${t.label}, ${queueBadgeCountLabel}` : t.label}
             >

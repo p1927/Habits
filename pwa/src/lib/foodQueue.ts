@@ -16,7 +16,8 @@ export type QueuedFoodLog =
       protein: number;
       fat: number;
       created_at: string;
-    };
+    }
+  | { id: string; kind: 'saved_recipe'; created_at: string };
 
 export function getFoodLogQueue(): QueuedFoodLog[] {
   return sortQueueByCreatedAt(queue.read());
@@ -34,7 +35,8 @@ type QueueInput =
       protein: number;
       fat: number;
       id?: string;
-    };
+    }
+  | { kind: 'saved_recipe'; id?: string };
 
 export function enqueueFoodLog(entry: QueueInput): QueuedFoodLog {
   const item = {

@@ -1,4 +1,4 @@
-import { LOG_TABS, logTabLabel, shortcutModifierLabel, type LogTab } from '../lib/logSectionShared';
+import { LOG_TABS, LOG_TAB_ICONS, logTabLabel, shortcutModifierLabel, type LogTab } from '../lib/logSectionShared';
 
 export interface LogSubTabsProps {
   tab: LogTab;
@@ -22,13 +22,15 @@ export function LogSubTabs({ tab, onTabChange, showShortcutHint, onDismissShortc
             aria-selected={tab === t}
             aria-controls={`log-panel-${t}`}
             aria-keyshortcuts={`${mod}${index + 1}`}
-            className={`sub-tab ${tab === t ? 'sub-tab-active' : ''}`}
+            tabIndex={tab === t ? 0 : -1}
+            className={`sub-tab log-sub-tab ${tab === t ? 'sub-tab-active' : ''}`}
             onClick={() => {
               onTabChange(t);
               onDismissShortcutHint();
             }}
           >
-            {logTabLabel(t)}
+            <span className="log-tab-icon" aria-hidden="true">{LOG_TAB_ICONS[t]}</span>
+            <span className="log-tab-label">{logTabLabel(t)}</span>
           </button>
         ))}
       </div>

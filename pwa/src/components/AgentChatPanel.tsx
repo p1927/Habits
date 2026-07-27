@@ -19,14 +19,16 @@ export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt }: A
           <p className="agent-greeting__sub">What would you like to do?</p>
           {onSelectPrompt && (
             <div className="agent-greeting-grid" role="group" aria-label="Suggested actions">
-              {AGENT_GREETING_CATEGORIES.map(({ label, text }) => (
+              {AGENT_GREETING_CATEGORIES.map(({ label, icon, description, text }) => (
                 <button
                   key={label}
                   type="button"
                   className="agent-greeting-card"
                   onClick={() => onSelectPrompt(text)}
                 >
-                  {label}
+                  <span className="agent-greeting-card__icon" aria-hidden="true">{icon}</span>
+                  <span className="agent-greeting-card__label">{label}</span>
+                  <span className="agent-greeting-card__desc">{description}</span>
                 </button>
               ))}
             </div>

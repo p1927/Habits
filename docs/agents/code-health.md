@@ -7,10 +7,11 @@
 | Field | Value |
 |-------|-------|
 | loop_id | `code-health` |
+| loop_mode | `dynamic` |
 | sentinel | `AGENT_LOOP_TICK_CODE_HEALTH` |
 | wake_sentinel | `AGENT_LOOP_WAKE_CODE_HEALTH` |
 | interval_sec | `120` |
-| monitor_regex | `^AGENT_LOOP_TICK_CODE_HEALTH` |
+| monitor_regex | `^AGENT_LOOP_WAKE_CODE_HEALTH` |
 | pidfile | `$TMPDIR/cursor-loop-code-health.pid` |
 | loop_script | `tools/cursor-loop/scripts/agent-loop.sh` |
 | state_file | `docs/code-health/STATE.md` |

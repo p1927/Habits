@@ -32,7 +32,7 @@ This loop is **independent** of relay (features) and maintenance (UI polish / br
 | 7 | **Implement** — smallest diff that fixes root cause |
 | 8 | **Verify** — `cd pwa && npm run build`; server compile if Python touched ([`VERIFICATION.md`](VERIFICATION.md)) |
 | 9 | **Update STATE** — HISTORY, backlogs, SCAN_COVERAGE, CHECKPOINT |
-| 10 | **Confirm loop** — ensure persistent `AGENT_LOOP_TICK_CODE_HEALTH` shell running; restart if aborted |
+| 10 | **Arm next wake** — end-of-turn gate: `verify-wake.sh code-health`; if DOWN, `arm-wake.sh` with `notify_on_output` on `^AGENT_LOOP_WAKE_CODE_HEALTH` (see `.cursor/rules/agent-loop-contract.mdc`) |
 
 If mid-refactor when tick fires: finish the current atomic step, then update STATE and re-arm.
 
@@ -72,51 +72,59 @@ Full checklist: [`CHECKLIST.md`](CHECKLIST.md)
 
 ---
 
-## Loop protocol
+## Loop protocol (cursor-loop 0.4+ — dynamic)
 
-**One loop, one process.** Run exactly **one** persistent tick shell per loop type. Do **not** stack:
-- persistent `while true` **and** dynamic `sleep && echo` re-arm in the same session
-- multiple `while true` shells for the same sentinel
-- `nohup scripts/agent-code-health-loop.sh` **plus** an in-chat monitored loop
+**Default: dynamic wake.** Do **not** start a persistent `while true` in Shell — Cursor often SIGTERM's it ~20–40s.
 
-Before starting: `pgrep -fl AGENT_LOOP_TICK_CODE_HEALTH` — if a PID exists, **reuse it**; do not spawn another.
+Each turn (see [`agent-loop-contract.mdc`](../../.cursor/rules/agent-loop-contract.mdc)):
 
-Cursor **kills persistent `while true` background shells** (~20s) in some setups. When that happens, use **dynamic re-arm** instead — never both at once.
-
-### Primary (in-chat — use this)
-
-Use the **same persistent pattern as relay/maintenance** (these survive in Cursor when monitored):
+1. Run ritual **deliverable** (steps 1–9)
+2. `checkpoint-loop.sh --product --evidence <id>`
+3. Arm wake:
 
 ```bash
-cd /Users/pratyushmishra/Documents/GitHub/Habits && while true; do
-  sleep 120
-  echo 'AGENT_LOOP_TICK_CODE_HEALTH {"prompt":"Code health tick: read docs/code-health/AGENT_WAKE.md first, then STATE.md. Run full ritual. Do not ask user."}'
-done
+LOOP_ID=code-health \
+WAKE_SENTINEL=AGENT_LOOP_WAKE_CODE_HEALTH \
+INTERVAL=120 \
+CONTRACT_DOC=docs/agents/code-health.md \
+STATE_FILE=docs/code-health/STATE.md \
+bash tools/cursor-loop/scripts/arm-wake.sh
 ```
 
-Start with **monitored shell output** on regex: `^AGENT_LOOP_TICK_CODE_HEALTH`
+Monitor: `^AGENT_LOOP_WAKE_CODE_HEALTH`
 
-Run the ritual **once immediately** when arming; first tick fires after 120s.
-
-### Secondary (dynamic re-arm — only if persistent loop died)
-
-If `pgrep -f AGENT_LOOP_TICK_CODE_HEALTH` returns nothing, re-arm at end of each turn (one shot):
+Verify before ending turn:
 
 ```bash
-sleep 120 && echo 'AGENT_LOOP_WAKE_CODE_HEALTH {"prompt":"..."}'
+bash tools/cursor-loop/scripts/verify-wake.sh code-health
 ```
 
-Monitored output on: `^AGENT_LOOP_WAKE_CODE_HEALTH`
-
-Do **not** start this while a persistent loop is already running.
-
-### Fallback (external terminal)
+After cursor-loop upgrade:
 
 ```bash
-nohup bash scripts/agent-code-health-loop.sh >> .cursor/code-health-loop.log 2>&1 &
+bash tools/cursor-loop/install.sh . --symlink
+bash tools/cursor-loop/scripts/refresh-loops.sh .
 ```
 
-Logs ticks to `.cursor/code-health-loop.log` but does **not** auto-wake chat — use only when in-chat loop unavailable. Kill before starting in-chat loop.
+Then paste `@docs/agents/code-health.md keep working` again.
+
+### Legacy (persistent tick — optional `loop_mode: persistent`)
+
+Only if contract sets `loop_mode: persistent`:
+
+```bash
+bash tools/cursor-loop/scripts/agent-loop.sh
+```
+
+Monitor: `^AGENT_LOOP_TICK_CODE_HEALTH`
+
+### Stop
+
+Say **stop loop** in chat, or:
+
+```bash
+bash tools/cursor-loop/scripts/refresh-loops.sh . --loop-id code-health
+```
 
 ### Stop
 

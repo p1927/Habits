@@ -88,7 +88,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource }: AgentProps
 
         {messages.length > 0 && (
           <>
-            <div className="agent-feed-label">Recent actions</div>
+            <p className="section-eyebrow">Activity</p>
             <AgentActionFeed
               serverOnline={serverOnline}
               active

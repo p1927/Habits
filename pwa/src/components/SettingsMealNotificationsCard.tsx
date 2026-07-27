@@ -24,6 +24,7 @@ export function SettingsMealNotificationsCard({
 }: SettingsMealNotificationsCardProps) {
   return (
     <article className="settings-card">
+      <p className="section-eyebrow">Alerts</p>
       <h2>Meal notifications</h2>
       <p className="muted settings-card-note">
         Browser reminders at each meal time while Habits is installed. Keep the app open or pinned for best results.

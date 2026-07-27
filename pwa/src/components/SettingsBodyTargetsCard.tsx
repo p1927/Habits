@@ -11,6 +11,7 @@ interface SettingsBodyTargetsCardProps {
 export function SettingsBodyTargetsCard({ settings, saving, onBodyChange, onSave }: SettingsBodyTargetsCardProps) {
   return (
     <article className="settings-card">
+      <p className="section-eyebrow">Profile</p>
       <h2>Body &amp; targets</h2>
       {Object.entries(settings.body).map(([key, val]) => (
         <label key={key} className="settings-row settings-row--input">

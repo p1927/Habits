@@ -1,58 +1,50 @@
 # Habits — Four Chat Windows (Loop Architecture)
 
 > **User cheat sheet:** [`docs/START_LOOPS.md`](../START_LOOPS.md) — one paste per window.  
-> **Package:** [`tools/cursor-loop/`](../../tools/cursor-loop/) — standalone git submodule.  
-> Fresh clone: `git submodule update --init tools/cursor-loop` then `bash tools/cursor-loop/install.sh . --symlink`  
-> **Contracts:** [`docs/agents/`](../agents/) — per-window loop docs.
+> **Package:** [`tools/cursor-loop/`](../../tools/cursor-loop/) v0.4+ — **dynamic wake** default.  
+> Install/upgrade: `bash tools/cursor-loop/install.sh . --symlink`
 
-> **Read this when arming or debugging loops.** One chat window = one loop = one PID. Never stack duplicates in the same window.
+> **One chat = one loop_id.** Default mode **`dynamic`**: each turn ends with `arm-wake.sh` (one monitored `sleep && echo`), not a persistent `while true`.
 
 ## Overview
 
-| # | Window | Role | Wake doc | Sentinel | Script | Interval | PID file |
-|---|--------|------|----------|----------|--------|----------|----------|
-| 1 | **Worker** | Ship features (relay) | [`docs/agents/worker-relay.md`](../agents/worker-relay.md) | `AGENT_LOOP_TICK_HABITS` | `tools/cursor-loop/scripts/agent-loop.sh` | 60s | `$TMPDIR/cursor-loop-worker-relay.pid` |
-| 2 | **UX** | UI design + polish | [`docs/agents/ux-relay.md`](../agents/ux-relay.md) | `AGENT_LOOP_TICK_UX_RELAY` | `tools/cursor-loop/scripts/agent-loop.sh` | 300s | `$TMPDIR/cursor-loop-ux-relay.pid` |
-| 3 | **Code** | Bugs, refactor, structure | [`docs/agents/code-health.md`](../agents/code-health.md) | `AGENT_LOOP_TICK_CODE_HEALTH` | `tools/cursor-loop/scripts/agent-loop.sh` | 120s | `$TMPDIR/cursor-loop-code-health.pid` |
-| 4 | **PO** | Product owner / business brainstorm | [`docs/agents/po-relay.md`](../agents/po-relay.md) | `AGENT_LOOP_TICK_MAINTENANCE` | `tools/cursor-loop/scripts/agent-loop.sh` | 120s | `$TMPDIR/cursor-loop-po-relay.pid` |
+| # | Window | loop_id | Wake sentinel | Interval | Wake check |
+|---|--------|---------|---------------|----------|------------|
+| 1 | **Worker** | `worker-relay` | `AGENT_LOOP_WAKE_HABITS` | 60s | `verify-wake.sh worker-relay` |
+| 2 | **UX** | `ux-relay` | `AGENT_LOOP_WAKE_UX_RELAY` | 300s | `verify-wake.sh ux-relay` |
+| 3 | **Code** | `code-health` | `AGENT_LOOP_WAKE_CODE_HEALTH` | 120s | `verify-wake.sh code-health` |
+| 4 | **PO** | `po-relay` | `AGENT_LOOP_WAKE_MAINTENANCE` | 120s | `verify-wake.sh po-relay` |
 
-**Not four loops in one chat.** Each window runs **exactly one** background shell with **its own sentinel** and **its own PID**. Shared state lives in docs (`STATE.md`, `docs/code-health/STATE.md`, `RELAY.md`) — windows coordinate via files, not shared processes.
-
----
-
-## What each window does (no overlap)
-
-| Window | Does | Does NOT |
-|--------|------|----------|
-| **Worker** | RELAY backlog, features, commits | UI polish, PO brainstorm, code-health refactors |
-| **UX** | Web research, `UI_POLISH_BACKLOG`, ship CSS/components (21st + ui-ux-pro-max) | Relay features, structural refactors, PO backlog scoring |
-| **Code** | `REFACTOR_BACKLOG`, line scan, DRY, naming, bug fixes in structure | UI polish, product brainstorm, relay features |
-| **PO** | 3-lens brainstorm (UX / PO / business), mutate `UX_BACKLOG`, `QUALITY_BACKLOG`, feed `RELAY.md` | Ship UI (→ UX window), ship features (→ Worker), refactor (→ Code) |
-
-Legacy name: PO window uses sentinel `AGENT_LOOP_TICK_MAINTENANCE` and folder `docs/maintenance/` — treat **maintenance = PO relay**, not a combined A/B/C worker.
+Contracts: [`docs/agents/`](../agents/). Rule: [`.cursor/rules/agent-loop-contract.mdc`](../../.cursor/rules/agent-loop-contract.mdc).
 
 ---
 
-## Arming a loop (every window)
+## Arming (dynamic — default)
 
-1. **Check existing PID** — do not spawn if already running:
+After `@docs/agents/<contract>.md keep working`, the agent each turn:
+
+1. Runs **Ritual deliverable** (ship work — not infra-only)
+2. Runs `checkpoint-loop.sh --product --evidence <id>`
+3. Starts **`arm-wake.sh`** with `notify_on_output` on `^AGENT_LOOP_WAKE_*`
+
+Status:
 
 ```bash
 bash tools/cursor-loop/scripts/loop-status.sh
-# or per window:
-test -f "${TMPDIR:-/tmp}/cursor-loop-worker-relay.pid" && kill -0 "$(cat "${TMPDIR:-/tmp}/cursor-loop-worker-relay.pid")" && echo "WORKER UP" || echo "WORKER DOWN"
-test -f "${TMPDIR:-/tmp}/cursor-loop-ux-relay.pid" && kill -0 "$(cat "${TMPDIR:-/tmp}/cursor-loop-ux-relay.pid")" && echo "UX UP" || echo "UX DOWN"
-test -f "${TMPDIR:-/tmp}/cursor-loop-code-health.pid" && kill -0 "$(cat "${TMPDIR:-/tmp}/cursor-loop-code-health.pid")" && echo "CODE UP" || echo "CODE DOWN"
-test -f "${TMPDIR:-/tmp}/cursor-loop-po-relay.pid" && kill -0 "$(cat "${TMPDIR:-/tmp}/cursor-loop-po-relay.pid")" && echo "PO UP" || echo "PO DOWN"
+bash tools/cursor-loop/scripts/doctor.sh .
 ```
 
-2. **Start one shell** with output monitoring on the sentinel regex (required for chat wake).
-3. **Run the ritual once immediately** when arming; first automated tick fires after the first `sleep`.
-4. **Record PID + shell id** in the relevant `STATE.md` → `CHECKPOINT.loops` (each doc tracks its own loop only).
+---
 
-### Cursor session stability
+## Refresh after cursor-loop upgrade
 
-Background loops may abort when Cursor cleans up agent shells. The **stop hook** + **loop survival** rule re-arm automatically. If a loop stays down, paste the contract line again from [`START_LOOPS.md`](../START_LOOPS.md).
+Stops legacy persistent shells; keeps bindings:
+
+```bash
+bash tools/cursor-loop/scripts/refresh-loops.sh .
+```
+
+Then in **each** chat: `@docs/agents/<contract>.md keep working`
 
 ---
 
@@ -60,25 +52,37 @@ Background loops may abort when Cursor cleans up agent shells. The **stop hook**
 
 | Window | Pattern |
 |--------|---------|
-| Worker | `^AGENT_LOOP_TICK_HABITS` |
-| UX | `^AGENT_LOOP_TICK_UX_RELAY` |
-| Code | `^AGENT_LOOP_TICK_CODE_HEALTH` |
-| PO | `^AGENT_LOOP_TICK_MAINTENANCE` |
+| Worker | `^AGENT_LOOP_WAKE_HABITS` |
+| UX | `^AGENT_LOOP_WAKE_UX_RELAY` |
+| Code | `^AGENT_LOOP_WAKE_CODE_HEALTH` |
+| PO | `^AGENT_LOOP_WAKE_MAINTENANCE` |
 
 ---
 
-## Stop one loop without killing others
+## Stop one loop
 
 Say **stop loop** in that chat, or:
 
 ```bash
-kill "$(cat "${TMPDIR:-/tmp}/cursor-loop-worker-relay.pid")"   # Worker
-kill "$(cat "${TMPDIR:-/tmp}/cursor-loop-ux-relay.pid")"     # UX
-kill "$(cat "${TMPDIR:-/tmp}/cursor-loop-code-health.pid")"  # Code
-kill "$(cat "${TMPDIR:-/tmp}/cursor-loop-po-relay.pid")"     # PO
+bash tools/cursor-loop/scripts/refresh-loops.sh . --loop-id ux-relay
 ```
 
-Remove stale pidfiles under `$TMPDIR/cursor-loop-*.pid` or legacy `$TMPDIR/habits-*-loop.pid` if the process died.
+---
+
+## Extreme reset
+
+```bash
+bash tools/cursor-loop/scripts/force-reset.sh . --all --yes
+bash tools/cursor-loop/scripts/validate_contracts.py .
+```
+
+Scoped: `force-reset.sh . --loop-id worker-relay --yes`
+
+---
+
+## Cursor session stability
+
+Persistent `while true` shells often SIGTERM ~20–40s. **Dynamic wake** avoids that. Recovery wakes must still **ship Ritual work** before re-arm (see agent-loop-contract).
 
 ---
 
@@ -86,8 +90,6 @@ Remove stale pidfiles under `$TMPDIR/cursor-loop-*.pid` or legacy `$TMPDIR/habit
 
 | Doc | Owner |
 |-----|-------|
-| [`docs/RELAY.md`](../RELAY.md) | Worker writes; PO/UX feed backlog items |
-| [`docs/maintenance/STATE.md`](STATE.md) | PO + UX read; PO mutates backlogs; UX closes `ui-*` |
-| [`docs/code-health/STATE.md`](../code-health/STATE.md) | Code window only |
-
-When two windows might touch the same file, PO updates backlog only; UX or Code implements; Worker only if it's a user-facing feature.
+| [`docs/RELAY.md`](../RELAY.md) | Worker |
+| [`docs/maintenance/STATE.md`](STATE.md) | PO + UX |
+| [`docs/code-health/STATE.md`](../code-health/STATE.md) | Code |

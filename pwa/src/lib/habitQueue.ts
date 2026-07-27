@@ -94,3 +94,4 @@ export function applyLocalMetric(
 }
 
 export { isOfflineError } from './foodQueue';
+export { makeQueueId } from './localStorageQueue';

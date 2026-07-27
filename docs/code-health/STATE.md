@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T10:10:00Z |
-| uncommitted_files | code-health ch-006–067 refactors |
-| where_we_are | Loop tick #46 OK; ch-067 done |
-| confirmed_next | ch-068 — Home.tsx or useLogRecipeScan trim |
+| reviewed_at | 2026-07-27T10:32:00Z |
+| uncommitted_files | code-health ch-006–077 refactors |
+| where_we_are | Backup wake tick #56; ch-077 done |
+| confirmed_next | ch-078 — line scan |
 
 ---
 
@@ -19,10 +19,10 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T10:10:00Z |
+| last_wake | 2026-07-27T10:32:00Z |
 | status | ready |
 | current_item_id | — |
-| loops | `/loop` fixed 2m — PID 17189, monitored `^AGENT_LOOP_TICK_CODE_HEALTH` |
+| loops | **cursor-loop** `code-health` — re-armed after primary abort (~16m, tick #55); backup wake active |
 
 ---
 
@@ -101,7 +101,17 @@
 - [x] ch-065 | `useMealPlanEntryLogging` → `executeMealPlanEntryLog` lib (171→88) | dry | done tick #45
 - [x] ch-066 | Line scan — top: Log 396, Home 242, useLogRecipeScan 215, useMealPlanQueueSync 213, useLogTypeTab 183 | structure | done tick #46
 - [x] ch-067 | Log.tsx → `LogTabPanels` tab switch extract (396→367 + 248 panel component) | structure | done tick #46
-- [ ] ch-068 | Home.tsx or useLogRecipeScan — next largest PWA target | structure | queued
+- [x] ch-068 | Home.tsx → `HomeMealPlanBlock`; `useLogRecipeScan` → `recipeScanFlow` helpers (242→218, 215→189) | structure | done tick #47
+- [x] ch-069 | `useMealPlanQueueSync` → `useMealPlanQueueSyncActions` + runner execute helpers (213→59) | structure | done tick #48
+- [x] ch-070 | `useLogTypeTab` → `logTypeTabActions` lib (183→153) | structure | done tick #49
+- [x] ch-071 | Server scan + `cards/sickness_sheet.py` split from sheet_loaders (146→76+87) | structure | done tick #50
+- [x] ch-072 | `google/sheet_io` → `sheet_key_value` for KV helpers (140→88+57) | structure | done tick #51
+- [x] ch-073 | Log.tsx → `useLogSection` hook (370→87 + 314 hook) | structure | done tick #52
+- [x] ch-074 | `useLogSection` → `useLogTabPanelsProps` + `useLogStatusShellProps` (314→165) | structure | done tick #53
+- [x] ch-075 | Line scan + `LogTypeTabPanel` → 4 sub-panels (264→129) | structure | done tick #54
+- [x] ch-076 | Home.tsx → `useHomeSection` hook (262→162) | structure | done tick #55
+- [x] ch-077 | `MealPlanQueuePanel` → `MealPlanQueueList` + `useMealPlanQueuePanelFocus` (259→171) | structure | done tick #56
+- [ ] ch-078 | Line scan — refresh largest targets | structure | queued
 
 ---
 
@@ -167,7 +177,17 @@
 | `pwa/src/hooks/useLogRecipeScan.ts` | 2026-07-27 tick #20 | ch-038: recipe scan queue + saved recipe |
 | `pwa/src/sections/Log.tsx` | 2026-07-27 tick #19 | 860 lines — hook extract → ch-038 |
 | `pwa/src/sections/Log.tsx` | 2026-07-27 tick #46 | ch-067: LogTabPanels; 396→367 |
-| `pwa/src/components/LogTabPanels.tsx` | 2026-07-27 tick #46 | ch-067: scan/type/recipes/mealplan/history panels |
+| `pwa/src/sections/Home.tsx` | 2026-07-27 tick #47 | ch-068: HomeMealPlanBlock; 242→218 |
+| `pwa/src/hooks/useLogRecipeScan.ts` | 2026-07-27 tick #47 | ch-068: fetch/capture/log flows in recipeScanFlow; 215→189 |
+| `pwa/src/hooks/useMealPlanQueueSync.ts` | 2026-07-27 tick #48 | ch-069: actions hook + runner execute; 213→59 |
+| `pwa/src/hooks/useLogTypeTab.ts` | 2026-07-27 tick #49 | ch-070: logTypeTabActions; 183→153 |
+| `server/habits_api/cards/sheet_loaders.py` | 2026-07-27 tick #50 | ch-071: notes/strategy only; 146→76 |
+| `server/habits_api/google/sheet_io.py` | 2026-07-27 tick #51 | ch-072: CRUD only; 140→88 |
+| `pwa/src/sections/Log.tsx` | 2026-07-27 tick #52 | ch-073: useLogSection; 370→87 |
+| `pwa/src/hooks/useLogSection.ts` | 2026-07-27 tick #53 | ch-074: panel/status props hooks; 314→165 |
+| `pwa/src/components/LogTypeTabPanel.tsx` | 2026-07-27 tick #54 | ch-075: 4 sub-panels; 264→129 |
+| `pwa/src/sections/Home.tsx` | 2026-07-27 tick #55 | ch-076: useHomeSection; 262→162 |
+| `pwa/src/components/MealPlanQueuePanel.tsx` | 2026-07-27 tick #56 | ch-077: list + focus hook; 259→171 |
 | `pwa/src/sections/*` | 2026-07-27 tick #46 | scan: Log 367, Home 242, useLogRecipeScan 215, useMealPlanQueueSync 213 |
 
 ---
@@ -268,3 +288,25 @@
 | `pwa/src/sections/Log.tsx` | 2026-07-27 tick #46 | ch-066 scan + ch-067 LogTabPanels; 396→367 |
 | `pwa/src/components/LogTabPanels.tsx` | 2026-07-27 tick #46 | ch-067: tab panel switch component |
 | 2026-07-27 | ch-066 + ch-067 | line scan + LogTabPanels extract | build | pending |
+| `pwa/src/sections/Home.tsx` | 2026-07-27 tick #47 | ch-068: HomeMealPlanBlock; 242→218 |
+| `pwa/src/hooks/useLogRecipeScan.ts` | 2026-07-27 tick #47 | ch-068: recipeScanFlow helpers; 215→189 |
+| 2026-07-27 | ch-068 | Home meal plan block + recipe scan flow lib | build | pending |
+| `pwa/src/hooks/useMealPlanQueueSync.ts` | 2026-07-27 tick #48 | ch-069: sync actions split; 213→59 |
+| 2026-07-27 | ch-069 | useMealPlanQueueSyncActions + runner execute | build | pending |
+| `pwa/src/hooks/useLogTypeTab.ts` | 2026-07-27 tick #49 | ch-070: logTypeTabActions; 183→153 |
+| 2026-07-27 | loop-migrate | legacy shell loops stopped; cursor-loop armed | — | pending |
+| 2026-07-27 | ch-070 | logTypeTabActions lib | build | pending |
+| `server/habits_api/cards/sheet_loaders.py` | 2026-07-27 tick #50 | ch-071: sickness split; 146→76 |
+| 2026-07-27 | ch-071 | sickness_sheet split | import | pending |
+| `server/habits_api/google/sheet_io.py` | 2026-07-27 tick #51 | ch-072: sheet_key_value split; 140→88 |
+| 2026-07-27 | ch-072 | sheet_key_value module | import | pending |
+| `pwa/src/sections/Log.tsx` | 2026-07-27 tick #52 | ch-073: useLogSection; 370→87 |
+| 2026-07-27 | ch-073 | useLogSection hook | build | pending |
+| `pwa/src/hooks/useLogSection.ts` | 2026-07-27 tick #53 | ch-074: props hooks split; 314→165 |
+| 2026-07-27 | ch-074 | useLogTabPanelsProps + useLogStatusShellProps | build | pending |
+| `pwa/src/components/LogTypeTabPanel.tsx` | 2026-07-27 tick #54 | ch-075: OFF/voice/manual/today split; 264→129 |
+| 2026-07-27 | ch-075 | line scan + LogTypeTabPanel split | build | pending |
+| `pwa/src/sections/Home.tsx` | 2026-07-27 tick #55 | ch-076: useHomeSection; 262→162 |
+| 2026-07-27 | ch-076 | useHomeSection hook | build | pending |
+| `pwa/src/components/MealPlanQueuePanel.tsx` | 2026-07-27 tick #56 | ch-077: MealPlanQueueList + focus hook; 259→171 |
+| 2026-07-27 | ch-077 | MealPlanQueuePanel split | build | pending |

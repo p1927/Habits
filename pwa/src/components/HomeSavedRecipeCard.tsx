@@ -7,17 +7,24 @@ export interface HomeSavedRecipeCardProps {
   serverOnline: boolean;
   onFoodUpdated?: (summary: import('../lib/api').FoodTodayResponse) => void;
   onError?: (message: string) => void;
+  onLogItem?: (food: string, quantityG: number) => void | Promise<void>;
+  onLogEntireRecipe?: () => void | Promise<void>;
+  logging?: boolean;
 }
 
 export function HomeSavedRecipeCard({
   serverOnline,
   onFoodUpdated,
   onError,
+  onLogItem: onLogItemProp,
+  onLogEntireRecipe: onLogEntireRecipeProp,
+  logging: loggingProp,
 }: HomeSavedRecipeCardProps) {
   const [recipe, setRecipe] = useState<SavedRecipe | null>(null);
   const [sheetsConnected, setSheetsConnected] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
-  const [logging, setLogging] = useState(false);
+  const [loggingLocal, setLoggingLocal] = useState(false);
+  const logging = loggingProp ?? loggingLocal;
   const [success, setSuccess] = useState('');
 
   const loadRecipe = useCallback(async () => {
@@ -43,7 +50,11 @@ export function HomeSavedRecipeCard({
 
   const logItem = async (food: string, quantityG: number) => {
     if (!serverOnline || logging) return;
-    setLogging(true);
+    if (onLogItemProp) {
+      await onLogItemProp(food, quantityG);
+      return;
+    }
+    setLoggingLocal(true);
     try {
       const res = await api.logFood(`${quantityG}g ${food}`);
       onFoodUpdated?.(res.summary);
@@ -51,13 +62,17 @@ export function HomeSavedRecipeCard({
     } catch (e) {
       onError?.(e instanceof Error ? e.message : 'Recipe item log failed');
     } finally {
-      setLogging(false);
+      setLoggingLocal(false);
     }
   };
 
   const logEntireRecipe = async () => {
     if (!serverOnline || logging) return;
-    setLogging(true);
+    if (onLogEntireRecipeProp) {
+      await onLogEntireRecipeProp();
+      return;
+    }
+    setLoggingLocal(true);
     try {
       const res = await api.logSavedRecipe();
       onFoodUpdated?.(res.summary);
@@ -65,7 +80,7 @@ export function HomeSavedRecipeCard({
     } catch (e) {
       onError?.(e instanceof Error ? e.message : 'Recipe log failed');
     } finally {
-      setLogging(false);
+      setLoggingLocal(false);
     }
   };
 

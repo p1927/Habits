@@ -1,7 +1,11 @@
 import { useCallback, useState } from 'react';
-import { api, type FoodTodayResponse } from '../lib/api';
-import { resolveBarcodeLookup } from '../lib/logBarcodeLookup';
-import { scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
+import { type FoodTodayResponse } from '../lib/api';
+import {
+  deleteFoodRowWithConfirm,
+  executeBarcodeLookup,
+  executeOffProductLog,
+} from '../lib/logTypeTabActions';
+import { type OffProduct } from '../lib/openFoodFacts';
 import { useDebouncedFoodSearch } from './useDebouncedFoodSearch';
 import type { LogFoodUndoRestore } from './useLogFoodScan';
 
@@ -82,74 +86,40 @@ export function useLogTypeTab({
 
   const handleLogOffProduct = useCallback(async () => {
     if (!offProduct) return;
-    const qty = Number.parseFloat(offQuantity);
-    if (!qty || qty <= 0) return;
-    const savedOff = offProduct;
-    const savedQty = offQuantity;
-    setLoading(true);
-    setError('');
-    try {
-      const macros = scaleOffMacros(offProduct.per100g, qty);
-      await logMacros(offProduct.name, qty, macros, (summary) => {
-        setOffProduct(null);
-        setFoodName('');
-        setSearchResults([]);
-        offerUndo(summary, savedOff.name, qty, {
-          offProduct: savedOff,
-          editName: savedOff.name,
-          editQty: savedQty,
-          offQuantity: savedQty,
-        });
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Open Food Facts log failed');
-    } finally {
-      setLoading(false);
-    }
+    await executeOffProductLog(offProduct, offQuantity, {
+      logMacros,
+      offerUndo,
+      setOffProduct,
+      setFoodName,
+      setSearchResults,
+      setLoading,
+      setError,
+    });
   }, [offProduct, offQuantity, logMacros, offerUndo, setLoading, setError, setSearchResults]);
 
   const handleBarcode = useCallback(
     async (code: string) => {
-      setError('');
-      setSuccess('');
-      setOffProduct(null);
-      onSwitchToTypeTab();
-      setLoading(true);
-      try {
-        const result = await resolveBarcodeLookup(code, serverOnline);
-        if (result.kind === 'sheet') {
-          setFoodName(result.name);
-          setSearchResults(result.results);
-        } else if (result.kind === 'off') {
-          setOffProduct(result.product);
-          setOffQuantity(String(result.product.quantityG));
-          setFoodName(result.product.name);
-          setSearchResults(result.results);
-        } else {
-          setFoodName(result.code);
-          setSearchResults(result.results);
-        }
-        setSuccess(result.message);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Barcode lookup failed');
-      } finally {
-        setLoading(false);
-      }
+      await executeBarcodeLookup(
+        code,
+        serverOnline,
+        {
+          setFoodName,
+          setSearchResults,
+          setOffProduct,
+          setOffQuantity,
+          setSuccess,
+          setError,
+          setLoading,
+        },
+        onSwitchToTypeTab,
+      );
     },
     [serverOnline, onSwitchToTypeTab, setLoading, setError, setSuccess, setSearchResults],
   );
 
   const handleDelete = useCallback(
     async (row: number) => {
-      if (!window.confirm('Remove this entry?')) return;
-      setLoading(true);
-      try {
-        setData(await api.deleteFoodRow(row));
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Delete failed');
-      } finally {
-        setLoading(false);
-      }
+      await deleteFoodRowWithConfirm(row, setData, setLoading, setError);
     },
     [setData, setLoading, setError],
   );

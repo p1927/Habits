@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:22:00Z |
-| where_we_are | relay-152 a11y pass on Log tabs + Day schedule grid (tabpanels, aria-live, focus rings). |
-| confirmed_next | relay-153 optimistic UI + retry |
+| reviewed_at | 2026-07-27T12:25:00Z |
+| where_we_are | relay-154 Lighthouse pass — lazy tab chunks + precache 474 KiB |
+| confirmed_next | brainstorm next backlog items |
 | brainstorm_notes | Worker only in this window — paste other contracts from `docs/START_LOOPS.md` for UX/Code/PO |
 
 ---
@@ -19,10 +19,8 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:22:00Z |
-| next_action | relay-153 optimistic UI + retry on food log failures |
-| blockers | [] |
-| loops | **Worker** `cursor-loop` `worker-relay` — PID **76951**, sentinel `^AGENT_LOOP_TICK_HABITS`, 60s. First tick confirmed. Verify: `bash tools/cursor-loop/scripts/verify-loop.sh worker-relay`. |
+| last_wake | 2026-07-27T12:55:00Z |
+| loops | **Worker** `cursor-loop` `worker-relay` — re-armed after tick #8 shell abort; tick #8 confirmed. |
 
 ---
 
@@ -35,7 +33,13 @@
 ## BACKLOG (priority ordered)
 
 - [x] relay-152 | Accessibility audit — ARIA, focus rings, contrast on new tabs | maintenance | Day schedule tabpanels + now-line sr-only; Log sub-tabs roving tabindex; Type tab aria-live + failed alerts; meal-plan quick-add focus + aria-busy
-- [ ] relay-153 | Optimistic UI + retry on food log failures | feature
+- [x] relay-153 | Optimistic UI + retry on food log failures | feature | auto-retry 1.5s; persist failed to queue; FoodFailedBanner + Retry all; meal_type preserved on retry
+- [x] relay-154 | Lighthouse PWA — lazy tab routes + precache trim | maintenance | React.lazy Log/Day/Cards/Agent/Settings; main chunk 251kB; precache **474 KiB**; exclude pdf/canvas/purify/index.es from precache
+- [x] relay-155 | Home saved recipe → optimistic food log | feature | `useOptimisticFoodLog` on Home; per-item log uses retry/offline queue
+- [x] relay-156 | Habit log retry parity with food queue | maintenance | auto-retry 1.5s; failed persist + Retry all on Day tab
+- [x] relay-157 | Lazy tab chunk preload | maintenance | idle preload Log/Day; hover/focus prefetch on tab bar + settings gear
+- [x] relay-158 | Home food log queue/failed banners | feature | FoodQueueBanner + FoodFailedBanner on Home (parity with Log tab)
+- [x] relay-159 | Home log entire recipe → optimistic + retry | feature | `saved_recipe` queue kind; `logSavedRecipe` in hook; Home uses optimistic path
 
 ---
 
@@ -53,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-152 | done | build | 4dfc101 |
 | 2026-07-27 | relay-151 | done | build | 0220ba7 |
 | 2026-07-27 | relay-149 | done | build | 3bf2d18 |
 | 2026-07-27 | relay-150 | done | build | 4e10f9b |

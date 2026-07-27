@@ -7,10 +7,11 @@
 | Field | Value |
 |-------|-------|
 | loop_id | `po-relay` |
+| loop_mode | `dynamic` |
 | sentinel | `AGENT_LOOP_TICK_MAINTENANCE` |
 | wake_sentinel | `AGENT_LOOP_WAKE_MAINTENANCE` |
 | interval_sec | `120` |
-| monitor_regex | `^AGENT_LOOP_TICK_MAINTENANCE` |
+| monitor_regex | `^AGENT_LOOP_WAKE_MAINTENANCE` |
 | pidfile | `$TMPDIR/cursor-loop-po-relay.pid` |
 | loop_script | `tools/cursor-loop/scripts/agent-loop.sh` |
 | state_file | `docs/maintenance/STATE.md` |

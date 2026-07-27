@@ -8,7 +8,8 @@ export function DayManageDayCard({ quadrants }: DayManageDayCardProps) {
   if (Object.keys(quadrants).length === 0) return null;
 
   return (
-    <Card>
+    <Card className="day-manage-card home-export-card--health">
+      <p className="section-eyebrow">Planning</p>
       <h2>Manage day</h2>
       {Object.entries(quadrants).map(([quad, items]) =>
         items.length > 0 ? (

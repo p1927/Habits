@@ -119,3 +119,76 @@ export async function runMealPlanSingleSync(
     }
   }
 }
+
+export interface MealPlanQueueBatchRunControls {
+  dismissMealPlanUndo: () => void;
+  clearError?: () => void;
+  setSyncing: (syncing: boolean) => void;
+  setProgress: (progress: { done: number; total: number } | null) => void;
+  onItemSuccess: (item: QueuedMealPlanLog) => void;
+  onItemFailure: (item: QueuedMealPlanLog, error: unknown) => void;
+  onQueueRefresh: () => void;
+  pruneFailedIds: () => void;
+}
+
+export async function executeMealPlanQueueBatchRun(
+  items: QueuedMealPlanLog[],
+  syncSource: MealPlanSyncSource,
+  undoContext: MealPlanSyncUndoContext,
+  controls: MealPlanQueueBatchRunControls,
+): Promise<void> {
+  if (!items.length) return;
+
+  controls.setSyncing(true);
+  controls.clearError?.();
+  controls.dismissMealPlanUndo();
+
+  try {
+    await runMealPlanBatchSync(items, syncSource, undoContext, {
+      onProgress: (done, total) => controls.setProgress({ done, total }),
+      onItemSuccess: controls.onItemSuccess,
+      onItemFailure: controls.onItemFailure,
+      onQueueRefresh: controls.onQueueRefresh,
+    });
+  } finally {
+    controls.setSyncing(false);
+    controls.setProgress(null);
+    controls.onQueueRefresh();
+    controls.pruneFailedIds();
+  }
+}
+
+export interface MealPlanQueueItemRetryControls {
+  dismissMealPlanUndo: () => void;
+  clearError?: () => void;
+  setRetryingId: (id: string | null) => void;
+  onItemSuccess: (item: QueuedMealPlanLog) => void;
+  markItemFailed: (id: string) => void;
+  onQueueRefresh: () => void;
+  onItemOffline?: (label: string) => void;
+  setError?: (message: string) => void;
+}
+
+export async function executeMealPlanQueueItemRetry(
+  item: QueuedMealPlanLog,
+  undoContext: MealPlanSyncUndoContext,
+  controls: MealPlanQueueItemRetryControls,
+): Promise<void> {
+  controls.setRetryingId(item.id);
+  controls.clearError?.();
+  controls.dismissMealPlanUndo();
+
+  try {
+    await runMealPlanSingleSync(item, undoContext, {
+      onSuccess: controls.onItemSuccess,
+      onOffline: () => controls.onItemOffline?.(mealPlanQueueLabel(item)),
+      onFailure: (e) => {
+        controls.markItemFailed(item.id);
+        controls.setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
+      },
+      onQueueRefresh: controls.onQueueRefresh,
+    });
+  } finally {
+    controls.setRetryingId(null);
+  }
+}

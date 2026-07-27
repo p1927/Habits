@@ -1,9 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { mealPlanQueueLabel, type QueuedMealPlanLog } from '../lib/mealPlanQueue';
-import { focusMealPlanQueueScrollTarget, mealPlanQueueItemId } from '../lib/mealPlanQueueFocus';
-import { formatRelativeTime } from '../lib/relativeTime';
+import { MealPlanQueueList } from './MealPlanQueueList';
+import type { QueuedMealPlanLog } from '../lib/mealPlanQueue';
+import { useMealPlanQueuePanelFocus } from '../hooks/useMealPlanQueuePanelFocus';
 import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export type MealPlanQueuePanelVariant = 'home' | 'default';
 
@@ -25,7 +23,6 @@ export interface MealPlanQueuePanelProps {
   onRetry: (item: QueuedMealPlanLog) => void;
   onDismissItem: (id: string) => void;
   onClearAll: () => void;
-  /** Increment to scroll this panel into view (e.g. Cards tab badge → Home). */
   scrollToQueueToken?: number;
 }
 
@@ -50,13 +47,20 @@ export function MealPlanQueuePanel({
   scrollToQueueToken = 0,
 }: MealPlanQueuePanelProps) {
   const failedCount = queue.filter((item) => failedIds.has(item.id)).length;
-  const prevFailedCountRef = useRef(0);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const syncBtnRef = useRef<HTMLButtonElement>(null);
   const isHome = variant === 'home';
   const panelClass = isHome ? 'home-meal-plan-queue-panel' : 'meal-plan-queue-panel';
   const progressClass = isHome ? 'home-meal-plan-sync-progress' : 'meal-plan-sync-progress';
-  const prefersReducedMotion = usePrefersReducedMotion();
+
+  const { panelRef, syncBtnRef, prefersReducedMotion } = useMealPlanQueuePanelFocus({
+    queue,
+    failedIds,
+    failedCount,
+    serverOnline,
+    syncing,
+    retryingId,
+    scrollToQueueToken,
+  });
+
   const announceSyncProgress = syncing && syncProgress && !prefersReducedMotion;
 
   useMealPlanQueueShortcuts({
@@ -80,51 +84,6 @@ export function MealPlanQueuePanel({
       : `${queue.length} meal log${queue.length === 1 ? '' : 's'} queued${
           failedCount > 0 ? ` · ${failedCount} failed` : ''
         }${bannerSuffix}${serverOnline ? shortcutHint : ' — will sync when online'}.`;
-
-  useEffect(() => {
-    if (failedCount === 0) {
-      prevFailedCountRef.current = 0;
-      return;
-    }
-    const shouldFocus = failedCount > prevFailedCountRef.current;
-    prevFailedCountRef.current = failedCount;
-    if (!shouldFocus || syncing) return;
-
-    const firstFailed = queue.find((item) => failedIds.has(item.id));
-    if (!firstFailed) return;
-
-    requestAnimationFrame(() => {
-      focusMealPlanQueueScrollTarget({
-        queue,
-        failedIds,
-        panel: panelRef.current,
-        syncButton: syncBtnRef.current,
-        serverOnline,
-        syncing,
-        retrying: !!retryingId,
-        reducedMotion: prefersReducedMotion,
-      });
-    });
-  }, [failedCount, syncing, queue, failedIds, prefersReducedMotion, serverOnline, retryingId]);
-
-  useEffect(() => {
-    if (!scrollToQueueToken) return;
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        focusMealPlanQueueScrollTarget({
-          queue,
-          failedIds,
-          panel: panelRef.current,
-          syncButton: syncBtnRef.current,
-          serverOnline,
-          syncing,
-          retrying: !!retryingId,
-          reducedMotion: prefersReducedMotion,
-        });
-      });
-    });
-  }, [scrollToQueueToken, queue, failedIds, serverOnline, syncing, retryingId, prefersReducedMotion]);
 
   return (
     <div
@@ -198,62 +157,15 @@ export function MealPlanQueuePanel({
           </div>
         </div>
       )}
-      {queue.length > 0 && (
-        <ul className="food-list meal-plan-queue-list" aria-label="Queued meal logs">
-          {queue.map((item) => {
-            const failed = failedIds.has(item.id);
-            const retrying = retryingId === item.id;
-            const label = mealPlanQueueLabel(item);
-            const queuedAgo = formatRelativeTime(item.created_at);
-            const statusSuffix = retrying
-              ? ' · Syncing…'
-              : failed
-                ? ' · Failed to sync'
-                : queuedAgo
-                  ? ` · Queued ${queuedAgo}`
-                  : ' · Queued offline';
-            return (
-              <li
-                key={item.id}
-                id={mealPlanQueueItemId(item.id)}
-                tabIndex={failed ? -1 : undefined}
-                className={`food-row food-row--${failed ? 'failed' : 'queued'}`}
-                role={failed ? 'alert' : undefined}
-              >
-                <div>
-                  <strong>{label}</strong>
-                  <span className={`muted${failed ? ' meal-plan-queue-item-failed' : ''}`}>
-                    {item.description ? ` · ${item.description}` : ''}
-                    {statusSuffix}
-                  </span>
-                </div>
-                <div className="food-row-actions">
-                  {serverOnline && (
-                    <button
-                      type="button"
-                      className="btn-small"
-                      data-meal-plan-retry=""
-                      disabled={syncing || !!retryingId}
-                      onClick={() => void onRetry(item)}
-                    >
-                      {retrying ? 'Syncing…' : 'Retry'}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="btn-small btn-danger"
-                    aria-label={`Dismiss queued ${label}`}
-                    disabled={retrying || syncing}
-                    onClick={() => onDismissItem(item.id)}
-                  >
-                    ×
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <MealPlanQueueList
+        queue={queue}
+        failedIds={failedIds}
+        retryingId={retryingId}
+        serverOnline={serverOnline}
+        syncing={syncing}
+        onRetry={onRetry}
+        onDismissItem={onDismissItem}
+      />
     </div>
   );
 }

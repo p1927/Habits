@@ -38,7 +38,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
 
   const { streakLegendOpen, toggleStreakLegend } = useDayStreakHaptics(streaks);
 
-  const { saving, updateMetric, queuedCount, pending, retry, dismiss, dismissAllQueued, queueSyncClearedToken } = useOptimisticHabitLog({
+  const { saving, updateMetric, queuedCount, failedCount, pending, retry, retryAllFailed, dismiss, dismissAllQueued, queueSyncClearedToken } = useOptimisticHabitLog({
     serverOnline,
     habits,
     setHabits,
@@ -84,6 +84,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
 
       <HabitQueueSection
         queuedCount={queuedCount}
+        failedCount={failedCount}
         pending={pending}
         queueSyncClearedToken={queueSyncClearedToken}
         metricLabel={dayMetricLabel}
@@ -91,6 +92,9 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
           dismissAllQueued();
           setHabitSyncMessage('Offline habit update queue cleared');
         }}
+        onRetryAll={() => retryAllFailed()}
+        onRetry={retry}
+        onDismiss={dismiss}
       />
 
       <MealPlanSyncAwarenessSlot

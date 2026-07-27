@@ -19,6 +19,14 @@ const LOG_TAB_LABELS: Record<LogTab, string> = {
   history: 'History',
 };
 
+export const LOG_TAB_ICONS: Record<LogTab, string> = {
+  scan: '⌖',
+  type: 'Aa',
+  mealplan: '☰',
+  recipes: '◉',
+  history: '↺',
+};
+
 export function logTabLabel(tab: LogTab): string {
   return LOG_TAB_LABELS[tab];
 }

@@ -24,6 +24,7 @@ export function SettingsMealPlanCard({
 }: SettingsMealPlanCardProps) {
   return (
     <article className="settings-card">
+      <p className="section-eyebrow">Planning</p>
       <h2>Weekly meal plan</h2>
       <label className="settings-row settings-row--input">
         <span className="settings-row-label">Day</span>

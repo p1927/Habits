@@ -51,7 +51,7 @@ export function Settings({
       {oauthSuccess && (
         <div className="banner banner-ok banner-revolut banner-row">
           Google connected successfully.
-          <button type="button" className="btn-small" onClick={onDismissOauth}>Dismiss</button>
+          <button type="button" className="btn-pill btn-pill-outline" onClick={onDismissOauth}>Dismiss</button>
         </div>
       )}
 

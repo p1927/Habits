@@ -7,6 +7,7 @@ interface SettingsGoogleCardProps {
 export function SettingsGoogleCard({ googleConnected, authUrl, onDisconnect }: SettingsGoogleCardProps) {
   return (
     <article className="settings-card">
+      <p className="section-eyebrow">Integrations</p>
       <h2>Google account</h2>
       <div className="settings-row">
         <span className="settings-row-label">Status</span>

@@ -76,7 +76,12 @@ export function DayScheduleGrid({ events }: DayScheduleGridProps) {
               />
             ))}
             {showNowLine && (
-              <div className="schedule-grid-now" style={{ top: `${nowTopPct}%` }} aria-hidden="true" />
+              <>
+                <div className="schedule-grid-now" style={{ top: `${nowTopPct}%` }} aria-hidden="true" />
+                <p className="sr-only" role="status">
+                  Current time: {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </>
             )}
             {timed.map((event) => {
               const startMin = eventStartMinutes(event.start);

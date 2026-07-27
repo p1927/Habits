@@ -12,7 +12,7 @@ import type { ScanHistoryEntry } from '../lib/scanHistory';
 import type { SavedRecipe } from './LogRecipesTabPanel';
 import type { SwipeDirection } from './ui/SwipeStack';
 
-interface LogTabPanelsProps {
+export interface LogTabPanelsProps {
   tab: LogTab;
   serverOnline: boolean;
   loading: boolean;

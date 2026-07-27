@@ -42,21 +42,48 @@
 }
 
 .agent-greeting-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   padding: 0.85rem 0.75rem;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--surface2) 70%, transparent);
   background: var(--gemini-surface);
   color: var(--text);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
   text-align: left;
   cursor: pointer;
-  transition: border-color var(--duration-fast), background var(--duration-fast);
+  transition: border-color var(--duration-fast), background var(--duration-fast), transform var(--duration-fast);
+}
+
+.agent-greeting-card__icon {
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--gemini-accent);
+  margin-bottom: 0.15rem;
+}
+
+.agent-greeting-card__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.agent-greeting-card__desc {
+  font-size: 0.6875rem;
+  color: var(--muted);
+  line-height: 1.35;
 }
 
 .agent-greeting-card:hover {
   border-color: color-mix(in srgb, var(--gemini-accent) 45%, var(--surface2));
   background: color-mix(in srgb, var(--gemini-accent) 8%, var(--gemini-surface));
+  transform: translateY(-1px);
+}
+
+.agent-greeting-card:focus-visible {
+  outline: 2px solid var(--gemini-accent);
+  outline-offset: 2px;
 }
 
 .agent-greeting__title {
@@ -442,14 +469,9 @@
 }
 
 .chat-bubble-disclaimer {
-.chat-bubble-disclaimer {
-  margin: 0.65rem 0 0;
   margin: 0.65rem 0 0;
   font-size: 0.6875rem;
-  font-size: 0.6875rem;
   line-height: 1.35;
-  line-height: 1.35;
-}
 }
 
 .agent-chat-empty {

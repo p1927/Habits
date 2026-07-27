@@ -67,7 +67,7 @@ export function useOptimisticFoodLog({
         ...optimisticCtx,
         id,
         pendingEntry: { id, food, quantity_g, status: 'pending' },
-        enqueue: () => enqueueFoodLog({ kind: 'item', food, quantity_g }),
+        enqueue: (reuseId) => enqueueFoodLog({ kind: 'item', food, quantity_g, id: reuseId }),
         submit: () => api.logFoodItem(food, quantity_g),
         onSuccess,
       });
@@ -87,7 +87,8 @@ export function useOptimisticFoodLog({
         ...optimisticCtx,
         id,
         pendingEntry: { id, food, quantity_g, status: 'pending', source: 'macros' },
-        enqueue: () => enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros }),
+        enqueue: (reuseId) =>
+          enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros, id: reuseId }),
         submit: () => api.logFoodMacros({ food, quantity_g, ...macros }),
         onSuccess,
       });
@@ -101,8 +102,9 @@ export function useOptimisticFoodLog({
       await executeOptimisticFoodLog({
         ...optimisticCtx,
         id,
-        pendingEntry: { id, food: description, quantity_g: 0, status: 'pending' },
-        enqueue: () => enqueueFoodLog({ kind: 'meal', description, meal_type }),
+        pendingEntry: { id, food: description, quantity_g: 0, status: 'pending', meal_type },
+        enqueue: (reuseId) =>
+          enqueueFoodLog({ kind: 'meal', description, meal_type, id: reuseId }),
         submit: () => api.logFood(description, meal_type),
         onOfflineComplete: onSuccess,
         onSuccess: () => onSuccess?.(),
@@ -110,6 +112,23 @@ export function useOptimisticFoodLog({
     },
     [serverOnline, setData, setSuccess, setError],
   );
+
+  const logSavedRecipe = useCallback(async () => {
+    const id = `pending-recipe-${Date.now()}`;
+    await executeOptimisticFoodLog({
+      ...optimisticCtx,
+      id,
+      pendingEntry: {
+        id,
+        food: 'Entire saved recipe',
+        quantity_g: 0,
+        status: 'pending',
+        source: 'saved_recipe',
+      },
+      enqueue: (reuseId) => enqueueFoodLog({ kind: 'saved_recipe', id: reuseId }),
+      submit: () => api.logSavedRecipe(),
+    });
+  }, [serverOnline, setData, setSuccess, setError]);
 
   const retry = useCallback(
     (entry: OptimisticFoodEntry) => {
@@ -123,14 +142,25 @@ export function useOptimisticFoodLog({
           protein: queued.protein,
           fat: queued.fat,
         });
+      } else if (queued?.kind === 'meal') {
+        void logMeal(queued.description, queued.meal_type);
+      } else if (queued?.kind === 'saved_recipe' || entry.source === 'saved_recipe') {
+        void logSavedRecipe();
       } else if (entry.quantity_g > 0) {
         void logItem(entry.food, entry.quantity_g);
       } else {
-        void logMeal(entry.food, 'other');
+        void logMeal(entry.food, entry.meal_type ?? 'other');
       }
     },
-    [logItem, logMeal, logMacros],
+    [logItem, logMeal, logMacros, logSavedRecipe],
   );
+
+  const retryAllFailed = useCallback(() => {
+    const failed = pending.filter((x) => x.status === 'failed');
+    for (const entry of failed) {
+      retry(entry);
+    }
+  }, [pending, retry]);
 
   const dismiss = useCallback((id: string) => {
     removeFoodLogQueueItem(id);
@@ -146,12 +176,15 @@ export function useOptimisticFoodLog({
     pending,
     logItem,
     logMeal,
+    logSavedRecipe,
     logMacros,
     retry,
+    retryAllFailed,
     dismiss,
     dismissAllQueued,
     flushQueue,
     queuedCount: pending.filter((x) => x.status === 'queued').length,
+    failedCount: pending.filter((x) => x.status === 'failed').length,
     queueSyncClearedToken,
   };
 }

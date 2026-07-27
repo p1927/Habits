@@ -3,7 +3,7 @@ import { UndoToast } from './UndoToast';
 import type { FoodLogUndoEntry } from '../hooks/useLogFoodUndo';
 import type { MealPlanUndoState } from '../hooks/useMealPlanUndo';
 
-interface LogStatusShellProps {
+export interface LogStatusShellProps {
   success: string;
   error: string;
   undoLog: FoodLogUndoEntry | null;

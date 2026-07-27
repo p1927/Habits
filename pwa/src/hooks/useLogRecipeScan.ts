@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, ApiError, type FoodScanResult, type FoodTodayResponse } from '../lib/api';
-import { isOfflineError } from '../lib/foodQueue';
+import { type FoodScanResult, type FoodTodayResponse } from '../lib/api';
 import { type LogTab } from '../lib/logSectionShared';
-import { addMealPhoto, getTodayMealPhotos } from '../lib/mealPhotos';
+import { getTodayMealPhotos } from '../lib/mealPhotos';
 import {
-  applyRecipeScanResult,
-  scanRecipeDataUrl,
+  captureRecipePhotoFlow,
+  fetchSavedRecipe,
+  logEntireSavedRecipeFlow,
+  savedRecipeLoadError,
   type SavedRecipe,
 } from '../lib/recipeScanFlow';
 import {
   clearRecipeScanQueue,
-  enqueueRecipeScan,
   getRecipeScanQueue,
 } from '../lib/recipeScanQueue';
 import { useRecipeScanQueueEffects } from './useRecipeScanQueueEffects';
@@ -79,14 +79,14 @@ export function useLogRecipeScan({
     setRecipeLoading(true);
     setError('');
     try {
-      const r = await api.getSavedRecipe();
-      setRecipe(r.recipe);
-      setRecipeSheetsConnected(r.sheets_connected);
+      const { recipe: loaded, sheetsConnected } = await fetchSavedRecipe();
+      setRecipe(loaded);
+      setRecipeSheetsConnected(sheetsConnected);
     } catch (e) {
       setRecipe(null);
       setRecipeSheetsConnected(null);
-      if (e instanceof ApiError && e.status === 401) return;
-      setError(e instanceof Error ? e.message : 'Failed to load saved recipe');
+      const msg = savedRecipeLoadError(e);
+      if (msg) setError(msg);
     } finally {
       setRecipeLoading(false);
     }
@@ -116,41 +116,17 @@ export function useLogRecipeScan({
 
   const handleRecipePhoto = useCallback(
     async (dataUrl: string) => {
-      const label = recipe?.name ?? 'Recipe';
-      const photo = addMealPhoto(dataUrl, label);
-      setRecipePhoto(dataUrl);
-      setRecipeScanResult(null);
-      setError('');
-
-      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-        enqueueRecipeScan(photo.id, label);
-        syncRecipeScanQueue();
-        setSuccess('Recipe photo saved — scan queued for when online');
-        return;
-      }
-
-      setRecipeScanning(true);
-      try {
-        const result = await scanRecipeDataUrl(dataUrl);
-        applyRecipeScanResult(result, dataUrl, {
-          setRecipePhoto,
-          setRecipeScanResult,
-          setRecipeEditName,
-          setRecipeEditQty,
-          setSuccess,
-        });
-      } catch (e) {
-        if (isOfflineError(e)) {
-          enqueueRecipeScan(photo.id, label);
-          syncRecipeScanQueue();
-          setSuccess('Recipe photo saved — scan queued for when online');
-          return;
-        }
-        setSuccess('Recipe photo saved — visible on Home');
-        setError(e instanceof Error ? e.message : 'Recipe scan failed');
-      } finally {
-        setRecipeScanning(false);
-      }
+      await captureRecipePhotoFlow(dataUrl, recipe?.name, {
+        serverOnline,
+        syncRecipeScanQueue,
+        setRecipePhoto,
+        setRecipeScanResult,
+        setRecipeEditName,
+        setRecipeEditQty,
+        setRecipeScanning,
+        setError,
+        setSuccess,
+      });
     },
     [recipe?.name, serverOnline, syncRecipeScanQueue, setError, setSuccess],
   );
@@ -178,9 +154,7 @@ export function useLogRecipeScan({
     setLoading(true);
     setError('');
     try {
-      const res = await api.logSavedRecipe();
-      setData(res.summary);
-      setSuccess(res.message);
+      await logEntireSavedRecipeFlow(setData, setSuccess);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Recipe log failed');
     } finally {

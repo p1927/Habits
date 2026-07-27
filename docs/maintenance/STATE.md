@@ -18,18 +18,18 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T08:48:00Z |
+| last_wake | 2026-07-27T12:13:00Z |
 | current_item_id | — |
-| loops | See **Active loops** below — one PID per window |
+| loops | **2026-07-27:** legacy `agent-loop.sh` pidfile loops **stopped**; UX uses Cursor `/loop` 5m wake in UX chat |
 
 ### Active loops (one PID each — [`LOOPS.md`](LOOPS.md))
 
 | Window | Sentinel | PID / shell | Status |
 |--------|----------|-------------|--------|
-| Worker | `AGENT_LOOP_TICK_HABITS` | *(Worker chat)* | — |
-| UX | `AGENT_LOOP_TICK_UX_RELAY` | PID *(restarted)* | running |
-| Code | `AGENT_LOOP_TICK_CODE_HEALTH` | *(Code chat)* | — |
-| PO | `AGENT_LOOP_TICK_MAINTENANCE` | **DOWN** (581173 aborted — use `/loop 2m` in PO chat) | — |
+| Worker | `AGENT_LOOP_TICK_HABITS` | — | **STOPPED** — use `@docs/agents/worker-relay.md keep working` in Worker chat |
+| UX | `AGENT_LOOP_WAKE_UX_RELAY` | Cursor `/loop` 5m | **UP** — this chat |
+| Code | `AGENT_LOOP_TICK_CODE_HEALTH` | — | **STOPPED** — use `@docs/agents/code-health.md keep working` in Code chat |
+| PO | `AGENT_LOOP_TICK_MAINTENANCE` | — | **STOPPED** — use `@docs/agents/po-relay.md keep working` in PO chat |
 
 ---
 
@@ -104,6 +104,11 @@
 - [x] ui-036 | **Home Revolut cards:** section eyebrows + pill CTAs on macros/trends/meal plan/recipes | P2 | done 2026-07-27
 - [x] ui-037 | **Recipes tab polish:** Revolut card surfaces on Log Recipes panel | P2 | done 2026-07-27
 - [ ] ui-038 | **Agent streaming text:** token-by-token assistant bubble (needs SSE backend) | P1 | open
+- [x] ui-039 | **Secondary panels Revolut pass:** meal photos, log history, day habits, agent action chips | P2 | done 2026-07-27
+- [x] ui-040 | **Log Type tab Revolut pass:** section eyebrows, pill CTAs, health cards on barcode/quick/manual/today | P2 | done 2026-07-27
+- [x] ui-041 | **Settings cards pass 2:** section eyebrows + title hierarchy on all settings cards | P2 | done 2026-07-27
+- [x] ui-042 | **Log sub-tabs icons:** Scan/Type/History/Recipes tab labels with subtle icons | P3 | done 2026-07-27
+- [x] ui-043 | **Agent empty state:** Gemini greeting chips when no messages (category grid polish) | P2 | done 2026-07-27 — icon + description cards
 
 ---
 

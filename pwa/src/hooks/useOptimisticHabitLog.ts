@@ -6,6 +6,7 @@ import {
   clearHabitLogQueue,
   getCachedHabitsToday,
   getHabitLogQueue,
+  makeQueueId,
   removeHabitQueueItem,
 } from '../lib/habitQueue';
 import {
@@ -33,7 +34,7 @@ export function useOptimisticHabitLog({
   setSyncMessage,
 }: UseOptimisticHabitLogOptions) {
   const [pending, setPending] = useState<QueuedHabitEntry[]>(() =>
-    getHabitLogQueue().map(queueToHabitEntry),
+    getHabitLogQueue().map((item) => queueToHabitEntry(item)),
   );
   const [saving, setSaving] = useState<string | null>(null);
   const [queueSyncClearedToken, setQueueSyncClearedToken] = useState(0);
@@ -64,9 +65,11 @@ export function useOptimisticHabitLog({
   const updateMetric = useCallback(
     async (metric: string, rawValue: string) => {
       const value = rawValue === '' ? null : Number.parseFloat(rawValue);
+      const id = makeQueueId('hq');
       await executeOptimisticHabitUpdate({
         serverOnline,
         habits,
+        id,
         metric,
         value,
         setHabits,
@@ -98,12 +101,20 @@ export function useOptimisticHabitLog({
     [updateMetric],
   );
 
+  const retryAllFailed = useCallback(() => {
+    for (const entry of pending.filter((x) => x.status === 'failed')) {
+      retry(entry);
+    }
+  }, [pending, retry]);
+
   return {
     pending,
     saving,
     updateMetric,
     queuedCount: pending.filter((x) => x.status === 'queued').length,
+    failedCount: pending.filter((x) => x.status === 'failed').length,
     retry,
+    retryAllFailed,
     dismiss,
     dismissAllQueued,
     queueSyncClearedToken,

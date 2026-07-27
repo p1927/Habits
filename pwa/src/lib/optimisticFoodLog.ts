@@ -6,7 +6,8 @@ export interface OptimisticFoodEntry {
   food: string;
   quantity_g: number;
   status: 'pending' | 'failed' | 'queued';
-  source?: 'macros';
+  source?: 'macros' | 'saved_recipe';
+  meal_type?: string;
   created_at?: string;
 }
 
@@ -30,11 +31,22 @@ export function queueToOptimisticEntry(item: QueuedFoodLog): OptimisticFoodEntry
       created_at: item.created_at,
     };
   }
+  if (item.kind === 'saved_recipe') {
+    return {
+      id: item.id,
+      food: 'Entire saved recipe',
+      quantity_g: 0,
+      status: 'queued',
+      source: 'saved_recipe',
+      created_at: item.created_at,
+    };
+  }
   return {
     id: item.id,
     food: item.description,
     quantity_g: 0,
     status: 'queued',
+    meal_type: item.meal_type,
     created_at: item.created_at,
   };
 }
@@ -53,6 +65,9 @@ export async function logQueuedFoodItem(item: QueuedFoodLog) {
       fat: item.fat,
     });
   }
+  if (item.kind === 'saved_recipe') {
+    return api.logSavedRecipe();
+  }
   return api.logFood(item.description, item.meal_type);
 }
 
@@ -60,7 +75,7 @@ interface ExecuteOptimisticFoodLogOptions {
   serverOnline: boolean;
   id: string;
   pendingEntry: OptimisticFoodEntry;
-  enqueue: () => QueuedFoodLog;
+  enqueue: (reuseId?: string) => QueuedFoodLog;
   submit: () => Promise<{ summary: FoodTodayResponse; message: string }>;
   setData: (data: FoodTodayResponse | null) => void;
   setSuccess: (msg: string) => void;
@@ -68,6 +83,22 @@ interface ExecuteOptimisticFoodLogOptions {
   setPending: React.Dispatch<React.SetStateAction<OptimisticFoodEntry[]>>;
   onSuccess?: (summary: FoodTodayResponse) => void;
   onOfflineComplete?: () => void;
+  autoRetryMs?: number;
+}
+
+const DEFAULT_AUTO_RETRY_MS = 1500;
+
+async function submitWithOptionalRetry(
+  submit: () => Promise<{ summary: FoodTodayResponse; message: string }>,
+  autoRetryMs: number,
+) {
+  try {
+    return await submit();
+  } catch (first) {
+    if (isOfflineError(first) || autoRetryMs <= 0) throw first;
+    await new Promise((resolve) => window.setTimeout(resolve, autoRetryMs));
+    return submit();
+  }
 }
 
 export async function executeOptimisticFoodLog({
@@ -82,12 +113,13 @@ export async function executeOptimisticFoodLog({
   setPending,
   onSuccess,
   onOfflineComplete,
+  autoRetryMs = DEFAULT_AUTO_RETRY_MS,
 }: ExecuteOptimisticFoodLogOptions) {
   setPending((p) => [...p, pendingEntry]);
   setError('');
 
   const queueOffline = () => {
-    const q = enqueue();
+    const q = enqueue(id);
     setPending((p) => p.map((x) => (x.id === id ? queueToOptimisticEntry(q) : x)));
     setSuccess('Saved offline — will sync when back online');
     onOfflineComplete?.();
@@ -99,7 +131,7 @@ export async function executeOptimisticFoodLog({
   }
 
   try {
-    const res = await submit();
+    const res = await submitWithOptionalRetry(submit, autoRetryMs);
     setData(res.summary);
     setSuccess(res.message);
     setPending((p) => p.filter((x) => x.id !== id));
@@ -110,7 +142,10 @@ export async function executeOptimisticFoodLog({
       return;
     }
     const msg = e instanceof Error ? e.message : 'Log failed';
-    setPending((p) => p.map((x) => (x.id === id ? { ...x, status: 'failed' as const } : x)));
-    setError(msg);
+    const q = enqueue(id);
+    setPending((p) =>
+      p.map((x) => (x.id === id ? { ...queueToOptimisticEntry(q), status: 'failed' as const } : x)),
+    );
+    setError(`${msg} — tap Retry to try again`);
   }
 }

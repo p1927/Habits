@@ -7,10 +7,11 @@
 | Field | Value |
 |-------|-------|
 | loop_id | `worker-relay` |
+| loop_mode | `dynamic` |
 | sentinel | `AGENT_LOOP_TICK_HABITS` |
 | wake_sentinel | `AGENT_LOOP_WAKE_HABITS` |
 | interval_sec | `60` |
-| monitor_regex | `^AGENT_LOOP_TICK_HABITS` |
+| monitor_regex | `^AGENT_LOOP_WAKE_HABITS` |
 | pidfile | `$TMPDIR/cursor-loop-worker-relay.pid` |
 | loop_script | `tools/cursor-loop/scripts/agent-loop.sh` |
 | state_file | `docs/RELAY.md` |

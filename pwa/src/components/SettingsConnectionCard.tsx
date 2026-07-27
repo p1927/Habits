@@ -7,7 +7,8 @@ interface SettingsConnectionCardProps {
 export function SettingsConnectionCard({ bearerInput, onBearerChange, onSave }: SettingsConnectionCardProps) {
   return (
     <article className="settings-card">
-      <h2>Server connection</h2>
+      <p className="section-eyebrow">Server</p>
+      <h2>Connection</h2>
       <label className="field settings-field">
         Bearer token
         <input

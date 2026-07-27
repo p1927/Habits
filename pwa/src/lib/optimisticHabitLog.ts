@@ -16,12 +16,12 @@ export interface QueuedHabitEntry {
   created_at: string;
 }
 
-export function queueToHabitEntry(item: QueuedHabitUpdate): QueuedHabitEntry {
+export function queueToHabitEntry(item: QueuedHabitUpdate, status: QueuedHabitEntry['status'] = 'queued'): QueuedHabitEntry {
   return {
     id: item.id,
     metric: item.metric,
     value: item.value,
-    status: 'queued',
+    status,
     created_at: item.created_at,
   };
 }
@@ -29,6 +29,7 @@ export function queueToHabitEntry(item: QueuedHabitUpdate): QueuedHabitEntry {
 interface ExecuteOptimisticHabitUpdateOptions {
   serverOnline: boolean;
   habits: HabitsTodayResponse | null;
+  id: string;
   metric: string;
   value: number | null;
   setHabits: (habits: HabitsTodayResponse | null) => void;
@@ -36,11 +37,28 @@ interface ExecuteOptimisticHabitUpdateOptions {
   setSyncMessage: (msg: string) => void;
   setPending: React.Dispatch<React.SetStateAction<QueuedHabitEntry[]>>;
   setSaving: (metric: string | null) => void;
+  autoRetryMs?: number;
+}
+
+const DEFAULT_AUTO_RETRY_MS = 1500;
+
+async function submitWithOptionalRetry(
+  submit: () => Promise<HabitsTodayResponse>,
+  autoRetryMs: number,
+) {
+  try {
+    return await submit();
+  } catch (first) {
+    if (isOfflineError(first) || autoRetryMs <= 0) throw first;
+    await new Promise((resolve) => window.setTimeout(resolve, autoRetryMs));
+    return submit();
+  }
 }
 
 export async function executeOptimisticHabitUpdate({
   serverOnline,
   habits,
+  id,
   metric,
   value,
   setHabits,
@@ -48,13 +66,27 @@ export async function executeOptimisticHabitUpdate({
   setSyncMessage,
   setPending,
   setSaving,
+  autoRetryMs = DEFAULT_AUTO_RETRY_MS,
 }: ExecuteOptimisticHabitUpdateOptions) {
   setSaving(metric);
   setError('');
   setHabits(applyLocalMetric(habits, metric, value));
+  setPending((p) => {
+    const withoutMetric = p.filter((x) => x.metric !== metric);
+    return [
+      ...withoutMetric,
+      {
+        id,
+        metric,
+        value,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      },
+    ];
+  });
 
   const queueOffline = () => {
-    const q = enqueueHabitUpdate(metric, value);
+    const q = enqueueHabitUpdate(metric, value, id);
     setPending((p) => {
       const withoutMetric = p.filter((x) => x.metric !== metric);
       return [...withoutMetric, queueToHabitEntry(q)];
@@ -69,7 +101,7 @@ export async function executeOptimisticHabitUpdate({
   }
 
   try {
-    setHabits(await api.updateHabitMetric(metric, value));
+    setHabits(await submitWithOptionalRetry(() => api.updateHabitMetric(metric, value), autoRetryMs));
     for (const q of getHabitLogQueue().filter((x) => x.metric === metric)) {
       removeHabitQueueItem(q.id);
     }
@@ -79,7 +111,13 @@ export async function executeOptimisticHabitUpdate({
       queueOffline();
       return;
     }
-    setError(e instanceof Error ? e.message : 'Update failed');
+    const msg = e instanceof Error ? e.message : 'Update failed';
+    const q = enqueueHabitUpdate(metric, value, id);
+    setPending((p) => {
+      const withoutMetric = p.filter((x) => x.metric !== metric);
+      return [...withoutMetric, queueToHabitEntry(q, 'failed')];
+    });
+    setError(`${msg} — tap Retry to try again`);
   } finally {
     setSaving(null);
   }

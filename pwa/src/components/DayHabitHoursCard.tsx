@@ -36,12 +36,15 @@ export function DayHabitHoursCard({
   const failed = pending.filter((e) => e.status === 'failed');
 
   return (
-    <Card>
+    <Card className="day-habit-hours-card home-export-card--health">
       <div className="habit-hours-header">
-        <h2>Habit hours</h2>
+        <div>
+          <p className="section-eyebrow">Targets</p>
+          <h2>Habit hours</h2>
+        </div>
         <button
           type="button"
-          className="btn-small streak-legend-toggle"
+          className="btn-pill btn-pill-outline streak-legend-toggle"
           aria-expanded={streakLegendOpen}
           aria-controls="streak-tier-legend"
           onClick={onToggleLegend}

@@ -8,10 +8,10 @@ export const AGENT_QUICK_PROMPTS = [
 ] as const;
 
 export const AGENT_GREETING_CATEGORIES = [
-  { label: 'Log food', text: 'Help me log what I ate today' },
-  { label: 'Habits', text: 'How am I doing on habits today?' },
-  { label: 'Schedule', text: 'What is on my calendar today?' },
-  { label: 'Health note', text: 'Add a note to my health cards' },
+  { label: 'Log food', icon: '◉', description: 'Track meals, macros, and portions', text: 'Help me log what I ate today' },
+  { label: 'Habits', icon: '☰', description: 'Sleep, work, and daily targets', text: 'How am I doing on habits today?' },
+  { label: 'Schedule', icon: '⌁', description: 'Calendar events and your day', text: 'What is on my calendar today?' },
+  { label: 'Health note', icon: '✎', description: 'Notes, sickness, or strategy cards', text: 'Add a note to my health cards' },
 ] as const;
 
 export const AGENT_TOOLS = [

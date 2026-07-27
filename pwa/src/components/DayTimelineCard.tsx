@@ -33,8 +33,11 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
           <button
             type="button"
             role="tab"
+            id="day-schedule-tab-agenda"
+            aria-controls="day-schedule-panel-agenda"
             className={`day-schedule-view-pill ${view === 'agenda' ? 'day-schedule-view-pill--active' : ''}`}
             aria-selected={view === 'agenda'}
+            tabIndex={view === 'agenda' ? 0 : -1}
             onClick={() => setView('agenda')}
           >
             Schedule
@@ -42,8 +45,11 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
           <button
             type="button"
             role="tab"
+            id="day-schedule-tab-day"
+            aria-controls="day-schedule-panel-day"
             className={`day-schedule-view-pill ${view === 'day' ? 'day-schedule-view-pill--active' : ''}`}
             aria-selected={view === 'day'}
+            tabIndex={view === 'day' ? 0 : -1}
             onClick={() => setView('day')}
           >
             Day
@@ -53,14 +59,21 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
 
       {!events.length ? (
         view === 'day' ? (
-          <DayScheduleGrid events={[]} />
+          <div role="tabpanel" id="day-schedule-panel-day" aria-labelledby="day-schedule-tab-day">
+            <DayScheduleGrid events={[]} />
+          </div>
         ) : (
-          <p className="muted day-schedule-empty">No events on your schedule today.</p>
+          <div role="tabpanel" id="day-schedule-panel-agenda" aria-labelledby="day-schedule-tab-agenda">
+            <p className="muted day-schedule-empty">No events on your schedule today.</p>
+          </div>
         )
       ) : view === 'day' ? (
-        <DayScheduleGrid events={events} />
+        <div role="tabpanel" id="day-schedule-panel-day" aria-labelledby="day-schedule-tab-day">
+          <DayScheduleGrid events={events} />
+        </div>
       ) : (
-        <div className="schedule-agenda" aria-label="Today's schedule">
+        <div role="tabpanel" id="day-schedule-panel-agenda" aria-labelledby="day-schedule-tab-agenda">
+          <div className="schedule-agenda" aria-label="Today's schedule">
           <h3 className="schedule-day-label">{dayLabel}</h3>
           <ul className="schedule-event-list">
             {sorted.map((ev) => {
@@ -83,6 +96,7 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
               );
             })}
           </ul>
+        </div>
         </div>
       )}
     </Card>

@@ -10,11 +10,10 @@ from habits_api.google.sheet_constants import (
 )
 from habits_api.google.sheet_io import (
     append_rows,
-    read_key_value_block,
     read_range,
     update_range,
-    write_physio_value,
 )
+from habits_api.google.sheet_key_value import read_key_value_block, write_physio_value
 
 __all__ = [
     "DAILY_COLS",

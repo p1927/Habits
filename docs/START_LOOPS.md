@@ -30,10 +30,21 @@ Open one **Agent chat** per row. Paste the message into that chat. Walk away.
 
 Say **stop loop** in that chat, or close the Cursor window.
 
+## Upgrade / refresh (cursor-loop 0.4+)
+
+After pulling cursor-loop changes:
+
+```bash
+bash tools/cursor-loop/install.sh . --symlink
+bash tools/cursor-loop/scripts/refresh-loops.sh .
+```
+
+Then paste the contract line again in **each** window (bindings preserved).
+
 ## Extreme reset (stuck / duplicate chat / corrupt state)
 
 ```bash
-bash tools/cursor-loop/scripts/force-reset.sh . --all
+bash tools/cursor-loop/scripts/force-reset.sh . --all --yes
 bash tools/cursor-loop/scripts/validate_contracts.py .
 ```
 

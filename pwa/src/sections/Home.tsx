@@ -1,8 +1,5 @@
-import { useRef, useState, type CSSProperties } from 'react';
-import { UndoToast } from '../components/UndoToast';
-import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
-import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
-import { MealPlanTodayCard } from '../components/MealPlanTodayCard';
+import { useHomeSection } from '../hooks/useHomeSection';
+import { HomeMealPlanBlock } from '../components/HomeMealPlanBlock';
 import { HomeSummaryTiles } from '../components/HomeSummaryTiles';
 import { HomeActivityRingsCard } from '../components/HomeActivityRingsCard';
 import { HomeMacrosCard } from '../components/HomeMacrosCard';
@@ -11,10 +8,11 @@ import { HomeHabitTrendCard } from '../components/HomeHabitTrendCard';
 import { HomeDecisionCard } from '../components/HomeDecisionCard';
 import { HomeReportsPanel } from '../components/HomeReportsPanel';
 import { HomeMealPhotosPanel } from '../components/HomeMealPhotosPanel';
+import { FoodFailedBanner } from '../components/FoodFailedBanner';
+import { FoodQueueBanner } from '../components/FoodQueueBanner';
 import { HomeSavedRecipeCard } from '../components/HomeSavedRecipeCard';
-import { useHomeDashboard } from '../hooks/useHomeDashboard';
-import { useMealPlanShell } from '../hooks/useMealPlanShell';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
+import type { CSSProperties } from 'react';
 
 interface HomeProps {
   serverOnline: boolean;
@@ -22,87 +20,19 @@ interface HomeProps {
   scrollToMealPlanQueue?: number;
 }
 
-export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPlanQueue }: HomeProps) {
-  const [mealPlanMessage, setMealPlanMessage] = useState('');
-  const syncMealPlanQueueRef = useRef<() => void>(() => {});
-
-  const {
-    food,
-    setFood,
-    history,
-    calTarget,
-    habitWeek,
-    decisionCard,
-    setDecisionCard,
-    error,
-    setError,
-    exporting,
-    sharingRings,
-    mealPhotos,
-    mealPlan,
-    dashboardLoading,
-    refresh,
-    pullProgress,
-    refreshing,
-    triggerRefresh,
-    proteinTarget,
-    habitPct,
-    burn,
-    calorieTrend,
-    habitsTrend,
-    handleShareRings,
-    handleExportWeekPdf,
-    handleAcceptCard,
-  } = useHomeDashboard({
-    serverOnline,
-    syncMealPlanQueue: () => syncMealPlanQueueRef.current(),
-  });
-
-  const {
-    mealPlanUndo,
-    mealPlanUndoing,
-    dismissMealPlanUndo,
-    handleMealPlanUndo,
-    mealPlanQueue,
-    syncingMealPlanQueue,
-    mealPlanSyncProgress,
-    failedMealPlanIds,
-    retryingMealPlanId,
-    syncMealPlanQueue,
-    flushMealPlanQueue,
-    retryFailedMealPlanQueue,
-    retryMealPlanItem,
-    dismissMealPlanItem,
-    loggingMealKey,
-    loggingMeals,
-    logMealPlanEntry,
-    logAllMealPlan,
-    clearMealPlanQueue,
-  } = useMealPlanShell({
-    serverOnline,
-    syncSource: 'home',
-    setMessage: setMealPlanMessage,
-    setError,
-    watchFocus: true,
-    watchQueueChanges: true,
-    food,
-    onFoodUpdated: setFood,
-    afterSync: () => void refresh(),
-    onAfterLog: () => void refresh(),
-  });
-
-  syncMealPlanQueueRef.current = syncMealPlanQueue;
+export function Home(props: HomeProps) {
+  const h = useHomeSection(props);
 
   return (
     <section className="section home-section" aria-labelledby="home-heading">
-      {(pullProgress > 0 || refreshing) && (
+      {(h.pullProgress > 0 || h.refreshing) && (
         <div
           className="pull-refresh-indicator"
           role="status"
           aria-live="polite"
-          style={{ '--pull-progress': pullProgress } as CSSProperties}
+          style={{ '--pull-progress': h.pullProgress } as CSSProperties}
         >
-          {refreshing ? 'Refreshing…' : pullProgress >= 1 ? 'Release to refresh' : 'Pull to refresh'}
+          {h.refreshing ? 'Refreshing…' : h.pullProgress >= 1 ? 'Release to refresh' : 'Pull to refresh'}
         </div>
       )}
       <div className="home-header-row">
@@ -113,130 +43,120 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
         </div>
         <button
           type="button"
-          className="btn-small home-refresh-btn"
-          disabled={refreshing}
+          className="btn-pill btn-pill-outline home-refresh-btn"
+          disabled={h.refreshing}
           aria-label="Refresh dashboard"
           title="Refresh dashboard (R)"
-          onClick={() => void triggerRefresh()}
+          onClick={() => void h.triggerRefresh()}
         >
-          {refreshing ? 'Refreshing…' : 'Refresh'}
+          {h.refreshing ? 'Refreshing…' : 'Refresh'}
         </button>
       </div>
 
-      {!serverOnline && (
+      {!h.serverOnline && (
         <div className="banner banner-warn banner-revolut" role="alert">Server offline — connect to sync.</div>
       )}
 
-      <MealPlanSyncAwarenessSlot
-        viewer="home"
-        onNavigate={onNavigateMealPlanSyncSource}
-        localSyncing={syncingMealPlanQueue}
+      <FoodQueueBanner
+        queuedCount={h.queuedCount}
+        queueSyncClearedToken={h.queueSyncClearedToken}
+        onDismiss={h.dismissAllQueued}
       />
 
-      <MealPlanQueueSection
-        hasMealPlan={mealPlan.length > 0}
-        serverOnline={serverOnline}
-        queue={mealPlanQueue}
-        syncing={syncingMealPlanQueue}
-        syncProgress={mealPlanSyncProgress}
-        failedIds={failedMealPlanIds}
-        retryingId={retryingMealPlanId}
-        variant="home"
-        scrollToQueueToken={scrollToMealPlanQueue}
-        noPlanToday={mealPlan.length === 0}
-        bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
-        onSyncAll={() => void flushMealPlanQueue()}
-        onRetryFailed={() => void retryFailedMealPlanQueue()}
-        onRetry={(item) => void retryMealPlanItem(item)}
-        onDismissItem={dismissMealPlanItem}
-        onClearAll={clearMealPlanQueue}
+      <FoodFailedBanner failedCount={h.failedCount} onRetryAll={() => h.retryAllFailed()} />
+
+      <HomeMealPlanBlock
+        serverOnline={h.serverOnline}
+        onNavigateMealPlanSyncSource={h.onNavigateMealPlanSyncSource}
+        scrollToMealPlanQueue={h.scrollToMealPlanQueue}
+        mealPlan={h.mealPlan}
+        mealPlanMessage={h.mealPlanMessage}
+        syncingMealPlanQueue={h.mealPlanShell.syncingMealPlanQueue}
+        mealPlanQueue={h.mealPlanShell.mealPlanQueue}
+        mealPlanSyncProgress={h.mealPlanShell.mealPlanSyncProgress}
+        failedMealPlanIds={h.mealPlanShell.failedMealPlanIds}
+        retryingMealPlanId={h.mealPlanShell.retryingMealPlanId}
+        loggingMealKey={h.mealPlanShell.loggingMealKey}
+        loggingMeals={h.mealPlanShell.loggingMeals}
+        mealPlanUndo={h.mealPlanShell.mealPlanUndo}
+        mealPlanUndoing={h.mealPlanShell.mealPlanUndoing}
+        onFlushQueue={() => void h.mealPlanShell.flushMealPlanQueue()}
+        onRetryFailed={() => void h.mealPlanShell.retryFailedMealPlanQueue()}
+        onRetryItem={(item) => void h.mealPlanShell.retryMealPlanItem(item)}
+        onDismissItem={h.mealPlanShell.dismissMealPlanItem}
+        onClearAll={h.mealPlanShell.clearMealPlanQueue}
+        onLogEntry={h.mealPlanShell.logMealPlanEntry}
+        onLogAll={h.mealPlanShell.logAllMealPlan}
+        onMealPlanUndo={h.onMealPlanUndo}
+        onDismissMealPlanUndo={h.mealPlanShell.dismissMealPlanUndo}
       />
 
       <HomeReportsPanel
-        serverOnline={serverOnline}
-        exporting={exporting}
-        onExport={() => void handleExportWeekPdf()}
+        serverOnline={h.serverOnline}
+        exporting={h.exporting}
+        onExport={() => void h.handleExportWeekPdf()}
       />
 
       <HomeActivityRingsCard
-        loading={dashboardLoading}
-        serverOnline={serverOnline}
-        sharing={sharingRings}
-        protein={food?.protein_g ?? 0}
-        proteinTarget={proteinTarget}
-        calories={food?.calories ?? 0}
-        calTarget={calTarget}
-        habitsPct={habitPct}
-        burn={burn}
-        onShare={() => void handleShareRings()}
+        loading={h.dashboardLoading}
+        serverOnline={h.serverOnline}
+        sharing={h.sharingRings}
+        protein={h.food?.protein_g ?? 0}
+        proteinTarget={h.proteinTarget}
+        calories={h.food?.calories ?? 0}
+        calTarget={h.calTarget}
+        habitsPct={h.habitPct}
+        burn={h.burn}
+        onShare={() => void h.handleShareRings()}
       />
 
       <HomeSummaryTiles
-        loading={dashboardLoading && serverOnline}
-        calories={food?.calories}
-        calTarget={calTarget}
-        protein={food?.protein_g}
-        proteinTarget={proteinTarget}
-        habitsPct={habitPct}
-        calorieTrend={calorieTrend}
-        habitsTrend={habitsTrend}
+        loading={h.dashboardLoading && h.serverOnline}
+        calories={h.food?.calories}
+        calTarget={h.calTarget}
+        protein={h.food?.protein_g}
+        proteinTarget={h.proteinTarget}
+        habitsPct={h.habitPct}
+        calorieTrend={h.calorieTrend}
+        habitsTrend={h.habitsTrend}
       />
 
       <HomeMacrosCard
-        protein={food?.protein_g ?? 0}
-        proteinTarget={proteinTarget}
-        carbs={food?.carbs ?? 0}
-        fat={food?.fat ?? 0}
-      />
-
-      <MealPlanTodayCard
-        mealPlan={mealPlan}
-        loggingMealKey={loggingMealKey}
-        loggingMeals={loggingMeals}
-        onLogEntry={logMealPlanEntry}
-        onLogAll={logAllMealPlan}
-        hideWhenEmpty
-        message={mealPlanMessage}
-        hideMessage={!!mealPlanUndo}
-        className="home-meal-plan-card"
-        logAllClassName="home-meal-plan-log-all"
-        disableLogAllWhenItemLogging
+        protein={h.food?.protein_g ?? 0}
+        proteinTarget={h.proteinTarget}
+        carbs={h.food?.carbs ?? 0}
+        fat={h.food?.fat ?? 0}
       />
 
       <HomeSavedRecipeCard
-        serverOnline={serverOnline}
-        onFoodUpdated={setFood}
-        onError={setError}
+        serverOnline={h.serverOnline}
+        onFoodUpdated={h.setFood}
+        onError={h.setError}
+        logging={h.recipeLogging}
+        onLogItem={(food, quantityG) => h.logItem(food, quantityG)}
+        onLogEntireRecipe={() => void h.logEntireRecipe()}
       />
+      {h.recipeMessage && (
+        <p className="banner banner-ok banner-revolut" role="status">{h.recipeMessage}</p>
+      )}
 
-      <HomeMealPhotosPanel photos={mealPhotos} />
+      <HomeMealPhotosPanel photos={h.mealPhotos} />
 
-      <HomeCalorieTrendCard days={history} />
+      <HomeCalorieTrendCard days={h.history} />
 
-      <HomeHabitTrendCard habitWeek={habitWeek} />
+      <HomeHabitTrendCard habitWeek={h.habitWeek} />
 
-      {decisionCard && (
+      {h.decisionCard && (
         <HomeDecisionCard
-          card={decisionCard}
+          card={h.decisionCard}
           onSwipe={(dir) => {
-            if (dir === 'right') void handleAcceptCard();
-            else if (dir === 'left' || dir === 'up') setDecisionCard(null);
+            if (dir === 'right') void h.handleAcceptCard();
+            else if (dir === 'left' || dir === 'up') h.setDecisionCard(null);
           }}
         />
       )}
 
-      {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
-      {mealPlanUndo && (
-        <UndoToast
-          message={`Logged ${mealPlanUndo.label}`}
-          onUndo={() => void handleMealPlanUndo(() => {
-            setMealPlanMessage('Log undone');
-            void refresh();
-          })}
-          onDismiss={dismissMealPlanUndo}
-          undoing={mealPlanUndoing}
-        />
-      )}
+      {h.error && <div className="banner banner-warn banner-revolut" role="alert">{h.error}</div>}
     </section>
   );
 }
