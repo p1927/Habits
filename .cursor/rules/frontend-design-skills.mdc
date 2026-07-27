@@ -1,0 +1,45 @@
+---
+description: Mandatory skill-driven workflow for all frontend UI/UX design and implementation
+globs: pwa/**/*.{tsx,ts,css}
+alwaysApply: false
+---
+
+# Frontend Design — Skills-First Workflow
+
+All frontend design and UI work in this project MUST use installed agent skills. Never hand-write UI from scratch without running the skill workflow below.
+
+## Required Skills (read before coding)
+
+| Priority | Skill | Path | When |
+|----------|-------|------|------|
+| 1 | ui-ux-pro-max | `.cursor/skills/ui-ux-pro-max/SKILL.md` | Every UI/UX task — design system, colors, typography, UX rules |
+| 2 | 21st-cache | `.cursor/skills/21st-cache/SKILL.md` | **Cache-first** — check `.21st/cache/` before any 21st API/MCP call |
+| 3 | 21st-cli-use | `.agents/skills/21st-cli-use/SKILL.md` | Search/install components from 21st.dev before building |
+| 4 | 21st-ai | `.agents/skills/21st-ai/SKILL.md` | Generate or iterate UI via 21st AI |
+| 5 | frontend-design | `.agents/skills/frontend-design/SKILL.md` | Distinctive aesthetic direction, avoid generic AI slop |
+| 6 | high-end-visual-design | `.agents/skills/high-end-visual-design/SKILL.md` | Premium polish, Awwwards-tier visuals |
+| 7 | web-design-guidelines | `.agents/skills/web-design-guidelines/SKILL.md` | Audit accessibility, UX, and interface compliance |
+| 8 | vercel-react-best-practices | `.agents/skills/vercel-react-best-practices/SKILL.md` | React performance and rendering patterns |
+
+## Workflow (follow in order)
+
+1. **Read** `ui-ux-pro-max` skill and run design-system search:
+   ```bash
+   python3 .cursor/skills/ui-ux-pro-max/scripts/search.py "<product> <style> <industry>" --design-system -p "Habits"
+   ```
+2. **Search 21st.dev** via `21st-cache` wrapper (cache-first) + `21st-cli-use`:
+   ```bash
+   python3 .cursor/skills/21st-cache/scripts/run.py search "<component query>" --limit 10 --json
+   ```
+3. **Apply** `frontend-design` + `high-end-visual-design` for aesthetic direction.
+4. **Implement** using project tokens (`pwa/src/styles/tokens.css`) and existing UI components.
+5. **Audit** with `web-design-guidelines` before finishing.
+6. **Optimize** React code per `vercel-react-best-practices`.
+
+## Rules
+
+- Announce which skill you are using: "Using [skill] to [purpose]"
+- Match existing conventions in `pwa/src/components/ui/` and `tokens.css`
+- No generic fonts (Inter, Roboto, Arial) or purple-gradient defaults unless design system specifies them
+- Prefer 21st.dev catalog components over custom implementations when a close match exists
+- **Always cache 21st steps** — use `run.py` wrapper or save MCP responses to `.21st/cache/`; never repeat metered calls for the same query

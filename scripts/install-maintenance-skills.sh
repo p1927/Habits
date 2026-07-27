@@ -35,4 +35,4 @@ npx skills add podo/design-agent-skills -y \
   --skill design-everyday-things
 
 npx skills list
-echo "Done — skill map: docs/maintenance/BRAINSTORM.md"
+echo "Done — skill map: docs/window-instances/po-relay/RITUAL.md Phase 4"

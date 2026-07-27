@@ -1,0 +1,24 @@
+---
+description: Web research first for annotations, labels, callouts, and inline UI markers
+alwaysApply: true
+---
+
+# Annotations — Research Before Implementing
+
+> **Scope:** Full annotation research workflow applies in **ux-relay** and **worker-relay** when shipping UI. In **po-relay** and **code-health** windows: skip unless the task explicitly adds labels, badges, or chart markers.
+
+Before adding or changing **annotations** (labels, badges, tooltips, callouts, chart markers, inline notes, hint text, status chips, or explanatory overlays), **always do web research first** to learn how products handle the same pattern on the internet.
+
+## Required workflow
+
+1. **Web search** — query how leading apps implement the pattern (e.g. "Google Keep note labels UI", "Google Calendar event chips", "chart annotation best practices 2025").
+2. **Reference check** — read `docs/window-instances/ux-relay/IDENTITY.md` inspiration matrix (Keep → Cards, Calendar → Day, Gemini → Agent, Tinder → Log).
+3. **Implement** — match discovered patterns: placement, density, typography, motion, and accessibility (contrast, `aria-label`, focus visibility).
+4. **Cite** — briefly note which reference(s) informed the approach in your response.
+
+## Rules
+
+- Do not invent annotation UX from scratch when established patterns exist online.
+- Prefer patterns from Gemini, Google Calendar, Google Keep, Tinder, and comparable modern apps when the surface maps to those tabs.
+- Reuse project tokens (`pwa/src/styles/tokens.css`) and existing UI primitives after research, not before.
+- If research surfaces multiple valid patterns, pick the one that best fits the Habits surface and say why.

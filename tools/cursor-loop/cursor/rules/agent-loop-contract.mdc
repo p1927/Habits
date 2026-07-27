@@ -1,0 +1,188 @@
+---
+description: Self-arming terminal agent loops — mandatory enforcement on every turn
+alwaysApply: true
+---
+
+# Agent Loop Contract (mandatory)
+
+You operate loop-driven work in this project. **Do not end any turn** until the End-of-turn gate passes.
+
+Arming, wake scheduling, and checkpoint commands are defined **only here** — not in contract docs. Contract docs hold Loop config + Task + Ritual.
+
+**Platform constraint:** Cursor wakes the agent only via **stdout on a monitored Shell**. Default mode is **`dynamic`**: one `arm-wake.sh` sleeper per turn — not a persistent `while true` in Shell.
+
+Read `<package_root>` from `.cursor/cursor-loop.json`.
+
+---
+
+## When this applies
+
+- User `@`-mentions a loop contract, says **keep working**, or you are woken by **sentinel** / **wake_sentinel**
+- You work in a window that owns a loop contract (Worker / UX / Code / PO)
+
+---
+
+## Loop config (read from contract doc)
+
+Required: `loop_id`, `sentinel`, `wake_sentinel`, `interval_sec`, `monitor_regex`, `loop_script`, `contract_doc`, `state_file`, `loop_mode` (default **`dynamic`**).
+
+**One Composer chat = one `loop_id`.** If bind fails, report `bind_error`; do not arm.
+
+Scoped reset only:
+
+```bash
+bash <package_root>/scripts/force-reset.sh . --loop-id <loop_id> --yes
+```
+
+Nuclear reset (all windows) requires `--all --yes`.
+
+---
+
+## Wake kinds
+
+| Kind | When | Order |
+|------|------|-------|
+| **tick** | `wake_sentinel` or `sentinel` output | Work → checkpoint → arm wake |
+| **recovery** | Stop-hook says DOWN, or wake DOWN at wake start | Work first — **never infra-only** |
+
+Ending a turn with only “loop re-armed / next tick in N min” is **forbidden**.
+
+---
+
+## On every wake
+
+1. Read contract **Loop config + Task + Ritual** and **`state_file`**
+2. If `bind_blocked` — stop and report; do not arm
+3. **Ritual deliverable** — ship backlog item, brainstorm entry, or refactor per contract (Mode-aware for PO)
+4. **Checkpoint** — see below
+5. **Arm next wake** — see Dynamic arming (end of turn if not done yet)
+6. Pass **End-of-turn gate**
+
+---
+
+## Checkpoint (after Ritual deliverable)
+
+```bash
+python3 <package_root>/scripts/checkpoint-loop.py . \
+  --conversation-id <from binding if known, else skip on first bind> \
+  --product --evidence <item-id-or-path>
+```
+
+Or `--blocker "reason"` if truly blocked. Use `--infra-only` only when arming failed after product work.
+
+If you cannot pass `--conversation-id`, still complete Ritual and record in `state_file` HISTORY.
+
+---
+
+## Dynamic arming (default — `loop_mode: dynamic`)
+
+At **end of every turn** (max once; do not stack):
+
+```bash
+LOOP_ID=<loop_id> WAKE_SENTINEL=<wake_sentinel> INTERVAL=<interval_sec> \
+CONTRACT_DOC=<contract_doc> STATE_FILE=<state_file> \
+bash <package_root>/scripts/arm-wake.sh
+```
+
+- Background shell (`block_until_ms: 0`)
+- **`notify_on_output`** on `^<wake_sentinel>` (must start with `^`)
+- If output is `WAKE_ALREADY_ARMED` — do **not** start another
+
+Verify before ending turn:
+
+```bash
+bash <package_root>/scripts/verify-wake.sh <loop_id>
+```
+
+---
+
+## Persistent mode (legacy — `loop_mode: persistent`)
+
+Only if contract sets `loop_mode: persistent`. Expect Cursor SIGTERM ~20–40s.
+
+1. `verify-loop.sh <loop_id>` — if UP, skip start
+2. Start `agent-loop.sh` once per turn max with `notify_on_output` on `^<sentinel>`
+3. Still arm `arm-wake.sh` as backup
+
+---
+
+## End-of-turn gate
+
+**Dynamic mode:**
+
+- [ ] Ritual deliverable done (or `--blocker` checkpoint)
+- [ ] `verify-wake.sh <loop_id>` exit 0 **OR** `WAKE_ALREADY_ARMED` this turn
+- [ ] Exactly one `arm-wake.sh` attempted (no duplicate sleep shells)
+- [ ] No `bind_blocked`
+- [ ] Response does **not** defer all work to “next tick”
+
+**Persistent mode:** also `verify-loop.sh` exit 0.
+
+---
+
+## Recovery (loop/wake DOWN)
+
+1. Complete Ritual deliverable **first**
+2. `checkpoint-loop.py --product` or `--blocker`
+3. Then `arm-wake.sh` once
+4. If arming fails, `--infra-only` and stop-hook will retry — do **not** skip step 1–2
+
+---
+
+## Stop
+
+When user says **stop loop** or **stop working**:
+
+1. `bash <package_root>/scripts/refresh-loops.sh . --loop-id <loop_id>`
+2. Do not arm wake
+3. Bind hook sets `stopped: true`
+
+---
+
+## Sentinel + state isolation
+
+Each loop owns **one sentinel pair** and **one state file**. Never mix them across windows.
+
+| loop_id | Sentinels | State file (only) | Forbidden in this window |
+|---------|-----------|-------------------|---------------------------|
+| `worker-relay` | `AGENT_LOOP_WAKE_HABITS`, `AGENT_LOOP_TICK_HABITS` | `docs/window-instances/worker-relay/STATE.md` | UI polish, PO brainstorm, code-health refactors |
+| `ux-relay` | `AGENT_LOOP_WAKE_UX_RELAY`, `AGENT_LOOP_TICK_UX_RELAY` | `docs/window-instances/ux-relay/STATE.md` | Relay features, PO brainstorm, refactors |
+| `code-health` | `AGENT_LOOP_WAKE_CODE_HEALTH`, `AGENT_LOOP_TICK_CODE_HEALTH` | `docs/window-instances/code-health/STATE.md` | UI polish, relay features, PO brainstorm |
+| `po-relay` | `AGENT_LOOP_WAKE_PO_RELAY`, `AGENT_LOOP_TICK_PO_RELAY` | `docs/window-instances/po-relay/STATE.md` | Any code/UI shipping; read worker STATE only to feed BACKLOG |
+
+Rules:
+
+- Respond only to your contract's `sentinel` and `wake_sentinel`
+- Ignore all foreign `AGENT_LOOP_*` lines
+- Read/update **only** your contract's `state_file` for backlog, checkpoint, and history
+- Do not summarize or act on another loop's backlog in this chat
+
+---
+
+## Extreme recovery
+
+```bash
+bash <package_root>/scripts/force-reset.sh . --all --yes
+bash <package_root>/scripts/validate_contracts.py .
+```
+
+Then paste `@<contract_doc> keep working` in the correct window.
+
+---
+
+## Refresh after package upgrade
+
+```bash
+bash <package_root>/scripts/refresh-loops.sh .
+```
+
+Then paste `@<contract_doc> keep working` in each window.
+
+---
+
+## Enforcement stack
+
+1. This rule — work-first + end-of-turn gate
+2. `arm-wake.sh` — dynamic primary schedule
+3. Stop hook — recovery with product-first message
+4. `loop_id` lock — one chat per loop_id

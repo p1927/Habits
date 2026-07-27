@@ -1,0 +1,28 @@
+---
+description: Mode C maintenance UI polish — 21st + ui-ux-pro-max ONLY
+globs: pwa/**/*.{tsx,ts,css}
+alwaysApply: false
+---
+
+# Maintenance UI Polish — Restricted Skills
+
+During **Mode C** (`CHECKPOINT.next_mode = C`), UI work is limited to these skills:
+
+| Skill | Path |
+|-------|------|
+| ui-ux-pro-max | `.cursor/skills/ui-ux-pro-max/SKILL.md` |
+| 21st-cache | `.cursor/skills/21st-cache/SKILL.md` |
+| 21st-cli-use | `.agents/skills/21st-cli-use/SKILL.md` |
+| 21st-ai | `.agents/skills/21st-ai/SKILL.md` |
+
+## Forbidden during Mode C
+
+Do **not** use: `high-end-visual-design`, `frontend-design`, `bolder`, `colorize`, or hand-rolled components without 21st search first.
+
+## Workflow
+
+1. ui-ux-pro-max design-system search for target screen
+2. 21st-cache → `21st search` → install/adapt
+3. Brainstorm: best design? over-engineered? pros/cons
+4. `npm run build` + live visual check at 390px
+5. Update `docs/window-instances/ux-relay/STATE.md` HISTORY

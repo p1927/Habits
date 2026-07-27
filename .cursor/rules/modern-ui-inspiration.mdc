@@ -1,0 +1,43 @@
+---
+description: Modern product UI — 21st.dev, ui-ux-pro-max, reference apps, and web research
+alwaysApply: true
+---
+
+# Modern Product UI — Research + Skills First
+
+> **Scope:** Apply the full workflow below only in the **ux-relay** window (`loop_id: ux-relay`). In Worker, Code, and PO windows: skip UI research and 21st/ui-ux-pro-max unless the active task explicitly requires visual changes.
+
+Habits should look and feel like a **2025-era Google / consumer app**: Gemini (Agent), Google Calendar (Day), Google Keep (Cards), Tinder (Log swipe). Aim to match those UIs closely; when exact parity is feasible, prefer it.
+
+## Before any UI/UX work
+
+1. **Web research** — search how the reference app implements the screen or component (layout, spacing, motion, empty states, loading).
+2. **Read skills** (in order):
+   - `.cursor/skills/ui-ux-pro-max/SKILL.md` — run design-system search first
+   - `.cursor/skills/21st-cache/SKILL.md` — cache-first 21st lookup
+   - `.agents/skills/21st-cli-use/SKILL.md` — search/install catalog components before hand-writing UI
+3. **Check inspiration matrix** — `docs/window-instances/ux-relay/IDENTITY.md` for tab → reference mapping.
+
+## Quick commands
+
+```bash
+python3 .cursor/skills/ui-ux-pro-max/scripts/search.py "<screen> modern mobile" --design-system -p "Habits"
+python3 .cursor/skills/21st-cache/scripts/run.py search "<component query>" --limit 10 --json
+```
+
+## Reference targets by tab
+
+| Tab | Match | Key patterns |
+|-----|-------|--------------|
+| Agent | Gemini | Streaming chat, tool chips, voice sheet, clean input bar |
+| Day | Google Calendar | Timeline blocks, color density, time affordances |
+| Cards | Google Keep | Pin grid, quick capture, labels, search affordance |
+| Log | Tinder | Card stack depth, swipe physics, undo, quick edit |
+
+## Rules
+
+- Announce: "Using [skill] to [purpose]" when invoking a skill.
+- **21st.dev + ui-ux-pro-max before custom components** — hand-write only when no close catalog match exists.
+- Use project tokens and `pwa/src/components/ui/` conventions; no generic AI slop (Inter/Roboto defaults, purple gradients).
+- After implementation, compare mentally (or visually at 390px) against the reference app; polish until parity is close.
+- For file-specific frontend work, also follow `.cursor/rules/frontend-design-skills.mdc`.

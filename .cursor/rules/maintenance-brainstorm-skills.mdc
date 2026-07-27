@@ -1,0 +1,34 @@
+---
+description: PO relay — mandatory 3-lens skill invocation before backlog changes
+globs: docs/window-instances/po-relay/**
+alwaysApply: false
+---
+
+# PO Brainstorm — Skills Mandate
+
+During po-relay Phase 4, run three separate lens sessions per [`po-relay/RITUAL.md`](../../docs/window-instances/po-relay/RITUAL.md). Read the skill file before each session.
+
+## UX designer lens
+
+Read: `.agents/skills/ux-heuristics/SKILL.md`, `.agents/skills/plan-design-review/SKILL.md`
+
+Cross-check inspiration matrix in [`ux-relay/IDENTITY.md`](../../docs/window-instances/ux-relay/IDENTITY.md). Output to `BRAINSTORM_LOG` with tag `ux`.
+
+## Product owner lens
+
+Read: `.agents/skills/define-opportunity-tree/SKILL.md`, `.agents/skills/agile-product-owner/SKILL.md`
+
+Mutate PO backlogs; feed `worker-relay/STATE.md` BACKLOG. Use `{keep|refine|merge|drop|add}`. Output to `BRAINSTORM_LOG` with tag `po`.
+
+## Business owner lens
+
+Read: `.agents/skills/jobs-to-be-done/SKILL.md`, `.agents/skills/hooked-ux/SKILL.md`, `.agents/skills/saas-metrics-coach/SKILL.md`
+
+Evaluate retention ROI for Habits PWA. Output to `BRAINSTORM_LOG` with tag `business`.
+
+## Rules
+
+- No generic brainstorm without reading lens skills
+- Rewrite useless requirements or drop with rationale
+- Propose UI via `UI_PROPOSALS` — never write `ux-relay` `UI_POLISH_BACKLOG` directly
+- Feed approved features to `docs/window-instances/worker-relay/STATE.md` BACKLOG

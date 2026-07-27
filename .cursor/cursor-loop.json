@@ -1,0 +1,7 @@
+{
+  "version": "0.4.0",
+  "package_root": "tools/cursor-loop",
+  "contracts_dir": "docs/window-instances",
+  "contract_globs": ["docs/window-instances/*/INSTANCE.md"],
+  "binding_ttl_days": 30
+}
