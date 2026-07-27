@@ -2,10 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { SicknessTimeline } from '../components/SicknessTimeline';
+import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
 import { api, ApiError, type KeepCard, type SicknessTimelineEvent } from '../lib/api';
+import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 interface CardsProps {
   serverOnline: boolean;
+  onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
 const FILTERS = ['all', 'sickness', 'notes', 'strategy'] as const;
@@ -15,7 +18,7 @@ const KEEP_VARIANTS: Record<string, 'keep-yellow' | 'keep-blue' | 'keep-green' |
   strategy: 'keep-green',
 };
 
-export function Cards({ serverOnline }: CardsProps) {
+export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps) {
   const [cards, setCards] = useState<KeepCard[]>([]);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('all');
   const [search, setSearch] = useState('');
@@ -80,6 +83,12 @@ export function Cards({ serverOnline }: CardsProps) {
     <section className="section cards-section" aria-labelledby="cards-heading">
       <h1 id="cards-heading">Cards</h1>
       <p className="muted">Notes, sickness, strategy — like Google Keep</p>
+
+      <MealPlanSyncAwarenessSlot
+        viewer="external"
+        onNavigate={onNavigateMealPlanSyncSource}
+        showPendingWhenIdle
+      />
 
       <label className="sr-only" htmlFor="cards-search">Search cards</label>
       <input

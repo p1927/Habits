@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { Card } from '../components/ui/Card';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
-import { MealPlanRemoteSyncBanner } from '../components/MealPlanRemoteSyncBanner';
+import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
 import { UndoToast } from '../components/UndoToast';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
-import { useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
@@ -153,8 +152,6 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource }: DayProps) {
     setError,
     clearError: () => setError(''),
   });
-
-  const remoteMealPlanSync = useMealPlanQueueRemoteSync('day');
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -367,12 +364,11 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource }: DayProps) {
         </div>
       )}
 
-      {remoteMealPlanSync && !syncingMealPlanQueue && onNavigateMealPlanSyncSource && (
-        <MealPlanRemoteSyncBanner
-          sync={remoteMealPlanSync}
-          onGoToSource={onNavigateMealPlanSyncSource}
-        />
-      )}
+      <MealPlanSyncAwarenessSlot
+        viewer="day"
+        onNavigate={onNavigateMealPlanSyncSource}
+        localSyncing={syncingMealPlanQueue}
+      />
 
       <MealPlanQueueSection
         hasMealPlan={mealPlan.length > 0}

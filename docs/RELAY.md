@@ -11,10 +11,10 @@
 | reviewed_at | 2026-07-27T04:30:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #98; relay-103 badge clear pulse on dismiss shipped. |
+| where_we_are | Loop tick #99; relay-104 Cards tab meal plan queue awareness shipped. |
 | blockers | [] |
-| confirmed_next | relay-104 cards tab meal plan queue awareness |
-| brainstorm_notes | relay-103 done; tab badge pulses when queue or failed count clears |
+| confirmed_next | relay-105 meal plan sync banner reduced motion |
+| brainstorm_notes | relay-104 done; Cards gets sync/pending banners + tab badge; shared MealPlanSyncAwarenessSlot |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:30:00Z |
+| last_wake | 2026-07-27T04:31:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-104 cards tab meal plan queue awareness |
+| cycle_parity | even (next: feature) |
+| next_action | relay-105 meal plan sync banner reduced motion |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-104 | Cards tab meal plan queue awareness | feature
 - [ ] relay-105 | Meal plan sync banner reduced motion | maintenance
 
 ---
@@ -57,7 +56,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-103 | done | build | — |
+| 2026-07-27 | relay-104 | done | build | 795ad08 |
+| 2026-07-27 | relay-103 | done | build | ab8f112 |
 | 2026-07-27 | relay-102 | done | build | c4e149d |
 | 2026-07-27 | relay-101 | done | build | ddb3d3a |
 | 2026-07-27 | relay-100 | done | build | 8db3dae |

@@ -1256,6 +1256,10 @@ button:disabled {
   font: inherit;
 }
 
+.meal-plan-queue-awareness {
+  margin-bottom: var(--space-sm);
+}
+
 .home-meal-plan-msg {
   margin: 0 0 0.75rem;
   padding: 0.5rem 0.75rem;

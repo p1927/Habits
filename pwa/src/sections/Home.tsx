@@ -6,11 +6,10 @@ import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
-import { MealPlanRemoteSyncBanner } from '../components/MealPlanRemoteSyncBanner';
+import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
-import { useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 import {
   api,
@@ -140,8 +139,6 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource }: HomeProps) 
     setError,
     clearError: () => setError(''),
   });
-
-  const remoteMealPlanSync = useMealPlanQueueRemoteSync('home');
 
   const refresh = useCallback(async () => {
     setMealPhotos(getTodayMealPhotos());
@@ -403,12 +400,11 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource }: HomeProps) 
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
-      {remoteMealPlanSync && !syncingMealPlanQueue && onNavigateMealPlanSyncSource && (
-        <MealPlanRemoteSyncBanner
-          sync={remoteMealPlanSync}
-          onGoToSource={onNavigateMealPlanSyncSource}
-        />
-      )}
+      <MealPlanSyncAwarenessSlot
+        viewer="home"
+        onNavigate={onNavigateMealPlanSyncSource}
+        localSyncing={syncingMealPlanQueue}
+      />
 
       <MealPlanQueueSection
         hasMealPlan={mealPlan.length > 0}

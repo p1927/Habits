@@ -122,7 +122,9 @@ function App() {
         {tab === 'day' && (
           <Day serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
         )}
-        {tab === 'cards' && <Cards serverOnline={serverOnline} />}
+        {tab === 'cards' && (
+          <Cards serverOnline={serverOnline} onNavigateMealPlanSyncSource={navigateMealPlanSyncSource} />
+        )}
         {tab === 'agent' && <Agent serverOnline={serverOnline} />}
         {tab === 'settings' && (
           <Settings
@@ -140,7 +142,7 @@ function App() {
           {TABS.map((t) => {
             const showQueueBadge =
               mealPlanQueueCount > 0 &&
-              (t.id === 'home' || t.id === 'log' || t.id === 'day') &&
+              (t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards') &&
               tab !== t.id;
             const badgeCount = mealPlanFailedCount > 0 ? mealPlanFailedCount : mealPlanQueueCount;
             const queueBadgeCountLabel =
@@ -159,7 +161,7 @@ function App() {
                 <span className="tab-icon" aria-hidden>{t.icon}</span>
                 {showQueueBadge && (
                   <span
-                    className={`tab-badge${mealPlanFailedCount > 0 ? ' tab-badge--failed' : ''}${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' ? ' tab-badge--actionable' : ''}`}
+                    className={`tab-badge${mealPlanFailedCount > 0 ? ' tab-badge--failed' : ''}${mealPlanBadgePulse ? ' tab-badge--pulse' : ''}${t.id === 'log' || t.id === 'cards' ? ' tab-badge--actionable' : ''}`}
                     aria-label={queueBadgeCountLabel}
                     title={
                       t.id === 'log'
@@ -168,7 +170,9 @@ function App() {
                           ? `${queueBadgeCountLabel} — tap to sync on Home`
                           : t.id === 'day'
                             ? `${queueBadgeCountLabel} — tap to sync on Day`
-                            : undefined
+                            : t.id === 'cards'
+                              ? `${queueBadgeCountLabel} — tap to open Home`
+                              : undefined
                     }
                     onClick={
                       t.id === 'log'
@@ -177,7 +181,12 @@ function App() {
                             setOpenLogMealPlan(true);
                             handleTabChange('log');
                           }
-                        : undefined
+                        : t.id === 'cards'
+                          ? (e) => {
+                              e.stopPropagation();
+                              navigateMealPlanSyncSource('home');
+                            }
+                          : undefined
                     }
                   >
                     {badgeCount > 9 ? '9+' : badgeCount}

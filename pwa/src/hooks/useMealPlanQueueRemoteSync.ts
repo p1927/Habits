@@ -6,18 +6,10 @@ import {
   type MealPlanSyncSource,
 } from '../lib/mealPlanQueue';
 
-const SOURCE_LABELS: Record<MealPlanSyncSource, string> = {
-  home: 'Home',
-  day: 'Day',
-  log: 'Log',
-};
-
-export function mealPlanSyncSourceLabel(source: MealPlanSyncSource): string {
-  return SOURCE_LABELS[source];
-}
+export type MealPlanSyncViewer = MealPlanSyncSource | 'external';
 
 export function useMealPlanQueueRemoteSync(
-  viewer: MealPlanSyncSource,
+  viewer: MealPlanSyncViewer,
   opts?: { showOwnSource?: boolean },
 ) {
   const showOwnSource = opts?.showOwnSource ?? false;
@@ -25,6 +17,7 @@ export function useMealPlanQueueRemoteSync(
   const readRemote = useCallback((): MealPlanQueueSyncStatus | null => {
     const status = getMealPlanQueueSyncStatus();
     if (!status) return null;
+    if (viewer === 'external') return status;
     if (status.source === viewer && !showOwnSource) return null;
     return status;
   }, [viewer, showOwnSource]);

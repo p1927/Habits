@@ -1,5 +1,5 @@
-import { mealPlanSyncSourceLabel } from '../hooks/useMealPlanQueueRemoteSync';
 import type { MealPlanQueueSyncStatus, MealPlanSyncSource } from '../lib/mealPlanQueue';
+import { mealPlanSyncSourceLabel } from '../lib/mealPlanQueue';
 
 export interface MealPlanRemoteSyncBannerProps {
   sync: MealPlanQueueSyncStatus;

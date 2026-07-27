@@ -7,6 +7,16 @@ export const MEAL_PLAN_SYNC_CHANGE = 'habits-meal-plan-queue-sync-change';
 
 export type MealPlanSyncSource = 'home' | 'day' | 'log';
 
+const MEAL_PLAN_SYNC_SOURCE_LABELS: Record<MealPlanSyncSource, string> = {
+  home: 'Home',
+  day: 'Day',
+  log: 'Log',
+};
+
+export function mealPlanSyncSourceLabel(source: MealPlanSyncSource): string {
+  return MEAL_PLAN_SYNC_SOURCE_LABELS[source];
+}
+
 export interface MealPlanQueueSyncStatus {
   syncing: boolean;
   done: number;

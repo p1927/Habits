@@ -5,7 +5,7 @@ import { ScanInlineOverlay } from '../components/ScanInlineOverlay';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { UndoToast } from '../components/UndoToast';
 import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
-import { MealPlanRemoteSyncBanner } from '../components/MealPlanRemoteSyncBanner';
+import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import {
@@ -19,7 +19,6 @@ import {
 import { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
-import { useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import { addMealPhoto, getTodayMealPhotos, getMealPhotoById } from '../lib/mealPhotos';
 import { lookupOpenFoodFacts, scaleOffMacros, type OffProduct } from '../lib/openFoodFacts';
 import {
@@ -269,10 +268,6 @@ export function Log({
     onItemOffline: (label) => setSuccess(`${label} still queued — offline`),
     setError,
     clearError: () => setError(''),
-  });
-
-  const remoteMealPlanSync = useMealPlanQueueRemoteSync('log', {
-    showOwnSource: tab !== 'mealplan',
   });
 
   const refresh = useCallback(async () => {
@@ -754,12 +749,12 @@ export function Log({
         </div>
       )}
 
-      {tab !== 'mealplan' && remoteMealPlanSync && onNavigateMealPlanSyncSource && (
-        <MealPlanRemoteSyncBanner
-          sync={remoteMealPlanSync}
-          onGoToSource={onNavigateMealPlanSyncSource}
-        />
-      )}
+      <MealPlanSyncAwarenessSlot
+        viewer="log"
+        onNavigate={onNavigateMealPlanSyncSource}
+        visible={tab !== 'mealplan'}
+        showOwnSource={tab !== 'mealplan'}
+      />
 
       <div className="sub-tabs" role="tablist" aria-label="Log food views">
         {LOG_TABS.map((t, index) => {
