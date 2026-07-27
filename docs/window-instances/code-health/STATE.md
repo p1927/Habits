@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T22:00:00Z |
-| where_we_are | ch-126 useAgentChat split shipped |
-| confirmed_next | ch-127 — line scan (api 307, useMealPlanShell 155, DayTimelineCard 151) |
+| reviewed_at | 2026-07-28T01:05:00Z |
+| where_we_are | ch-127 useMealPlanShell split shipped |
+| confirmed_next | ch-128 — DayTimelineCard (151) split |
 
 ---
 
@@ -18,13 +18,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T22:00:00Z` |
-| confirmed_next | `ch-127` |
+| last_wake | `2026-07-28T01:05:00Z` |
+| confirmed_next | `ch-128` |
 | phase | `9-arm` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `7` |
-| last_reviewed_round | `7` |
+| review_round | `8` |
+| last_reviewed_round | `8` |
 | loops | `wake ARMED PID 49727 (120s)` |
 | worktree_status | `none` |
 | current_item_id | `—` |
@@ -41,8 +41,8 @@
 | execute_started | `no` |
 | fix_verify_done | `no` |
 | reflect_done | `yes` |
-| commit_hash | `2fd9102` |
-| receive_review_done | `yes` |
+| commit_hash | `2795849` |
+| receive_review_done | `no` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 
@@ -180,7 +180,9 @@
 - [x] ch-124 | `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; main 155→122 |
 - [x] ch-125 | `useHomeDashboard.ts` (153) split | structure | refresh hook + homeDashboardDerived; main 153→87 |
 - [x] ch-126 | `useAgentChat.ts` (171) split | structure | useAgentChatStream + composition; 171→99 |
-- [ ] ch-127 | Line scan — top: api 307, useMealPlanShell 155, DayTimelineCard 151 | structure | queued |
+- [x] ch-127 | Line scan + `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; 155→128 |
+- [ ] ch-128 | `DayTimelineCard.tsx` (151) split | structure | agenda panel extract |
+- [ ] ch-129 | Meal plan hook test coverage (getFoodBeforeSync + offline) | robustness | from ch-r8-b001 |
 
 ---
 
@@ -264,8 +266,8 @@
 | `pwa/src/sections/Day.tsx` | 2026-07-27 tick #72 | ch-093: useDaySection; 168→156 |
 | `pwa/src/lib/mealNotifications.ts` | 2026-07-27 tick #75 | ch-096: storage + permission + scheduler; 163→12 |
 | `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
-| `pwa/src/hooks/useAgentChat.ts` | 2026-07-27 tick #97 | ch-126: useAgentChatStream + composition; 171→99 |
-| `pwa/src/sections/*` + hooks + lib | 2026-07-27 tick #97 | scan: api 307, useMealPlanShell 155, DayTimelineCard 151 |
+| `pwa/src/hooks/useMealPlanShell.ts` | 2026-07-28 tick #98 | ch-127: useMealPlanShellSyncContext; 155→128 |
+| `pwa/src/sections/*` + hooks + lib | 2026-07-28 tick #98 | scan: api 308, DayTimelineCard 151, useFutureSelfSection 150 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -308,7 +310,8 @@
 | ch-r5-001 | low | `docs/window-instances/code-health/STATE.md:1` — tick close checkpoint/backlog sync for ch-125 ship | round-5 /code-review | closed | — | closed |
 | ch-r6-001 | low | `docs/window-instances/code-health/STATE.md:1` — worktree ch-126 prep merge cycle; next execute useAgentChat split | round-6 /code-review | closed | — | closed |
 | ch-r7-001 | low | `pwa/src/hooks/useAgentChatStream.ts:1` — stream/abort + beginStream extracted; `useAgentChat.ts` composition 171→99 | round-7 /code-review | closed | — | closed |
-| ch-r7-001 | low | `pwa/src/hooks/useAgentChatStream.ts:1` — stream/abort + beginStream extracted; `useAgentChat.ts` composition 171→99 | round-7 /code-review | closed | — | closed |
+| ch-r8-001 | low | `pwa/src/hooks/useMealPlanShellSyncContext.ts:1` — food snapshot + sync callbacks extracted; `useMealPlanShell.ts` composition 155→128 | round-8 /code-review | closed | — | closed |
+| ch-r8-b001 | low | Meal plan hooks lack automated tests for getFoodBeforeSync + offline paths | round-8 bugbot | backlog | ch-129 | open |
 
 ---
 
@@ -316,6 +319,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-127 | useMealPlanShell split (syncContext hook) | build | 2795849 |
 | 2026-07-27 | ch-126 | useAgentChat split (stream hook + composition) | build | 2fd9102 |
 | 2026-07-27 | ch-125 | useHomeDashboard split (refresh hook + derived) | build | pending |
 | 2026-07-27 | ch-124 | useMealPlanShell split (syncContext hook) | build | pending |
