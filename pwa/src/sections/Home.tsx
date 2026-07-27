@@ -11,6 +11,7 @@ import { HomeHabitTrendCard } from '../components/HomeHabitTrendCard';
 import { HomeDecisionCard } from '../components/HomeDecisionCard';
 import { HomeReportsPanel } from '../components/HomeReportsPanel';
 import { HomeMealPhotosPanel } from '../components/HomeMealPhotosPanel';
+import { HomeSavedRecipeCard } from '../components/HomeSavedRecipeCard';
 import { useHomeDashboard } from '../hooks/useHomeDashboard';
 import { useMealPlanShell } from '../hooks/useMealPlanShell';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
@@ -123,7 +124,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
       </div>
 
       {!serverOnline && (
-        <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
+        <div className="banner banner-warn banner-revolut" role="alert">Server offline — connect to sync.</div>
       )}
 
       <MealPlanSyncAwarenessSlot
@@ -202,6 +203,12 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
         disableLogAllWhenItemLogging
       />
 
+      <HomeSavedRecipeCard
+        serverOnline={serverOnline}
+        onFoodUpdated={setFood}
+        onError={setError}
+      />
+
       <HomeMealPhotosPanel photos={mealPhotos} />
 
       <HomeCalorieTrendCard days={history} />
@@ -218,7 +225,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
         />
       )}
 
-      {error && <div className="banner banner-warn" role="alert">{error}</div>}
+      {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
       {mealPlanUndo && (
         <UndoToast
           message={`Logged ${mealPlanUndo.label}`}

@@ -1,0 +1,132 @@
+import { useCallback, useEffect, useState } from 'react';
+import { Card } from './ui/Card';
+import { api, ApiError } from '../lib/api';
+import type { SavedRecipe } from './LogRecipesTabPanel';
+
+export interface HomeSavedRecipeCardProps {
+  serverOnline: boolean;
+  onFoodUpdated?: (summary: import('../lib/api').FoodTodayResponse) => void;
+  onError?: (message: string) => void;
+}
+
+export function HomeSavedRecipeCard({
+  serverOnline,
+  onFoodUpdated,
+  onError,
+}: HomeSavedRecipeCardProps) {
+  const [recipe, setRecipe] = useState<SavedRecipe | null>(null);
+  const [sheetsConnected, setSheetsConnected] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [logging, setLogging] = useState(false);
+  const [success, setSuccess] = useState('');
+
+  const loadRecipe = useCallback(async () => {
+    if (!serverOnline) return;
+    setLoading(true);
+    try {
+      const res = await api.getSavedRecipe();
+      setRecipe(res.recipe);
+      setSheetsConnected(res.sheets_connected);
+    } catch (e) {
+      setRecipe(null);
+      setSheetsConnected(null);
+      if (e instanceof ApiError && e.status === 401) return;
+      onError?.(e instanceof Error ? e.message : 'Failed to load saved recipe');
+    } finally {
+      setLoading(false);
+    }
+  }, [serverOnline, onError]);
+
+  useEffect(() => {
+    void loadRecipe();
+  }, [loadRecipe]);
+
+  const logItem = async (food: string, quantityG: number) => {
+    if (!serverOnline || logging) return;
+    setLogging(true);
+    try {
+      const res = await api.logFood(`${quantityG}g ${food}`);
+      onFoodUpdated?.(res.summary);
+      setSuccess(res.message);
+    } catch (e) {
+      onError?.(e instanceof Error ? e.message : 'Recipe item log failed');
+    } finally {
+      setLogging(false);
+    }
+  };
+
+  const logEntireRecipe = async () => {
+    if (!serverOnline || logging) return;
+    setLogging(true);
+    try {
+      const res = await api.logSavedRecipe();
+      onFoodUpdated?.(res.summary);
+      setSuccess(res.message);
+    } catch (e) {
+      onError?.(e instanceof Error ? e.message : 'Recipe log failed');
+    } finally {
+      setLogging(false);
+    }
+  };
+
+  if (!serverOnline) return null;
+
+  return (
+    <Card className="home-saved-recipe-card">
+      <div className="home-export-row">
+        <div>
+          <h2>Saved recipe</h2>
+          <p className="muted">From Save Reciepe tab · log without opening Log</p>
+        </div>
+        <button
+          type="button"
+          className="btn-small"
+          disabled={loading || logging}
+          aria-label="Refresh saved recipe from sheet"
+          onClick={() => void loadRecipe()}
+        >
+          {loading ? 'Loading…' : 'Refresh'}
+        </button>
+      </div>
+      {success && <p className="banner banner-ok home-recipe-msg">{success}</p>}
+      {sheetsConnected === false ? (
+        <p className="muted">Google Sheets not connected — link in Settings.</p>
+      ) : !recipe ? (
+        <p className="muted">No saved recipe found in Save Reciepe tab.</p>
+      ) : (
+        <>
+          <h3>{recipe.name}</h3>
+          <ul className="food-list">
+            {recipe.items.map((item) => (
+              <li key={item.food} className="food-row">
+                <div>
+                  <strong>{item.food}</strong>
+                  <span className="muted">
+                    {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-small"
+                  disabled={logging}
+                  aria-label={`Log ${item.food}`}
+                  onClick={() => void logItem(item.food, item.quantity_g)}
+                >
+                  Log
+                </button>
+              </li>
+            ))}
+          </ul>
+          {recipe.totals && (
+            <p className="muted">
+              Total: {recipe.totals.calories.toFixed(0)} kcal · {recipe.totals.protein.toFixed(1)}g protein
+            </p>
+          )}
+          <button type="button" disabled={logging} onClick={() => void logEntireRecipe()}>
+            {logging ? 'Logging…' : 'Log entire recipe today'}
+          </button>
+        </>
+      )}
+    </Card>
+  );
+}
