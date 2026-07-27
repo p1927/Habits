@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:35:00Z |
-| where_we_are | relay-176 verified shipped (e9b67a1) |
-| confirmed_next | relay-177 |
+| reviewed_at | 2026-07-27T14:38:00Z |
+| where_we_are | relay-177 shipped |
+| confirmed_next | relay-178 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -24,11 +24,12 @@
 | next_action | relay-177 Log History list show meal count inline |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 8-close |
-| review_status | skipped |
-| review_skip_reason | relay-176 verify-only tick; no new worker diff (shipped e9b67a1/f13d681) |
-| review_round | `2` |
-| review_diff_range | — |
-| code_changed | `no` |
+| review_status | done |
+| review_skip_reason | — |
+| review_round | `3` |
+| last_reviewed_round | `3` |
+| review_diff_range | uncommitted STATE relay-176 verify |
+| code_changed | `yes` |
 
 ---
 
@@ -62,7 +63,7 @@
 - [x] relay-175 | Log History CSV include meal count per day | polish | Followed col B → meal_count; CSV date,meals,calories,protein
 - [x] relay-176 | Home dashboard pull-to-refresh gesture | polish | usePullToRefresh + HomePullRefreshIndicator (e9b67a1)
 
-- [ ] relay-177 | Log History list show meal count inline | polish
+- [x] relay-177 | Log History list show meal count inline | polish | meal count suffix on history rows when API provides it
 - [ ] relay-178 | Agent chat copy assistant message | polish
 - [ ] relay-179 | Day manage-day quadrant tap → expand task list | feature
 
@@ -85,6 +86,8 @@
 | rf-r0-000 | low | No issues in relay-171–173 diff | round-0 /code-review | closed | — | closed |
 | rf-r1-000 | low | No issues in relay-174 diff | round-1 /code-review | closed | — | closed |
 | rf-r2-000 | low | No issues in relay-175 diff | round-2 /code-review | closed | — | closed |
+| rf-r3-000 | low | relay-176 verify-only tick; STATE checkpoint sync; no new pwa/server feature diff | round-3 /code-review | closed | relay-176 | closed |
+| rf-r3-001 | low | No issues in relay-177 diff | round-3 /code-review | closed | — | closed |
 
 ---
 
@@ -92,6 +95,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-177 | done | build | c69908d |
 | 2026-07-27 | relay-176 | done | build | e9b67a1 |
 | 2026-07-27 | relay-175 | done | build | c3d1f04 |
 | 2026-07-27 | relay-174 | done | build | e8edd4b |
