@@ -1,3 +1,5 @@
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+
 export interface MealPlanQueuePendingBannerProps {
   count: number;
   failedCount: number;
@@ -5,6 +7,8 @@ export interface MealPlanQueuePendingBannerProps {
 }
 
 export function MealPlanQueuePendingBanner({ count, failedCount, onOpenHome }: MealPlanQueuePendingBannerProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   if (count <= 0) return null;
 
   const failedSuffix = failedCount > 0 ? ` · ${failedCount} failed` : '';
@@ -14,7 +18,7 @@ export function MealPlanQueuePendingBanner({ count, failedCount, onOpenHome }: M
       type="button"
       className="banner banner-warn meal-plan-queue-awareness meal-plan-remote-sync--actionable"
       role="status"
-      aria-live="polite"
+      aria-live={prefersReducedMotion ? undefined : 'polite'}
       aria-atomic="true"
       onClick={onOpenHome}
     >
