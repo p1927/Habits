@@ -1349,9 +1349,9 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
                 </ul>
               )}
             </div>
-          ) : (
+          ) : mealPlan.length > 0 ? (
             <MealPlanQueueEmptyHint />
-          )}
+          ) : null}
         <Card>
           <h2>Today&apos;s meal plan</h2>
           <p className="muted">From WEEK MEALS sheet · shortcut <kbd>{shortcutModifierLabel()}3</kbd></p>
