@@ -25,7 +25,7 @@
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 8-close |
 | review_status | skipped |
-| review_skip_reason | relay-184 reviewed round 10; committed pending |
+| review_skip_reason | relay-184 reviewed round 10; committed ac53858 |
 | review_round | `10` |
 | last_reviewed_round | `10` |
 | review_diff_range | `ac53858` |
@@ -118,7 +118,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-184 | done | build | — |
+| 2026-07-27 | relay-184 | done | build | ac53858 |
 | 2026-07-27 | relay-183 | done | build | 2055d88 |
 | 2026-07-27 | relay-182 | done | build | f3af1b5 |
 | 2026-07-27 | relay-181 | done | build | f8cbe92 |
