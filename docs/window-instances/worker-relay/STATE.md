@@ -19,18 +19,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:55:00Z |
+| last_wake | 2026-07-27T12:57:53Z |
 | confirmed_next | relay-184 |
 | next_action | relay-184 Agent composer focus shortcut (⌘/Ctrl+K) |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 9-arm |
-| last_wake | 2026-07-27T12:57:53Z |
-| review_status | skipped |
+| review_status | `pending` |
 | review_skip_reason | relay-183 reviewed round 8; committed 2055d88 |
-| review_round | `8` |
+| review_round | `9` |
 | last_reviewed_round | `8` |
-| review_diff_range | `2055d88` |
-| code_changed | `no` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
 
 ---
 
@@ -39,8 +38,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
+| review_changed_files | `docs/window-instances/worker-relay/STATE.md pwa/src/App.css pwa/src/components/DayCalendarEventSheet.tsx` |
+| review_fingerprint | `295bf797f23f2445` |
 ## IN_PROGRESS
 
 *(empty)*

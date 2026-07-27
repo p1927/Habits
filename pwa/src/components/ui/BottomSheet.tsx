@@ -5,10 +5,11 @@ interface BottomSheetProps {
   open: boolean;
   onClose: () => void;
   title?: string;
+  showTitle?: boolean;
   children: ReactNode;
 }
 
-export function BottomSheet({ open, onClose, title, children }: BottomSheetProps) {
+export function BottomSheet({ open, onClose, title, showTitle = true, children }: BottomSheetProps) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -32,7 +33,7 @@ export function BottomSheet({ open, onClose, title, children }: BottomSheetProps
         aria-label={title}
       >
         <div className="ui-sheet__handle" />
-        {title && <h2 className="ui-sheet__title">{title}</h2>}
+        {title && showTitle && <h2 className="ui-sheet__title">{title}</h2>}
         <div className="ui-sheet__body">{children}</div>
       </div>
     </div>
