@@ -1164,6 +1164,16 @@ button:disabled {
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
+.home-meal-plan-queue-panel:has(.meal-plan-queue-list) .banner-row,
+.home-meal-plan-queue-panel--syncing:has(.meal-plan-queue-list) .banner-row {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.home-meal-plan-queue-panel--has-failed .meal-plan-queue-list {
+  background: color-mix(in srgb, var(--err) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--err) 30%, transparent);
+}
+
 .home-meal-plan-sync-progress {
   padding: 0.5rem 0.75rem 0.75rem;
   background: color-mix(in srgb, var(--warn) 12%, var(--surface));
