@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:00:00Z |
-| where_we_are | Round 9 review complete — DayCalendarEventSheet polish committed |
-| confirmed_next | relay-184 |
-| brainstorm_notes | Day schedule ⌘1/⌘2 shortcuts + first-visit hint on DayTimelineCard |
+| reviewed_at | 2026-07-27T13:05:00Z |
+| where_we_are | relay-184 shipped |
+| confirmed_next | relay-185 |
+| brainstorm_notes | Agent ⌘/Ctrl+K composer focus + empty-state hint |
 
 ---
 
@@ -19,17 +19,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:57:53Z |
-| confirmed_next | relay-184 |
-| next_action | relay-184 Agent composer focus shortcut (⌘/Ctrl+K) |
+| last_wake | 2026-07-27T13:05:00Z |
+| confirmed_next | relay-185 |
+| next_action | relay-185 Cards tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
+| phase | 8-close |
 | review_status | skipped |
-| review_skip_reason | round-9 reviewed; committed d87aa56 |
-| review_round | `9` |
-| last_reviewed_round | `9` |
-| review_diff_range | `d87aa56` |
-| code_changed | `no` |
+| review_skip_reason | relay-184 reviewed round 10; committed pending |
+| review_round | `10` |
+| last_reviewed_round | `10` |
+| review_diff_range | `relay-184` |
+| code_changed | `yes` |
 
 ---
 
@@ -38,8 +38,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/worker-relay/STATE.md pwa/src/App.css pwa/src/components/DayCalendarEventSheet.tsx` |
-| review_fingerprint | `295bf797f23f2445` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/AgentChatComposer.tsx pwa/src/hooks/useAgentComposerFocusShortcut.ts pwa/src/sections/Agent.tsx` |
+| review_fingerprint | `relay-184` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -77,8 +77,9 @@
 - [x] relay-181 | Home decision card tap → Future Self tab | feature | `#futureself` deep link + Open Future Self on decision card
 - [x] relay-182 | Log tab keyboard shortcut hint on first visit | polish | verify-only — `useLogTabShortcuts` + LogSubTabs hint (f3af1b5)
 - [x] relay-183 | Day tab keyboard shortcut hint on first visit | polish | useDayScheduleShortcuts + DayTimelineCard hint (⌘1/⌘2)
-- [ ] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish
+- [x] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish | useAgentComposerFocusShortcut + disclaimer hint
 - [ ] relay-185 | Cards tab keyboard shortcut hint on first visit | polish
+- [ ] relay-186 | Settings tab keyboard shortcut from header gear hint | polish
 
 ---
 
@@ -109,6 +110,7 @@
 | rf-r8-000 | low | No issues in relay-183 diff | round-8 /code-review | closed | — | closed |
 | rf-r9-001 | low | Duplicate event title in BottomSheet h2 and Card h3 | round-9 /code-review | fix-now | — | closed |
 | rf-r9-002 | low | Unused `.day-event-detail` wrapper CSS after Card refactor | round-9 /code-review | fix-now | — | closed |
+| rf-r10-001 | low | No issues in relay-184 composer shortcut diff | round-10 /code-review | closed | — | closed |
 
 ---
 
@@ -116,6 +118,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-184 | done | build | — |
 | 2026-07-27 | relay-183 | done | build | 2055d88 |
 | 2026-07-27 | relay-182 | done | build | f3af1b5 |
 | 2026-07-27 | relay-181 | done | build | f8cbe92 |

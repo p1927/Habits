@@ -1,6 +1,7 @@
 import type { VoiceOrbVisualState } from '../lib/voiceStatus';
 
 import { AgentToolChips } from './AgentToolChips';
+import { shortcutModifierLabel } from '../lib/logSectionShared';
 
 export interface AgentChatComposerProps {
   serverOnline: boolean;
@@ -89,6 +90,7 @@ export function AgentChatComposer({
           onChange={(e) => onInputChange(e.target.value)}
           placeholder={scanning ? 'Scanning photo…' : loading ? 'Send to interrupt…' : 'Ask Coach'}
           disabled={!serverOnline || scanning}
+          aria-keyshortcuts={`${shortcutModifierLabel()}K`}
         />
 
         {input.trim() || attachImage ? (
@@ -111,7 +113,8 @@ export function AgentChatComposer({
 
       {showDisclaimer && (
         <p className="agent-composer-disclaimer muted">
-          Coach can make mistakes — double-check food and calendar changes.
+          Coach can make mistakes — double-check food and calendar changes. Press{' '}
+          <kbd>{shortcutModifierLabel()}K</kbd> to focus the composer.
         </p>
       )}
     </div>

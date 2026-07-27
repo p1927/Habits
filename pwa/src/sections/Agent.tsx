@@ -3,6 +3,7 @@ import { AgentChatComposer } from '../components/AgentChatComposer';
 import { AgentSectionBody } from '../components/AgentSectionBody';
 import { AgentSectionHeader } from '../components/AgentSectionHeader';
 import { AgentSectionOverlays } from '../components/AgentSectionOverlays';
+import { useAgentComposerFocusShortcut } from '../hooks/useAgentComposerFocusShortcut';
 import { useAgentSection, type AgentNavigateMealPlanSyncSource } from '../hooks/useAgentSection';
 
 interface AgentProps {
@@ -18,6 +19,10 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
     if (!agentPrompt?.token) return;
     s.setInput(agentPrompt.text);
   }, [agentPrompt?.token, agentPrompt?.text, s.setInput]);
+
+  useAgentComposerFocusShortcut(
+    s.voiceOpen || s.toolsOpen || s.cameraOpen || s.attachOpen,
+  );
 
   return (
     <section className="section agent-section agent-section--gemini" aria-labelledby="agent-heading">

@@ -4310,6 +4310,16 @@ form.log-type-card {
   line-height: 1.35;
 }
 
+.agent-composer-disclaimer kbd {
+  display: inline-block;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--surface2);
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 0.8125rem;
+}
+
 .chat-bubble-disclaimer {
   margin: 0.65rem 0 0;
   font-size: 0.6875rem;
