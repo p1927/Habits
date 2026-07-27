@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T08:28:00Z |
+| reviewed_at | 2026-07-27T08:31:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #141; relay-145 Coach meal plan queue awareness shipped. |
+| where_we_are | Loop tick #1 confirmed; single `/loop` PID 12732 healthy. |
 | blockers | [] |
-| confirmed_next | refill BACKLOG from BRAINSTORM |
-| brainstorm_notes | single /loop 60s; no duplicate loop processes |
+| confirmed_next | relay-146 Coach tab meal plan queue badge |
+| brainstorm_notes | brainstorm items Plan label + queue sort already shipped |
 
 ---
 
