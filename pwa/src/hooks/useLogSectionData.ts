@@ -13,6 +13,10 @@ interface UseLogSectionDataOptions {
   setTab: (tab: LogTab) => void;
   openMealPlan?: boolean;
   onMealPlanOpened?: () => void;
+  openLogHistory?: boolean;
+  onLogHistoryOpened?: () => void;
+  openLogRecipes?: boolean;
+  onLogRecipesOpened?: () => void;
   scrollToMealPlanQueue?: number;
   onTabRecipes?: () => void;
 }
@@ -23,6 +27,10 @@ export function useLogSectionData({
   setTab,
   openMealPlan,
   onMealPlanOpened,
+  openLogHistory,
+  onLogHistoryOpened,
+  openLogRecipes,
+  onLogRecipesOpened,
   scrollToMealPlanQueue,
   onTabRecipes,
 }: UseLogSectionDataOptions) {
@@ -60,6 +68,19 @@ export function useLogSectionData({
     setTab('mealplan');
     onMealPlanOpened?.();
   }, [openMealPlan, onMealPlanOpened, setTab]);
+
+  useEffect(() => {
+    if (!openLogHistory) return;
+    setTab('history');
+    onLogHistoryOpened?.();
+  }, [openLogHistory, onLogHistoryOpened, setTab]);
+
+  useEffect(() => {
+    if (!openLogRecipes) return;
+    setTab('recipes');
+    onTabRecipes?.();
+    onLogRecipesOpened?.();
+  }, [openLogRecipes, onLogRecipesOpened, setTab, onTabRecipes]);
 
   useEffect(() => {
     if (!scrollToMealPlanQueue) return;

@@ -1,4 +1,5 @@
-import { useMealPlanQueueSyncActions, type UseMealPlanQueueSyncOptions } from './useMealPlanQueueSyncActions';
+import { useMealPlanQueueSyncActions } from './useMealPlanQueueSyncActions';
+import type { UseMealPlanQueueSyncOptions } from './useMealPlanQueueSyncOptions';
 import { useMealPlanQueueSyncEffects } from './useMealPlanQueueSyncEffects';
 import { useMealPlanQueueSyncState } from './useMealPlanQueueSyncState';
 
@@ -6,6 +7,7 @@ export type { UseMealPlanQueueSyncOptions };
 
 export function useMealPlanQueueSync(options: UseMealPlanQueueSyncOptions) {
   const {
+    syncSource = 'log',
     active = true,
     autoFlushOnMount = false,
     watchOnline = false,
@@ -33,6 +35,7 @@ export function useMealPlanQueueSync(options: UseMealPlanQueueSyncOptions) {
   } = useMealPlanQueueSyncActions({ ...options, syncState });
 
   useMealPlanQueueSyncEffects({
+    syncSource,
     active,
     autoFlushOnMount,
     watchOnline,
