@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { mealPlanQueueLabel, type QueuedMealPlanLog } from '../lib/mealPlanQueue';
 import { focusMealPlanQueueScrollTarget, mealPlanQueueItemId } from '../lib/mealPlanQueueFocus';
+import { formatRelativeTime } from '../lib/relativeTime';
 import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
@@ -203,6 +204,14 @@ export function MealPlanQueuePanel({
             const failed = failedIds.has(item.id);
             const retrying = retryingId === item.id;
             const label = mealPlanQueueLabel(item);
+            const queuedAgo = formatRelativeTime(item.created_at);
+            const statusSuffix = retrying
+              ? ' · Syncing…'
+              : failed
+                ? ' · Failed to sync'
+                : queuedAgo
+                  ? ` · Queued ${queuedAgo}`
+                  : ' · Queued offline';
             return (
               <li
                 key={item.id}
@@ -215,7 +224,7 @@ export function MealPlanQueuePanel({
                   <strong>{label}</strong>
                   <span className={`muted${failed ? ' meal-plan-queue-item-failed' : ''}`}>
                     {item.description ? ` · ${item.description}` : ''}
-                    {retrying ? ' · Syncing…' : failed ? ' · Failed to sync' : ' · Queued offline'}
+                    {statusSuffix}
                   </span>
                 </div>
                 <div className="food-row-actions">
