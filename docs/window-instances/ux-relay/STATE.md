@@ -18,14 +18,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:55:00Z` |
+| last_wake | `2026-07-27T23:58:00Z` |
 | next_mode | `C` |
 | current_item_id | `—` |
-| phase | `4-execute` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| review_round | `13` |
-| last_reviewed_round | `13` |
+| review_round | `14` |
+| last_reviewed_round | `14` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | confirmed_next | `backlog idle; await PO UI_PROPOSALS` |
@@ -35,14 +35,14 @@
 | worktree_item_id | `—` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
-| ritual_step | `4-execute` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `Idle audit: backlog complete; no open ui-*; await PO proposals` |
 | execute_started | `yes` |
-| fix_verify_done | `no` |
-| reflect_done | `no` |
+| fix_verify_done | `yes` |
+| reflect_done | `yes` |
 | commit_hash | `—` |
-| receive_review_done | `no` |
+| receive_review_done | `yes` |
 | commit_done | `no` |
 | merge_done | `no` |
 
@@ -139,6 +139,7 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r14-001 | low | docs/window-instances/ux-relay/STATE.md idle audit — backlog idle ui-001–058; build pass | round-14 bugbot | closed | — | closed |
 | ux-r13-005 | low | useSettingsSection.ts passthrough disconnectSuccess + dismissDisconnectSuccess | round-13 bugbot | closed | ui-058 | closed |
 | ux-r13-001 | medium | useSettingsSectionData.ts — disconnectSuccess not cleared when save/load paths set error | round-13 bugbot | fix-now | ui-058 | closed |
 | ux-r13-002 | low | Settings.tsx role=alert + aria-live=polite conflict — use role=alert only | round-13 bugbot | fix-now | ui-058 | closed |
