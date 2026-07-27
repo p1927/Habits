@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:32:00Z |
-| where_we_are | relay-175 shipped |
-| confirmed_next | relay-176 |
+| reviewed_at | 2026-07-27T14:35:00Z |
+| where_we_are | relay-176 verified shipped (e9b67a1) |
+| confirmed_next | relay-177 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -19,15 +19,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:32:00Z |
-| confirmed_next | relay-176 |
-| next_action | relay-176 Home dashboard pull-to-refresh gesture |
+| last_wake | 2026-07-27T14:35:00Z |
+| confirmed_next | relay-177 |
+| next_action | relay-177 Log History list show meal count inline |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 8-close |
-| review_status | done |
+| review_status | skipped |
+| review_skip_reason | relay-176 verify-only tick; no new worker diff (shipped e9b67a1/f13d681) |
 | review_round | `2` |
-| review_diff_range | `c3d1f04` |
-| code_changed | `yes` |
+| review_diff_range | — |
+| code_changed | `no` |
 
 ---
 
@@ -59,7 +60,11 @@
 
 - [x] relay-174 | Day schedule empty state → Agent quick add prompt | feature | Add with Coach → navigateAgentPrompt + composer prefill
 - [x] relay-175 | Log History CSV include meal count per day | polish | Followed col B → meal_count; CSV date,meals,calories,protein
-- [ ] relay-176 | Home dashboard pull-to-refresh gesture | polish
+- [x] relay-176 | Home dashboard pull-to-refresh gesture | polish | usePullToRefresh + HomePullRefreshIndicator (e9b67a1)
+
+- [ ] relay-177 | Log History list show meal count inline | polish
+- [ ] relay-178 | Agent chat copy assistant message | polish
+- [ ] relay-179 | Day manage-day quadrant tap → expand task list | feature
 
 ---
 
@@ -69,7 +74,7 @@
 |------|-------------|-------|
 | Queue sort parity | relay-130 | done |
 | Lighthouse PWA | ROADMAP | relay-160 done (97/100/100) |
-| ui-038 Agent SSE streaming | maintenance | needs backend |
+| ui-038 Agent SSE streaming | maintenance | done relay-165 |
 
 ---
 
@@ -87,6 +92,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-176 | done | build | e9b67a1 |
 | 2026-07-27 | relay-175 | done | build | c3d1f04 |
 | 2026-07-27 | relay-174 | done | build | e8edd4b |
 | 2026-07-27 | relay-173 | done | build | 8b0e3d3 |
