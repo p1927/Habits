@@ -4,6 +4,7 @@ import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
 import { UndoToast } from '../components/UndoToast';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
+import { mealPlanSyncSourceLabel, useMealPlanQueueRemoteSync } from '../hooks/useMealPlanQueueRemoteSync';
 import { useOptimisticHabitLog } from '../hooks/useOptimisticHabitLog';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
@@ -150,6 +151,8 @@ export function Day({ serverOnline }: DayProps) {
     setError,
     clearError: () => setError(''),
   });
+
+  const remoteMealPlanSync = useMealPlanQueueRemoteSync('day');
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -359,6 +362,13 @@ export function Day({ serverOnline }: DayProps) {
           >
             Dismiss
           </button>
+        </div>
+      )}
+
+      {remoteMealPlanSync && !syncingMealPlanQueue && (
+        <div className="banner banner-warn home-meal-plan-remote-sync" role="status">
+          Syncing meal logs on {mealPlanSyncSourceLabel(remoteMealPlanSync.source)} (
+          {remoteMealPlanSync.done}/{remoteMealPlanSync.total})…
         </div>
       )}
 

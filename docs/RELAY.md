@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:55:00Z |
+| reviewed_at | 2026-07-27T04:00:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #91; relay-096 queue empty hint aria-live shipped. |
+| where_we_are | Loop tick #92; relay-097 Day remote sync banner shipped. |
 | blockers | [] |
-| confirmed_next | relay-097 remote sync banner on Day tab |
-| brainstorm_notes | relay-096 done; empty hint announces when queue clears |
+| confirmed_next | relay-098 clear stale failed ids on queue dismiss all |
+| brainstorm_notes | relay-097 done; Day mirrors Home remote sync banner |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:55:00Z |
+| last_wake | 2026-07-27T04:00:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-097 remote sync banner on Day tab |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-098 clear stale failed ids on queue dismiss all |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -58,7 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-096 | done | build | — |
+| 2026-07-27 | relay-096 | done | build | 8f5cb6b |
 | 2026-07-27 | relay-095 | done | build | 2557202 |
 | 2026-07-27 | relay-094 | done | build | 1cab646 |
 | 2026-07-27 | relay-093 | done | build | 9345536 |
