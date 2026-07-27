@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-101 | Meal plan queue count hook sync failed on dismiss | maintenance
 - [ ] relay-102 | Remote sync banner tap navigates to source tab | feature
+- [ ] relay-103 | Meal plan queue badge clear pulse on dismiss | maintenance
 
 ---
 
@@ -57,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-101 | done | build | — |
 | 2026-07-27 | relay-100 | done | build | 8db3dae |
 | 2026-07-27 | relay-099 | done | build | 8f1cd97 |
 | 2026-07-27 | relay-098 | done | build | 74dfcaf |
