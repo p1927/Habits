@@ -24,8 +24,8 @@
 | next_action | relay-182 Log tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 8-close |
-| review_status | done |
-| review_skip_reason | — |
+| review_status | skipped |
+| review_skip_reason | relay-181 reviewed round 7; committed f8cbe92 |
 | review_round | `7` |
 | last_reviewed_round | `7` |
 | review_diff_range | `f8cbe92` |
