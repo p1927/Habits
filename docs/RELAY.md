@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:01:00Z |
+| reviewed_at | 2026-07-27T05:02:00Z |
 | git_branch | main |
-| uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #130; relay-136 habit queue empty hint on sync clear shipped. |
+| uncommitted_files | maintenance docs, Log.tsx WIP |
+| where_we_are | Loop tick #131; relay-137 recipe scan queue sort by created_at shipped. |
 | blockers | [] |
-| confirmed_next | relay-137 recipe scan queue sort by created_at |
-| brainstorm_notes | HabitQueueSection + queueSyncClearedToken mirror meal plan empty hint |
+| confirmed_next | relay-138 food log queue empty hint on sync clear |
+| brainstorm_notes | all offline queues now use sortQueueByCreatedAt |
 
 ---
 
