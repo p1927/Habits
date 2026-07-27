@@ -5,6 +5,7 @@ import { mealPlanSyncSourceLabel } from './lib/mealPlanQueue';
 import { useMealNotifications } from './hooks/useMealNotifications';
 import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
 import { useMealPlanQueueRemoteSync } from './hooks/useMealPlanQueueRemoteSync';
+import { useMealPlanQueueScroll } from './hooks/useMealPlanQueueScroll';
 import { bindNotificationNavigation } from './lib/notificationNavigation';
 import { useServerStatus } from './hooks/useServerStatus';
 import { Home } from './sections/Home';
@@ -42,7 +43,6 @@ function App() {
   const [tab, setTab] = useState<TabId>(parseInitialTab);
   const [oauthSuccess, setOauthSuccess] = useState(false);
   const [openLogMealPlan, setOpenLogMealPlan] = useState(false);
-  const [mealPlanQueueScrollToken, setMealPlanQueueScrollToken] = useState(0);
   const { status, googleConnected, refresh } = useServerStatus();
   const serverOnline = status === 'online' || status === 'online-unauthorized';
   useMealNotifications(serverOnline);
@@ -58,6 +58,11 @@ function App() {
     setTab(id);
     window.location.hash = id;
   }, []);
+
+  const { scrollToken: mealPlanQueueScrollToken, scrollToMealPlanQueue } = useMealPlanQueueScroll(
+    handleTabChange,
+    { onBeforeLogScroll: () => setOpenLogMealPlan(true) },
+  );
 
   const navigateMealPlanSyncSource = useCallback(
     (source: MealPlanSyncSource) => {
@@ -195,26 +200,13 @@ function App() {
                               : undefined
                     }
                     onClick={
-                      t.id === 'log'
+                      queueBadgeActionable
                         ? (e) => {
                             e.stopPropagation();
-                            setOpenLogMealPlan(true);
-                            handleTabChange('log');
-                            setMealPlanQueueScrollToken((token) => token + 1);
+                            const targetTab = t.id === 'cards' ? 'home' : t.id;
+                            scrollToMealPlanQueue(targetTab, { openLogPlan: t.id === 'log' });
                           }
-                        : t.id === 'home' || t.id === 'day'
-                          ? (e) => {
-                              e.stopPropagation();
-                              handleTabChange(t.id);
-                              setMealPlanQueueScrollToken((token) => token + 1);
-                            }
-                          : t.id === 'cards'
-                            ? (e) => {
-                                e.stopPropagation();
-                                handleTabChange('home');
-                                setMealPlanQueueScrollToken((token) => token + 1);
-                              }
-                            : undefined
+                        : undefined
                     }
                   >
                     {badgeCount > 9 ? '9+' : badgeCount}
