@@ -25,6 +25,9 @@
   /* Brand & semantic */
   --accent: #8ab4f8;
   --accent-dim: rgba(138, 180, 248, 0.14);
+  --focus-ring: var(--gemini-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
   --warn: #fbbf24;
   --ok: #4ade80;
   --err: #f87171;

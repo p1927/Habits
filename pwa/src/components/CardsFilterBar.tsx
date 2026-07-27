@@ -32,7 +32,10 @@ export function CardsFilterBar({ search, filter, onSearchChange, onFilterChange 
             key={f}
             type="button"
             role="tab"
+            id={`cards-filter-${f}`}
+            aria-controls="cards-filter-panel"
             aria-selected={filter === f}
+            tabIndex={filter === f ? 0 : -1}
             className={`sub-tab cards-filter-tab ${FILTER_TAB_CLASS[f]} ${filter === f ? 'sub-tab-active' : ''}`.trim()}
             onClick={() => onFilterChange(f)}
           >

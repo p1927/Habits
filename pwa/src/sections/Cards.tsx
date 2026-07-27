@@ -93,7 +93,9 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
         <CardsSicknessTimelineCard events={sicknessEvents} />
       )}
 
-      <CardsKeepGrid cards={filtered} onDelete={(card) => void handleDelete(card)} />
+      <div role="tabpanel" id="cards-filter-panel" aria-labelledby={`cards-filter-${filter}`}>
+        <CardsKeepGrid cards={filtered} onDelete={(card) => void handleDelete(card)} />
+      </div>
 
       <button type="button" className="fab fab--keep" onClick={() => setFabOpen(true)} aria-label="Add note">
         +

@@ -943,11 +943,20 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.625rem;
-  border-radius: 10px;
-  background: var(--surface);
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--revolut-pill-radius);
+  background: var(--gemini-assistant);
+  border: 1px solid color-mix(in srgb, var(--surface2) 60%, transparent);
   font-size: 0.8125rem;
   animation: agent-action-in 0.35s ease-out;
+}
+
+.agent-action-food {
+  border-color: color-mix(in srgb, var(--hinge-rose) 35%, transparent);
+}
+
+.agent-action-calendar {
+  border-color: color-mix(in srgb, var(--gemini-accent) 35%, transparent);
 }
 
 @keyframes agent-action-in {
@@ -959,6 +968,27 @@ button:disabled {
 
 .agent-action-icon {
   flex-shrink: 0;
+  width: 1.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.log-history-stats {
+  font-variant-numeric: tabular-nums;
+}
+
+.log-history-card .food-row strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.home-meal-photos-card h2,
+.log-history-card h2,
+.day-habit-hours-card h2 {
+  margin: 0 0 0.35rem;
+}
+
+.day-habit-hours-card .habit-hours-header {
+  align-items: flex-start;
 }
 
 .agent-action-text {
@@ -2753,11 +2783,6 @@ button:disabled {
   font-size: var(--font-size-sm);
 }
 
-.cards-search:focus {
-  outline: 2px solid var(--gemini-accent);
-  outline-offset: 1px;
-}
-
 .cards-filters {
   margin-bottom: var(--space-md);
 }
@@ -3108,6 +3133,39 @@ button:disabled {
   outline-offset: 2px;
 }
 
+.log-type-card h2,
+.day-manage-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.log-type-card .section-eyebrow,
+.day-manage-card .section-eyebrow {
+  margin-bottom: 0.25rem;
+}
+
+form.log-type-card {
+  display: block;
+}
+
+.log-type-card .field {
+  margin-bottom: 0.75rem;
+}
+
+.log-type-card .btn-pill {
+  margin-top: 0.25rem;
+}
+
+.day-manage-card .manage-quad h3 {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--text-secondary);
+  margin: 0.75rem 0 0.35rem;
+}
+
 .recipes-card {
   padding: 1rem 1.125rem;
   border-radius: var(--revolut-card-radius);
@@ -3309,6 +3367,11 @@ button:disabled {
   background: color-mix(in srgb, var(--gemini-accent) 18%, transparent);
   border-color: color-mix(in srgb, var(--gemini-accent) 35%, transparent);
   color: var(--gemini-accent);
+}
+
+.day-schedule-view-pill:focus-visible {
+  outline: 2px solid var(--gemini-accent);
+  outline-offset: 2px;
 }
 
 .schedule-day-grid {
@@ -4235,9 +4298,22 @@ button:disabled {
 .settings-time-input:focus-visible,
 .settings-text-input:focus-visible,
 .settings-select:focus-visible,
-.settings-toggle:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.settings-toggle:focus-visible,
+.tab:focus-visible,
+.sub-tab:focus-visible,
+.header-gear:focus-visible,
+.link-btn:focus-visible,
+.fab:focus-visible,
+.day-schedule-view-pill:focus-visible,
+.agent-composer-icon:focus-visible,
+.agent-composer-mic:focus-visible,
+.agent-composer-send:focus-visible,
+.agent-composer-tools:focus-visible,
+.agent-voice-orb-btn:focus-visible,
+.cards-search:focus-visible,
+.scan-history-pill:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .settings-card-note {
@@ -4356,11 +4432,6 @@ button:disabled {
 .scan-history-pill:hover {
   border-color: color-mix(in srgb, var(--accent) 40%, var(--surface2));
   background: color-mix(in srgb, var(--accent) 8%, var(--bg));
-}
-
-.scan-history-pill:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 
 .scan-history-thumb {

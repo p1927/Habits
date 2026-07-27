@@ -186,6 +186,7 @@ function App() {
               className={`tab ${tab === t.id ? 'tab-active' : ''}`}
               onClick={() => handleTabChange(t.id)}
               aria-current={tab === t.id ? 'page' : undefined}
+              aria-label={showQueueBadge ? `${t.label}, ${queueBadgeCountLabel}` : t.label}
             >
               <span className="tab-icon-wrap">
                 <span className="tab-icon" aria-hidden>{t.icon}</span>
