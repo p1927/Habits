@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CameraCapture } from '../components/CameraCapture';
 import { FoodQueueBanner } from '../components/FoodQueueBanner';
+import { RecipeScanQueueSection } from '../components/RecipeScanQueueSection';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import { ScanInlineOverlay } from '../components/ScanInlineOverlay';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
@@ -118,7 +119,7 @@ export function Log({
   const [recipeEditOpen, setRecipeEditOpen] = useState(false);
   const [recipeEditName, setRecipeEditName] = useState('');
   const [recipeEditQty, setRecipeEditQty] = useState('100');
-  const [recipeScanQueueCount, setRecipeScanQueueCount] = useState(() => getRecipeScanQueue().length);
+  const [recipeScanQueue, setRecipeScanQueue] = useState(() => getRecipeScanQueue());
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
@@ -440,15 +441,15 @@ export function Log({
     setRecipePhoto(match?.dataUrl ?? null);
   }, [tab, recipe?.name]);
 
-  const syncRecipeScanQueueCount = useCallback(() => {
-    setRecipeScanQueueCount(getRecipeScanQueue().length);
+  const syncRecipeScanQueue = useCallback(() => {
+    setRecipeScanQueue(getRecipeScanQueue());
   }, []);
 
   const dismissRecipeScanQueue = useCallback(() => {
     clearRecipeScanQueue();
-    syncRecipeScanQueueCount();
+    syncRecipeScanQueue();
     setSuccess('Recipe scan queue cleared');
-  }, [syncRecipeScanQueueCount]);
+  }, [syncRecipeScanQueue]);
 
   const dismissFoodLogQueue = useCallback(() => {
     if (!window.confirm(`Discard ${queuedCount} queued food log${queuedCount === 1 ? '' : 's'}? They will not sync.`)) return;
@@ -467,7 +468,7 @@ export function Log({
     const photo = getMealPhotoById(item.photoId);
     if (!photo) {
       removeRecipeScanQueueItem(item.id);
-      syncRecipeScanQueueCount();
+      syncRecipeScanQueue();
       void processRecipeScanQueue();
       return;
     }
@@ -477,7 +478,7 @@ export function Log({
     try {
       const result = await api.scanFood(dataUrlToFile(photo.dataUrl, 'recipe.jpg'));
       removeRecipeScanQueueItem(item.id);
-      syncRecipeScanQueueCount();
+      syncRecipeScanQueue();
       setRecipePhoto(photo.dataUrl);
       setRecipeScanResult(result);
       setRecipeEditName(result.matched_name ?? result.detected_name);
@@ -491,7 +492,7 @@ export function Log({
     } finally {
       setRecipeScanning(false);
     }
-  }, [serverOnline, recipeScanning, recipeScanResult, syncRecipeScanQueueCount]);
+  }, [serverOnline, recipeScanning, recipeScanResult, syncRecipeScanQueue]);
 
   useEffect(() => {
     void processRecipeScanQueue();
@@ -499,12 +500,12 @@ export function Log({
 
   useEffect(() => {
     const onOnline = () => {
-      syncRecipeScanQueueCount();
+      syncRecipeScanQueue();
       void processRecipeScanQueue();
     };
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [processRecipeScanQueue, syncRecipeScanQueueCount]);
+  }, [processRecipeScanQueue, syncRecipeScanQueue]);
 
   useEffect(() => {
     if (!foodName.trim() || foodName.length < 2) {
@@ -577,7 +578,7 @@ export function Log({
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
       enqueueRecipeScan(photo.id, label);
-      syncRecipeScanQueueCount();
+      syncRecipeScanQueue();
       setSuccess('Recipe photo saved — scan queued for when online');
       return;
     }
@@ -594,7 +595,7 @@ export function Log({
     } catch (e) {
       if (isOfflineError(e)) {
         enqueueRecipeScan(photo.id, label);
-        syncRecipeScanQueueCount();
+        syncRecipeScanQueue();
         setSuccess('Recipe photo saved — scan queued for when online');
         return;
       }
@@ -617,7 +618,7 @@ export function Log({
         editQty: savedQty,
       });
     });
-    syncRecipeScanQueueCount();
+    syncRecipeScanQueue();
     void processRecipeScanQueue();
   }
 
@@ -732,21 +733,7 @@ export function Log({
         onDismiss={dismissFoodLogQueue}
       />
 
-      {recipeScanQueueCount > 0 && (
-        <div className="banner banner-warn banner-row" role="status">
-          <span>
-            {recipeScanQueueCount} recipe photo{recipeScanQueueCount === 1 ? '' : 's'} queued — will scan when online.
-          </span>
-          <button
-            type="button"
-            className="btn-small"
-            aria-label="Dismiss recipe scan queue"
-            onClick={dismissRecipeScanQueue}
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
+      <RecipeScanQueueSection queue={recipeScanQueue} onDismiss={dismissRecipeScanQueue} />
 
       <MealPlanSyncAwarenessSlot
         viewer="log"
@@ -1043,7 +1030,7 @@ export function Log({
                   );
                 } else if (dir === 'up' || dir === 'left') {
                   setRecipeScanResult(null);
-                  syncRecipeScanQueueCount();
+                  syncRecipeScanQueue();
                   void processRecipeScanQueue();
                 }
               }}
