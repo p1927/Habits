@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T05:00:00Z |
+| last_wake | 2026-07-27T05:02:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | odd (next: feature) |
-| next_action | relay-136 queue empty hint on habit sync clear |
+| next_action | relay-138 food log queue empty hint on sync clear |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-136 | Queue empty hint on habit sync clear | feature
-- [ ] relay-137 | Recipe scan queue sort by created_at | maintenance
-- [ ] relay-138 | Habit queue empty hint on sync clear | feature
+- [ ] relay-138 | Food log queue empty hint on sync clear | feature
+- [ ] relay-139 | Revert or finish Log.tsx WIP blocking build | maintenance
+- [ ] relay-140 | Recipe scan queue relative timestamps | feature
 
 ---
 
