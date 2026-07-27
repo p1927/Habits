@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { mealPlanQueueLabel, type QueuedMealPlanLog } from '../lib/mealPlanQueue';
 import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 export type MealPlanQueuePanelVariant = 'home' | 'default';
 
@@ -53,6 +54,8 @@ export function MealPlanQueuePanel({
   const isHome = variant === 'home';
   const panelClass = isHome ? 'home-meal-plan-queue-panel' : 'meal-plan-queue-panel';
   const progressClass = isHome ? 'home-meal-plan-sync-progress' : 'meal-plan-sync-progress';
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const announceSyncProgress = syncing && syncProgress && !prefersReducedMotion;
 
   const focusQueueScrollTarget = (reducedMotion: boolean) => {
     const firstFailed = queue.find((item) => failedIds.has(item.id));
@@ -114,28 +117,24 @@ export function MealPlanQueuePanel({
     const firstFailed = queue.find((item) => failedIds.has(item.id));
     if (!firstFailed) return;
 
-    const reducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reducedMotion = prefersReducedMotion;
 
     requestAnimationFrame(() => {
       focusQueueScrollTarget(reducedMotion);
     });
-  }, [failedCount, syncing, queue, failedIds]);
+  }, [failedCount, syncing, queue, failedIds, prefersReducedMotion]);
 
   useEffect(() => {
     if (!scrollToQueueToken) return;
 
-    const reducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reducedMotion = prefersReducedMotion;
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         focusQueueScrollTarget(reducedMotion);
       });
     });
-  }, [scrollToQueueToken, queue, failedIds, serverOnline, syncing, retryingId]);
+  }, [scrollToQueueToken, queue, failedIds, serverOnline, syncing, retryingId, prefersReducedMotion]);
 
   return (
     <div
@@ -149,8 +148,8 @@ export function MealPlanQueuePanel({
     >
       <div className={`banner banner-row${failedCount > 0 ? ' banner-err' : ' banner-warn'}`}>
         <span
-          aria-live={syncing && syncProgress ? 'polite' : undefined}
-          aria-atomic={syncing && syncProgress ? 'true' : undefined}
+          aria-live={announceSyncProgress ? 'polite' : undefined}
+          aria-atomic={announceSyncProgress ? 'true' : undefined}
         >
           {bannerText}
         </span>
@@ -193,8 +192,8 @@ export function MealPlanQueuePanel({
         <div
           className={progressClass}
           role="progressbar"
-          aria-live="polite"
-          aria-atomic="true"
+          aria-live={announceSyncProgress ? 'polite' : undefined}
+          aria-atomic={announceSyncProgress ? 'true' : undefined}
           aria-valuenow={syncProgress.done}
           aria-valuemin={0}
           aria-valuemax={syncProgress.total}

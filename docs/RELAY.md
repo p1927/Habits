@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:46:00Z |
+| reviewed_at | 2026-07-27T04:47:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #115; relay-120 queue scroll focus management shipped. |
+| where_we_are | Loop tick #116; relay-121 sync progress reduced motion aria shipped. |
 | blockers | [] |
-| confirmed_next | relay-121 meal plan sync progress reduced motion aria |
-| brainstorm_notes | relay-120 done; badge scroll focuses failed retry or sync button; double rAF for tab mount |
+| confirmed_next | relay-122 extract focusQueueScrollTarget to lib helper |
+| brainstorm_notes | relay-121 done; aria-live disabled on sync progress/banner under prefers-reduced-motion |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:45:00Z |
+| last_wake | 2026-07-27T04:46:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-120 meal plan queue scroll focus management |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-121 meal plan sync progress reduced motion aria |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-121 | Meal plan sync progress reduced motion aria | maintenance
 - [ ] relay-122 | Extract focusQueueScrollTarget to lib helper | maintenance
+- [ ] relay-123 | Remote sync banner reduced motion aria-live | maintenance
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-120 | done | build | — |
+| 2026-07-27 | relay-121 | done | build | — |
+| 2026-07-27 | relay-120 | done | build | 15492bc |
 | 2026-07-27 | relay-119 | done | build | 850df2e |
 | 2026-07-27 | relay-118 | done | build | 4cb5108 |
 | 2026-07-27 | relay-117 | done | build | 3383ae4 |
