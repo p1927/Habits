@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:53:00Z |
+| reviewed_at | 2026-07-27T04:54:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #122; relay-128 food log queue relative timestamps shipped. |
+| where_we_are | Loop tick #123; relay-129 pending banner dynamic tab label shipped. |
 | blockers | [] |
-| confirmed_next | relay-129 pending banner dynamic tab label |
-| brainstorm_notes | Log tab pending rows show "Queued 5m ago" via formatRelativeTime |
+| confirmed_next | relay-130 meal plan queue sort by created_at |
+| brainstorm_notes | Cards pending banner reads last queue source; label + navigation follow Home/Day/Log |
 
 ---
 
@@ -59,7 +59,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-128 | done | build | pending |
+| 2026-07-27 | relay-128 | done | build | 96f6f3e |
 | 2026-07-27 | relay-127 | done | build | 745e1fd |
 | 2026-07-27 | relay-126 | done | build | e2b7b12 |
 | 2026-07-27 | relay-125 | done | build | 49e36b5 |
