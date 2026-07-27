@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type FoodTodayResponse } from '../lib/api';
+import { vibrateMealPlanSyncSuccess } from '../lib/haptics';
 import {
   addMealPlanFailedId,
   clearMealPlanFailedIds,
@@ -136,6 +137,7 @@ export function useMealPlanQueueSync({
         }
 
         if (synced > 0 && lastSummary) {
+          vibrateMealPlanSyncSuccess();
           onFoodUpdated?.(lastSummary);
           const label = mealPlanSyncUndoLabel(synced, labels);
           const offeredUndo = offerUndoFromSummary(beforeRows, lastSummary, label);
@@ -190,6 +192,7 @@ export function useMealPlanQueueSync({
         const before = beforeRaw ?? (await api.getFoodToday());
         const summary = await syncOneMealPlanItem(item);
         if (summary) {
+          vibrateMealPlanSyncSuccess();
           onFoodUpdated?.(summary);
           syncMealPlanQueue();
           const label = mealPlanQueueLabel(item);
