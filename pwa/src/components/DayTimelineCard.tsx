@@ -35,8 +35,10 @@ export function DayTimelineCard({ events, onAgentSchedulePrompt }: DayTimelineCa
   };
 
   const emptySchedule = (
-    <div className="day-schedule-empty">
-      <p className="muted">No events on your schedule today.</p>
+    <div className="day-schedule-empty-panel">
+      <p className="section-eyebrow">Today</p>
+      <p className="day-schedule-empty-panel__title">Nothing scheduled</p>
+      <p className="muted day-schedule-empty-panel__body">Your day is clear — add events or ask Coach to plan.</p>
       {onAgentSchedulePrompt && (
         <button
           type="button"
