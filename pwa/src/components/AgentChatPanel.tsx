@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { StreamingDots } from './StreamingDots';
 import { AGENT_GREETING_CATEGORIES, type AgentChatMessage } from '../lib/agentSectionShared';
 
@@ -10,6 +11,20 @@ export interface AgentChatPanelProps {
 
 export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt }: AgentChatPanelProps) {
   const showGreeting = messages.length === 0;
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const copyMessage = useCallback(async (content: string, index: number) => {
+    if (!content.trim()) return;
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedIndex(index);
+      window.setTimeout(() => {
+        setCopiedIndex((current) => (current === index ? null : current));
+      }, 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }, []);
 
   return (
     <div className="agent-chat" ref={listRef} role="log" aria-live="polite" aria-label="Chat messages">
@@ -35,18 +50,35 @@ export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt }: A
           )}
         </div>
       )}
-      {messages.map((m, i) => (
+      {messages.map((m, i) => {
+        const isStreaming = loading && i === messages.length - 1;
+        const canCopy = m.role === 'assistant' && m.content.trim() && !isStreaming;
+
+        return (
         <div key={i} className={`chat-bubble chat-bubble--${m.role}`} aria-label={m.role === 'user' ? 'You' : 'Coach'}>
           {m.imageUrl && <img src={m.imageUrl} alt="" className="chat-bubble-image" />}
           {m.content}
-          {m.role === 'assistant' && loading && i === messages.length - 1 && m.content && (
+          {canCopy && (
+            <div className="chat-bubble-actions">
+              <button
+                type="button"
+                className="chat-bubble-copy-btn"
+                aria-label={copiedIndex === i ? 'Copied to clipboard' : 'Copy coach message'}
+                onClick={() => void copyMessage(m.content, i)}
+              >
+                {copiedIndex === i ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+          )}
+          {m.role === 'assistant' && isStreaming && m.content && (
             <span className="chat-stream-cursor" aria-hidden="true" />
           )}
           {m.role === 'assistant' && i === messages.length - 1 && !loading && (
             <p className="chat-bubble-disclaimer muted">Coach can make mistakes — double-check important details.</p>
           )}
         </div>
-      ))}
+        );
+      })}
       {loading && (messages.length === 0 || messages[messages.length - 1]?.role !== 'assistant' || !messages[messages.length - 1]?.content) && (
         <StreamingDots />
       )}
