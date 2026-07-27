@@ -401,7 +401,7 @@ export function Home({ serverOnline }: HomeProps) {
       )}
 
       {remoteMealPlanSync && !syncingMealPlanQueue && (
-        <div className="banner banner-warn home-meal-plan-remote-sync" role="status">
+        <div className="banner banner-warn meal-plan-remote-sync" role="status">
           Syncing meal logs on {mealPlanSyncSourceLabel(remoteMealPlanSync.source)} (
           {remoteMealPlanSync.done}/{remoteMealPlanSync.total})…
         </div>
