@@ -33,14 +33,14 @@ export function AgentChatComposer({
   onOpenVoice,
   onOpenTools,
 }: AgentChatComposerProps) {
-  const canSend = serverOnline && !loading && !scanning && (input.trim() || attachImage);
+  const canSend = serverOnline && !scanning && (input.trim() || attachImage);
 
   return (
     <div className="agent-composer-dock" aria-label="Message composer">
       {attachImage && (
         <div className="agent-attach-preview">
           <img src={attachImage} alt="Attached food photo" className="agent-attach-thumb" />
-          <button type="button" className="btn-small" onClick={onClearAttach}>
+          <button type="button" className="btn-pill btn-pill-outline" onClick={onClearAttach}>
             Remove
           </button>
         </div>
@@ -87,8 +87,8 @@ export function AgentChatComposer({
           className="agent-composer-field"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder={scanning ? 'Scanning photo…' : 'Ask Coach'}
-          disabled={!serverOnline || loading || scanning}
+          placeholder={scanning ? 'Scanning photo…' : loading ? 'Send to interrupt…' : 'Ask Coach'}
+          disabled={!serverOnline || scanning}
         />
 
         {input.trim() || attachImage ? (

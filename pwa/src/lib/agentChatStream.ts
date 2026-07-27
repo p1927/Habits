@@ -19,12 +19,18 @@ export interface AgentChatStreamHandlers {
   onError: (message: string) => void;
 }
 
+export interface AgentChatStreamOptions {
+  signal?: AbortSignal;
+}
+
 export async function agentChatStream(
   message: string,
   history: { role: string; content: string }[] | undefined,
   imageBase64: string | undefined,
   handlers: AgentChatStreamHandlers,
+  options: AgentChatStreamOptions = {},
 ): Promise<void> {
+  const { signal } = options;
   const { apiUrl } = getConfig();
   const bearer = getBearer();
   const headers = new Headers({ 'Content-Type': 'application/json' });
@@ -35,6 +41,7 @@ export async function agentChatStream(
     method: 'POST',
     headers,
     body: JSON.stringify({ message, history, image_base64: imageBase64 }),
+    signal,
   });
 
   if (!resp.ok) {
@@ -45,30 +52,39 @@ export async function agentChatStream(
   const reader = resp.body?.getReader();
   if (!reader) throw new ApiError(502, 'No response body');
 
+  const onAbort = () => void reader.cancel();
+  signal?.addEventListener('abort', onAbort);
+
   const decoder = new TextDecoder();
   let buffer = '';
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const blocks = buffer.split('\n\n');
-    buffer = blocks.pop() ?? '';
+  try {
+    while (true) {
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const blocks = buffer.split('\n\n');
+      buffer = blocks.pop() ?? '';
 
-    for (const block of blocks) {
-      const parsed = parseSseBlock(block.trim());
-      if (!parsed) continue;
-      const payload = JSON.parse(parsed.data) as Record<string, unknown>;
-      if (parsed.event === 'token' && typeof payload.text === 'string') {
-        handlers.onToken(payload.text);
-      } else if (parsed.event === 'done') {
-        handlers.onDone({
-          reply: String(payload.reply ?? ''),
-          tool_results: (payload.tool_results as ChatResponse['tool_results']) ?? [],
-        });
-      } else if (parsed.event === 'error') {
-        handlers.onError(String(payload.message ?? 'Stream failed'));
+      for (const block of blocks) {
+        if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+        const parsed = parseSseBlock(block.trim());
+        if (!parsed) continue;
+        const payload = JSON.parse(parsed.data) as Record<string, unknown>;
+        if (parsed.event === 'token' && typeof payload.text === 'string') {
+          handlers.onToken(payload.text);
+        } else if (parsed.event === 'done') {
+          handlers.onDone({
+            reply: String(payload.reply ?? ''),
+            tool_results: (payload.tool_results as ChatResponse['tool_results']) ?? [],
+          });
+        } else if (parsed.event === 'error') {
+          handlers.onError(String(payload.message ?? 'Stream failed'));
+        }
       }
     }
+  } finally {
+    signal?.removeEventListener('abort', onAbort);
   }
 }
