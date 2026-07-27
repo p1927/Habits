@@ -91,6 +91,7 @@ export function AgentAttachSheet({
           </>
         )}
       </div>
+      <p className="muted agent-attach-sheet-hint">Press Escape to close</p>
     </BottomSheet>
   );
 }
