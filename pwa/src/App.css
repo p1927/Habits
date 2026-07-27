@@ -1268,7 +1268,9 @@ button:disabled {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .meal-plan-remote-sync {
+  .meal-plan-remote-sync,
+  .home-meal-plan-queue-panel--syncing .banner-row,
+  .meal-plan-queue-panel--syncing .banner-row {
     animation: none;
   }
 
@@ -1312,6 +1314,7 @@ button:disabled {
 
 .home-meal-plan-queue-panel--syncing .banner-row {
   border-radius: var(--radius-md) var(--radius-md) 0 0;
+  animation: meal-plan-sync-banner-pulse 1.8s ease-in-out infinite;
 }
 
 .home-meal-plan-queue-panel:has(.meal-plan-queue-list) .banner-row,
@@ -1786,9 +1789,13 @@ button:disabled {
   border-radius: var(--radius-md);
 }
 
-.meal-plan-queue-panel:has(.meal-plan-queue-list) .banner-row,
+.meal-plan-queue-panel:has(.meal-plan-queue-list) .banner-row {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
 .meal-plan-queue-panel--syncing .banner-row {
   border-radius: var(--radius-md) var(--radius-md) 0 0;
+  animation: meal-plan-sync-banner-pulse 1.8s ease-in-out infinite;
 }
 
 .meal-plan-sync-progress {
