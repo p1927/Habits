@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T01:05:00Z |
-| where_we_are | ch-127 useMealPlanShell split shipped |
-| confirmed_next | ch-128 — DayTimelineCard (151) split |
+| reviewed_at | 2026-07-28T01:35:00Z |
+| where_we_are | ch-128 DayTimelineCard split shipped |
+| confirmed_next | ch-129 — useFutureSelfSection (150) or test coverage |
 
 ---
 
@@ -18,13 +18,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T01:05:00Z` |
-| confirmed_next | `ch-128` |
+| last_wake | `2026-07-28T01:35:00Z` |
+| confirmed_next | `ch-129` |
 | phase | `9-arm` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `8` |
-| last_reviewed_round | `8` |
+| review_round | `9` |
+| last_reviewed_round | `9` |
 | loops | `wake ARMED PID 49727 (120s)` |
 | worktree_status | `none` |
 | current_item_id | `—` |
@@ -41,7 +41,7 @@
 | execute_started | `no` |
 | fix_verify_done | `no` |
 | reflect_done | `yes` |
-| commit_hash | `2795849` |
+| commit_hash | `d664e48` |
 | receive_review_done | `no` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -181,8 +181,9 @@
 - [x] ch-125 | `useHomeDashboard.ts` (153) split | structure | refresh hook + homeDashboardDerived; main 153→87 |
 - [x] ch-126 | `useAgentChat.ts` (171) split | structure | useAgentChatStream + composition; 171→99 |
 - [x] ch-127 | Line scan + `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; 155→128 |
-- [ ] ch-128 | `DayTimelineCard.tsx` (151) split | structure | agenda panel extract |
+- [x] ch-128 | `DayTimelineCard.tsx` (151) split | structure | DayTimelineAgendaPanel + DayScheduleEmptyPanel; 151→99 |
 - [ ] ch-129 | Meal plan hook test coverage (getFoodBeforeSync + offline) | robustness | from ch-r8-b001 |
+- [ ] ch-130 | Line scan — top: api 308, useFutureSelfSection 150, useAppShell 137 | structure | queued |
 
 ---
 
@@ -267,7 +268,8 @@
 | `pwa/src/lib/mealNotifications.ts` | 2026-07-27 tick #75 | ch-096: storage + permission + scheduler; 163→12 |
 | `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
 | `pwa/src/hooks/useMealPlanShell.ts` | 2026-07-28 tick #98 | ch-127: useMealPlanShellSyncContext; 155→128 |
-| `pwa/src/sections/*` + hooks + lib | 2026-07-28 tick #98 | scan: api 308, DayTimelineCard 151, useFutureSelfSection 150 |
+| `pwa/src/components/DayTimelineCard.tsx` | 2026-07-28 tick #99 | ch-128: agenda + empty panels; 151→99 |
+| `pwa/src/sections/*` + hooks + lib | 2026-07-28 tick #99 | scan: api 308, useFutureSelfSection 150, useAppShell 137 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -312,6 +314,8 @@
 | ch-r7-001 | low | `pwa/src/hooks/useAgentChatStream.ts:1` — stream/abort + beginStream extracted; `useAgentChat.ts` composition 171→99 | round-7 /code-review | closed | — | closed |
 | ch-r8-001 | low | `pwa/src/hooks/useMealPlanShellSyncContext.ts:1` — food snapshot + sync callbacks extracted; `useMealPlanShell.ts` composition 155→128 | round-8 /code-review | closed | — | closed |
 | ch-r8-b001 | low | Meal plan hooks lack automated tests for getFoodBeforeSync + offline paths | round-8 bugbot | backlog | ch-129 | open |
+| ch-r9-001 | low | `pwa/src/components/DayScheduleEmptyPanel.tsx:1` + `DayTimelineAgendaPanel.tsx` — extracted; `DayTimelineCard.tsx` shell 151→99 | round-9 /code-review | closed | — | closed |
+| ch-r9-b001 | low | Bugbot: no functional regressions; event select + tab ARIA parity with pre-refactor | round-9 bugbot | closed | — | closed |
 
 ---
 
@@ -319,6 +323,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-128 | DayTimelineCard split (agenda + empty panels) | build | d664e48 |
 | 2026-07-28 | ch-127 | useMealPlanShell split (syncContext hook) | build | 2795849 |
 | 2026-07-27 | ch-126 | useAgentChat split (stream hook + composition) | build | 2fd9102 |
 | 2026-07-27 | ch-125 | useHomeDashboard split (refresh hook + derived) | build | pending |
