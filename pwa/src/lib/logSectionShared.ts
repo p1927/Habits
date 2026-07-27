@@ -2,6 +2,7 @@ export type LogTab = 'scan' | 'type' | 'mealplan' | 'recipes' | 'history';
 
 export const LOG_TABS: LogTab[] = ['scan', 'type', 'mealplan', 'recipes', 'history'];
 export const LOG_SHORTCUT_HINT_KEY = 'habits-log-shortcuts-hint-seen';
+export const LOG_TAB_STORAGE_KEY = 'habits-log-last-tab';
 
 export const MEAL_TYPES = [
   { value: 'breakfast', label: 'Breakfast' },
@@ -29,6 +30,24 @@ export const LOG_TAB_ICONS: Record<LogTab, string> = {
 
 export function logTabLabel(tab: LogTab): string {
   return LOG_TAB_LABELS[tab];
+}
+
+export function readStoredLogTab(fallback: LogTab = 'scan'): LogTab {
+  try {
+    const raw = localStorage.getItem(LOG_TAB_STORAGE_KEY);
+    if (raw && LOG_TABS.includes(raw as LogTab)) return raw as LogTab;
+  } catch {
+    /* ignore */
+  }
+  return fallback;
+}
+
+export function storeLogTab(tab: LogTab) {
+  try {
+    localStorage.setItem(LOG_TAB_STORAGE_KEY, tab);
+  } catch {
+    /* ignore */
+  }
 }
 
 export function isTypingTarget(target: EventTarget | null): boolean {

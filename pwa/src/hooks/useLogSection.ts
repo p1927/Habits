@@ -1,21 +1,18 @@
 import { useCallback, useRef, useState } from 'react';
-import { useLogFoodScan } from './useLogFoodScan';
-import { useLogFoodUndo, type FoodLogUndoEntry } from './useLogFoodUndo';
-import { useLogFoodUndoRestore } from './useLogFoodUndoRestore';
-import { useLogRecipeScan } from './useLogRecipeScan';
 import { useLogSectionData } from './useLogSectionData';
+import { useLogSectionFoodStack } from './useLogSectionFoodStack';
 import { useLogStatusShellProps } from './useLogStatusShellProps';
 import { useLogTabPanelsProps } from './useLogTabPanelsProps';
 import { useLogTabShortcuts } from './useLogTabShortcuts';
-import { useLogTypeTab } from './useLogTypeTab';
 import { useMealPlanShell } from './useMealPlanShell';
-import { useOptimisticFoodLog } from './useOptimisticFoodLog';
-import { type LogTab } from '../lib/logSectionShared';
+import { readStoredLogTab, storeLogTab, type LogTab } from '../lib/logSectionShared';
 
 interface UseLogSectionOptions {
   serverOnline: boolean;
   openMealPlan?: boolean;
   onMealPlanOpened?: () => void;
+  openLogHistory?: boolean;
+  onLogHistoryOpened?: () => void;
   scrollToMealPlanQueue?: number;
 }
 
@@ -23,13 +20,18 @@ export function useLogSection({
   serverOnline,
   openMealPlan,
   onMealPlanOpened,
+  openLogHistory,
+  onLogHistoryOpened,
   scrollToMealPlanQueue,
 }: UseLogSectionOptions) {
-  const [tab, setTab] = useState<LogTab>('scan');
+  const [tab, setTabState] = useState<LogTab>(() => readStoredLogTab());
+  const setTab = useCallback((next: LogTab) => {
+    setTabState(next);
+    storeLogTab(next);
+  }, []);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const foodUndoRestoreRef = useRef<(entry: FoodLogUndoEntry) => void>(() => {});
   const onTabRecipesRef = useRef<() => void>(() => {});
   const onTabRecipes = useCallback(() => {
     onTabRecipesRef.current();
@@ -41,68 +43,23 @@ export function useLogSection({
     setTab,
     openMealPlan,
     onMealPlanOpened,
+    openLogHistory,
+    onLogHistoryOpened,
     scrollToMealPlanQueue,
     onTabRecipes,
   });
 
   const { showShortcutHint, dismissShortcutHint } = useLogTabShortcuts(setTab);
 
-  const foodLog = useOptimisticFoodLog({
-    serverOnline,
-    setData: sectionData.setData,
-    setSuccess,
-    setError,
-  });
-
-  const foodUndo = useLogFoodUndo({
-    serverOnline,
-    setData: sectionData.setData,
-    onPendingUndo: () => setSuccess(''),
-    setSuccess,
-    setError,
-    restoreRef: foodUndoRestoreRef,
-  });
-
-  const foodScan = useLogFoodScan({ logItem: foodLog.logItem, offerUndo: foodUndo.offerUndo, setLoading, setError });
-
-  const recipeScan = useLogRecipeScan({
+  const { foodLog, foodUndo, foodScan, recipeScan, typeTab } = useLogSectionFoodStack({
     serverOnline,
     tab,
-    setData: sectionData.setData,
-    setLoading,
-    logItem: foodLog.logItem,
-    offerUndo: foodUndo.offerUndo,
-    setError,
-    setSuccess,
-  });
-
-  onTabRecipesRef.current = () => void recipeScan.loadSavedRecipe();
-
-  const typeTab = useLogTypeTab({
-    serverOnline,
-    logItem: foodLog.logItem,
-    logMeal: foodLog.logMeal,
-    logMacros: foodLog.logMacros,
-    offerUndo: foodUndo.offerUndo,
-    setData: sectionData.setData,
-    setLoading,
-    setError,
-    setSuccess,
-    onSwitchToTypeTab: () => setTab('type'),
-  });
-
-  useLogFoodUndoRestore({
-    restoreRef: foodUndoRestoreRef,
-    setScanResult: foodScan.setScanResult,
-    setEditName: foodScan.setEditName,
-    setEditQty: foodScan.setEditQty,
-    setRecipeScanResult: recipeScan.setRecipeScanResult,
-    setRecipeEditName: recipeScan.setRecipeEditName,
-    setRecipeEditQty: recipeScan.setRecipeEditQty,
-    setOffProduct: typeTab.setOffProduct,
-    setOffQuantity: typeTab.setOffQuantity,
-    setFoodName: typeTab.setFoodName,
     setTab,
+    sectionData,
+    setLoading,
+    setError,
+    setSuccess,
+    onTabRecipesRef,
   });
 
   const mealPlanShell = useMealPlanShell({
