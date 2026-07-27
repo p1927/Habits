@@ -253,6 +253,10 @@ def build_prompt(
         )
     else:
         parts.append("(then arm next wake at end of turn)")
+        parts.append(
+            "Phase 9 CRITICAL: run arm-wake.sh in Shell with block_until_ms=0 AND "
+            "notify_on_output on monitor_regex from INSTANCE — sentinel alone does not wake this chat"
+        )
     parts.append("Do not ask user.")
 
     phase_6_block: dict = {}
@@ -264,6 +268,38 @@ def build_prompt(
             "prep_script_does_not_complete_phase": True,
             "must_read_files": changed_files[:20],
         }
+
+    monitor_regex = ""
+    interval_sec = "120"
+    wake_sentinel = f"AGENT_LOOP_WAKE_{loop_id.upper().replace('-', '_')}"
+    if root and contract_doc:
+        contract_path = root / contract_doc
+        if contract_path.is_file():
+            import loop_hook_lib as mod
+
+            cfg = mod.parse_loop_config(contract_path.read_text(encoding="utf-8"))
+            monitor_regex = cfg.get("monitor_regex", "")
+            interval_sec = cfg.get("interval_sec", interval_sec)
+            wake_sentinel = cfg.get("wake_sentinel", wake_sentinel)
+
+    arm_shell = {
+        "block_until_ms": 0,
+        "notify_on_output_pattern": monitor_regex,
+        "notify_required": True,
+        "note": (
+            "Dynamic wake ONLY works when the Shell that runs arm-wake.sh uses "
+            "notify_on_output matching monitor_regex. Announcing arm without "
+            "notify leaves the sentinel orphaned — no tick."
+        ),
+        "env": {
+            "LOOP_ID": loop_id,
+            "WAKE_SENTINEL": wake_sentinel,
+            "INTERVAL": interval_sec,
+            "CONTRACT_DOC": contract_doc,
+            "STATE_FILE": state_file,
+            "PROJECT_ROOT": str(root) if root else ".",
+        },
+    }
 
     payload = {
         "loop_id": loop_id,
@@ -292,6 +328,7 @@ def build_prompt(
             else ""
         ),
         "phase_6": phase_6_block,
+        "arm_shell": arm_shell,
         "prompt": "; ".join(parts) + ".",
     }
     return json.dumps(payload)

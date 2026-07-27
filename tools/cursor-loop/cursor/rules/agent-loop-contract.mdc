@@ -81,6 +81,13 @@ If you cannot pass `--conversation-id`, still complete Ritual and record in `sta
 At **end of every turn** (max once; do not stack):
 
 ```bash
+bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
+  --state-file <STATE.md> --loop-id <loop_id>
+```
+
+Then run `ARM_COMMAND` from prep output in Shell with **`block_until_ms: 0`** and **`notify_on_output`** on `monitor_regex` (required — sentinel stdout alone does not wake this chat).
+
+```bash
 LOOP_ID=<loop_id> WAKE_SENTINEL=<wake_sentinel> INTERVAL=<interval_sec> \
 CONTRACT_DOC=<contract_doc> STATE_FILE=<state_file> \
 bash <package_root>/scripts/arm-wake.sh

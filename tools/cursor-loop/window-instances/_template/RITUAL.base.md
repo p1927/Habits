@@ -193,24 +193,21 @@ One arm = one sleep cycle. DOWN after sentinel is **not** "job done" unless a **
 ### Phase 9 checklist
 
 1. `checkpoint-loop.py --product --evidence <item-id>` (or `--blocker`)
-2. Arm (background, `block_until_ms: 0`, `notify_on_output` on `^<wake_sentinel>`):
+2. Prep arm (prints `ARM_COMMAND`, `monitor_regex`, notify requirements):
 
 ```bash
-LOOP_ID=<loop_id> \
-WAKE_SENTINEL=<wake_sentinel> \
-INTERVAL=<interval_sec> \
-CONTRACT_DOC=<contract_doc> \
-STATE_FILE=<state_file> \
-bash tools/cursor-loop/scripts/arm-wake.sh
+bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
+  --state-file <STATE.md> --loop-id <loop_id>
 ```
 
-3. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
+3. Run `ARM_COMMAND` in Shell with **`block_until_ms: 0`** and **`notify_on_output`** on `monitor_regex` (required — without notify, sentinel stdout does not wake this chat).
+4. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
 
 ```bash
 bash tools/cursor-loop/scripts/verify-wake.sh <loop_id>   # must exit 0
 ```
 
-4. Set `CHECKPOINT.phase=9-arm` **only after** step 3 passes
-5. If verify fails or shell aborted: re-run step 2 once; record in STATE if still DOWN — stop hook will recovery-wake
+4. Set `CHECKPOINT.phase=9-arm` **only after** step 4 passes
+5. If verify fails or shell aborted: re-run step 3 once; record in STATE if still DOWN — stop hook will recovery-wake
 
 Full arming rules: [`.cursor/rules/agent-loop-contract.mdc`](../../../.cursor/rules/agent-loop-contract.mdc).

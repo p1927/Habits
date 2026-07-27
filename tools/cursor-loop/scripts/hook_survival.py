@@ -150,6 +150,13 @@ def main() -> int:
         f"Loop {loop_id} wake is DOWN (mode={binding.get('loop_mode', 'dynamic')}). "
         f"Read {contract_doc}"
     )
+    fired = mod.read_wake_fired(loop_id)
+    if fired:
+        msg += (
+            f" Sentinel ALREADY FIRED at {fired.get('fired_at', '?')} without waking this chat — "
+            "arm-wake Shell likely missing notify_on_output on monitor_regex."
+        )
+        mod.clear_wake_fired(loop_id)
     if state_file:
         msg += f" and {state_file}"
     msg += (

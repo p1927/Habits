@@ -162,6 +162,8 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/prepare_review_tick.py" \
   "${INSTALL_PACKAGE}/scripts/prepare_select_tick.sh" \
   "${INSTALL_PACKAGE}/scripts/prepare_select_tick.py" \
+  "${INSTALL_PACKAGE}/scripts/prepare_arm_wake.sh" \
+  "${INSTALL_PACKAGE}/scripts/record_wake_fired.py" \
   "${INSTALL_PACKAGE}/scripts/prepare_bugbot_review.sh" \
   "${INSTALL_PACKAGE}/scripts/prepare_bugbot_review.py" \
   "${INSTALL_PACKAGE}/scripts/state_checkpoint.py" \

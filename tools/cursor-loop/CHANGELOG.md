@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- **Dynamic wake notify contract** — Phase 9 requires `prepare_arm_wake.sh` + Shell `notify_on_output` on `monitor_regex`; wake JSON includes `arm_shell` block
+- **Missed-wake diagnostics** — `record_wake_fired.py` + doctor/survival hook warn when sentinel fired without agent wake
+- **Between-tick arm gate** — at `phase=9-arm` with `code_changed=no`, skip main-scope git block so re-arm is not forced through `RITUAL_GATE_FORCE`
+- **Tests** — `test_between_tick_arm.sh`
+
 ## 0.5.9
 
 - **Hard main-branch gate** — arm/checkpoint fails when engineer/designer/qa have app-scope diff on `main` without active worktree

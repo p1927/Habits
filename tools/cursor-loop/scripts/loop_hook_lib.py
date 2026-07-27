@@ -302,6 +302,33 @@ def resolve_wake_pidfile_path(loop_id: str) -> Path:
     return tmp / f"cursor-loop-{loop_id}.wake.pid"
 
 
+def resolve_wake_fired_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.wake.fired.json"
+
+
+def write_wake_fired(loop_id: str, payload_line: str) -> None:
+    """Record that dynamic wake sentinel fired (for recovery when notify misses)."""
+    path = resolve_wake_fired_path(loop_id)
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    data = {"loop_id": loop_id, "fired_at": now, "payload_line": payload_line.strip()}
+    path.write_text(json.dumps(data, separators=(",", ":")), encoding="utf-8")
+
+
+def read_wake_fired(loop_id: str) -> dict | None:
+    path = resolve_wake_fired_path(loop_id)
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def clear_wake_fired(loop_id: str) -> None:
+    resolve_wake_fired_path(loop_id).unlink(missing_ok=True)
+
+
 def resolve_last_exit_path(loop_id: str) -> Path:
     tmp = Path(os.environ.get("TMPDIR") or "/tmp")
     return tmp / f"cursor-loop-{loop_id}.last_exit"

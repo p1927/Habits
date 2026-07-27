@@ -636,8 +636,9 @@ def worktree_gate_issues(
     exec_idx = phase_index("4-execute")
     close_idx = phase_index("8-close")
     sf = state_file or f"docs/window-instances/{loop_id}/STATE.md"
+    steady_between = normalize_phase(phase) == "9-arm" and not code_changed
 
-    if project_root is not None and idx >= close_idx:
+    if project_root is not None and idx >= close_idx and not steady_between:
         if main_scope_app_diff(project_root, loop_id, state_file) and worktree_status != "active":
             return GateResult(
                 False,
@@ -701,6 +702,10 @@ def required_phase_before_arm(
     round_num = parse_review_round(review_round)
     last_reviewed = max_reviewed_round(state_text)
     skip_git_checks = mode == "steady"
+    phase_norm = normalize_phase(phase)
+    between_tick_arm = mode == "arm" and phase_norm == "9-arm" and not code_changed
+    if between_tick_arm:
+        skip_git_checks = True
     git_diff = (
         not skip_git_checks
         and project_root is not None

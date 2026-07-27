@@ -169,6 +169,19 @@ for entry in instances:
         if phase_num >= 9 and "DOWN" in wake:
             status = "WARN"
             notes.append("phase=9-arm but wake DOWN — re-arm required")
+        try:
+            sys.path.insert(0, str(scripts_dir))
+            import loop_hook_lib as lh
+
+            fired = lh.read_wake_fired(loop_id)
+            if fired and "DOWN" in wake:
+                status = "WARN"
+                notes.append(
+                    f"missed wake: sentinel fired {fired.get('fired_at', '?')} without notify — "
+                    "use Shell notify_on_output on monitor_regex"
+                )
+        except Exception:
+            pass
         if worktree == "active":
             status = "WARN"
             notes.append("worktree_status=active — merge+remove before arm")

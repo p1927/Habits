@@ -58,4 +58,6 @@ trap cleanup EXIT INT TERM
 echo "WAKE_ARMED loop_id=${LOOP_ID} interval=${INTERVAL}s sentinel=${WAKE_SENTINEL} pid=$$"
 
 sleep "$INTERVAL"
-echo "${WAKE_SENTINEL} ${PAYLOAD}"
+FIRED_LINE="${WAKE_SENTINEL} ${PAYLOAD}"
+echo "$FIRED_LINE"
+python3 "${SCRIPT_DIR}/record_wake_fired.py" "$LOOP_ID" "$FIRED_LINE" 2>/dev/null || true
