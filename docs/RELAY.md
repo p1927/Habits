@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:51:00Z |
+| reviewed_at | 2026-07-27T04:52:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #120; relay-126 queue empty hint reduced motion aria-live shipped. |
+| where_we_are | Loop tick #121; relay-127 habit queue relative timestamps shipped. |
 | blockers | [] |
-| confirmed_next | relay-127 habit queue relative timestamps |
-| brainstorm_notes | relay-126 gates announce on !prefersReducedMotion in MealPlanQueueEmptyHint |
+| confirmed_next | relay-128 food log queue relative timestamps |
+| brainstorm_notes | Day tab lists queued habit updates with "Queued 5m ago" via formatRelativeTime |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:50:00Z |
+| last_wake | 2026-07-27T04:52:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: feature) |
-| next_action | relay-126 queue empty hint reduced motion aria-live |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-128 food log queue relative timestamps |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-126 | Queue empty hint reduced motion aria-live | maintenance
 - [ ] relay-127 | Habit queue relative timestamps (parity with meal plan) | feature
 
 ---
@@ -59,6 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-126 | done | build | e2b7b12 |
 | 2026-07-27 | relay-125 | done | build | 49e36b5 |
 | 2026-07-27 | relay-124 | done | build | f1d6a05 |
 | 2026-07-27 | relay-123 | done | build | e99dc96 |
