@@ -14,6 +14,8 @@ export function MealPlanQueuePendingBanner({ count, failedCount, onOpenHome }: M
       type="button"
       className="banner banner-warn meal-plan-queue-awareness meal-plan-remote-sync--actionable"
       role="status"
+      aria-live="polite"
+      aria-atomic="true"
       onClick={onOpenHome}
     >
       {count} meal log{count === 1 ? '' : 's'} queued{failedSuffix} — tap to open Home

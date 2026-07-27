@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:35:00Z |
+| reviewed_at | 2026-07-27T04:36:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #104; relay-108 Cards badge scroll to Home queue shipped. |
+| where_we_are | Loop tick #105; relay-109 pending queue banner aria-live shipped. |
 | blockers | [] |
-| confirmed_next | relay-109 pending queue banner aria-live on count change |
-| brainstorm_notes | relay-108 done; Cards tab badge opens Home and scrolls to meal plan queue |
+| confirmed_next | relay-110 meal plan sync source label in tab badge title |
+| brainstorm_notes | relay-109 done; pending queue banner announces count/failed updates politely |
 
 ---
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-109 | Pending queue banner aria-live on count change | maintenance
 - [ ] relay-110 | Meal plan sync source label in tab badge title | maintenance
+- [ ] relay-111 | Home/Day tab badge tap scroll to queue | feature
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-108 | done | build | — |
+| 2026-07-27 | relay-109 | done | build | — |
+| 2026-07-27 | relay-108 | done | build | cb2d7e2 |
 | 2026-07-27 | relay-107 | done | build | ca1b156 |
 | 2026-07-27 | relay-106 | done | build | 9b3209e |
 | 2026-07-27 | relay-105 | done | build | 56d94a8 |
