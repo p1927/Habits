@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:25:00Z |
+| last_wake | 2026-07-27T04:30:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-103 meal plan queue badge clear pulse on dismiss |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-104 cards tab meal plan queue awareness |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-103 | Meal plan queue badge clear pulse on dismiss | maintenance
 - [ ] relay-104 | Cards tab meal plan queue awareness | feature
+- [ ] relay-105 | Meal plan sync banner reduced motion | maintenance
 
 ---
 
@@ -57,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-103 | done | build | — |
 | 2026-07-27 | relay-102 | done | build | c4e149d |
 | 2026-07-27 | relay-101 | done | build | ddb3d3a |
 | 2026-07-27 | relay-100 | done | build | 8db3dae |
