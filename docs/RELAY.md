@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-098 | Clear stale failed ids on queue dismiss all | maintenance
 - [ ] relay-099 | Log remote sync banner on non-Plan tabs | feature
+- [ ] relay-100 | Shared meal-plan-remote-sync CSS class | maintenance
 
 ---
 
@@ -57,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-098 | done | build | — |
 | 2026-07-27 | relay-097 | done | build | e1d9f29 |
 | 2026-07-27 | relay-096 | done | build | 8f5cb6b |
 | 2026-07-27 | relay-095 | done | build | 2557202 |
