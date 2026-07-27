@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T21:10:00Z |
-| where_we_are | relay-187 shipped |
+| reviewed_at | 2026-07-27T21:15:00Z |
+| where_we_are | relay-187 review complete (round 15) |
 | confirmed_next | relay-188 |
-| brainstorm_notes | App tab ⌘1–5 shortcuts defer to Log/Day/Cards section keys |
+| brainstorm_notes | aria-keyshortcuts now match deferred shortcut handler |
 
 ---
 
@@ -19,16 +19,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:12:00Z` |
+| last_wake | `2026-07-27T21:15:00Z` |
 | confirmed_next | `relay-188` |
 | next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
-| phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `relay-187 reviewed round 14; committed 4c3ad70` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| phase | `8-close` |
+| review_status | `done` |
+| review_skip_reason | `—` |
+| review_diff_range | `relay-187-r15` |
+| code_changed | `no` |
 | review_round | `15` |
-| last_reviewed_round | `14` |
+| last_reviewed_round | `15` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
