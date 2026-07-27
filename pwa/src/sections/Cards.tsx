@@ -6,6 +6,7 @@ import { CardsSicknessTimelineCard } from '../components/CardsSicknessTimelineCa
 import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
 import { api, ApiError, type KeepCard, type SicknessTimelineEvent } from '../lib/api';
 import { filterCardsBySearch, type CardsFilter } from '../lib/cardsSectionShared';
+import { useCardsFilterShortcuts } from '../hooks/useCardsFilterShortcuts';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 interface CardsProps {
@@ -23,6 +24,8 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
   const [newBody, setNewBody] = useState('');
   const [error, setError] = useState('');
   const [sicknessEvents, setSicknessEvents] = useState<SicknessTimelineEvent[]>([]);
+
+  const { showShortcutHint, dismissShortcutHint } = useCardsFilterShortcuts(setFilter, fabOpen);
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
@@ -87,6 +90,8 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
         filter={filter}
         onSearchChange={setSearch}
         onFilterChange={setFilter}
+        showShortcutHint={showShortcutHint}
+        onDismissShortcutHint={dismissShortcutHint}
       />
 
       {(filter === 'all' || filter === 'sickness') && (

@@ -1,5 +1,7 @@
 export const CARDS_FILTERS = ['all', 'sickness', 'notes', 'strategy'] as const;
 
+export const CARDS_SHORTCUT_HINT_KEY = 'habits-cards-shortcuts-hint-seen';
+
 export type CardsFilter = (typeof CARDS_FILTERS)[number];
 
 export const KEEP_CARD_VARIANTS: Record<string, 'keep-yellow' | 'keep-blue' | 'keep-green' | 'keep-pink' | 'keep-purple'> = {

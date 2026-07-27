@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:08:00Z |
-| where_we_are | Round 11 review complete — CHECKPOINT table hygiene |
-| confirmed_next | relay-185 |
-| brainstorm_notes | Agent ⌘/Ctrl+K composer focus + empty-state hint |
+| reviewed_at | 2026-07-27T13:12:00Z |
+| where_we_are | relay-185 shipped |
+| confirmed_next | relay-186 |
+| brainstorm_notes | Cards ⌘1–4 filter shortcuts + first-visit hint |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T13:02:10Z` |
-| confirmed_next | `relay-185` |
-| next_action | `relay-185 Cards tab keyboard shortcut hint on first visit` |
-| phase | `1-wake` |
+| last_wake | `2026-07-27T13:12:00Z` |
+| confirmed_next | `relay-186` |
+| next_action | `relay-186 Settings tab keyboard shortcut from header gear hint` |
+| phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `prior tick closed; next wake starts Phase 1` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `11` |
-| last_reviewed_round | `11` |
+| review_skip_reason | `relay-185 reviewed round 12; committed pending` |
+| review_diff_range | `relay-185` |
+| code_changed | `yes` |
+| review_round | `12` |
+| last_reviewed_round | `12` |
 | worktree_status | `none` |
-| current_item_id | `relay-185` |
+| current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/CardsFilterBar.tsx pwa/src/hooks/useCardsFilterShortcuts.ts pwa/src/lib/cardsSectionShared.ts pwa/src/sections/Cards.tsx` |
+| review_fingerprint | `f2acfe37a1ce1f59` |
 
 ## IN_PROGRESS
 
@@ -75,7 +75,7 @@
 - [x] relay-182 | Log tab keyboard shortcut hint on first visit | polish | verify-only — `useLogTabShortcuts` + LogSubTabs hint (f3af1b5)
 - [x] relay-183 | Day tab keyboard shortcut hint on first visit | polish | useDayScheduleShortcuts + DayTimelineCard hint (⌘1/⌘2)
 - [x] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish | useAgentComposerFocusShortcut + disclaimer hint
-- [ ] relay-185 | Cards tab keyboard shortcut hint on first visit | polish
+- [x] relay-185 | Cards tab keyboard shortcut hint on first visit | polish | useCardsFilterShortcuts + CardsFilterBar hint (⌘1–4)
 - [ ] relay-186 | Settings tab keyboard shortcut from header gear hint | polish
 
 ---
@@ -109,6 +109,7 @@
 | rf-r9-002 | low | Unused `.day-event-detail` wrapper CSS after Card refactor | round-9 /code-review | fix-now | — | closed |
 | rf-r10-001 | low | No issues in relay-184 composer shortcut diff | round-10 /code-review | closed | — | closed |
 | rf-r11-001 | low | Duplicate `last_wake` row in CHECKPOINT from prior 9-arm edit | round-11 /code-review | fix-now | — | closed |
+| rf-r12-001 | low | No issues in relay-185 Cards filter shortcut diff | round-12 /code-review | closed | — | closed |
 
 ---
 
@@ -116,7 +117,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-184 | done | build | ac53858 |
+| 2026-07-27 | relay-185 | done | build | — |
 | 2026-07-27 | relay-183 | done | build | 2055d88 |
 | 2026-07-27 | relay-182 | done | build | f3af1b5 |
 | 2026-07-27 | relay-181 | done | build | f8cbe92 |

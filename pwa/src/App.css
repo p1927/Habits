@@ -1965,6 +1965,10 @@ button:disabled {
   font-size: var(--font-size-md);
 }
 
+.cards-filter-shortcut-hint {
+  margin: -0.35rem 0 var(--space-md);
+}
+
 /* Home summary tiles — Apple Health style (ui-015) */
 .home-summary-grid {
   display: grid;
