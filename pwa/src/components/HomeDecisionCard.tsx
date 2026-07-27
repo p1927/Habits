@@ -5,9 +5,10 @@ import type { FutureSelfCard } from '../lib/api';
 export interface HomeDecisionCardProps {
   card: FutureSelfCard;
   onSwipe: (dir: SwipeDirection) => void;
+  onOpenFutureSelf?: () => void;
 }
 
-export function HomeDecisionCard({ card, onSwipe }: HomeDecisionCardProps) {
+export function HomeDecisionCard({ card, onSwipe, onOpenFutureSelf }: HomeDecisionCardProps) {
   return (
     <Card className="decision-card-wrap decision-card-wrap--elevated decision-card-wrap--hinge">
       <p className="decision-card-eyebrow">Future self · Today&apos;s prompt</p>
@@ -67,6 +68,16 @@ export function HomeDecisionCard({ card, onSwipe }: HomeDecisionCardProps) {
           </div>
         </div>
       </SwipeStack>
+      {onOpenFutureSelf && (
+        <button
+          type="button"
+          className="decision-card-open-future-self muted"
+          onClick={onOpenFutureSelf}
+          aria-label="Open Future Self tab"
+        >
+          Open Future Self
+        </button>
+      )}
     </Card>
   );
 }

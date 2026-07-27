@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:44:00Z |
-| where_we_are | relay-180 shipped |
-| confirmed_next | relay-181 |
+| reviewed_at | 2026-07-27T15:00:00Z |
+| where_we_are | relay-181 shipped |
+| confirmed_next | relay-182 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -20,19 +20,24 @@
 | Field | Value |
 |-------|-------|
 | last_wake | 2026-07-27T14:44:00Z |
-| confirmed_next | relay-181 |
-| next_action | relay-181 Home decision card tap Future Self tab |
+| confirmed_next | relay-182 |
+| next_action | relay-182 Log tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 8-close |
 | review_status | done |
 | review_skip_reason | — |
-| review_round | `6` |
-| last_reviewed_round | `6` |
-| review_diff_range | `HEAD` |
+| review_round | `7` |
+| last_reviewed_round | `7` |
+| review_diff_range | `relay-181` |
 | code_changed | `yes` |
 
 ---
 
+| worktree_status | `none` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -67,7 +72,7 @@
 - [x] relay-178 | Agent chat copy assistant message | polish | Copy pill on completed coach bubbles via clipboard API
 - [x] relay-179 | Day manage-day quadrant tap → expand task list | feature | accordion toggle + task preview when collapsed
 - [x] relay-180 | Agent chat regenerate last reply | polish | Regenerate pill re-streams last user turn
-- [ ] relay-181 | Home decision card tap → Future Self tab | feature
+- [x] relay-181 | Home decision card tap → Future Self tab | feature | `#futureself` deep link + Open Future Self on decision card
 - [ ] relay-182 | Log tab keyboard shortcut hint on first visit | polish
 
 ---
@@ -94,6 +99,7 @@
 | rf-r4-000 | low | No issues in relay-178 diff | round-4 /code-review | closed | — | closed |
 | rf-r5-000 | low | No issues in relay-179 diff | round-5 /code-review | closed | — | closed |
 | rf-r6-000 | low | No issues in relay-180 diff | round-6 /code-review | closed | — | closed |
+| rf-r7-000 | low | No issues in relay-181 diff | round-7 /code-review | closed | — | closed |
 
 ---
 
@@ -101,7 +107,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-180 | done | build | — |
+| 2026-07-27 | relay-181 | done | build | — |
+| 2026-07-27 | relay-180 | done | build | f32d5a1 |
 | 2026-07-27 | relay-179 | done | build | d9fcad8 |
 | 2026-07-27 | relay-178 | done | build | 81a3034 |
 | 2026-07-27 | relay-177 | done | build | c69908d |

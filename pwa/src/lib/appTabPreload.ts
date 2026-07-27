@@ -6,6 +6,7 @@ export const Day = lazy(async () => ({ default: (await import('../sections/Day')
 export const Cards = lazy(async () => ({ default: (await import('../sections/Cards')).Cards }));
 export const Agent = lazy(async () => ({ default: (await import('../sections/Agent')).Agent }));
 export const Settings = lazy(async () => ({ default: (await import('../sections/Settings')).Settings }));
+export const FutureSelf = lazy(async () => ({ default: (await import('../sections/FutureSelf')).FutureSelf }));
 
 const TAB_CHUNK_PRELOAD: Partial<Record<TabId, () => Promise<unknown>>> = {
   log: () => import('../sections/Log'),
@@ -13,6 +14,7 @@ const TAB_CHUNK_PRELOAD: Partial<Record<TabId, () => Promise<unknown>>> = {
   cards: () => import('../sections/Cards'),
   agent: () => import('../sections/Agent'),
   settings: () => import('../sections/Settings'),
+  futureself: () => import('../sections/FutureSelf'),
 };
 
 const preloadedTabs = new Set<TabId>();

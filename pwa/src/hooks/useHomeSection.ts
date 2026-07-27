@@ -9,6 +9,7 @@ interface UseHomeSectionOptions {
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   onOpenLogHistory?: () => void;
   onOpenLogRecipes?: () => void;
+  onOpenFutureSelf?: () => void;
   scrollToMealPlanQueue?: number;
 }
 
@@ -17,6 +18,7 @@ export function useHomeSection({
   onNavigateMealPlanSyncSource,
   onOpenLogHistory,
   onOpenLogRecipes,
+  onOpenFutureSelf,
   scrollToMealPlanQueue,
 }: UseHomeSectionOptions) {
   const [mealPlanMessage, setMealPlanMessage] = useState('');
@@ -56,6 +58,7 @@ export function useHomeSection({
     onNavigateMealPlanSyncSource,
     onOpenLogHistory,
     onOpenLogRecipes,
+    onOpenFutureSelf,
     scrollToMealPlanQueue,
     pullProgress: dashboard.pullProgress,
     refreshing: dashboard.refreshing,

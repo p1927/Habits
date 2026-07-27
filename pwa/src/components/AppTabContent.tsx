@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Home } from '../sections/Home';
-import { Agent, Cards, Day, Log, Settings } from '../lib/appTabPreload';
+import { Agent, Cards, Day, FutureSelf, Log, Settings } from '../lib/appTabPreload';
 import { AGENT_SCHEDULE_TODAY_PROMPT } from '../lib/agentSectionShared';
 import type { AppShellState } from '../hooks/useAppShell';
 import { TabSectionFallback } from './TabSectionFallback';
@@ -23,6 +23,7 @@ type AppTabContentProps = Pick<
   | 'navigateLogHistory'
   | 'navigateLogRecipes'
   | 'navigateAgentPrompt'
+  | 'navigateFutureSelf'
   | 'agentPrompt'
   | 'refresh'
 >;
@@ -44,6 +45,7 @@ export function AppTabContent({
   navigateLogHistory,
   navigateLogRecipes,
   navigateAgentPrompt,
+  navigateFutureSelf,
   agentPrompt,
   refresh,
 }: AppTabContentProps) {
@@ -55,6 +57,7 @@ export function AppTabContent({
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           onOpenLogHistory={navigateLogHistory}
           onOpenLogRecipes={navigateLogRecipes}
+          onOpenFutureSelf={navigateFutureSelf}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
         />
       )}
@@ -98,6 +101,7 @@ export function AppTabContent({
           onDismissOauth={() => setOauthSuccess(false)}
         />
       )}
+      {tab === 'futureself' && <FutureSelf serverOnline={serverOnline} />}
     </Suspense>
   );
 }

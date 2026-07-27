@@ -67,6 +67,11 @@ export function useAppShell() {
     [handleTabChange],
   );
 
+  const navigateFutureSelf = useCallback(() => {
+    preloadAppTabChunk('futureself');
+    handleTabChange('futureself');
+  }, [handleTabChange]);
+
   useEffect(() => {
     return bindNotificationNavigation(handleTabChange);
   }, [handleTabChange]);
@@ -117,6 +122,7 @@ export function useAppShell() {
     navigateLogHistory,
     navigateLogRecipes,
     navigateAgentPrompt,
+    navigateFutureSelf,
     agentPrompt,
     handleTabChange,
     refresh,

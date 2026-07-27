@@ -1,4 +1,4 @@
-export type TabId = 'home' | 'log' | 'day' | 'cards' | 'agent' | 'settings';
+export type TabId = 'home' | 'log' | 'day' | 'cards' | 'agent' | 'settings' | 'futureself';
 
 export interface HabitsConfig {
   apiUrl: string;

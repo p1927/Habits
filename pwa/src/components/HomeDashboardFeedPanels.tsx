@@ -9,6 +9,7 @@ export function HomeDashboardFeedPanels({
   serverOnline,
   onOpenLogHistory,
   onOpenLogRecipes,
+  onOpenFutureSelf,
   setFood,
   setError,
   recipeLogging,
@@ -48,6 +49,7 @@ export function HomeDashboardFeedPanels({
       {decisionCard && (
         <HomeDecisionCard
           card={decisionCard}
+          onOpenFutureSelf={onOpenFutureSelf}
           onSwipe={(dir) => {
             if (dir === 'right') void handleAcceptCard();
             else if (dir === 'left' || dir === 'up') setDecisionCard(null);

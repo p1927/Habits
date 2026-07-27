@@ -16,7 +16,7 @@ export const APP_STATUS_LABELS: Record<string, string> = {
   'no-config': 'API URL not configured',
 };
 
-const VALID_TABS: TabId[] = ['home', 'log', 'day', 'cards', 'agent', 'settings'];
+const VALID_TABS: TabId[] = ['home', 'log', 'day', 'cards', 'agent', 'settings', 'futureself'];
 
 export function parseInitialAppTab(): TabId {
   const hash = window.location.hash.replace('#', '');

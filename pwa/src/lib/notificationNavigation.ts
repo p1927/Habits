@@ -2,7 +2,7 @@ import type { TabId } from './config';
 
 export const NAVIGATE_MESSAGE = 'habits-navigate';
 
-const VALID_TABS: TabId[] = ['home', 'log', 'day', 'cards', 'agent', 'settings'];
+const VALID_TABS: TabId[] = ['home', 'log', 'day', 'cards', 'agent', 'settings', 'futureself'];
 
 export function tabFromNotificationUrl(url: string): TabId {
   const hash = url.includes('#') ? url.split('#').pop() ?? '' : '';
