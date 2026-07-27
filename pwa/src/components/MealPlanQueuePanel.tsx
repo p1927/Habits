@@ -1,4 +1,5 @@
 import { mealPlanQueueLabel, type QueuedMealPlanLog } from '../lib/mealPlanQueue';
+import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
 
 export type MealPlanQueuePanelVariant = 'home' | 'default';
 
@@ -44,12 +45,20 @@ export function MealPlanQueuePanel({
   const panelClass = isHome ? 'home-meal-plan-queue-panel' : 'meal-plan-queue-panel';
   const progressClass = isHome ? 'home-meal-plan-sync-progress' : 'meal-plan-sync-progress';
 
+  useMealPlanQueueShortcuts({
+    enabled: queue.length > 0 || syncing,
+    serverOnline,
+    syncing,
+    retrying: !!retryingId,
+    onSyncAll,
+  });
+
   const bannerText =
     syncing && syncProgress
       ? `Syncing meal logs (${syncProgress.done}/${syncProgress.total})…`
       : `${queue.length} meal log${queue.length === 1 ? '' : 's'} queued${
           failedCount > 0 ? ` · ${failedCount} failed` : ''
-        }${bannerSuffix}${serverOnline ? ` — tap Retry or ${syncActionHint}` : ' — will sync when online'}.`;
+        }${bannerSuffix}${serverOnline ? ` — tap Retry or ${syncActionHint} · press S` : ' — will sync when online'}.`;
 
   return (
     <div
@@ -65,6 +74,7 @@ export function MealPlanQueuePanel({
             type="button"
             className="btn-small"
             disabled={syncing || !!retryingId}
+            aria-keyshortcuts="S"
             onClick={() => void onSyncAll()}
           >
             {syncing ? 'Syncing…' : syncAllLabel}
