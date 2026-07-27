@@ -1,4 +1,5 @@
 import { APP_TABS } from '../lib/appShellShared';
+import { shortcutModifierLabel } from '../lib/logSectionShared';
 import { getMealPlanQueueLastSource, mealPlanQueueSourceLabel, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 import type { TabId } from '../lib/config';
 import type { AppShellState } from '../hooks/useAppShell';
@@ -13,7 +14,10 @@ type AppTabBarProps = Pick<
   | 'mealPlanBadgePulse'
   | 'mealPlanSyncSourceHint'
   | 'scrollToMealPlanQueue'
->;
+> & {
+  showShortcutHint?: boolean;
+  onDismissShortcutHint?: () => void;
+};
 
 export function AppTabBar({
   tab,
@@ -24,12 +28,17 @@ export function AppTabBar({
   mealPlanBadgePulse,
   mealPlanSyncSourceHint,
   scrollToMealPlanQueue,
+  showShortcutHint = false,
+  onDismissShortcutHint,
 }: AppTabBarProps) {
   if (tab === 'settings') return null;
 
+  const mod = shortcutModifierLabel();
+
   return (
+    <>
     <nav className="tab-bar" aria-label="Main">
-      {APP_TABS.map((t) => {
+      {APP_TABS.map((t, index) => {
         const showQueueBadge =
           mealPlanQueueCount > 0 &&
           (t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards' || t.id === 'agent') &&
@@ -48,10 +57,14 @@ export function AppTabBar({
             key={t.id}
             type="button"
             className={`tab ${tab === t.id ? 'tab-active' : ''}`}
-            onClick={() => handleTabChange(t.id)}
+            onClick={() => {
+              handleTabChange(t.id);
+              onDismissShortcutHint?.();
+            }}
             onPointerEnter={() => preloadTab(t.id)}
             onFocus={() => preloadTab(t.id)}
             aria-current={tab === t.id ? 'page' : undefined}
+            aria-keyshortcuts={`${mod}${index + 1}`}
             aria-label={showQueueBadge ? `${t.label}, ${queueBadgeCountLabel}` : t.label}
           >
             <span className="tab-icon-wrap">
@@ -81,6 +94,17 @@ export function AppTabBar({
         );
       })}
     </nav>
+    {showShortcutHint && (
+      <p className="log-shortcut-hint muted app-tab-shortcut-hint" role="note">
+        Tip: press <kbd>{mod}1</kbd>–<kbd>{mod}5</kbd> to jump tabs (Log/Day/Cards keep their own shortcuts).{' '}
+        {onDismissShortcutHint && (
+          <button type="button" className="link-btn" onClick={onDismissShortcutHint}>
+            Got it
+          </button>
+        )}
+      </p>
+    )}
+    </>
   );
 }
 

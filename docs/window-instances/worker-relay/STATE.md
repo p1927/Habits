@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:18:00Z |
-| where_we_are | relay-186 shipped |
-| confirmed_next | relay-187 |
-| brainstorm_notes | Settings ⌘/Ctrl+, shortcut + header gear hint |
+| reviewed_at | 2026-07-27T21:10:00Z |
+| where_we_are | relay-187 shipped |
+| confirmed_next | relay-188 |
+| brainstorm_notes | App tab ⌘1–5 shortcuts defer to Log/Day/Cards section keys |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T13:20:00Z` |
-| confirmed_next | `relay-187` |
-| next_action | `relay-187 App tab bar keyboard shortcuts ⌘/Ctrl+1–5` |
-| phase | `9-arm` |
+| last_wake | `2026-07-27T21:10:00Z` |
+| confirmed_next | `relay-188` |
+| next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
+| phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-186 reviewed round 13; committed 41d31b5` |
-| review_diff_range | `relay-186` |
-| code_changed | `no` |
-| review_round | `13` |
-| last_reviewed_round | `13` |
+| review_skip_reason | `relay-187 reviewed round 14; committed pending` |
+| review_diff_range | `relay-187` |
+| code_changed | `yes` |
+| review_round | `14` |
+| last_reviewed_round | `14` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/App.tsx pwa/src/components/AppHeader.tsx pwa/src/hooks/useSettingsOpenShortcut.ts pwa/src/lib/appShellShared.ts` |
-| review_fingerprint | `30970493c75344cd` |
+| review_changed_files | `pwa/src/App.css pwa/src/App.tsx pwa/src/components/AppTabBar.tsx pwa/src/hooks/useAppTabShortcuts.ts pwa/src/lib/appShellShared.ts` |
+| review_fingerprint | `69135bdcf5ee146c` |
 
 ## IN_PROGRESS
 

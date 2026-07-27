@@ -414,6 +414,19 @@ button:disabled {
   background: color-mix(in srgb, var(--gemini-accent) 14%, transparent);
 }
 
+.app-tab-shortcut-hint {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom, 0) + 0.35rem);
+  width: min(100%, 480px);
+  margin: 0;
+  padding: 0 1rem;
+  text-align: center;
+  z-index: 99;
+  pointer-events: auto;
+}
+
 .tab-icon {
   font-size: 1.125rem;
   line-height: 1;

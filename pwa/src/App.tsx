@@ -3,6 +3,7 @@ import { AppStatusBanners } from './components/AppStatusBanners';
 import { AppTabBar } from './components/AppTabBar';
 import { AppTabContent } from './components/AppTabContent';
 import { useAppShell } from './hooks/useAppShell';
+import { useAppTabShortcuts } from './hooks/useAppTabShortcuts';
 import { useSettingsOpenShortcut } from './hooks/useSettingsOpenShortcut';
 import './App.css';
 
@@ -12,6 +13,8 @@ function App() {
     shell.preloadTab('settings');
     shell.handleTabChange('settings');
   });
+  const { showShortcutHint: showTabShortcutHint, dismissShortcutHint: dismissTabShortcutHint } =
+    useAppTabShortcuts(shell.tab, shell.handleTabChange, shell.preloadTab);
 
   return (
     <div className="app">
@@ -27,7 +30,11 @@ function App() {
       <main className="main" id="main-content" role="main">
         <AppTabContent {...shell} />
       </main>
-      <AppTabBar {...shell} />
+      <AppTabBar
+        {...shell}
+        showShortcutHint={showTabShortcutHint}
+        onDismissShortcutHint={dismissTabShortcutHint}
+      />
     </div>
   );
 }

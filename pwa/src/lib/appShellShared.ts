@@ -19,6 +19,7 @@ export const APP_STATUS_LABELS: Record<string, string> = {
 const VALID_TABS: TabId[] = ['home', 'log', 'day', 'cards', 'agent', 'settings', 'futureself'];
 
 export const SETTINGS_SHORTCUT_HINT_KEY = 'habits-settings-shortcut-hint-seen';
+export const APP_TAB_SHORTCUT_HINT_KEY = 'habits-app-tab-shortcuts-hint-seen';
 
 export function parseInitialAppTab(): TabId {
   const hash = window.location.hash.replace('#', '');
