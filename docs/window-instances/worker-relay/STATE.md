@@ -19,10 +19,10 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:22:00Z` |
+| last_wake | `2026-07-27T23:24:00Z` |
 | confirmed_next | `relay-191` |
 | next_action | `relay-191 Agent tools sheet Escape to close` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-190 reviewed round 21; committed 57e63d9` |
 | review_diff_range | `relay-190` |
