@@ -23,7 +23,7 @@
 | confirmed_next | relay-174 |
 | next_action | relay-174 Day schedule empty state Agent quick prompt |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
+| phase | 8-close |
 | review_status | done |
 | review_round | `0` |
 | code_changed | `yes` |
@@ -76,7 +76,7 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
-| — | — | — | — | — | — | — |
+| rf-r0-000 | low | No issues in relay-171–173 diff | round-0 /code-review | closed | — | closed |
 
 ---
 
@@ -84,7 +84,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-173 | done | build | — |
+| 2026-07-27 | relay-173 | done | build | 8b0e3d3 |
 | 2026-07-27 | relay-172 | done | build | ceeeed2 |
 | 2026-07-27 | relay-171 | done | build | 3d602a9 |
 | 2026-07-27 | relay-150 | done | build | d3c3c18 |
