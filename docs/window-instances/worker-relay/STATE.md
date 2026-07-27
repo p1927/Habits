@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:05:00Z |
-| where_we_are | relay-193 shipped |
-| confirmed_next | relay-194 |
-| brainstorm_notes | LogFoodEditSheet Escape hint; BottomSheet already handles key |
+| reviewed_at | 2026-07-27T23:45:00Z |
+| where_we_are | relay-194 shipped |
+| confirmed_next | relay-195 |
+| brainstorm_notes | AgentAttachSheet Escape hint; BottomSheet already handles key |
 
 ---
 
@@ -19,24 +19,24 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:05:00Z` |
-| confirmed_next | `relay-194` |
-| next_action | `relay-194 Agent attach sheet Escape to close` |
-| phase | `9-arm` |
+| last_wake | `2026-07-27T23:45:00Z` |
+| confirmed_next | `relay-195` |
+| next_action | `relay-195 Agent camera sheet Escape hint` |
+| phase | `2-orient` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-193 reviewed round 24; committed 788b258` |
-| review_diff_range | `relay-193` |
+| review_skip_reason | `relay-194 reviewed round 25; committed e11be06` |
+| review_diff_range | `relay-194` |
 | code_changed | `no` |
-| review_round | `24` |
-| last_reviewed_round | `24` |
+| review_round | `25` |
+| last_reviewed_round | `25` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css,pwa/src/components/LogFoodEditSheet.tsx` |
-| review_fingerprint | `788b258` |
-| ritual_step | `1-wake` |
+| review_changed_files | `pwa/src/App.css,pwa/src/components/AgentAttachSheet.tsx` |
+| review_fingerprint | `e11be06` |
+| ritual_step | `2-orient` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
@@ -94,9 +94,10 @@
 - [x] relay-191 | Agent tools sheet Escape to close | polish | BottomSheet Escape + hint text (ad3d6a0)
 - [x] relay-192 | Cards create sheet Escape to close | polish | BottomSheet Escape + hint text (3e03d10)
 - [x] relay-193 | Log food edit sheet Escape to close | polish | BottomSheet Escape + hint text (788b258)
-- [ ] relay-194 | Agent attach sheet Escape to close | polish | Given attach sheet open, When user presses Escape, Then sheet closes + hint text visible
+- [x] relay-194 | Agent attach sheet Escape to close | polish | BottomSheet Escape + hint text (e11be06)
 - [ ] relay-195 | Agent camera sheet Escape hint | polish | Given camera BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
 - [ ] relay-196 | Agent voice sheet Escape hint | polish | Given voice BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
+- [ ] relay-197 | Day event detail sheet Escape hint | polish | Given DayCalendarEventSheet open, When user presses Escape, Then sheet closes + hint text | PO Session #26 — post-196 queue refill
 
 ---
 
@@ -146,6 +147,9 @@
 | rf-r24-000 | low | No logic, security, or regression bugs in relay-193 diff (2 files) | round-24 bugbot | closed | — | closed |
 | rf-r24-001 | low | pwa/src/components/LogFoodEditSheet.tsx:42 adds Escape hint; close via BottomSheet keydown | round-24 bugbot | closed | relay-193 | closed |
 | rf-r24-002 | low | pwa/src/App.css:2070-2074 log-food-edit-sheet-hint matches cards-create-sheet-hint | round-24 /code-review | closed | — | closed |
+| rf-r25-000 | low | No logic, security, or regression bugs in relay-194 diff (2 files) | round-25 bugbot | closed | — | closed |
+| rf-r25-001 | low | pwa/src/components/AgentAttachSheet.tsx:94 adds Escape hint; BottomSheet handles keydown | round-25 bugbot | closed | relay-194 | closed |
+| rf-r25-002 | low | pwa/src/App.css:3772-3776 agent-attach-sheet-hint mirrors agent-tools-sheet-hint | round-25 /code-review | closed | — | closed |
 
 ---
 
@@ -153,6 +157,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-194 | done | build | e11be06 |
 | 2026-07-27 | relay-193 | done | build | 788b258 |
 | 2026-07-27 | relay-192 | done | build | 3e03d10 |
 | 2026-07-27 | relay-191 | done | build | ad3d6a0 |
