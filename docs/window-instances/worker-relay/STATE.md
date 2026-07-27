@@ -19,10 +19,8 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:22:00Z` |
-| confirmed_next | `relay-188` |
-| next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
-| phase | `8-close` |
+| last_wake | `2026-07-27T21:25:00Z` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `round 16 review done; refactor 3757406 + duplicate removal` |
 | review_diff_range | `useHomeDashboard-refactor-r16` |
