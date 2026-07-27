@@ -85,7 +85,22 @@ bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
   --state-file <STATE.md> --loop-id <loop_id>
 ```
 
-Then run `ARM_COMMAND` from prep output in Shell with **`block_until_ms: 0`** and **`notify_on_output`** on `monitor_regex` (required — sentinel stdout alone does not wake this chat).
+**Preferred (reliable — wake JSON returns in Shell output):**
+
+```bash
+bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
+  --state-file <STATE.md> --loop-id <loop_id> --exec
+```
+
+Run `EXEC_COMMAND` from prep with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`** (e.g. 210000 for 120s interval). **Do not use `block_until_ms: 0`.** When the shell prints `AGENT_LOOP_WAKE_*`, **run Ritual phases 1–8 from that line in the same turn** before ending.
+
+**Alternate (only if you also Await the background task before ending the turn):**
+
+1. Run `ARM_COMMAND` with `block_until_ms: 0` (background)
+2. **Mandatory:** `Await` that shell's `task_id` with `pattern=monitor_regex` and `block_until_ms=SHELL_BLOCK_UNTIL_MS`
+3. Process wake from Await output in the same turn
+
+**Forbidden:** background `ARM_COMMAND` without `notify_on_output` **and** without `Await` — sentinel will fire but this chat will not wake.
 
 ```bash
 LOOP_ID=<loop_id> WAKE_SENTINEL=<wake_sentinel> INTERVAL=<interval_sec> \
@@ -93,8 +108,8 @@ CONTRACT_DOC=<contract_doc> STATE_FILE=<state_file> \
 bash <package_root>/scripts/arm-wake.sh
 ```
 
-- Background shell (`block_until_ms: 0`)
-- **`notify_on_output`** on `^<wake_sentinel>` (must start with `^`)
+- Shell **`block_until_ms` ≥ interval** (foreground `--exec`) **or** background + **`Await`** / **`notify_on_output`**
+- **`notify_on_output`** on `^<wake_sentinel>` when using background arm
 - If output is `WAKE_ALREADY_ARMED` — do **not** start another
 
 Verify before ending turn:

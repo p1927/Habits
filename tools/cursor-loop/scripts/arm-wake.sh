@@ -32,6 +32,8 @@ if [[ -n "$STATE_FILE" && -f "$PROJECT_ROOT/$STATE_FILE" ]]; then
   python3 "${SCRIPT_DIR}/validate_ritual_gate.py" "${gate_args[@]}" || exit 1
 fi
 
+python3 "${SCRIPT_DIR}/record_wake_fired.py" --clear "$LOOP_ID" 2>/dev/null || true
+
 if [[ -f "$WAKE_PIDFILE" ]]; then
   old_pid="$(cat "$WAKE_PIDFILE" 2>/dev/null || true)"
   if [[ -n "$old_pid" ]] && kill -0 "$old_pid" 2>/dev/null; then

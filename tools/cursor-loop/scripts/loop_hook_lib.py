@@ -329,6 +329,16 @@ def clear_wake_fired(loop_id: str) -> None:
     resolve_wake_fired_path(loop_id).unlink(missing_ok=True)
 
 
+def arm_block_until_ms(interval_sec: str | int, *, buffer_sec: int = 90) -> int:
+    """Shell block_until_ms so notify stays attached until sentinel fires."""
+    try:
+        sec = int(str(interval_sec).strip())
+    except (TypeError, ValueError):
+        sec = 120
+    sec = max(sec, 1)
+    return (sec + buffer_sec) * 1000
+
+
 def resolve_last_exit_path(loop_id: str) -> Path:
     tmp = Path(os.environ.get("TMPDIR") or "/tmp")
     return tmp / f"cursor-loop-{loop_id}.last_exit"

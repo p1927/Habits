@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+
+- **Wake delivery fix** — Phase 9 prefers `prepare_arm_wake.sh --exec` (foreground); process `AGENT_LOOP_WAKE` from Shell output in same turn
+- **Missed-tick recovery** — `beforeSubmitPrompt` + stop hook deliver unconsumed sentinel; `wake.fired` cleared on re-arm
+- **block_until_ms** — must be ≥ `(interval + 90s)`; background arm without `notify`/`Await` misses ticks
+
 ## 0.6.0
 
 - **Dynamic wake notify contract** — Phase 9 requires `prepare_arm_wake.sh` + Shell `notify_on_output` on `monitor_regex`; wake JSON includes `arm_shell` block

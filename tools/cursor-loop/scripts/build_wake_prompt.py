@@ -247,27 +247,6 @@ def build_prompt(
                 parts.append(f"review_fingerprint={review_fingerprint}")
 
     parts.append("follow CHECKPOINT.confirmed_next; run Ritual deliverable this turn")
-    if recovery:
-        parts.append(
-            "(recovery wake — ship deliverable BEFORE re-arming; do not defer to next tick)"
-        )
-    else:
-        parts.append("(then arm next wake at end of turn)")
-        parts.append(
-            "Phase 9 CRITICAL: run arm-wake.sh in Shell with block_until_ms=0 AND "
-            "notify_on_output on monitor_regex from INSTANCE — sentinel alone does not wake this chat"
-        )
-    parts.append("Do not ask user.")
-
-    phase_6_block: dict = {}
-    if git_diff or code_changed:
-        phase_6_block = {
-            "required": True,
-            "cursor_command": "/code-review",
-            "command_file": "tools/cursor-loop/cursor/commands/code-review.md",
-            "prep_script_does_not_complete_phase": True,
-            "must_read_files": changed_files[:20],
-        }
 
     monitor_regex = ""
     interval_sec = "120"
@@ -282,14 +261,49 @@ def build_prompt(
             interval_sec = cfg.get("interval_sec", interval_sec)
             wake_sentinel = cfg.get("wake_sentinel", wake_sentinel)
 
+    import loop_hook_lib as mod
+
+    block_ms = mod.arm_block_until_ms(interval_sec)
+
+    if recovery:
+        parts.append(
+            "(recovery wake — ship deliverable BEFORE re-arming; do not defer to next tick)"
+        )
+    else:
+        parts.append("(then arm next wake at end of turn)")
+        parts.append(
+            f"Phase 9 CRITICAL: prepare_arm_wake.sh --exec with block_until_ms>={block_ms}; "
+            f"when {wake_sentinel} prints, run phases 1-8 from that output IN THE SAME TURN"
+        )
+    parts.append("Do not ask user.")
+
+    phase_6_block: dict = {}
+    if git_diff or code_changed:
+        phase_6_block = {
+            "required": True,
+            "cursor_command": "/code-review",
+            "command_file": "tools/cursor-loop/cursor/commands/code-review.md",
+            "prep_script_does_not_complete_phase": True,
+            "must_read_files": changed_files[:20],
+        }
+
     arm_shell = {
-        "block_until_ms": 0,
+        "mode": "foreground_exec",
+        "exec_command": (
+            f"bash tools/cursor-loop/scripts/prepare_arm_wake.sh . "
+            f"--state-file {state_file} --loop-id {loop_id} --exec"
+        ),
+        "block_until_ms": block_ms,
         "notify_on_output_pattern": monitor_regex,
-        "notify_required": True,
+        "await_fallback": {
+            "required_if_background": True,
+            "pattern": monitor_regex,
+            "block_until_ms": block_ms,
+        },
         "note": (
-            "Dynamic wake ONLY works when the Shell that runs arm-wake.sh uses "
-            "notify_on_output matching monitor_regex. Announcing arm without "
-            "notify leaves the sentinel orphaned — no tick."
+            "Preferred: --exec foreground with block_until_ms >= interval; process "
+            "AGENT_LOOP_WAKE from Shell output in the same turn. Background arm without "
+            "notify AND without Await on task_id will miss ticks."
         ),
         "env": {
             "LOOP_ID": loop_id,

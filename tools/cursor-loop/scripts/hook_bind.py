@@ -54,6 +54,28 @@ def main() -> int:
 
     mod.maybe_cleanup_bindings(root, manifest)
 
+    binding = mod.read_binding(root, conversation_id)
+    if binding and not binding.get("stopped") and not binding.get("paused"):
+        loop_id = binding.get("loop_id") or ""
+        fired = mod.read_wake_fired(loop_id) if loop_id else None
+        if fired:
+            line = (fired.get("payload_line") or "").strip()
+            contract_doc = binding.get("contract_doc") or ""
+            state_file = binding.get("state_file") or ""
+            msg = (
+                f"MISSED TICK for {loop_id}: sentinel fired at {fired.get('fired_at', '?')} "
+                f"without waking this chat. Treat the wake payload below as your tick NOW — "
+                f"run Ritual phases 1→8, then re-arm with prepare_arm_wake.sh --exec "
+                f"(block_until_ms >= interval, same-turn wake processing). "
+                f"Read {contract_doc}"
+            )
+            if state_file:
+                msg += f" and {state_file}"
+            msg += f". Wake payload: {line}"
+            mod.clear_wake_fired(loop_id)
+            print(json.dumps({"followup_message": msg}))
+            return 0
+
     if mod.is_stop_request(prompt):
         binding = mod.read_binding(root, conversation_id)
         if binding:

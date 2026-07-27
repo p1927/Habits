@@ -193,15 +193,16 @@ One arm = one sleep cycle. DOWN after sentinel is **not** "job done" unless a **
 ### Phase 9 checklist
 
 1. `checkpoint-loop.py --product --evidence <item-id>` (or `--blocker`)
-2. Prep arm (prints `ARM_COMMAND`, `monitor_regex`, notify requirements):
+2. Prep arm (prints `EXEC_COMMAND`, `SHELL_BLOCK_UNTIL_MS`):
 
 ```bash
 bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
   --state-file <STATE.md> --loop-id <loop_id>
 ```
 
-3. Run `ARM_COMMAND` in Shell with **`block_until_ms: 0`** and **`notify_on_output`** on `monitor_regex` (required — without notify, sentinel stdout does not wake this chat).
-4. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
+3. **Preferred:** run `EXEC_COMMAND` (`--exec`) with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`**. When `AGENT_LOOP_WAKE_*` prints, run phases 1–8 from that output **in the same turn**.
+4. **Alternate:** background `ARM_COMMAND` only with **`Await`** on the shell `task_id` or **`notify_on_output`** — never background-only.
+5. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
 
 ```bash
 bash tools/cursor-loop/scripts/verify-wake.sh <loop_id>   # must exit 0
