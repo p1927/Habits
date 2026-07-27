@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T22:00:00Z |
-| where_we_are | Round 11 — ui-056 ring + Day empty panel shipped; ui-057 tab shortcuts closed |
-| confirmed_next | await PO prop-ui-042 formalize; backlog idle |
+| reviewed_at | 2026-07-27T23:02:00Z |
+| where_we_are | Backlog idle (ui-001–057 done); triaged prop-ui-042/043 as shipped |
+| confirmed_next | Propose ux-gap-045 to PO; backlog idle await new UI_PROPOSALS |
 
 ---
 
@@ -18,33 +18,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T22:05:00Z` |
+| last_wake | `2026-07-27T23:02:00Z` |
 | next_mode | `C` |
 | current_item_id | `—` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| review_round | `11` |
-| last_reviewed_round | `11` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| confirmed_next | `backlog idle; await PO prop-ui-042` |
+| phase | `7-triage` |
+| review_status | `triaged` |
+| review_skip_reason | `—` |
+| review_round | `12` |
+| last_reviewed_round | `12` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| confirmed_next | `backlog idle; ux-gap-045 proposed; await PO triage` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
-| ritual_step | `9-arm` |
+| review_changed_files | `docs/window-instances/ux-relay/STATE.md` |
+| review_fingerprint | `08101cac58b1348d` |
+| ritual_step | `7b-fix-verify` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `Close ui-057: verify tab shortcuts + hint on main; fix ux-r10-002 if App.css drift; then ship ui-056 ring in follow-up tick` |
+| brainstorm_outcome | `Idle audit: prop-ui-042/043 verified shipped; ux-gap-045 Settings OAuth polish proposed` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
-| reflect_done | `yes` |
-| commit_hash | `62120c61904a` |
+| reflect_done | `no` |
+| commit_hash | `—` |
 | receive_review_done | `yes` |
-| commit_done | `yes` |
-| merge_done | `yes` |
+| commit_done | `no` |
+| merge_done | `no` |
 
 ## IN_PROGRESS
 
@@ -61,9 +61,10 @@
 | ux-gap-039 | po-agreed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | shipped ui-053 |
 | ux-gap-040 | po-agreed | Global CSS | Remove unused legacy `.card`, `.card-placeholder`, `.btn-decline` rules | — | shipped this tick |
 | ux-gap-041 | po-agreed | Log History | prop-ui-040 verified — Export CSV pill shipped | Google Sheets export | shipped ui-054 |
-| ux-gap-042 | ux-proposed | Day | prop-ui-041 verified — DayCalendarEventSheet Revolut card + time pill shipped ui-055 | Google Calendar popup | PO: close prop-ui-041 |
+| ux-gap-042 | po-agreed | Day | prop-ui-041 verified — DayCalendarEventSheet Revolut card + time pill shipped ui-055 | Google Calendar popup | shipped ui-055 |
 | ux-gap-043 | po-agreed | Home | relay-176 pull-refresh — UIRefreshControl ring + label (ui-056) | Apple Health refresh | shipped ui-056 |
 | ux-gap-044 | po-agreed | Global nav | Main tab ⌘1–5 shortcuts + dismissible hint (ui-057) | Gemini keyboard hints | shipped ui-057 |
+| ux-gap-045 | ux-proposed | Settings | Disconnect success banner + aria-live on Settings error path (connect live-region shipped relay-190) | Revolut Settings | PO: triage disconnect UX |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -137,6 +138,14 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r12-002 | medium | CHECKPOINT.confirmed_next stale vs brainstorm_outcome — prop-ui-042 already shipped | round-12 bugbot | fix-now | — | closed |
+| ux-r12-003 | medium | ux-gap-042 still ux-proposed though ui-055 shipped | round-12 bugbot | fix-now | ux-gap-042 | closed |
+| ux-r12-004 | low | ux-gap-045 overstated connect aria-live (relay-190 shipped) | round-12 bugbot | backlog | ux-gap-045 | closed |
+| ux-r12-005 | low | Disconnect silent on success; Settings error banner lacks aria-live | round-12 bugbot | backlog | ux-gap-045 | open |
+| ux-r12-006 | low | SettingsGoogleCard already Revolut-tier — gap narrowed to disconnect UX | round-12 bugbot | backlog | ux-gap-045 | closed |
+| ux-r12-007 | low | LAST_REVIEW.confirmed_next stale after ux-gap-045 proposed | round-12 bugbot | fix-now | — | closed |
+| ux-r12-008 | low | review_skip_reason populated while code_changed=yes | round-12 bugbot | fix-now | — | closed |
+| ux-r12-001 | low | docs/window-instances/ux-relay/STATE.md idle audit — prop-ui-042/043 triage + ux-gap-045 proposed; build pass | round-12 /code-review | closed | — | closed |
 | ux-r11-001 | low | HomeSectionChrome.tsx pull-refresh ring + App.css spin keyframes; DayTimelineCard.tsx Revolut empty panel — build pass | round-11 /code-review | closed | ui-056 | closed |
 | ux-r11-000 | low | No issues in reviewed diff — ring indicator + Day empty panel; build pass | round-11 /code-review | closed | ui-056 | closed |
 | ux-r10-003 | medium | Tab buttons always advertised aria-keyshortcuts while handler suppressed on Log/Day/Cards | round-10 /code-review | fix-now | ui-057 | closed |
@@ -163,7 +172,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
-| 2026-07-27 | C | ui-056, ui-057 | Pull-refresh ring + Day empty panel; tab shortcuts closed | build | 62120c6 |
+| 2026-07-27 | C | audit | Backlog idle; triaged prop-ui-042/043 shipped (ui-057/ui-056); ux-gap-045 proposed | build | — |
 | 2026-07-27 | C | ui-057 | Tab shortcuts Round 10 review + aria-keyshortcuts fix | build | pending |
 | 2026-07-27 | C | ui-056 | Pull-refresh ring + Day empty Revolut panel | build | pending |
 | 2026-07-27 | C | idle | Wake checkpoint; backlog idle; await PO | — | pending |
