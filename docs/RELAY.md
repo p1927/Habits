@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:38:00Z |
+| reviewed_at | 2026-07-27T04:39:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #107; relay-111 Home/Day badge scroll to queue shipped. |
+| where_we_are | Loop tick #108; relay-113 queue sync progress aria-live shipped. |
 | blockers | [] |
-| confirmed_next | relay-113 meal plan queue sync progress aria-live |
-| brainstorm_notes | relay-111 done; Home/Day queue badges open tab and scroll to queue panel |
+| confirmed_next | relay-114 Log tab badge scroll to Plan meal queue |
+| brainstorm_notes | relay-113 done; queue panel progress bar announces done/total updates politely |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:37:00Z |
+| last_wake | 2026-07-27T04:38:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-111 Home/Day tab badge tap scroll to queue |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-113 meal plan queue sync progress aria-live |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-113 | Meal plan queue sync progress aria-live | maintenance
 - [ ] relay-114 | Log tab badge scroll to Plan meal queue | feature
 - [ ] relay-115 | Shared scrollToMealPlanQueue helper in App | maintenance
 
@@ -58,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-111 | done | build | — |
+| 2026-07-27 | relay-113 | done | build | — |
+| 2026-07-27 | relay-111 | done | build | 6a97b84 |
 | 2026-07-27 | relay-110 | done | build | 17c9484 |
 | 2026-07-27 | relay-109 | done | build | be01dfe |
 | 2026-07-27 | relay-108 | done | build | cb2d7e2 |

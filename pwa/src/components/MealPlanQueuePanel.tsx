@@ -173,9 +173,12 @@ export function MealPlanQueuePanel({
         <div
           className={progressClass}
           role="progressbar"
+          aria-live="polite"
+          aria-atomic="true"
           aria-valuenow={syncProgress.done}
           aria-valuemin={0}
           aria-valuemax={syncProgress.total}
+          aria-valuetext={`Syncing meal logs, ${syncProgress.done} of ${syncProgress.total} complete`}
           aria-label="Meal plan sync progress"
         >
           <div className="progress-bar">
