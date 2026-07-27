@@ -57,7 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-100 | done | build | — |
+| 2026-07-27 | relay-100 | done | build | 8db3dae |
 | 2026-07-27 | relay-099 | done | build | 8f1cd97 |
 | 2026-07-27 | relay-098 | done | build | 74dfcaf |
 | 2026-07-27 | relay-097 | done | build | e1d9f29 |
