@@ -23,12 +23,12 @@
 | confirmed_next | `relay-190` |
 | next_action | `relay-190 Settings OAuth banner aria-live polite on show` |
 | phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `relay-189 reviewed round 19; committed 9fb62aa` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| review_status | `skipped` |
+| review_skip_reason | `round 20 STATE checkpoint sync; committed 62a8b43` |
+| review_diff_range | `state-checkpoint-r20` |
+| code_changed | `no` |
 | review_round | `20` |
-| last_reviewed_round | `19` |
+| last_reviewed_round | `20` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
@@ -124,6 +124,7 @@
 | rf-r17-001 | low | No issues in relay-188 OAuth auto-dismiss diff | round-17 /code-review | closed | — | closed |
 | rf-r18-001 | low | No issues in STATE checkpoint sync diff (last_wake + phase 9-arm) | round-18 /code-review | closed | — | closed |
 | rf-r19-001 | low | No issues in relay-189 ring share sheet diff | round-19 /code-review | closed | — | closed |
+| rf-r20-001 | low | No issues in STATE checkpoint restore (confirmed_next + next_action) | round-20 /code-review | closed | — | closed |
 
 ---
 
