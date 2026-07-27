@@ -1,4 +1,7 @@
+import { createLocalStorageQueue, makeQueueId, sortQueueByCreatedAt } from './localStorageQueue';
+
 const STORAGE_KEY = 'habits-food-log-queue';
+const queue = createLocalStorageQueue<QueuedFoodLog>(STORAGE_KEY);
 
 export type QueuedFoodLog =
   | { id: string; kind: 'item'; food: string; quantity_g: number; created_at: string }
@@ -15,23 +18,8 @@ export type QueuedFoodLog =
       created_at: string;
     };
 
-function readQueue(): QueuedFoodLog[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as QueuedFoodLog[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeQueue(items: QueuedFoodLog[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
-
 export function getFoodLogQueue(): QueuedFoodLog[] {
-  return readQueue();
+  return sortQueueByCreatedAt(queue.read());
 }
 
 type QueueInput =
@@ -51,19 +39,19 @@ type QueueInput =
 export function enqueueFoodLog(entry: QueueInput): QueuedFoodLog {
   const item = {
     ...entry,
-    id: entry.id ?? `q-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: entry.id ?? makeQueueId('q'),
     created_at: new Date().toISOString(),
   } as QueuedFoodLog;
-  writeQueue([...readQueue(), item]);
+  queue.write([...queue.read(), item]);
   return item;
 }
 
 export function removeFoodLogQueueItem(id: string) {
-  writeQueue(readQueue().filter((x) => x.id !== id));
+  queue.write(queue.read().filter((x) => x.id !== id));
 }
 
 export function clearFoodLogQueue() {
-  localStorage.removeItem(STORAGE_KEY);
+  queue.clear();
 }
 
 export function isOfflineError(err: unknown): boolean {
