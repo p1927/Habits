@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { mealPlanQueueLabel, type QueuedMealPlanLog } from '../lib/mealPlanQueue';
+import { focusMealPlanQueueScrollTarget, mealPlanQueueItemId } from '../lib/mealPlanQueueFocus';
 import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
@@ -57,32 +58,6 @@ export function MealPlanQueuePanel({
   const prefersReducedMotion = usePrefersReducedMotion();
   const announceSyncProgress = syncing && syncProgress && !prefersReducedMotion;
 
-  const focusQueueScrollTarget = (reducedMotion: boolean) => {
-    const firstFailed = queue.find((item) => failedIds.has(item.id));
-    if (firstFailed) {
-      const row = document.getElementById(`meal-plan-queue-item-${firstFailed.id}`);
-      if (row) {
-        row.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
-        const retryBtn = row.querySelector<HTMLButtonElement>('[data-meal-plan-retry]');
-        if (retryBtn) {
-          retryBtn.focus({ preventScroll: true });
-          return;
-        }
-        if (row instanceof HTMLElement) {
-          row.focus({ preventScroll: true });
-          return;
-        }
-      }
-    }
-
-    panelRef.current?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
-    if (serverOnline && syncBtnRef.current && !syncing && !retryingId) {
-      syncBtnRef.current.focus({ preventScroll: true });
-    } else {
-      panelRef.current?.focus({ preventScroll: true });
-    }
-  };
-
   useMealPlanQueueShortcuts({
     enabled: queue.length > 0 || syncing,
     serverOnline,
@@ -117,21 +92,35 @@ export function MealPlanQueuePanel({
     const firstFailed = queue.find((item) => failedIds.has(item.id));
     if (!firstFailed) return;
 
-    const reducedMotion = prefersReducedMotion;
-
     requestAnimationFrame(() => {
-      focusQueueScrollTarget(reducedMotion);
+      focusMealPlanQueueScrollTarget({
+        queue,
+        failedIds,
+        panel: panelRef.current,
+        syncButton: syncBtnRef.current,
+        serverOnline,
+        syncing,
+        retrying: !!retryingId,
+        reducedMotion: prefersReducedMotion,
+      });
     });
-  }, [failedCount, syncing, queue, failedIds, prefersReducedMotion]);
+  }, [failedCount, syncing, queue, failedIds, prefersReducedMotion, serverOnline, retryingId]);
 
   useEffect(() => {
     if (!scrollToQueueToken) return;
 
-    const reducedMotion = prefersReducedMotion;
-
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        focusQueueScrollTarget(reducedMotion);
+        focusMealPlanQueueScrollTarget({
+          queue,
+          failedIds,
+          panel: panelRef.current,
+          syncButton: syncBtnRef.current,
+          serverOnline,
+          syncing,
+          retrying: !!retryingId,
+          reducedMotion: prefersReducedMotion,
+        });
       });
     });
   }, [scrollToQueueToken, queue, failedIds, serverOnline, syncing, retryingId, prefersReducedMotion]);
@@ -217,7 +206,7 @@ export function MealPlanQueuePanel({
             return (
               <li
                 key={item.id}
-                id={`meal-plan-queue-item-${item.id}`}
+                id={mealPlanQueueItemId(item.id)}
                 tabIndex={failed ? -1 : undefined}
                 className={`food-row food-row--${failed ? 'failed' : 'queued'}`}
                 role={failed ? 'alert' : undefined}
