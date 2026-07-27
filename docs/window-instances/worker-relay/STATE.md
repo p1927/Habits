@@ -19,22 +19,22 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T13:12:00Z` |
-| confirmed_next | `relay-186` |
-| next_action | `relay-186 Settings tab keyboard shortcut from header gear hint` |
+| last_wake | `2026-07-27T13:18:00Z` |
+| confirmed_next | `relay-187` |
+| next_action | `relay-187 App tab bar keyboard shortcuts ⌘/Ctrl+1–5` |
 | phase | `8-close` |
-| review_status | `pending` |
-| review_skip_reason | `relay-185 reviewed round 12; committed pending` |
-| review_diff_range | `uncommitted` |
+| review_status | `skipped` |
+| review_skip_reason | `relay-186 reviewed round 13; committed pending` |
+| review_diff_range | `relay-186` |
 | code_changed | `yes` |
 | review_round | `13` |
-| last_reviewed_round | `12` |
+| last_reviewed_round | `13` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/App.tsx pwa/src/components/AppHeader.tsx pwa/src/lib/appShellShared.ts` |
+| review_changed_files | `pwa/src/App.css pwa/src/App.tsx pwa/src/components/AppHeader.tsx pwa/src/hooks/useSettingsOpenShortcut.ts pwa/src/lib/appShellShared.ts` |
 | review_fingerprint | `30970493c75344cd` |
 
 ## IN_PROGRESS
@@ -76,7 +76,10 @@
 - [x] relay-183 | Day tab keyboard shortcut hint on first visit | polish | useDayScheduleShortcuts + DayTimelineCard hint (⌘1/⌘2)
 - [x] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish | useAgentComposerFocusShortcut + disclaimer hint
 - [x] relay-185 | Cards tab keyboard shortcut hint on first visit | polish | useCardsFilterShortcuts + CardsFilterBar hint (⌘1–4)
-- [ ] relay-186 | Settings tab keyboard shortcut from header gear hint | polish
+- [x] relay-186 | Settings tab keyboard shortcut from header gear hint | polish | useSettingsOpenShortcut + AppHeader hint (⌘,)
+- [ ] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish
+- [ ] relay-188 | OAuth success banner auto-dismiss after 5s | polish
+- [ ] relay-189 | Home rings share sheet keyboard Escape to close | polish
 
 ---
 
@@ -110,6 +113,7 @@
 | rf-r10-001 | low | No issues in relay-184 composer shortcut diff | round-10 /code-review | closed | — | closed |
 | rf-r11-001 | low | Duplicate `last_wake` row in CHECKPOINT from prior 9-arm edit | round-11 /code-review | fix-now | — | closed |
 | rf-r12-001 | low | No issues in relay-185 Cards filter shortcut diff | round-12 /code-review | closed | — | closed |
+| rf-r13-001 | low | No issues in relay-186 Settings shortcut diff | round-13 /code-review | closed | — | closed |
 
 ---
 
@@ -117,6 +121,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-186 | done | build | — |
 | 2026-07-27 | relay-185 | done | build | 2303dab |
 | 2026-07-27 | relay-184 | done | build | ac53858 |
 | 2026-07-27 | relay-183 | done | build | 2055d88 |
