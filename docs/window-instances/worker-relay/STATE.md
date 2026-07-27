@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:22:00Z |
-| where_we_are | relay-190 shipped |
-| confirmed_next | relay-191 |
-| brainstorm_notes | OAuth banner role=status + aria-live=polite on show |
+| reviewed_at | 2026-07-27T21:18:00Z |
+| where_we_are | relay-191 shipped |
+| confirmed_next | relay-192 |
+| brainstorm_notes | Agent tools sheet Escape hint; BottomSheet already handles key |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:24:00Z` |
-| confirmed_next | `relay-191` |
-| next_action | `relay-191 Agent tools sheet Escape to close` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_skip_reason | `relay-190 reviewed round 21; committed 57e63d9` |
-| review_diff_range | `relay-190` |
+| last_wake | `2026-07-27T21:18:00Z` |
+| confirmed_next | `relay-192` |
+| next_action | `relay-192 Cards create sheet Escape to close` |
+| phase | `8-close` |
+| review_status | `done` |
+| review_skip_reason | `—` |
+| review_diff_range | `relay-191` |
 | code_changed | `no` |
-| review_round | `21` |
-| last_reviewed_round | `21` |
+| review_round | `22` |
+| last_reviewed_round | `22` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/sections/Settings.tsx` |
-| review_fingerprint | `57e63d9` |
+| review_changed_files | `pwa/src/components/AgentToolsSheet.tsx,pwa/src/App.css` |
+| review_fingerprint | `ad3d6a0` |
 
 ## IN_PROGRESS
 
@@ -81,7 +81,7 @@
 - [x] relay-188 | OAuth success banner auto-dismiss after 5s | polish | Settings useEffect 5s auto-dismiss
 - [x] relay-189 | Home rings share sheet keyboard Escape to close | polish | HomeRingShareSheet + BottomSheet Escape
 - [x] relay-190 | Settings OAuth banner aria-live polite on show | polish | role=status aria-live=polite on OAuth success banner
-- [ ] relay-191 | Agent tools sheet Escape to close | polish
+- [x] relay-191 | Agent tools sheet Escape to close | polish | BottomSheet Escape + hint text (ad3d6a0)
 - [ ] relay-192 | Cards create sheet Escape to close | polish
 - [ ] relay-193 | Log food edit sheet Escape to close | polish
 
@@ -127,6 +127,7 @@
 | rf-r19-001 | low | No issues in relay-189 ring share sheet diff | round-19 /code-review | closed | — | closed |
 | rf-r20-001 | low | No issues in STATE checkpoint restore (confirmed_next + next_action) | round-20 /code-review | closed | — | closed |
 | rf-r21-001 | low | No issues in relay-190 OAuth aria-live diff | round-21 /code-review | closed | — | closed |
+| rf-r22-000 | low | No issues in relay-191 Agent tools sheet Escape hint diff | round-22 /code-review | closed | — | closed |
 
 ---
 
@@ -134,6 +135,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-191 | done | build | ad3d6a0 |
 | 2026-07-27 | relay-190 | done | build | 57e63d9 |
 | 2026-07-27 | relay-189 | done | build | 9fb62aa |
 | 2026-07-27 | relay-188 | done | build | 9d012ca |
