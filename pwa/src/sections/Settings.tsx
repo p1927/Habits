@@ -35,6 +35,8 @@ export function Settings({
     saveBearer,
     saveSettings,
     disconnectGoogle,
+    disconnectSuccess,
+    dismissDisconnectSuccess,
     authUrl,
     updateBody,
     updateNotificationTime,
@@ -49,6 +51,12 @@ export function Settings({
     return () => window.clearTimeout(id);
   }, [oauthSuccess, onDismissOauth]);
 
+  useEffect(() => {
+    if (!disconnectSuccess) return;
+    const id = window.setTimeout(dismissDisconnectSuccess, 5000);
+    return () => window.clearTimeout(id);
+  }, [disconnectSuccess, dismissDisconnectSuccess]);
+
   return (
     <section className="section settings-page">
       <p className="section-eyebrow">Account</p>
@@ -59,6 +67,15 @@ export function Settings({
         <div className="banner banner-ok banner-revolut banner-row" role="status" aria-live="polite">
           Google connected successfully.
           <button type="button" className="btn-pill btn-pill-outline" onClick={onDismissOauth}>Dismiss</button>
+        </div>
+      )}
+
+      {disconnectSuccess && (
+        <div className="banner banner-ok banner-revolut banner-row" role="status" aria-live="polite">
+          Google account disconnected.
+          <button type="button" className="btn-pill btn-pill-outline" onClick={dismissDisconnectSuccess}>
+            Dismiss
+          </button>
         </div>
       )}
 
@@ -105,7 +122,11 @@ export function Settings({
         </>
       )}
 
-      {error && <div className="banner banner-warn banner-revolut">{error}</div>}
+      {error && (
+        <div className="banner banner-warn banner-revolut" role="alert">
+          {error}
+        </div>
+      )}
       <p className="muted build-label">Build {getBuildLabel()}</p>
     </section>
   );

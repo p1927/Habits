@@ -20,6 +20,8 @@ export function useSettingsSection(options: UseSettingsSectionOptions) {
     setBearerInput: data.setBearerInput,
     settings: data.settings,
     error: data.error,
+    disconnectSuccess: data.disconnectSuccess,
+    dismissDisconnectSuccess: data.dismissDisconnectSuccess,
     saving: data.saving,
     mealDay: notifications.mealDay,
     setMealDay: notifications.setMealDay,

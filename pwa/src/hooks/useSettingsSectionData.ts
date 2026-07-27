@@ -12,6 +12,7 @@ export function useSettingsSectionData({
   const [bearerInput, setBearerInput] = useState(getBearer() ?? '');
   const [settings, setSettings] = useState<SettingsResponse | null>(null);
   const [error, setError] = useState('');
+  const [disconnectSuccess, setDisconnectSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -21,17 +22,22 @@ export function useSettingsSectionData({
         cacheNotificationTimes(s.notification_times);
         setSettings(s);
       })
-      .catch((e: Error) => setError(e.message));
+      .catch((e: Error) => {
+        setDisconnectSuccess(false);
+        setError(e.message);
+      });
   }, [serverOnline, googleConnected]);
 
   const saveBearer = useCallback(async () => {
     setBearer(bearerInput.trim());
     setError('');
+    setDisconnectSuccess(false);
     onBearerSaved?.();
     if (serverOnline && bearerInput.trim()) {
       try {
         setSettings(await api.getSettings());
       } catch (e) {
+        setDisconnectSuccess(false);
         setError(e instanceof Error ? e.message : 'Failed to connect');
       }
     }
@@ -41,11 +47,13 @@ export function useSettingsSectionData({
     if (!settings) return;
     setSaving(true);
     setError('');
+    setDisconnectSuccess(false);
     try {
       const updated = await api.updateSettings(settings);
       cacheNotificationTimes(updated.notification_times);
       setSettings(updated);
     } catch (e) {
+      setDisconnectSuccess(false);
       setError(e instanceof Error ? e.message : 'Save failed');
     } finally {
       setSaving(false);
@@ -53,14 +61,22 @@ export function useSettingsSectionData({
   }, [settings]);
 
   const disconnectGoogle = useCallback(async () => {
+    setDisconnectSuccess(false);
     try {
       await api.disconnectGoogle();
       onBearerSaved?.();
       setSettings((s) => (s ? { ...s, sheets_connected: false } : s));
+      setError('');
+      setDisconnectSuccess(true);
     } catch (e) {
+      setDisconnectSuccess(false);
       setError(e instanceof Error ? e.message : 'Disconnect failed');
     }
   }, [onBearerSaved]);
+
+  const dismissDisconnectSuccess = useCallback(() => {
+    setDisconnectSuccess(false);
+  }, []);
 
   const updateBody = useCallback((key: string, value: string) => {
     setSettings((s) => (s ? { ...s, body: { ...s.body, [key]: value } } : s));
@@ -94,6 +110,8 @@ export function useSettingsSectionData({
     setBearerInput,
     settings,
     error,
+    disconnectSuccess,
+    dismissDisconnectSuccess,
     saving,
     saveBearer,
     saveSettings,
