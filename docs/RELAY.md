@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:56:00Z |
+| reviewed_at | 2026-07-27T04:57:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #125; relay-131 Cards badge last queue source navigation shipped. |
+| where_we_are | Loop tick #126; relay-132 Plan label for Log queue source shipped. |
 | blockers | [] |
-| confirmed_next | relay-132 meal plan queue source label Plan for Log tab |
-| brainstorm_notes | Cards tab badge title + click use getMealPlanQueueLastSource like pending banner |
+| confirmed_next | relay-133 habit queue sort by created_at |
+| brainstorm_notes | mealPlanQueueSourceLabel maps log → Plan in banners and tab hints |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:55:00Z |
+| last_wake | 2026-07-27T04:57:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-131 Cards tab badge navigate to last queue source |
+| cycle_parity | even (next: maintenance) |
+| next_action | relay-133 habit queue sort by created_at |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-131 | Cards tab badge navigate to last queue source | maintenance
 - [ ] relay-132 | Meal plan queue source label "Plan" for Log tab | feature
+- [ ] relay-133 | Habit queue sort by created_at | maintenance
+- [ ] relay-134 | Food log queue sort by created_at | maintenance
 
 ---
 
@@ -49,8 +50,8 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| Cards badge last-source navigation | relay-129 | match pending banner target |
 | Log tab "Plan" label | UX | align badge title with queue sub-tab |
+| Queue sort parity | relay-130 | habit + food queues oldest-first |
 
 ---
 
@@ -58,6 +59,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-131 | done | build | 194ae02 |
 | 2026-07-27 | relay-130 | done | build | cbbbc5e |
 | 2026-07-27 | relay-129 | done | build | f1f65f6 |
 | 2026-07-27 | relay-128 | done | build | 96f6f3e |
