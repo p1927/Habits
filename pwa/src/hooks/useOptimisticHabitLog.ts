@@ -25,10 +25,17 @@ export interface QueuedHabitEntry {
   metric: string;
   value: number | null;
   status: 'pending' | 'failed' | 'queued';
+  created_at: string;
 }
 
 function queueToEntry(item: QueuedHabitUpdate): QueuedHabitEntry {
-  return { id: item.id, metric: item.metric, value: item.value, status: 'queued' };
+  return {
+    id: item.id,
+    metric: item.metric,
+    value: item.value,
+    status: 'queued',
+    created_at: item.created_at,
+  };
 }
 
 export function useOptimisticHabitLog({
