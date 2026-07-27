@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:15:00Z |
+| reviewed_at | 2026-07-27T04:20:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #95; relay-100 shared remote sync CSS class shipped. |
+| where_we_are | Loop tick #96; relay-101 queue count hook failed sync on dismiss shipped. |
 | blockers | [] |
-| confirmed_next | relay-101 meal plan queue count hook sync failed on dismiss |
-| brainstorm_notes | relay-100 done; meal-plan-remote-sync replaces home-* class |
+| confirmed_next | relay-102 remote sync banner tap navigates to source tab |
+| brainstorm_notes | relay-101 done; tab badge failed count clears on dismiss all |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:15:00Z |
+| last_wake | 2026-07-27T04:20:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-101 meal plan queue count hook sync failed on dismiss |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-102 remote sync banner tap navigates to source tab |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 

@@ -3,6 +3,8 @@ import {
   getMealPlanFailedCount,
   getMealPlanQueue,
   MEAL_PLAN_QUEUE_CHANGE,
+  MEAL_PLAN_SYNC_CHANGE,
+  pruneMealPlanFailedIds,
 } from '../lib/mealPlanQueue';
 
 export function useMealPlanQueueCount() {
@@ -14,7 +16,8 @@ export function useMealPlanQueueCount() {
 
   const sync = useCallback(() => {
     const next = getMealPlanQueue().length;
-    const nextFailed = getMealPlanFailedCount();
+    if (next === 0) pruneMealPlanFailedIds();
+    const nextFailed = next === 0 ? 0 : getMealPlanFailedCount();
     if (next > prevCountRef.current || nextFailed > prevFailedRef.current) {
       setBadgePulse(true);
     }
@@ -36,10 +39,12 @@ export function useMealPlanQueueCount() {
     window.addEventListener('online', onWake);
     window.addEventListener('focus', onWake);
     window.addEventListener(MEAL_PLAN_QUEUE_CHANGE, onWake);
+    window.addEventListener(MEAL_PLAN_SYNC_CHANGE, onWake);
     return () => {
       window.removeEventListener('online', onWake);
       window.removeEventListener('focus', onWake);
       window.removeEventListener(MEAL_PLAN_QUEUE_CHANGE, onWake);
+      window.removeEventListener(MEAL_PLAN_SYNC_CHANGE, onWake);
     };
   }, [sync]);
 
