@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:02:00Z |
+| reviewed_at | 2026-07-27T05:03:00Z |
 | git_branch | main |
-| uncommitted_files | maintenance docs, Log.tsx WIP |
-| where_we_are | Loop tick #131; relay-137 recipe scan queue sort by created_at shipped. |
+| uncommitted_files | maintenance docs |
+| where_we_are | Loop tick #132; relay-138 food log queue empty hint on sync clear shipped. |
 | blockers | [] |
-| confirmed_next | relay-138 food log queue empty hint on sync clear |
-| brainstorm_notes | all offline queues now use sortQueueByCreatedAt |
+| confirmed_next | relay-140 recipe scan queue relative timestamps |
+| brainstorm_notes | FoodQueueBanner + queueSyncClearedToken; Log.tsx WIP reverted to fix build |
 
 ---
 
@@ -59,6 +59,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-137 | done | build | 5e4e9fa |
+| 2026-07-27 | relay-136 | done | build | 095e089 |
 | 2026-07-27 | relay-135 | done | build | 6c27112 |
 | 2026-07-27 | relay-134 | done | build | 2f35cdb |
 | 2026-07-27 | relay-133 | done | build | 9551e3c |
