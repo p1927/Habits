@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:40:00Z |
-| where_we_are | relay-178 shipped |
-| confirmed_next | relay-179 |
+| reviewed_at | 2026-07-27T14:42:00Z |
+| where_we_are | relay-179 shipped; backlog refilled |
+| confirmed_next | relay-180 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -19,16 +19,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:38:00Z |
-| confirmed_next | relay-178 |
-| next_action | relay-178 Agent chat copy assistant message |
+| last_wake | 2026-07-27T14:42:00Z |
+| confirmed_next | relay-180 |
+| next_action | relay-180 Agent chat regenerate last reply |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
+| phase | 8-close |
 | review_status | done |
 | review_skip_reason | — |
-| review_round | `3` |
-| last_reviewed_round | `3` |
-| review_diff_range | `c69908d` |
+| review_round | `5` |
+| last_reviewed_round | `5` |
+| review_diff_range | `HEAD` |
 | code_changed | `yes` |
 
 ---
@@ -64,8 +64,11 @@
 - [x] relay-176 | Home dashboard pull-to-refresh gesture | polish | usePullToRefresh + HomePullRefreshIndicator (e9b67a1)
 
 - [x] relay-177 | Log History list show meal count inline | polish | meal count suffix on history rows when API provides it
-- [ ] relay-178 | Agent chat copy assistant message | polish
-- [ ] relay-179 | Day manage-day quadrant tap → expand task list | feature
+- [x] relay-178 | Agent chat copy assistant message | polish | Copy pill on completed coach bubbles via clipboard API
+- [x] relay-179 | Day manage-day quadrant tap → expand task list | feature | accordion toggle + task preview when collapsed
+- [ ] relay-180 | Agent chat regenerate last reply | polish
+- [ ] relay-181 | Home decision card tap → Future Self tab | feature
+- [ ] relay-182 | Log tab keyboard shortcut hint on first visit | polish
 
 ---
 
@@ -88,6 +91,8 @@
 | rf-r2-000 | low | No issues in relay-175 diff | round-2 /code-review | closed | — | closed |
 | rf-r3-000 | low | relay-176 verify-only tick; STATE checkpoint sync; no new pwa/server feature diff | round-3 /code-review | closed | relay-176 | closed |
 | rf-r3-001 | low | No issues in relay-177 diff | round-3 /code-review | closed | — | closed |
+| rf-r4-000 | low | No issues in relay-178 diff | round-4 /code-review | closed | — | closed |
+| rf-r5-000 | low | No issues in relay-179 diff | round-5 /code-review | closed | — | closed |
 
 ---
 
@@ -95,6 +100,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-179 | done | build | — |
+| 2026-07-27 | relay-178 | done | build | 81a3034 |
 | 2026-07-27 | relay-177 | done | build | c69908d |
 | 2026-07-27 | relay-176 | done | build | e9b67a1 |
 | 2026-07-27 | relay-175 | done | build | c3d1f04 |
