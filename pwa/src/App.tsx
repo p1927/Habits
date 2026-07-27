@@ -66,10 +66,9 @@ function App() {
 
   const navigateMealPlanSyncSource = useCallback(
     (source: MealPlanSyncSource) => {
-      if (source === 'log') setOpenLogMealPlan(true);
-      handleTabChange(source);
+      scrollToMealPlanQueue(source, { openLogPlan: source === 'log' });
     },
-    [handleTabChange],
+    [scrollToMealPlanQueue],
   );
 
   useEffect(() => {

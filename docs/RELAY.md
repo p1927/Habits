@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:42:00Z |
+| reviewed_at | 2026-07-27T04:43:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #111; relay-116 queue banner aria-live while syncing shipped. |
+| where_we_are | Loop tick #112; relay-117 navigateMealPlanSyncSource scroll to queue shipped. |
 | blockers | [] |
-| confirmed_next | relay-117 navigateMealPlanSyncSource scroll to queue |
-| brainstorm_notes | relay-116 done; queue panel banner announces sync done/total updates politely |
+| confirmed_next | relay-118 meal plan queue panel banner reduced motion |
+| brainstorm_notes | relay-117 done; remote sync and pending banners scroll to queue on navigate |
 
 ---
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-117 | navigateMealPlanSyncSource scroll to queue | feature
 - [ ] relay-118 | Meal plan queue panel banner reduced motion | maintenance
+- [ ] relay-119 | Cards pending banner scroll via shared navigate | feature
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-116 | done | build | — |
+| 2026-07-27 | relay-117 | done | build | — |
+| 2026-07-27 | relay-116 | done | build | acbc27e |
 | 2026-07-27 | relay-115 | done | build | 42580ec |
 | 2026-07-27 | relay-114 | done | build | cf3ce9e |
 | 2026-07-27 | relay-113 | done | build | 967f3e8 |
