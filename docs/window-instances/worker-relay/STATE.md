@@ -23,8 +23,8 @@
 | confirmed_next | `relay-192` |
 | next_action | `relay-192 Cards create sheet Escape to close` |
 | phase | `8-close` |
-| review_status | `done` |
-| review_skip_reason | `—` |
+| review_status | `skipped` |
+| review_skip_reason | `relay-191 reviewed round 22; committed ad3d6a0` |
 | review_diff_range | `relay-191` |
 | code_changed | `no` |
 | review_round | `22` |
