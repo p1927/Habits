@@ -39,6 +39,7 @@ export function LogFoodEditSheet({
           Cancel
         </button>
       </div>
+      <p className="muted log-food-edit-sheet-hint">Press Escape to close</p>
     </BottomSheet>
   );
 }

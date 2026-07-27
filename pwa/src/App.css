@@ -2067,6 +2067,12 @@ button:disabled {
   text-align: center;
 }
 
+.log-food-edit-sheet-hint {
+  margin: 0.75rem 0 0;
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
 /* Home summary tiles — Apple Health style (ui-015) */
 .home-summary-grid {
   display: grid;
