@@ -11,7 +11,7 @@
 | reviewed_at | 2026-07-27T08:31:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #1 confirmed; single `/loop` PID 12732 healthy. |
+| where_we_are | Prior loop aborted; restarted single `/loop`. |
 | blockers | [] |
 | confirmed_next | relay-146 Coach tab meal plan queue badge |
 | brainstorm_notes | brainstorm items Plan label + queue sort already shipped |
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T08:28:00Z |
+| last_wake | 2026-07-27T08:31:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: maintenance) |
-| next_action | refill BACKLOG from BRAINSTORM |
+| cycle_parity | odd (next: feature) |
+| next_action | relay-146 Coach tab meal plan queue badge |
 | blockers | [] |
-| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` — single fixed loop (see CHECKPOINT PID after arm) |
+| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 13722, running) |
 
 ---
 
@@ -40,7 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-*(empty — refill from BRAINSTORM on next wake)*
+- [ ] relay-146 | Coach tab meal plan queue badge | feature
+- [ ] relay-147 | Commit meal plan queue event bus + count store | maintenance
+- [ ] relay-148 | Home section sub-panel refactor finish | feature
 
 ---
 
