@@ -120,6 +120,7 @@ export function Log({
   const [recipeEditName, setRecipeEditName] = useState('');
   const [recipeEditQty, setRecipeEditQty] = useState('100');
   const [recipeScanQueue, setRecipeScanQueue] = useState(() => getRecipeScanQueue());
+  const [recipeScanQueueSyncClearedToken, setRecipeScanQueueSyncClearedToken] = useState(0);
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
   const [loggingMealKey, setLoggingMealKey] = useState<string | null>(null);
   const [loggingMeals, setLoggingMeals] = useState(false);
@@ -445,6 +446,12 @@ export function Log({
     setRecipeScanQueue(getRecipeScanQueue());
   }, []);
 
+  const notifyRecipeScanQueueClearedIfEmpty = useCallback(() => {
+    if (getRecipeScanQueue().length === 0) {
+      setRecipeScanQueueSyncClearedToken((token) => token + 1);
+    }
+  }, []);
+
   const dismissRecipeScanQueue = useCallback(() => {
     clearRecipeScanQueue();
     syncRecipeScanQueue();
@@ -469,6 +476,7 @@ export function Log({
     if (!photo) {
       removeRecipeScanQueueItem(item.id);
       syncRecipeScanQueue();
+      notifyRecipeScanQueueClearedIfEmpty();
       void processRecipeScanQueue();
       return;
     }
@@ -479,6 +487,7 @@ export function Log({
       const result = await api.scanFood(dataUrlToFile(photo.dataUrl, 'recipe.jpg'));
       removeRecipeScanQueueItem(item.id);
       syncRecipeScanQueue();
+      notifyRecipeScanQueueClearedIfEmpty();
       setRecipePhoto(photo.dataUrl);
       setRecipeScanResult(result);
       setRecipeEditName(result.matched_name ?? result.detected_name);
@@ -492,7 +501,7 @@ export function Log({
     } finally {
       setRecipeScanning(false);
     }
-  }, [serverOnline, recipeScanning, recipeScanResult, syncRecipeScanQueue]);
+  }, [serverOnline, recipeScanning, recipeScanResult, syncRecipeScanQueue, notifyRecipeScanQueueClearedIfEmpty]);
 
   useEffect(() => {
     void processRecipeScanQueue();
@@ -733,7 +742,11 @@ export function Log({
         onDismiss={dismissFoodLogQueue}
       />
 
-      <RecipeScanQueueSection queue={recipeScanQueue} onDismiss={dismissRecipeScanQueue} />
+      <RecipeScanQueueSection
+        queue={recipeScanQueue}
+        queueSyncClearedToken={recipeScanQueueSyncClearedToken}
+        onDismiss={dismissRecipeScanQueue}
+      />
 
       <MealPlanSyncAwarenessSlot
         viewer="log"
