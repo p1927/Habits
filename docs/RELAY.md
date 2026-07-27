@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:41:00Z |
+| reviewed_at | 2026-07-27T04:42:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #110; relay-115 shared scrollToMealPlanQueue helper shipped. |
+| where_we_are | Loop tick #111; relay-116 queue banner aria-live while syncing shipped. |
 | blockers | [] |
-| confirmed_next | relay-116 meal plan queue banner aria-live while syncing |
-| brainstorm_notes | relay-115 done; useMealPlanQueueScroll hook consolidates badge scroll navigation |
+| confirmed_next | relay-117 navigateMealPlanSyncSource scroll to queue |
+| brainstorm_notes | relay-116 done; queue panel banner announces sync done/total updates politely |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:40:00Z |
+| last_wake | 2026-07-27T04:42:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | odd (next: maintenance) |
-| next_action | relay-115 shared scrollToMealPlanQueue helper in App |
+| next_action | relay-117 navigateMealPlanSyncSource scroll to queue |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-116 | Meal plan queue banner aria-live while syncing | maintenance
 - [ ] relay-117 | navigateMealPlanSyncSource scroll to queue | feature
+- [ ] relay-118 | Meal plan queue panel banner reduced motion | maintenance
 
 ---
 
@@ -57,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-115 | done | build | — |
+| 2026-07-27 | relay-116 | done | build | — |
+| 2026-07-27 | relay-115 | done | build | 42580ec |
 | 2026-07-27 | relay-114 | done | build | cf3ce9e |
 | 2026-07-27 | relay-113 | done | build | 967f3e8 |
 | 2026-07-27 | relay-111 | done | build | 6a97b84 |

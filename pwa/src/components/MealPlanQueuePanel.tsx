@@ -134,7 +134,12 @@ export function MealPlanQueuePanel({
       role="status"
     >
       <div className={`banner banner-row${failedCount > 0 ? ' banner-err' : ' banner-warn'}`}>
-        <span>{bannerText}</span>
+        <span
+          aria-live={syncing && syncProgress ? 'polite' : undefined}
+          aria-atomic={syncing && syncProgress ? 'true' : undefined}
+        >
+          {bannerText}
+        </span>
         {serverOnline && (
           <>
             {failedCount > 0 && onRetryFailed && (
