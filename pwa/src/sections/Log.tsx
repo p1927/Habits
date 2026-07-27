@@ -3,8 +3,7 @@ import { CameraCapture } from '../components/CameraCapture';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import { SwipeFoodCard } from '../components/SwipeFoodCard';
 import { UndoToast } from '../components/UndoToast';
-import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
-import { MealPlanQueuePanel } from '../components/MealPlanQueuePanel';
+import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
 import { Card } from '../components/ui/Card';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import {
@@ -1084,29 +1083,26 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
 
       {tab === 'mealplan' && (
         <>
-          {mealPlanQueue.length > 0 || syncingMealPlanQueue ? (
-            <MealPlanQueuePanel
-              serverOnline={serverOnline}
-              queue={mealPlanQueue}
-              syncing={syncingMealPlanQueue}
-              syncProgress={mealPlanSyncProgress}
-              failedIds={failedMealPlanIds}
-              retryingId={retryingMealPlanId}
-              clearAllLabel="Dismiss"
-              onSyncAll={() => void flushMealPlanQueue()}
-              onRetryFailed={() => void retryFailedMealPlanQueue()}
-              onRetry={(item) => void retryMealPlanItem(item)}
-              onDismissItem={dismissMealPlanItem}
-              onClearAll={() => {
-                clearMealPlanQueue();
-                resetFailedIds();
-                syncMealPlanQueue();
-                setSuccess('Meal plan log queue cleared');
-              }}
-            />
-          ) : mealPlan.length > 0 ? (
-            <MealPlanQueueEmptyHint />
-          ) : null}
+          <MealPlanQueueSection
+            hasMealPlan={mealPlan.length > 0}
+            serverOnline={serverOnline}
+            queue={mealPlanQueue}
+            syncing={syncingMealPlanQueue}
+            syncProgress={mealPlanSyncProgress}
+            failedIds={failedMealPlanIds}
+            retryingId={retryingMealPlanId}
+            clearAllLabel="Dismiss"
+            onSyncAll={() => void flushMealPlanQueue()}
+            onRetryFailed={() => void retryFailedMealPlanQueue()}
+            onRetry={(item) => void retryMealPlanItem(item)}
+            onDismissItem={dismissMealPlanItem}
+            onClearAll={() => {
+              clearMealPlanQueue();
+              resetFailedIds();
+              syncMealPlanQueue();
+              setSuccess('Meal plan log queue cleared');
+            }}
+          />
         <Card>
           <h2>Today&apos;s meal plan</h2>
           <p className="muted">From WEEK MEALS sheet · shortcut <kbd>{shortcutModifierLabel()}3</kbd></p>

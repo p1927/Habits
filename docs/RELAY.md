@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:15:00Z |
+| reviewed_at | 2026-07-27T03:20:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #83; relay-088 retry failed queue shortcut shipped. |
+| where_we_are | Loop tick #84; relay-089 MealPlanQueueSection wrapper shipped. |
 | blockers | [] |
-| confirmed_next | relay-089 meal plan queue section wrapper component |
-| brainstorm_notes | relay-088 done; R retries failed items only, S syncs all |
+| confirmed_next | relay-090 tab badge show failed meal plan count |
+| brainstorm_notes | relay-089 done; Home/Day/Log share MealPlanQueueSection |
 
 ---
 
@@ -56,7 +56,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-088 | done | build | — |
+| 2026-07-27 | relay-088 | done | build | b63a49f |
 | 2026-07-27 | relay-087 | done | build | 4d623e3 |
 | 2026-07-27 | relay-086 | done | build | 39f4535 |
 | 2026-07-27 | relay-085 | done | build | 2719131 |

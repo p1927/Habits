@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { Card } from '../components/ui/Card';
-import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
-import { MealPlanQueuePanel } from '../components/MealPlanQueuePanel';
+import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
 import { UndoToast } from '../components/UndoToast';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
@@ -362,30 +361,27 @@ export function Day({ serverOnline }: DayProps) {
         </div>
       )}
 
-      {mealPlanQueue.length > 0 || syncingMealPlanQueue ? (
-        <MealPlanQueuePanel
-          serverOnline={serverOnline}
-          queue={mealPlanQueue}
-          syncing={syncingMealPlanQueue}
-          syncProgress={mealPlanSyncProgress}
-          failedIds={failedMealPlanIds}
-          retryingId={retryingMealPlanId}
-          syncAllLabel="Sync all"
-          syncActionHint="Sync all"
-          onSyncAll={() => void flushMealPlanQueue()}
-          onRetryFailed={() => void retryFailedMealPlanQueue()}
-          onRetry={(item) => void retryMealPlanItem(item)}
-          onDismissItem={dismissMealPlanItem}
-          onClearAll={() => {
-            clearMealPlanQueue();
-            resetFailedIds();
-            syncMealPlanQueue();
-            setMealSuccess('Meal plan log queue cleared');
-          }}
-        />
-      ) : mealPlan.length > 0 ? (
-        <MealPlanQueueEmptyHint />
-      ) : null}
+      <MealPlanQueueSection
+        hasMealPlan={mealPlan.length > 0}
+        serverOnline={serverOnline}
+        queue={mealPlanQueue}
+        syncing={syncingMealPlanQueue}
+        syncProgress={mealPlanSyncProgress}
+        failedIds={failedMealPlanIds}
+        retryingId={retryingMealPlanId}
+        syncAllLabel="Sync all"
+        syncActionHint="Sync all"
+        onSyncAll={() => void flushMealPlanQueue()}
+        onRetryFailed={() => void retryFailedMealPlanQueue()}
+        onRetry={(item) => void retryMealPlanItem(item)}
+        onDismissItem={dismissMealPlanItem}
+        onClearAll={() => {
+          clearMealPlanQueue();
+          resetFailedIds();
+          syncMealPlanQueue();
+          setMealSuccess('Meal plan log queue cleared');
+        }}
+      />
 
       <Card>
         <h2>Today&apos;s meal plan</h2>

@@ -5,8 +5,7 @@ import { SwipeStack } from '../components/ui/SwipeStack';
 import { MacroBar, Sparkline } from '../components/MacroChart';
 import { MealPhotoGallery } from '../components/MealPhotoGallery';
 import { UndoToast } from '../components/UndoToast';
-import { MealPlanQueueEmptyHint } from '../components/MealPlanQueueEmptyHint';
-import { MealPlanQueuePanel } from '../components/MealPlanQueuePanel';
+import { MealPlanQueueSection } from '../components/MealPlanQueueSection';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useMealPlanUndo } from '../hooks/useMealPlanUndo';
 import { useMealPlanQueueSync } from '../hooks/useMealPlanQueueSync';
@@ -364,7 +363,6 @@ export function Home({ serverOnline }: HomeProps) {
   const proteinTarget = food?.protein_target_g ?? 150;
   const habitPct = habitCompletionPct(habits);
   const burn = estimateBurn(habits);
-  const hasPendingMealPlanQueue = mealPlanQueue.length > 0 || syncingMealPlanQueue;
 
   return (
     <section className="section home-section" aria-labelledby="home-heading">
@@ -399,31 +397,28 @@ export function Home({ serverOnline }: HomeProps) {
         <div className="banner banner-warn" role="alert">Server offline — connect to sync.</div>
       )}
 
-      {hasPendingMealPlanQueue ? (
-        <MealPlanQueuePanel
-          serverOnline={serverOnline}
-          queue={mealPlanQueue}
-          syncing={syncingMealPlanQueue}
-          syncProgress={mealPlanSyncProgress}
-          failedIds={failedMealPlanIds}
-          retryingId={retryingMealPlanId}
-          variant="home"
-          noPlanToday={mealPlan.length === 0}
-          bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
-          onSyncAll={() => void flushMealPlanQueue()}
-          onRetryFailed={() => void retryFailedMealPlanQueue()}
-          onRetry={(item) => void retryMealPlanItem(item)}
-          onDismissItem={dismissMealPlanItem}
-          onClearAll={() => {
-            clearMealPlanQueue();
-            resetFailedIds();
-            syncMealPlanQueue();
-            setMealPlanMessage('Meal plan log queue cleared');
-          }}
-        />
-      ) : mealPlan.length > 0 ? (
-        <MealPlanQueueEmptyHint />
-      ) : null}
+      <MealPlanQueueSection
+        hasMealPlan={mealPlan.length > 0}
+        serverOnline={serverOnline}
+        queue={mealPlanQueue}
+        syncing={syncingMealPlanQueue}
+        syncProgress={mealPlanSyncProgress}
+        failedIds={failedMealPlanIds}
+        retryingId={retryingMealPlanId}
+        variant="home"
+        noPlanToday={mealPlan.length === 0}
+        bannerSuffix={mealPlan.length === 0 ? ' — no meals planned today' : ''}
+        onSyncAll={() => void flushMealPlanQueue()}
+        onRetryFailed={() => void retryFailedMealPlanQueue()}
+        onRetry={(item) => void retryMealPlanItem(item)}
+        onDismissItem={dismissMealPlanItem}
+        onClearAll={() => {
+          clearMealPlanQueue();
+          resetFailedIds();
+          syncMealPlanQueue();
+          setMealPlanMessage('Meal plan log queue cleared');
+        }}
+      />
 
       <Card className="home-export-card">
         <div className="home-export-row">
