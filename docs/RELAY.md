@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T08:37:00Z |
+| reviewed_at | 2026-07-27T09:32:00Z |
 | git_branch | main |
-| uncommitted_files | maintenance docs |
-| where_we_are | relay-146 Coach tab queue badge shipped. |
+| uncommitted_files | maintenance docs, App.css WIP |
+| where_we_are | relay-147–150 shipped (queue store, Home refactor, saved recipe card). |
 | blockers | [] |
-| confirmed_next | relay-147 Commit meal plan queue event bus + count store |
-| brainstorm_notes | relay loop script uses PID file + AGENT_LOOP_TICK_HABITS |
+| confirmed_next | relay-149 VoiceStatusOrb iframe postMessage |
+| brainstorm_notes | loops optional; keep shipping features |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T08:37:00Z |
+| last_wake | 2026-07-27T09:32:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: maintenance) |
-| next_action | relay-147 Commit meal plan queue event bus + count store |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-149 VoiceStatusOrb iframe postMessage |
 | blockers | [] |
 | loops | relay `scripts/agent-relay-loop.sh` (^AGENT_LOOP_TICK_HABITS, PID file); restart only in Habits terminal |
 
@@ -40,8 +40,7 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-147 | Commit meal plan queue event bus + count store | maintenance
-- [ ] relay-148 | Home section sub-panel refactor finish | feature
+- [ ] relay-149 | VoiceStatusOrb — wire iframe postMessage for real mic/listening state | maintenance
 
 ---
 
@@ -58,7 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-146 | done | build | — |
+| 2026-07-27 | relay-146 | done | build | 5ba479f |
 | 2026-07-27 | relay-144 | done | build | 6269dd1 |
 | 2026-07-27 | relay-143 | done | build | c77ad53 |
 | 2026-07-27 | relay-142 | done | build | 4fe608c |
