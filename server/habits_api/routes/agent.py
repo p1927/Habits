@@ -16,6 +16,7 @@ router = APIRouter()
 class ChatMessage(BaseModel):
     message: str = Field(min_length=1)
     history: list[dict] | None = None
+    image_base64: str | None = Field(default=None, min_length=100)
 
 
 @router.post("/api/agent/chat", dependencies=[Depends(require_bearer)])
@@ -25,6 +26,6 @@ async def agent_chat(
     settings: Settings = Depends(get_settings),
 ) -> dict:
     return await invoke_service(
-        agent_service.chat(settings, db, body.message, body.history),
+        agent_service.chat(settings, db, body.message, body.history, body.image_base64),
         map_value_error=True,
     )

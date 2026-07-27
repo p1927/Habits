@@ -11,7 +11,26 @@ from habits_api.config import Settings
 from habits_api.db import TokenDB
 
 
-async def chat(settings: Settings, db: TokenDB, message: str, history: list[dict] | None = None) -> dict:
+def _build_user_message(message: str, image_base64: str | None) -> dict[str, Any]:
+    if not image_base64:
+        return {"role": "user", "content": message}
+    data_uri = image_base64 if image_base64.startswith("data:") else f"data:image/jpeg;base64,{image_base64}"
+    return {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": message},
+            {"type": "image_url", "image_url": {"url": data_uri}},
+        ],
+    }
+
+
+async def chat(
+    settings: Settings,
+    db: TokenDB,
+    message: str,
+    history: list[dict] | None = None,
+    image_base64: str | None = None,
+) -> dict:
     if not settings.minimax_api_key:
         raise ValueError("MINIMAX_API_KEY not configured")
 
@@ -25,7 +44,7 @@ async def chat(settings: Settings, db: TokenDB, message: str, history: list[dict
     messages: list[dict[str, Any]] = [{"role": "system", "content": system}]
     if history:
         messages.extend(history[-10:])
-    messages.append({"role": "user", "content": message})
+    messages.append(_build_user_message(message, image_base64))
 
     url = f"{settings.minimax_base_url.rstrip('/')}/text/chatcompletion_v2"
     headers = {

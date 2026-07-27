@@ -290,9 +290,13 @@ export const api = {
     }),
   deleteCard: (card_type: string, row: number) =>
     request<{ cards: KeepCard[] }>(`/api/cards/${card_type}/${row}`, { method: 'DELETE' }),
-  agentChat: (message: string, history?: { role: string; content: string }[]) =>
+  agentChat: (
+    message: string,
+    history?: { role: string; content: string }[],
+    imageBase64?: string,
+  ) =>
     request<ChatResponse>('/api/agent/chat', {
       method: 'POST',
-      body: JSON.stringify({ message, history }),
+      body: JSON.stringify({ message, history, image_base64: imageBase64 }),
     }),
 };

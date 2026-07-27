@@ -28,7 +28,7 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
     setMessages((m) => [...m, userMsg]);
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }));
-      const res = await api.agentChat(message, history);
+      const res = await api.agentChat(message, history, imageUrl);
       setMessages((m) => [...m, { role: 'assistant', content: res.reply || 'Done.' }]);
       if (res.tool_results.length) onToolResults?.();
     } catch (e) {
