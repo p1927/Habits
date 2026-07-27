@@ -11,10 +11,10 @@
 | reviewed_at | 2026-07-27T04:32:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #101; relay-105 meal plan sync banner reduced motion shipped. |
+| where_we_are | Loop tick #102; relay-106 aria-live on remote sync progress shipped. |
 | blockers | [] |
-| confirmed_next | relay-106 aria-live on meal plan remote sync progress |
-| brainstorm_notes | relay-105 done; sync banner pulses while syncing; static under prefers-reduced-motion |
+| confirmed_next | relay-107 tab badge pulse reduced motion |
+| brainstorm_notes | relay-106 done; remote sync banner announces done/total updates politely |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:32:00Z |
+| last_wake | 2026-07-27T04:33:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: maintenance) |
-| next_action | relay-106 aria-live on meal plan remote sync progress |
+| cycle_parity | even (next: feature) |
+| next_action | relay-107 tab badge pulse reduced motion |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-106 | aria-live on meal plan remote sync progress | maintenance
 - [ ] relay-107 | Tab badge pulse reduced motion | maintenance
 - [ ] relay-108 | Scroll to meal plan queue on badge tap from Cards | feature
 
@@ -58,7 +57,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-105 | done | build | — |
+| 2026-07-27 | relay-106 | done | build | — |
+| 2026-07-27 | relay-105 | done | build | 56d94a8 |
 | 2026-07-27 | relay-104 | done | build | 9d3232a |
 | 2026-07-27 | relay-103 | done | build | ab8f112 |
 | 2026-07-27 | relay-102 | done | build | c4e149d |

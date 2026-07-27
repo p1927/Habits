@@ -14,6 +14,8 @@ export function MealPlanRemoteSyncBanner({ sync, onGoToSource }: MealPlanRemoteS
       type="button"
       className="banner banner-warn meal-plan-remote-sync meal-plan-remote-sync--actionable"
       role="status"
+      aria-live="polite"
+      aria-atomic="true"
       onClick={() => onGoToSource(sync.source)}
     >
       Syncing meal logs on {label} ({sync.done}/{sync.total})… — tap to open {label}
