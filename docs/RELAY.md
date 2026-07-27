@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:05:00Z |
+| reviewed_at | 2026-07-27T05:06:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #134; relay-141 recipe scan queue empty hint on sync clear shipped. |
+| where_we_are | Loop tick #135; relay-142 shared QueueEmptyHint base styles shipped. |
 | blockers | [] |
-| confirmed_next | relay-142 shared QueueEmptyHint base styles |
-| brainstorm_notes | recipeScanQueueSyncClearedToken on queue drain via processRecipeScanQueue |
+| confirmed_next | relay-143 Log tab refactor finish |
+| brainstorm_notes | QueueEmptyHint + .queue-empty CSS; domain hints are thin wrappers |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T05:05:00Z |
+| last_wake | 2026-07-27T05:06:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: maintenance) |
-| next_action | relay-142 shared QueueEmptyHint base styles |
+| cycle_parity | odd (next: feature) |
+| next_action | relay-143 Log tab refactor finish (sub-panels) |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
