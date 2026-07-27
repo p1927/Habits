@@ -4,8 +4,28 @@ set -euo pipefail
 
 ROOT="${1:-.}"
 ROOT="$(cd "$ROOT" && pwd)"
-MANIFEST="$(python3 -c "import json,sys; from pathlib import Path; r=Path(sys.argv[1]); m=json.loads((r/".cursor"/"cursor-loop.json").read_text()); print(r/m.get("instances_manifest", "docs/window-instances/instances.manifest.json"))" "$ROOT")"
-SCRIPTS="$ROOT/tools/cursor-loop/scripts"
+MANIFEST="$(python3 - "$ROOT" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+manifest_path = root / ".cursor" / "cursor-loop.json"
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+rel = manifest.get("instances_manifest", "docs/window-instances/instances.manifest.json")
+print(root / rel)
+PY
+)"
+SCRIPTS="$(python3 - "$ROOT" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+manifest = json.loads((root / ".cursor/cursor-loop.json").read_text(encoding="utf-8"))
+print(root / manifest["package_root"] / "scripts")
+PY
+)"
 
 if [[ ! -f "$MANIFEST" ]]; then
   echo "instance-doctor: missing $MANIFEST" >&2
@@ -17,7 +37,7 @@ python3 "$SCRIPTS/validate_instance.py" "$ROOT" || true
 echo ""
 echo "=== Window Instance Doctor ==="
 
-python3 - "$ROOT" "$MANIFEST" <<'PY'
+python3 - "$ROOT" "$MANIFEST" "$SCRIPTS" <<'PY'
 import json
 import re
 import subprocess
@@ -26,7 +46,8 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 manifest_path = Path(sys.argv[2])
-manifest = json.loads(manifest_path.read_text())
+scripts_dir = Path(sys.argv[3])
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 instances = manifest.get("instances") or []
 
 def parse_checkpoint(state_text: str) -> dict[str, str]:
@@ -69,7 +90,7 @@ def read_wake_armed_at(loop_id: str) -> str | None:
     return armed.read_text(encoding="utf-8").strip() or None
 
 def wake_status(loop_id: str) -> str:
-    script = root / "tools/cursor-loop/scripts/verify-wake.sh"
+    script = scripts_dir / "verify-wake.sh"
     armed_at = read_wake_armed_at(loop_id)
     if not script.is_file():
         return "?"
@@ -135,4 +156,4 @@ for entry in instances:
 PY
 
 echo ""
-echo "Run: python3 tools/cursor-loop/scripts/validate_instance.py ."
+echo "Run: python3 $SCRIPTS/validate_instance.py ."

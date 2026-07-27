@@ -79,11 +79,9 @@ def bootstrap(
                 if template_dest.is_symlink():
                     template_dest.unlink()
                 elif template_dest.is_dir():
-                    import shutil
                     shutil.rmtree(template_dest)
         if not template_dest.exists():
             if mode == "copy":
-                import shutil
                 shutil.copytree(template_src, template_dest)
             else:
                 template_dest.symlink_to(template_src.resolve(), target_is_directory=True)
