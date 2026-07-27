@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:35:00Z |
+| reviewed_at | 2026-07-27T03:40:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #87; relay-092 meal plan sync success haptic shipped. |
+| where_we_are | Loop tick #88; relay-093 queue panel focus first failed item shipped. |
 | blockers | [] |
-| confirmed_next | relay-093 queue panel focus on first failed item |
-| brainstorm_notes | relay-092 done; queue flush/retry triggers vibrateMealPlanSyncSuccess |
+| confirmed_next | relay-094 home queue banner sync in progress on other tab |
+| brainstorm_notes | relay-093 done; panel scrolls/focuses first failed row on new failure |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:35:00Z |
+| last_wake | 2026-07-27T03:40:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-093 queue panel focus on first failed item |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-094 home queue banner when sync in progress on other tab |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-093 | Queue panel focus on first failed item | maintenance
 - [ ] relay-094 | Home queue banner when sync in progress on other tab | feature
+- [ ] relay-095 | Meal plan sync failure haptic | feature
+- [ ] relay-096 | Queue empty hint aria-live on transition | maintenance
 
 ---
 
@@ -57,6 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-093 | done | build | — |
 | 2026-07-27 | relay-092 | done | build | 8d6c73f |
 | 2026-07-27 | relay-091 | done | build | 18f7be6 |
 | 2026-07-27 | relay-090 | done | build | 68b6136 |

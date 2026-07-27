@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { mealPlanQueueLabel, type QueuedMealPlanLog } from '../lib/mealPlanQueue';
 import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
 
@@ -43,6 +44,7 @@ export function MealPlanQueuePanel({
   onClearAll,
 }: MealPlanQueuePanelProps) {
   const failedCount = queue.filter((item) => failedIds.has(item.id)).length;
+  const prevFailedCountRef = useRef(0);
   const isHome = variant === 'home';
   const panelClass = isHome ? 'home-meal-plan-queue-panel' : 'meal-plan-queue-panel';
   const progressClass = isHome ? 'home-meal-plan-sync-progress' : 'meal-plan-sync-progress';
@@ -68,6 +70,32 @@ export function MealPlanQueuePanel({
       : `${queue.length} meal log${queue.length === 1 ? '' : 's'} queued${
           failedCount > 0 ? ` · ${failedCount} failed` : ''
         }${bannerSuffix}${serverOnline ? shortcutHint : ' — will sync when online'}.`;
+
+  useEffect(() => {
+    if (failedCount === 0) {
+      prevFailedCountRef.current = 0;
+      return;
+    }
+    const shouldFocus = failedCount > prevFailedCountRef.current;
+    prevFailedCountRef.current = failedCount;
+    if (!shouldFocus || syncing) return;
+
+    const firstFailed = queue.find((item) => failedIds.has(item.id));
+    if (!firstFailed) return;
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    requestAnimationFrame(() => {
+      const row = document.getElementById(`meal-plan-queue-item-${firstFailed.id}`);
+      if (!row) return;
+      row.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' });
+      const retryBtn = row.querySelector<HTMLButtonElement>('[data-meal-plan-retry]');
+      if (retryBtn) retryBtn.focus({ preventScroll: true });
+      else if (row instanceof HTMLElement) row.focus({ preventScroll: true });
+    });
+  }, [failedCount, syncing, queue, failedIds]);
 
   return (
     <div
@@ -138,6 +166,8 @@ export function MealPlanQueuePanel({
             return (
               <li
                 key={item.id}
+                id={`meal-plan-queue-item-${item.id}`}
+                tabIndex={failed ? -1 : undefined}
                 className={`food-row food-row--${failed ? 'failed' : 'queued'}`}
                 role={failed ? 'alert' : undefined}
               >
@@ -153,6 +183,7 @@ export function MealPlanQueuePanel({
                     <button
                       type="button"
                       className="btn-small"
+                      data-meal-plan-retry=""
                       disabled={syncing || !!retryingId}
                       onClick={() => void onRetry(item)}
                     >
