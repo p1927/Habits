@@ -197,7 +197,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
           meal: entry.meal,
           label: entry.label,
           description: entry.description,
-        });
+        }, { source: 'day' });
         syncMealPlanQueue();
         setMealSuccess(`${entry.label} queued — will log when online`);
         setLoggingMealKey(null);
@@ -218,7 +218,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
               meal: entry.meal,
               label: entry.label,
               description: entry.description,
-            });
+            }, { source: 'day' });
             syncMealPlanQueue();
             setMealSuccess(`${entry.label} queued — will log when online`);
             return;
@@ -239,7 +239,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
     dismissMealPlanUndo();
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-      enqueueMealPlanLog({ kind: 'all' });
+      enqueueMealPlanLog({ kind: 'all' }, { source: 'day' });
       syncMealPlanQueue();
       setMealSuccess('All planned meals queued — will log when online');
       setLoggingMeals(false);
@@ -255,7 +255,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
         }
       } catch (e) {
         if (isOfflineError(e)) {
-          enqueueMealPlanLog({ kind: 'all' });
+          enqueueMealPlanLog({ kind: 'all' }, { source: 'day' });
           syncMealPlanQueue();
           setMealSuccess('All planned meals queued — will log when online');
           return;

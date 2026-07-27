@@ -311,7 +311,7 @@ export function Log({
           meal: entry.meal,
           label: entry.label,
           description: entry.description,
-        });
+        }, { source: 'log' });
         syncMealPlanQueue();
         setSuccess(`${entry.label} queued — will log when online`);
         setLoggingMealKey(null);
@@ -333,7 +333,7 @@ export function Log({
               meal: entry.meal,
               label: entry.label,
               description: entry.description,
-            });
+            }, { source: 'log' });
             syncMealPlanQueue();
             setSuccess(`${entry.label} queued — will log when online`);
             return;
@@ -354,7 +354,7 @@ export function Log({
     dismissMealPlanUndo();
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-      enqueueMealPlanLog({ kind: 'all' });
+      enqueueMealPlanLog({ kind: 'all' }, { source: 'log' });
       syncMealPlanQueue();
       setSuccess('All planned meals queued — will log when online');
       setLoggingMeals(false);
@@ -371,7 +371,7 @@ export function Log({
         }
       } catch (e) {
         if (isOfflineError(e)) {
-          enqueueMealPlanLog({ kind: 'all' });
+          enqueueMealPlanLog({ kind: 'all' }, { source: 'log' });
           syncMealPlanQueue();
           setSuccess('All planned meals queued — will log when online');
           return;

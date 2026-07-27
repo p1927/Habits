@@ -2,7 +2,7 @@ import { MealPlanQueuePendingBanner } from './MealPlanQueuePendingBanner';
 import { MealPlanRemoteSyncBanner } from './MealPlanRemoteSyncBanner';
 import { useMealPlanQueueCount } from '../hooks/useMealPlanQueueCount';
 import { useMealPlanQueueRemoteSync, type MealPlanSyncViewer } from '../hooks/useMealPlanQueueRemoteSync';
-import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
+import { getMealPlanQueueLastSource, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 export interface MealPlanSyncAwarenessSlotProps {
   viewer: MealPlanSyncViewer;
@@ -15,6 +15,8 @@ export interface MealPlanSyncAwarenessSlotProps {
   showOwnSource?: boolean;
   /** Cards: show pending queue banner when no remote sync in progress */
   showPendingWhenIdle?: boolean;
+  /** Override tab label/target for pending queue banner (defaults to last queue source). */
+  pendingTargetSource?: MealPlanSyncSource;
 }
 
 export function MealPlanSyncAwarenessSlot({
@@ -24,6 +26,7 @@ export function MealPlanSyncAwarenessSlot({
   visible = true,
   showOwnSource = false,
   showPendingWhenIdle = false,
+  pendingTargetSource,
 }: MealPlanSyncAwarenessSlotProps) {
   const remoteSync = useMealPlanQueueRemoteSync(viewer, { showOwnSource });
   const { count, failedCount } = useMealPlanQueueCount();
@@ -35,11 +38,13 @@ export function MealPlanSyncAwarenessSlot({
   }
 
   if (showPendingWhenIdle) {
+    const targetSource = pendingTargetSource ?? getMealPlanQueueLastSource() ?? 'home';
     return (
       <MealPlanQueuePendingBanner
         count={count}
         failedCount={failedCount}
-        onOpenHome={() => onNavigate('home')}
+        targetSource={targetSource}
+        onOpenQueue={onNavigate}
       />
     );
   }

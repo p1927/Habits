@@ -25,6 +25,27 @@ export interface MealPlanQueueSyncStatus {
 }
 
 const SYNC_KEY = 'habits-meal-plan-queue-sync';
+const LAST_SOURCE_KEY = 'habits-meal-plan-queue-last-source';
+
+function isMealPlanSyncSource(value: string): value is MealPlanSyncSource {
+  return value === 'home' || value === 'day' || value === 'log';
+}
+
+export function getMealPlanQueueLastSource(): MealPlanSyncSource | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(LAST_SOURCE_KEY);
+    if (!raw || !isMealPlanSyncSource(raw)) return null;
+    return raw;
+  } catch {
+    return null;
+  }
+}
+
+export function setMealPlanQueueLastSource(source: MealPlanSyncSource) {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem(LAST_SOURCE_KEY, source);
+}
 
 function notifyQueueChange() {
   if (typeof window !== 'undefined') {
@@ -56,7 +77,10 @@ export function getMealPlanQueueSyncStatus(): MealPlanQueueSyncStatus | null {
 export function setMealPlanQueueSyncStatus(status: MealPlanQueueSyncStatus | null) {
   if (typeof window === 'undefined') return;
   if (!status?.syncing) sessionStorage.removeItem(SYNC_KEY);
-  else sessionStorage.setItem(SYNC_KEY, JSON.stringify(status));
+  else {
+    sessionStorage.setItem(SYNC_KEY, JSON.stringify(status));
+    setMealPlanQueueLastSource(status.source);
+  }
   notifySyncChange();
 }
 
@@ -86,8 +110,20 @@ function readQueue(): QueuedMealPlanLog[] {
   }
 }
 
+function writeFailedIdsSilent(ids: string[]) {
+  if (ids.length === 0) localStorage.removeItem(FAILED_KEY);
+  else localStorage.setItem(FAILED_KEY, JSON.stringify(ids));
+}
+
 function writeQueue(items: QueuedMealPlanLog[]) {
-  localStorage.setItem(QUEUE_KEY, JSON.stringify(items));
+  if (items.length === 0) {
+    localStorage.removeItem(QUEUE_KEY);
+    writeFailedIdsSilent([]);
+  } else {
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(items));
+    const queueIds = new Set(items.map((item) => item.id));
+    writeFailedIdsSilent(readFailedIds().filter((id) => queueIds.has(id)));
+  }
   notifyQueueChange();
 }
 
@@ -150,7 +186,9 @@ export function pruneMealPlanFailedIds() {
 
 export function enqueueMealPlanLog(
   entry: Omit<QueuedMealPlanLog, 'id' | 'created_at'> & { id?: string },
+  options?: { source?: MealPlanSyncSource },
 ): QueuedMealPlanLog {
+  if (options?.source) setMealPlanQueueLastSource(options.source);
   const item: QueuedMealPlanLog = {
     ...entry,
     id: entry.id ?? `mpq-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,

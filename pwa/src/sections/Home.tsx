@@ -224,7 +224,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
           meal: entry.meal,
           label: entry.label,
           description: entry.description,
-        });
+        }, { source: 'home' });
         syncMealPlanQueue();
         setMealPlanMessage(`${entry.label} queued — will log when online`);
         setLoggingMealKey(null);
@@ -247,7 +247,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
               meal: entry.meal,
               label: entry.label,
               description: entry.description,
-            });
+            }, { source: 'home' });
             syncMealPlanQueue();
             setMealPlanMessage(`${entry.label} queued — will log when online`);
             return;
@@ -268,7 +268,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
     dismissMealPlanUndo();
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-      enqueueMealPlanLog({ kind: 'all' });
+      enqueueMealPlanLog({ kind: 'all' }, { source: 'home' });
       syncMealPlanQueue();
       setMealPlanMessage('All planned meals queued — will log when online');
       setLoggingMeals(false);
@@ -286,7 +286,7 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
         void refresh();
       } catch (e) {
         if (isOfflineError(e)) {
-          enqueueMealPlanLog({ kind: 'all' });
+          enqueueMealPlanLog({ kind: 'all' }, { source: 'home' });
           syncMealPlanQueue();
           setMealPlanMessage('All planned meals queued — will log when online');
           return;
@@ -565,9 +565,8 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
       )}
 
       {decisionCard && (
-        <Card className="decision-card-wrap decision-card-wrap--elevated">
-          <p className="decision-card-eyebrow">Future self</p>
-          <h2>Today&apos;s decision</h2>
+        <Card className="decision-card-wrap decision-card-wrap--elevated decision-card-wrap--hinge">
+          <p className="decision-card-eyebrow">Future self · Today&apos;s prompt</p>
           {decisionCard.image_url ? (
             <img
               src={decisionCard.image_url}
@@ -615,9 +614,18 @@ export function Home({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealP
             hintLeft="Decline"
             hintUp="Skip"
           >
-            <div className="decision-card-inner">
-              <h3>{decisionCard.title}</h3>
-              <p className="muted">{decisionCard.accept_action}</p>
+            <div className="decision-card-inner decision-card-inner--hinge">
+              <p className="decision-card-prompt">
+                {decisionCard.habit
+                  ? `How will you show up for ${decisionCard.habit} today?`
+                  : 'What choice moves you closer to your future self?'}
+              </p>
+              <div className="decision-card-answer">
+                <h3>{decisionCard.title}</h3>
+                {decisionCard.accept_action && (
+                  <p className="decision-card-action">{decisionCard.accept_action}</p>
+                )}
+              </div>
             </div>
           </SwipeStack>
         </Card>
