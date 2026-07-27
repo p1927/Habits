@@ -22,7 +22,7 @@
 | last_wake | `2026-07-27T21:18:00Z` |
 | confirmed_next | `relay-192` |
 | next_action | `relay-192 Cards create sheet Escape to close` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-191 reviewed round 22; committed ad3d6a0` |
 | review_diff_range | `relay-191` |
