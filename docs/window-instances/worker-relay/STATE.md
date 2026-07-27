@@ -23,7 +23,7 @@
 | confirmed_next | relay-183 |
 | next_action | relay-183 Day tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 8-close |
+| phase | 9-arm |
 | review_status | skipped |
 | review_skip_reason | relay-182 verify-only; no pwa/server diff this tick |
 | review_round | `7` |
