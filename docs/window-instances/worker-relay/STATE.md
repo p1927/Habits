@@ -117,7 +117,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-185 | done | build | — |
+| 2026-07-27 | relay-185 | done | build | 2303dab |
+| 2026-07-27 | relay-184 | done | build | ac53858 |
 | 2026-07-27 | relay-183 | done | build | 2055d88 |
 | 2026-07-27 | relay-182 | done | build | f3af1b5 |
 | 2026-07-27 | relay-181 | done | build | f8cbe92 |
