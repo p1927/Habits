@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:20:00Z |
-| where_we_are | relay-188 closed; checkpoint sync round 18 |
-| confirmed_next | relay-189 |
-| brainstorm_notes | OAuth banner auto-dismiss 5s + manual Dismiss preserved |
+| reviewed_at | 2026-07-27T23:16:00Z |
+| where_we_are | relay-189 shipped |
+| confirmed_next | relay-190 |
+| brainstorm_notes | Share PNG opens BottomSheet preview; Escape closes |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:18:00Z` |
-| confirmed_next | `relay-189` |
-| next_action | `relay-189 Home rings share sheet keyboard Escape to close` |
-| phase | `9-arm` |
+| last_wake | `2026-07-27T23:16:00Z` |
+| confirmed_next | `relay-190` |
+| next_action | `relay-190 Settings OAuth banner aria-live polite on show` |
+| phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `round 18 STATE checkpoint sync; committed 5d27251` |
-| review_diff_range | `state-checkpoint-r18` |
+| review_skip_reason | `relay-189 reviewed round 19; committed 9fb62aa` |
+| review_diff_range | `relay-189` |
 | code_changed | `no` |
-| review_round | `18` |
-| last_reviewed_round | `18` |
+| review_round | `19` |
+| last_reviewed_round | `19` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
-| review_fingerprint | `76bc7ac4d2c88063` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/HomeRingShareSheet.tsx pwa/src/hooks/useHomeDashboard.ts pwa/src/hooks/useHomeDashboardActions.ts pwa/src/hooks/useHomeSection.ts pwa/src/sections/Home.tsx` |
+| review_fingerprint | `9fb62aa3432e1406` |
 
 ## IN_PROGRESS
 
@@ -79,9 +79,10 @@
 - [x] relay-186 | Settings tab keyboard shortcut from header gear hint | polish | useSettingsOpenShortcut + AppHeader hint (⌘,)
 - [x] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish | useAppTabShortcuts + AppTabBar hint; defers on Log/Day/Cards
 - [x] relay-188 | OAuth success banner auto-dismiss after 5s | polish | Settings useEffect 5s auto-dismiss
-- [ ] relay-189 | Home rings share sheet keyboard Escape to close | polish
+- [x] relay-189 | Home rings share sheet keyboard Escape to close | polish | HomeRingShareSheet + BottomSheet Escape
 - [ ] relay-190 | Settings OAuth banner aria-live polite on show | polish
 - [ ] relay-191 | Agent tools sheet Escape to close | polish
+- [ ] relay-192 | Cards create sheet Escape to close | polish
 
 ---
 
