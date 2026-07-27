@@ -19,10 +19,10 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T13:18:00Z` |
+| last_wake | `2026-07-27T13:20:00Z` |
 | confirmed_next | `relay-187` |
 | next_action | `relay-187 App tab bar keyboard shortcuts ⌘/Ctrl+1–5` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-186 reviewed round 13; committed 41d31b5` |
 | review_diff_range | `relay-186` |
