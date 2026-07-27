@@ -77,7 +77,7 @@
 - [x] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish | useAgentComposerFocusShortcut + disclaimer hint
 - [x] relay-185 | Cards tab keyboard shortcut hint on first visit | polish | useCardsFilterShortcuts + CardsFilterBar hint (⌘1–4)
 - [x] relay-186 | Settings tab keyboard shortcut from header gear hint | polish | useSettingsOpenShortcut + AppHeader hint (⌘,)
-- [ ] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish
+- [x] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish | useAppTabShortcuts + AppTabBar hint; defers on Log/Day/Cards
 - [ ] relay-188 | OAuth success banner auto-dismiss after 5s | polish
 - [ ] relay-189 | Home rings share sheet keyboard Escape to close | polish
 
@@ -114,6 +114,7 @@
 | rf-r11-001 | low | Duplicate `last_wake` row in CHECKPOINT from prior 9-arm edit | round-11 /code-review | fix-now | — | closed |
 | rf-r12-001 | low | No issues in relay-185 Cards filter shortcut diff | round-12 /code-review | closed | — | closed |
 | rf-r13-001 | low | No issues in relay-186 Settings shortcut diff | round-13 /code-review | closed | — | closed |
+| rf-r14-001 | low | No issues in relay-187 app tab shortcut diff | round-14 /code-review | closed | — | closed |
 
 ---
 
@@ -121,6 +122,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-187 | done | build | — |
 | 2026-07-27 | relay-186 | done | build | 41d31b5 |
 | 2026-07-27 | relay-185 | done | build | 2303dab |
 | 2026-07-27 | relay-184 | done | build | ac53858 |
