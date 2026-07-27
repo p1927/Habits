@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:25:00Z |
+| reviewed_at | 2026-07-27T04:30:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #97; relay-102 remote sync banner navigation shipped. |
+| where_we_are | Loop tick #98; relay-103 badge clear pulse on dismiss shipped. |
 | blockers | [] |
-| confirmed_next | relay-103 meal plan queue badge clear pulse on dismiss |
-| brainstorm_notes | relay-102 done; tap remote sync banner opens source tab/Plan |
+| confirmed_next | relay-104 cards tab meal plan queue awareness |
+| brainstorm_notes | relay-103 done; tab badge pulses when queue or failed count clears |
 
 ---
 

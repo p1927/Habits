@@ -18,7 +18,11 @@ export function useMealPlanQueueCount() {
     const next = getMealPlanQueue().length;
     if (next === 0) pruneMealPlanFailedIds();
     const nextFailed = next === 0 ? 0 : getMealPlanFailedCount();
-    if (next > prevCountRef.current || nextFailed > prevFailedRef.current) {
+    const countIncreased = next > prevCountRef.current;
+    const failedIncreased = nextFailed > prevFailedRef.current;
+    const queueCleared = prevCountRef.current > 0 && next === 0;
+    const failedCleared = prevFailedRef.current > 0 && nextFailed === 0;
+    if (countIncreased || failedIncreased || queueCleared || failedCleared) {
       setBadgePulse(true);
     }
     prevCountRef.current = next;
