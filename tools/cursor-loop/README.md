@@ -198,3 +198,19 @@ Run one tier: `python3 -m pytest tests/segments -q` or `bash tests/e2e/test_full
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Window Instances (v0.5+)
+
+```bash
+bash tools/cursor-loop/install.sh . --symlink --preset four-window
+export PATH="$PWD/.cursor/bin:$PATH"
+
+cwin status          # all loops + wake state
+cwin paste worker-relay
+cwin bootstrap --preset habits-pwa --refresh
+cwin create qa-relay --archetype qa --interval 180
+cwin validate
+```
+
+Canonical presets live in `tools/cursor-loop/window-instances/presets/`.
+Project runtime state: `docs/window-instances/<loop_id>/STATE.md`.

@@ -18,13 +18,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T11:22:00Z |
+| last_wake | 2026-07-27T13:35:00Z |
 | current_item_id | po-tick-001 |
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | — |
 | confirmed_next | UX verify ui-038; Worker relay-169 |
-| loops | dynamic wake — paste `@docs/window-instances/po-relay/INSTANCE.md keep working` |
+| loops | po-relay backup wake pid 24470 (658177 aborted → re-armed) |
 
 ### Loop status (verify with `loop-status.sh`)
 

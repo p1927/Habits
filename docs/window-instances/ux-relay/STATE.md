@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:25:00Z |
-| where_we_are | ui-038 closed (SSE already wired); ui-052 Future Self swipe Hinge pass shipped |
-| confirmed_next | scan orphan surfaces; propose UX_GAPS for PO |
+| reviewed_at | 2026-07-27T13:32:00Z |
+| where_we_are | Backlog complete; prop-ui-038 verified done; prop-ui-039 logged as UX_GAP |
+| confirmed_next | PO triage ux-gap-039; scan for new gaps |
 
 ---
 
@@ -18,7 +18,7 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:25:00Z |
+| last_wake | 2026-07-27T13:32:00Z |
 | next_mode | `C` |
 | current_item_id | — |
 | phase | `9-arm` |
@@ -41,7 +41,7 @@
 
 | id | status | surface | gap | reference app | po_response |
 |----|--------|---------|-----|---------------|-------------|
-| — | — | — | *(none open)* | — | — |
+| ux-gap-039 | ux-proposed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | — |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 

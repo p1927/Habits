@@ -94,6 +94,26 @@ Verify before ending turn:
 bash <package_root>/scripts/verify-wake.sh <loop_id>
 ```
 
+
+---
+
+## Dynamic wake lifecycle (do not misread DOWN)
+
+Each `arm-wake.sh` run is **one shot**: sleep → print `wake_sentinel` → cleanup removes the pidfile. After the sentinel fires, `verify-wake.sh` shows **DOWN** — that is normal **mid-turn**, not success.
+
+| When | `verify-wake` | Meaning |
+|------|---------------|---------|
+| End of a healthy turn | **ARMED** | Fresh sleeper counting down — **target steady state** |
+| During a wake turn, after the old sleeper fired | **DOWN** | Old cycle finished — re-arm before ending turn |
+| End of any turn with DOWN | **FAIL** | End-of-turn gate not met — run `arm-wake.sh` again |
+| Follow-up turns ("Briefly inform…") with DOWN | **FAIL** | Not exempt — still re-arm |
+
+Rules:
+
+- **Follow-up turns are not exempt** from the end-of-turn gate.
+- Always run **`verify-wake.sh` fresh** — never treat stale terminal `WAKE_ARMED pid=…` as proof of a live sleeper.
+- `instance-doctor` showing `wake=ARMED` between turns is healthy; sustained `wake=DOWN` at `phase=9-arm` means re-arm was skipped.
+
 ---
 
 ## Persistent mode (legacy — `loop_mode: persistent`)
@@ -111,8 +131,9 @@ Only if contract sets `loop_mode: persistent`. Expect Cursor SIGTERM ~20–40s.
 **Dynamic mode:**
 
 - [ ] Ritual deliverable done (or `--blocker` checkpoint)
-- [ ] `verify-wake.sh <loop_id>` exit 0 **OR** `WAKE_ALREADY_ARMED` this turn
-- [ ] Exactly one `arm-wake.sh` attempted (no duplicate sleep shells)
+- [ ] `verify-wake.sh <loop_id>` exit 0 **OR** `WAKE_ALREADY_ARMED` this turn (DOWN means re-arm, not success)
+- [ ] Exactly one `arm-wake.sh` attempted
+- [ ] Follow-up / recovery turns re-arm when verify shows DOWN (no duplicate sleep shells)
 - [ ] No `bind_blocked`
 - [ ] Response does **not** defer all work to “next tick”
 

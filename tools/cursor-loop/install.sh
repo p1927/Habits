@@ -19,7 +19,8 @@ VERSION="$(cat "${PACKAGE_DIR}/VERSION" 2>/dev/null || echo "0.0.0")"
 MODE="symlink"
 TARGET=""
 PACKAGE_PATH="tools/cursor-loop"
-CONTRACTS_DIR="docs/agents"
+CONTRACTS_DIR="docs/window-instances"
+PRESET=""
 UNINSTALL=0
 
 usage() {
@@ -40,6 +41,10 @@ for ((i = 0; i < ${#args[@]}; i++)); do
       ;;
     --contracts-dir)
       CONTRACTS_DIR="${args[i + 1]:?Missing value for --contracts-dir}"
+      ((i++))
+      ;;
+    --preset)
+      PRESET="${args[i + 1]:?Missing value for --preset}"
       ((i++))
       ;;
     *)
@@ -117,6 +122,15 @@ install_file "${INSTALL_PACKAGE}/cursor/hooks/_common.sh" "${HOOK_DEST_DIR}/_com
 install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-bind.sh" "${HOOK_DEST_DIR}/loop-bind.sh"
 install_file "${INSTALL_PACKAGE}/cursor/hooks/loop-survival.sh" "${HOOK_DEST_DIR}/loop-survival.sh"
 
+for rule in window-instance-loop.mdc worker-relay-loop.mdc ux-relay-loop.mdc po-relay-loop.mdc code-health-loop.mdc; do
+  if [[ -f "${INSTALL_PACKAGE}/cursor/rules/${rule}" ]]; then
+    install_file "${INSTALL_PACKAGE}/cursor/rules/${rule}" "${TARGET}/.cursor/rules/${rule}"
+  fi
+done
+mkdir -p "${TARGET}/.cursor/bin"
+install_file "${INSTALL_PACKAGE}/bin/cwin" "${TARGET}/.cursor/bin/cwin"
+
+
 chmod +x \
   "${HOOK_DEST_DIR}/_common.sh" \
   "${HOOK_DEST_DIR}/loop-bind.sh" \
@@ -146,7 +160,10 @@ cat > "$MANIFEST" <<EOF
   "version": "${VERSION}",
   "package_root": "${PKG_REL}",
   "contracts_dir": "${CONTRACTS_DIR}",
-  "contract_globs": [],
+  "state_dir": "${CONTRACTS_DIR}",
+  "instances_manifest": "${CONTRACTS_DIR}/instances.manifest.json",
+  "instances_preset": "${PRESET}",
+  "contract_globs": ["${CONTRACTS_DIR}/*/INSTANCE.md"],
   "binding_ttl_days": 30
 }
 EOF
@@ -156,6 +173,11 @@ HOOKS_JSON="${TARGET}/.cursor/hooks.json"
 SNIPPET="${INSTALL_PACKAGE}/cursor/hooks/hooks.json.snippet"
 python3 "${INSTALL_PACKAGE}/scripts/merge_hooks.py" "$HOOKS_JSON" "$SNIPPET"
 echo "merged: ${HOOKS_JSON}"
+
+if [[ -n "$PRESET" ]]; then
+  python3 "${INSTALL_PACKAGE}/window-instances/scripts/bootstrap_instances.py" "${TARGET}" --preset "${PRESET}" --mode symlink --refresh
+  echo "bootstrapped preset: ${PRESET}"
+fi
 
 mkdir -p "${TARGET}/${CONTRACTS_DIR}"
 if [[ ! -f "${TARGET}/docs/START_LOOPS.md" ]]; then
@@ -178,5 +200,5 @@ cursor-loop v${VERSION} installed into: ${TARGET}
   manifest: ${MANIFEST}
   package:  ${PKG_REL}
 
-Next: @${CONTRACTS_DIR}/<task>.md keep working
+Next: cwin status   (add .cursor/bin to PATH)
 EOF

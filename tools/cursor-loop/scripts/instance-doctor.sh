@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT="${1:-.}"
 ROOT="$(cd "$ROOT" && pwd)"
-MANIFEST="$ROOT/docs/window-instances/instances.manifest.json"
+MANIFEST="$(python3 -c "import json,sys; from pathlib import Path; r=Path(sys.argv[1]); m=json.loads((r/".cursor"/"cursor-loop.json").read_text()); print(r/m.get("instances_manifest", "docs/window-instances/instances.manifest.json"))" "$ROOT")"
 SCRIPTS="$ROOT/tools/cursor-loop/scripts"
 
 if [[ ! -f "$MANIFEST" ]]; then
@@ -50,8 +50,17 @@ def parse_checkpoint(state_text: str) -> dict[str, str]:
 def count_open_backlog(state_text: str) -> int:
     return len(re.findall(r"^\s*-\s*\[\s*\]", state_text, re.MULTILINE))
 
+def read_wake_armed_at(loop_id: str) -> str | None:
+    import os
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    armed = tmp / f"cursor-loop-{loop_id}.wake.armed"
+    if not armed.is_file():
+        return None
+    return armed.read_text(encoding="utf-8").strip() or None
+
 def wake_status(loop_id: str) -> str:
     script = root / "tools/cursor-loop/scripts/verify-wake.sh"
+    armed_at = read_wake_armed_at(loop_id)
     if not script.is_file():
         return "?"
     try:
@@ -62,7 +71,11 @@ def wake_status(loop_id: str) -> str:
             text=True,
             timeout=5,
         )
-        return "ARMED" if r.returncode == 0 else "DOWN"
+        if r.returncode == 0:
+            return "ARMED" + (f" since {armed_at}" if armed_at else "")
+        if armed_at:
+            return f"DOWN (last armed {armed_at}) — re-arm required"
+        return "DOWN (never armed)"
     except Exception:
         return "?"
 

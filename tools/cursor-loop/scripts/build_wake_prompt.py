@@ -33,10 +33,16 @@ READ_ORDER = ["INSTANCE.md", "IDENTITY.md", "STATE.md", "RITUAL.md"]
 
 
 def load_instances_manifest(root: Path) -> dict:
-    path = root / "docs/window-instances/instances.manifest.json"
-    if not path.is_file():
+    import loop_hook_lib as mod
+
+    try:
+        manifest = mod.load_manifest(root)
+    except (FileNotFoundError, ValueError):
+        legacy = root / "docs/window-instances/instances.manifest.json"
+        if legacy.is_file():
+            return json.loads(legacy.read_text(encoding="utf-8"))
         return {"version": 1, "instances": []}
-    return json.loads(path.read_text(encoding="utf-8"))
+    return mod.load_instances_manifest(root, manifest)
 
 
 def all_loop_ids(manifest: dict) -> set[str]:

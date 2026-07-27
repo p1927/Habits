@@ -7,7 +7,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-PACKAGE_VERSION = "0.4.0"
+PACKAGE_VERSION = "0.5.0"
 
 VALID_LOOP_MODES = frozenset({"dynamic", "persistent", "external"})
 DEFAULT_LOOP_MODE = "dynamic"
@@ -30,7 +30,28 @@ LOOP_CONFIG_KEYS = frozenset(
     }
 )
 
-REQUIRED_MANIFEST_KEYS = ("package_root", "contracts_dir")
+REQUIRED_MANIFEST_KEYS = ("package_root",)
+
+
+def resolve_state_dir(manifest: dict) -> str:
+    return manifest.get("state_dir") or manifest.get("contracts_dir") or "docs/window-instances"
+
+
+def resolve_instances_manifest_path(root: Path, manifest: dict) -> Path:
+    rel = manifest.get("instances_manifest")
+    if rel:
+        return root / rel
+    state_dir = resolve_state_dir(manifest)
+    return root / state_dir / "instances.manifest.json"
+
+
+def load_instances_manifest(root: Path, manifest: dict | None = None) -> dict:
+    if manifest is None:
+        manifest = load_manifest(root)
+    path = resolve_instances_manifest_path(root, manifest)
+    if not path.is_file():
+        return {"version": 1, "instances": []}
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def load_manifest(root: Path) -> dict:
@@ -51,6 +72,8 @@ def load_manifest(root: Path) -> dict:
     data.setdefault("version", PACKAGE_VERSION)
     data.setdefault("contract_globs", [])
     data.setdefault("binding_ttl_days", 30)
+    data.setdefault("contracts_dir", resolve_state_dir(data))
+    data.setdefault("state_dir", resolve_state_dir(data))
     return data
 
 
@@ -386,7 +409,7 @@ def iter_contract_files(root: Path, manifest: dict) -> list[Path]:
             seen.add(resolved)
             files.append(path)
 
-    contracts_dir = root / manifest["contracts_dir"]
+    contracts_dir = root / resolve_state_dir(manifest)
     if contracts_dir.is_dir():
         for path in sorted(contracts_dir.glob("*.md")):
             add(path)

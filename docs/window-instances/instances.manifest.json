@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "preset": "habits-pwa",
   "instances": [
     {
       "loop_id": "worker-relay",

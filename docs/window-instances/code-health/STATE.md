@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:24:00Z |
-| uncommitted_files | ch-006–117 refactors + window-instances |
-| where_we_are | Backup wake tick #95; ch-117 line scan done |
-| confirmed_next | ch-118 — Day.tsx (156) split |
+| reviewed_at | 2026-07-27T13:35:00Z |
+| uncommitted_files | ch-006–119 refactors + window-instances |
+| where_we_are | Backup wake tick #97; ch-119 done |
+| confirmed_next | ch-120 — ringShareCardCanvas (143) split |
 
 ---
 
@@ -19,11 +19,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:21:00Z |
+| last_wake | 2026-07-27T13:35:00Z |
 | phase | 9-arm |
 | review_status | done |
-| confirmed_next | ch-118 |
-| loops | dynamic wake re-armed after SIGTERM recovery |
+| confirmed_next | ch-120 |
+| loops | primary code-health PID 24462; backup wake code-health pid 23804; po-relay backup wake pid 24470 |
 
 ---
 
@@ -152,7 +152,9 @@
 - [x] ch-115 | `Agent.tsx` (139) split | structure | AgentSectionHeader + Body + Overlays; 139→71 |
 - [x] ch-116 | `App.tsx` → `useAppShell` + tab/header/banners (296→28) | structure | done (prior tick)
 - [x] ch-117 | Line scan — top: api 302, Day 156, ringShareCardCanvas 143, useCameraCapture 137, weekReportPdf 136 | structure | done tick #95
-- [ ] ch-118 | `Day.tsx` (156) split | structure | queued
+- [x] ch-118 | `Day.tsx` → header + meal + schedule + alerts stacks (156→54) | structure | done tick #96
+- [x] ch-119 | `useCameraCapture.ts` → stream + actions modules (137→26) | structure | done tick #97
+- [ ] ch-120 | `ringShareCardCanvas.ts` (143) split | structure | queued
 
 ---
 
@@ -455,3 +457,7 @@
 | 2026-07-27 | ch-115 | Agent section split (header/body/overlays) | build | pending |
 | `pwa/src/sections/Agent.tsx` | 2026-07-27 tick #94 | ch-115: 139→71; 3 panel components |
 | 2026-07-27 | ch-117 | line scan tick #95 | — | pending |
+| `pwa/src/sections/Day.tsx` | 2026-07-27 tick #96 | ch-118: meal + schedule + alerts stacks; 156→54 |
+| 2026-07-27 | ch-118 | Day section split | build | pending |
+| `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
+| 2026-07-27 | ch-119 | useCameraCapture split | build | pass |

@@ -45,7 +45,7 @@ cursor-loop automates that loop so the user pastes one line per window and walks
 
 | Mode | Script | Monitored regex | Notes |
 |------|--------|-----------------|-------|
-| **`dynamic`** (default) | `arm-wake.sh` | `^AGENT_LOOP_WAKE_*` | One-shot `sleep && echo` per turn; survives Cursor shell cleanup |
+| **`dynamic`** (default) | `arm-wake.sh` | `^AGENT_LOOP_WAKE_*` | One-shot `sleep && echo` per turn; survives Cursor shell cleanup. DOWN after sentinel is normal; sustained DOWN means re-arm was skipped. |
 | **`persistent`** | `agent-loop.sh` | `^AGENT_LOOP_TICK_*` | Legacy `while true`; often SIGTERM ~20–40s in Agent Shell |
 
 Dynamic flow:
