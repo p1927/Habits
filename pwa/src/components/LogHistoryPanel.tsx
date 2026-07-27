@@ -1,3 +1,4 @@
+import { Sparkline } from './MacroChart';
 import { Card } from './ui/Card';
 
 export interface LogHistoryPanelProps {
@@ -5,6 +6,9 @@ export interface LogHistoryPanelProps {
 }
 
 export function LogHistoryPanel({ days }: LogHistoryPanelProps) {
+  const chronological = [...days].sort((a, b) => a.date.localeCompare(b.date));
+  const showTrend = chronological.length >= 2;
+
   return (
     <Card className="log-history-card home-export-card--health">
       <p className="section-eyebrow">History</p>
@@ -12,16 +16,35 @@ export function LogHistoryPanel({ days }: LogHistoryPanelProps) {
       {!days.length ? (
         <p className="muted">No history in Followed tab.</p>
       ) : (
-        <ul className="food-list">
-          {[...days].reverse().map((d) => (
-            <li key={d.date} className="food-row">
-              <strong>{d.date}</strong>
-              <span className="log-history-stats muted">
-                {d.calories.toFixed(0)} kcal · {d.protein.toFixed(1)}g protein
-              </span>
-            </li>
-          ))}
-        </ul>
+        <>
+          {showTrend && (
+            <div className="log-history-trends">
+              <div className="log-history-trend">
+                <h3 className="log-history-trend__label">Calories</h3>
+                <Sparkline data={chronological.map((d) => d.calories)} color="var(--ring-calories)" />
+                <div className="sparkline-labels">
+                  {chronological.map((d) => (
+                    <span key={`cal-${d.date}`}>{d.date.slice(5)}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="log-history-trend">
+                <h3 className="log-history-trend__label">Protein</h3>
+                <Sparkline data={chronological.map((d) => d.protein)} color="var(--ring-protein)" />
+              </div>
+            </div>
+          )}
+          <ul className="food-list log-history-list">
+            {[...days].reverse().map((d) => (
+              <li key={d.date} className="food-row">
+                <strong>{d.date}</strong>
+                <span className="log-history-stats muted">
+                  {d.calories.toFixed(0)} kcal · {d.protein.toFixed(1)}g protein
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </Card>
   );

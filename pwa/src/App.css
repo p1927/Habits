@@ -982,6 +982,24 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.log-history-trends {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.log-history-trend__label {
+  margin: 0 0 0.35rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.log-history-list {
+  margin-top: 0.25rem;
+}
+
 .log-history-card .food-row strong {
   font-variant-numeric: tabular-nums;
 }
