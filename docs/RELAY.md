@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T11:45:00Z |
+| reviewed_at | 2026-07-27T12:14:00Z |
 | git_branch | main |
-| uncommitted_files | App.css WIP, parallel window refactors (Day/Log/Cards/server) |
-| where_we_are | relay-149–151 shipped (voice orb, meal plan quick-add on Log Type tab). |
+| uncommitted_files | none (pushed f3af1b5) |
+| where_we_are | Legacy inline + script loops discarded; **cursor-loop** worker-relay armed fresh (PID 74904, 60s). |
 | blockers | [] |
 | confirmed_next | relay-152 accessibility audit |
-| brainstorm_notes | loops optional; keep shipping features |
+| brainstorm_notes | Worker only in this window — paste other contracts from `docs/START_LOOPS.md` for UX/Code/PO |
 
 ---
 
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T11:45:00Z |
+| last_wake | 2026-07-27T12:14:00Z |
 | status | ready |
 | current_item_id | — |
 | cycle_parity | even (next: feature) |
 | next_action | relay-152 accessibility audit |
 | blockers | [] |
-| loops | relay `scripts/agent-relay-loop.sh` (^AGENT_LOOP_TICK_HABITS, PID file); restart only in Habits terminal |
+| loops | **Worker** `tools/cursor-loop/scripts/agent-loop.sh` — `loop_id=worker-relay`, sentinel `^AGENT_LOOP_TICK_HABITS`, interval 60s, PID **74904**, shell **316284**. Verify: `bash tools/cursor-loop/scripts/verify-loop.sh worker-relay`. **All legacy loops discarded** (inline `while true`, `scripts/agent-*-loop.sh`). UX/Code/PO: arm by pasting contract in separate windows (`docs/START_LOOPS.md`). |
 
 ---
 

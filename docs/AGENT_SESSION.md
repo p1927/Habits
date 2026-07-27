@@ -14,22 +14,22 @@ Each 1-minute wake runs the **full relay cycle**, not blind coding:
 | 4 | **Verify** | `npm run build`; API import if backend changed; see [`VERIFICATION.md`](VERIFICATION.md) |
 | 5 | **Commit** | Git commit completed work (see protocol below) |
 | 6 | **Update RELAY** | Append HISTORY, update CHECKPOINT, clear IN_PROGRESS |
-| 7 | **Confirm loop** | Ensure in-session `/loop` (60s `AGENT_LOOP_TICK_HABITS`) still running; restart if not |
+| 7 | **Confirm loop** | `bash tools/cursor-loop/scripts/verify-loop.sh worker-relay`; re-arm per `.cursor/rules/agent-loop-contract.mdc` if DOWN |
 
 If mid-implementation when tick fires: finish the current atomic step, then run Review + Brainstorm before the next item.
 
-## Loop schedule (this chat tab)
+## Loop schedule (Worker window)
 
 | Trigger | Delay | Purpose |
 |---------|-------|---------|
-| `/loop` fixed schedule | **60 seconds** | Persistent ritual wake via `AGENT_LOOP_TICK_HABITS` |
-| Initial arm | **Immediate** | Run ritual now on session start |
+| `cursor-loop` sentinel | **60 seconds** | `AGENT_LOOP_TICK_HABITS` via `tools/cursor-loop/scripts/agent-loop.sh` |
+| Contract paste | **Immediate** | `@docs/agents/worker-relay.md keep working` |
 
-Use the Loop skill fixed schedule — persistent `while true; sleep 60; echo AGENT_LOOP_TICK_HABITS …` with monitored shell output. **Never use one-shot** `sleep N && echo`.
+**Do not** use inline `while true; sleep …; echo` loops or `scripts/agent-*-loop.sh` (deprecated wrappers). One chat = one `loop_id`. Arming and survival: **`.cursor/rules/agent-loop-contract.mdc`**.
+
+Cheat sheet: [`docs/START_LOOPS.md`](START_LOOPS.md). Verify: `bash tools/cursor-loop/scripts/loop-status.sh`.
 
 While this chat is open: **chain BACKLOG items** without waiting for ticks. The loop only wakes you when idle between turns.
-
-After every wake, confirm the loop terminal is still running. Restart if it exited.
 
 ## Git commit protocol (required)
 
