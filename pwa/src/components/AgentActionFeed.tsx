@@ -13,6 +13,8 @@ interface AgentActionFeedProps {
   serverOnline: boolean;
   active: boolean;
   onDataChange?: () => void;
+  seedActions?: AgentAction[];
+  pollToken?: number;
 }
 
 function foodFingerprint(items: FoodLogItem[]): string {
@@ -23,11 +25,13 @@ function calendarFingerprint(events: CalendarEvent[]): string {
   return events.map((e) => `${e.id}:${e.summary}`).join('|');
 }
 
-export function AgentActionFeed({ serverOnline, active, onDataChange }: AgentActionFeedProps) {
+export function AgentActionFeed({ serverOnline, active, onDataChange, seedActions, pollToken = 0 }: AgentActionFeedProps) {
   const [actions, setActions] = useState<AgentAction[]>([]);
   const prevFoodRef = useRef<string>('');
   const prevCalRef = useRef<string>('');
   const initializedRef = useRef(false);
+  const onDataChangeRef = useRef(onDataChange);
+  onDataChangeRef.current = onDataChange;
 
   const poll = useCallback(async () => {
     if (!serverOnline) return;
@@ -76,7 +80,7 @@ export function AgentActionFeed({ serverOnline, active, onDataChange }: AgentAct
 
         if (newActions.length > 0) {
           setActions((prev) => [...newActions, ...prev].slice(0, 12));
-          onDataChange?.();
+          onDataChangeRef.current?.();
         }
       }
 
@@ -86,7 +90,7 @@ export function AgentActionFeed({ serverOnline, active, onDataChange }: AgentAct
     } catch {
       // polling is best-effort
     }
-  }, [serverOnline, onDataChange]);
+  }, [serverOnline]);
 
   useEffect(() => {
     if (!active) return;
@@ -94,6 +98,21 @@ export function AgentActionFeed({ serverOnline, active, onDataChange }: AgentAct
     const id = window.setInterval(() => void poll(), 20_000);
     return () => window.clearInterval(id);
   }, [active, poll]);
+
+  useEffect(() => {
+    if (!pollToken) return;
+    void poll();
+  }, [pollToken, poll]);
+
+  useEffect(() => {
+    if (!seedActions?.length) return;
+    setActions((prev) => {
+      const ids = new Set(prev.map((a) => a.id));
+      const fresh = seedActions.filter((a) => !ids.has(a.id));
+      if (!fresh.length) return prev;
+      return [...fresh, ...prev].slice(0, 12);
+    });
+  }, [seedActions]);
 
   if (actions.length === 0) {
     return (

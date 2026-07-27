@@ -55,7 +55,7 @@ export function AgentContextPanel({ context, onNavigateMealPlanSyncSource }: Age
       />
 
       <HomeSummaryTiles
-        loading={loading && !food}
+        loading={loading}
         calories={food?.calories}
         calTarget={2200}
         protein={food?.protein_g}

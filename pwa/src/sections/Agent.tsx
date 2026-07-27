@@ -28,6 +28,8 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource }: AgentProps
         onSelectPrompt={s.setInput}
         context={s.context}
         onNavigateMealPlanSyncSource={onNavigateMealPlanSyncSource}
+        toolFeedActions={s.toolFeedActions}
+        actionPollToken={s.actionPollToken}
       />
 
       <AgentChatComposer

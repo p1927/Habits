@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { agentChatStream } from '../lib/agentChatStream';
 import type { AgentChatMessage } from '../lib/agentSectionShared';
 
+import type { ChatResponse } from '../lib/api';
+
 interface UseAgentChatOptions {
   serverOnline: boolean;
-  onToolResults?: () => void;
+  onToolResults?: (results: ChatResponse['tool_results']) => void;
 }
 
 function isAbortError(e: unknown): boolean {
@@ -64,6 +66,9 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
               copy[copy.length - 1] = { ...last, content: last.content + token };
               return copy;
             });
+            requestAnimationFrame(() => {
+              listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'auto' });
+            });
           },
           onDone: (res) => {
             if (gen !== streamGenRef.current) return;
@@ -75,7 +80,7 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
               }
               return copy;
             });
-            if (res.tool_results.length) onToolResults?.();
+            if (res.tool_results.length) onToolResults?.(res.tool_results);
           },
           onError: (msg) => {
             if (gen !== streamGenRef.current) return;

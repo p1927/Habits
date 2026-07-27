@@ -1,9 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { getConfig } from '../lib/config';
 import { toOrbVisual, type VoiceIframeStatus } from '../lib/voiceStatus';
+import { type ChatResponse } from '../lib/api';
 import { useAgentContext } from './useAgentContext';
 import { useAgentChat } from './useAgentChat';
 import { useAgentPhotoAttach } from './useAgentPhotoAttach';
+import { toolResultsToActions } from '../lib/agentToolFeed';
+import type { AgentAction } from '../components/AgentActionFeed';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 interface UseAgentSectionOptions {
@@ -16,14 +19,19 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [voiceIframeStatus, setVoiceIframeStatus] = useState<VoiceIframeStatus | null>(null);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [toolFeedActions, setToolFeedActions] = useState<AgentAction[]>([]);
+  const [actionPollToken, setActionPollToken] = useState(0);
 
   const orbState = toOrbVisual(voiceIframeStatus, serverOnline);
 
   const refreshRef = useRef(context.refresh);
   refreshRef.current = context.refresh;
 
-  const onToolResults = useCallback(() => {
+  const onToolResults = useCallback((results: ChatResponse['tool_results']) => {
     void refreshRef.current();
+    const actions = toolResultsToActions(results);
+    if (actions.length) setToolFeedActions(actions);
+    setActionPollToken((t) => t + 1);
   }, []);
 
   const {
@@ -81,6 +89,8 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
     scanning,
     handlePhotoCapture,
     composerVoiceOrbState,
+    toolFeedActions,
+    actionPollToken,
   };
 }
 

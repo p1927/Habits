@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import { AgentActionFeed } from './AgentActionFeed';
 import { AgentChatPanel } from './AgentChatPanel';
 import { AgentContextPanel } from './AgentContextPanel';
+import type { AgentAction } from '../components/AgentActionFeed';
 import type { AgentNavigateMealPlanSyncSource, AgentSectionContext } from '../hooks/useAgentSection';
 import type { AgentChatMessage } from '../lib/agentSectionShared';
 
@@ -14,6 +15,8 @@ interface AgentSectionBodyProps {
   onSelectPrompt: (prompt: string) => void;
   context: AgentSectionContext;
   onNavigateMealPlanSyncSource?: AgentNavigateMealPlanSyncSource;
+  toolFeedActions?: AgentAction[];
+  actionPollToken?: number;
 }
 
 export function AgentSectionBody({
@@ -24,6 +27,8 @@ export function AgentSectionBody({
   onSelectPrompt,
   context,
   onNavigateMealPlanSyncSource,
+  toolFeedActions,
+  actionPollToken,
 }: AgentSectionBodyProps) {
   const refreshRef = useRef(context.refresh);
   refreshRef.current = context.refresh;
@@ -52,6 +57,8 @@ export function AgentSectionBody({
             serverOnline={serverOnline}
             active
             onDataChange={onActionFeedDataChange}
+            seedActions={toolFeedActions}
+            pollToken={actionPollToken}
           />
         </>
       )}
