@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:32:00Z |
-| where_we_are | Backlog complete; prop-ui-038 verified done; prop-ui-039 logged as UX_GAP |
-| confirmed_next | PO triage ux-gap-039; scan for new gaps |
+| reviewed_at | 2026-07-27T13:45:00Z |
+| where_we_are | ui-053 shipped (prop-ui-039 deep link); camera/barcode viewfinder polish |
+| confirmed_next | scan for new UX_GAPS; PO triage remaining proposals |
 
 ---
 
@@ -18,13 +18,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:32:00Z |
+| last_wake | 2026-07-27T13:45:00Z |
 | next_mode | `C` |
-| current_item_id | — |
+| current_item_id | ui-053 |
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | — |
-| confirmed_next | triage PO UI_PROPOSALS; scan remaining generic `card` surfaces |
+| review_round | `0` |
+| review_diff_range | — |
+| code_changed | `yes` |
+| confirmed_next | audit remaining orphan surfaces; await PO on new gaps |
 | loops | dynamic wake — paste `@docs/window-instances/ux-relay/INSTANCE.md keep working` |
 
 ---
@@ -41,7 +44,7 @@
 
 | id | status | surface | gap | reference app | po_response |
 |----|--------|---------|-----|---------------|-------------|
-| ux-gap-039 | ux-proposed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | — |
+| ux-gap-039 | po-agreed | Home → Log | Saved recipe “See full recipe” deep link to Log Recipes tab (prop-ui-039) | Revolut / Gemini deep links | PO refined AC; Worker relay-150 |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -103,6 +106,7 @@
 - [x] ui-050 | **Legacy Food forms:** quick/manual entry + protein progress card Revolut pass | P3 | done 2026-07-27
 - [x] ui-051 | **Future Self Hinge pass:** baseline + tracker cards, section eyebrow, rose tint | P3 | done 2026-07-27
 - [x] ui-052 | **Future Self swipe card:** Hinge prompt layout, rose accept pill, projection grid Revolut pass | P3 | done 2026-07-27
+- [x] ui-053 | **Home recipe deep link:** “See full recipe” → Log Recipes sub-tab (prop-ui-039) | P2 | done 2026-07-27
 
 ---
 
@@ -118,6 +122,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | C | ui-053 | Home→Log Recipes deep link + camera/barcode viewfinder | build | pending |
 | 2026-07-27 | C | ui-038, ui-052 | Agent stream scroll + Future Self swipe Hinge | build | pending |
 | 2026-07-27 | C | ui-016–018 | Gemini theme + Health tiles + Translate scan | build | pending |
 | 2026-07-27 | A | ux-relay-loop-001 | build + components scan | build | — |

@@ -70,6 +70,24 @@ def bootstrap(
     state_dir.mkdir(parents=True, exist_ok=True)
 
     template_state = (wi_root / "_template" / "STATE.md").read_text(encoding="utf-8")
+
+    template_dest = state_dir / "_template"
+    template_src = wi_root / "_template"
+    if template_src.is_dir():
+        if template_dest.exists() or template_dest.is_symlink():
+            if refresh:
+                if template_dest.is_symlink():
+                    template_dest.unlink()
+                elif template_dest.is_dir():
+                    import shutil
+                    shutil.rmtree(template_dest)
+        if not template_dest.exists():
+            if mode == "copy":
+                import shutil
+                shutil.copytree(template_src, template_dest)
+            else:
+                template_dest.symlink_to(template_src.resolve(), target_is_directory=True)
+
     project_instances: list[dict] = []
 
     for entry in preset_data.get("instances") or []:

@@ -13,6 +13,11 @@ Ship top unchecked `task-*` backlog item per tick — verify build, commit, upda
 1. `.agents/skills/vercel-react-best-practices/SKILL.md`
 2. `.cursor/skills/ui-ux-pro-max/SKILL.md` — when feature requires UI touch
 
+## Code review cycle (mandatory on code-changing ticks)
+
+- **Phase 6:** [`/code-review`](../../../.cursor/commands/code-review.md) — log `wk-r{N}-*` findings with `source=round-{N}`
+- **Phase 7:** [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) — verify and implement fix-now
+
 ## Forbidden
 
 - Other windows' STATE files (see wake JSON `forbidden_loops`)

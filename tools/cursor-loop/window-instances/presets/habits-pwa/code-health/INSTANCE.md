@@ -17,7 +17,7 @@
 | state_file | `docs/window-instances/code-health/STATE.md` |
 | contract_doc | `docs/window-instances/code-health/INSTANCE.md` |
 | archetype | `engineer` |
-| instance_version | `1` |
+| instance_version | `2` |
 
 ---
 

@@ -3,7 +3,7 @@
 **extends:** `designer`  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
-## Phase 2 — Review
+## Phase 2 — Orient
 
 Read `../po-relay/STATE.md` `UI_PROPOSALS`; update `LAST_REVIEW`; `git status`.
 
@@ -24,7 +24,11 @@ Top agreed `ui-*` from `UI_POLISH_BACKLOG`; resume `IN_PROGRESS` if set.
 
 ```bash
 cd pwa && npm run build
+git diff --stat HEAD -- pwa/ server/
+git diff --stat --cached -- pwa/ server/
 ```
+
+Set `code_changed`; increment `review_round` if yes. Record `review_diff_range`.
 
 **API (if server touched):**
 
@@ -50,13 +54,21 @@ python3 -c "import habits_api.main"
 - [ ] Visual check at **390px**
 - [ ] `prefers-reduced-motion` not broken
 
-## Phase 6 — Review
+## Phase 6 — Code review (Round N)
 
-`/code-review` on UI diff + visual parity vs reference app in IDENTITY matrix.
+Required when `code_changed=yes`.
 
-## Phase 7 — Triage
+1. [`/code-review`](../../../.cursor/commands/code-review.md) on UI diff + 390px visual parity vs IDENTITY matrix
+2. Log findings as `ux-r{N}-{seq}` with `source=round-{N}`
+3. Zero issues → sentinel `ux-r{N}-000`
 
-Resolve each `UI_PROPOSALS` row; log `UX_GAPS` for PO if new gaps found.
+## Phase 7 — Receive review (Round N)
+
+Required when `code_changed=yes`.
+
+1. [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) on round-N rows
+2. Implement fix-now UI fixes; re-verify build + 390px if needed
+3. Also triage `UI_PROPOSALS`; log `UX_GAPS` for PO if new gaps found
 
 ## Phase 8 — Close
 

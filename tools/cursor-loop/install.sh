@@ -127,7 +127,12 @@ for rule in window-instance-loop.mdc worker-relay-loop.mdc ux-relay-loop.mdc po-
     install_file "${INSTALL_PACKAGE}/cursor/rules/${rule}" "${TARGET}/.cursor/rules/${rule}"
   fi
 done
-mkdir -p "${TARGET}/.cursor/bin"
+mkdir -p "${TARGET}/.cursor/commands" "${TARGET}/.cursor/bin"
+for cmd in code-review.md receiving-code-review.md; do
+  if [[ -f "${INSTALL_PACKAGE}/cursor/commands/${cmd}" ]]; then
+    install_file "${INSTALL_PACKAGE}/cursor/commands/${cmd}" "${TARGET}/.cursor/commands/${cmd}"
+  fi
+done
 install_file "${INSTALL_PACKAGE}/bin/cwin" "${TARGET}/.cursor/bin/cwin"
 
 

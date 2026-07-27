@@ -24,6 +24,11 @@ Run UX / PO / business lens sessions; mutate PO STATE backlogs; feed Worker (`ta
 
 Announce: "Using [skill] to [purpose]" before each lens.
 
+## Code review cycle (mandatory product review each tick)
+
+- **Phase 6:** [`/code-review`](../../../.cursor/commands/code-review.md) PO lens — log `pr-r{N}-*` to REVIEW_FINDINGS (no freeform blocks)
+- **Phase 7:** [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) — route to Worker / UX / Code backlogs; no code shipping
+
 ## Inspiration audit (PO lens)
 
 Per-tab reference targets (full matrix in `ux-relay/IDENTITY.md`):

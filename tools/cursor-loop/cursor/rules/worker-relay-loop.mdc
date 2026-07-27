@@ -34,6 +34,8 @@ Respond **only** to `AGENT_LOOP_WAKE_HABITS` / `AGENT_LOOP_TICK_HABITS`.
 
 Ship relay features only — not UI polish, refactors, or PO brainstorm.
 
+**Code-changing ticks:** Phase 6 `/code-review` then Phase 7 `/receiving-code-review` before close.
+
 Restart: `@docs/window-instances/worker-relay/INSTANCE.md keep working`
 
 Loop arming: [`agent-loop-contract.mdc`](agent-loop-contract.mdc)

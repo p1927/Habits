@@ -17,6 +17,9 @@
 | phase | `1-wake` |
 | review_status | `pending` |
 | review_skip_reason | — |
+| review_round | `0` |
+| review_diff_range | — |
+| code_changed | `no` |
 | confirmed_next | — |
 
 ## IN_PROGRESS

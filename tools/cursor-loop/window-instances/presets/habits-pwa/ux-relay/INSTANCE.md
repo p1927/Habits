@@ -17,7 +17,7 @@
 | state_file | `docs/window-instances/ux-relay/STATE.md` |
 | contract_doc | `docs/window-instances/ux-relay/INSTANCE.md` |
 | archetype | `designer` |
-| instance_version | `1` |
+| instance_version | `2` |
 
 ---
 

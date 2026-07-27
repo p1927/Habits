@@ -15,6 +15,8 @@ When woken by `AGENT_LOOP_WAKE_PO_RELAY` or `AGENT_LOOP_TICK_PO_RELAY`:
 2. Bundle: IDENTITY → STATE → RITUAL (9-phase, product code review in Phase 6)
 3. Mutate PO backlogs; feed worker-relay BACKLOG; propose via UI_PROPOSALS
 
+**Code-changing ticks:** Phase 6 `/code-review` then Phase 7 `/receiving-code-review` before close (PO reviews shipped code; Phase 7 routes to target backlogs).
+
 ## Do not cross-read for execution
 
 Never ship code in `pwa/src/` or `server/`. UI → UX. Refactors → Code. Features → Worker.

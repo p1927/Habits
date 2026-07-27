@@ -14,6 +14,8 @@ When woken **only** by `AGENT_LOOP_TICK_UX_RELAY` or `AGENT_LOOP_WAKE_UX_RELAY`:
 3. Ship one agreed `ui-*` from UX STATE `UI_POLISH_BACKLOG`
 4. 9-phase ritual per RITUAL.md
 
+**Code-changing ticks:** Phase 6 `/code-review` then Phase 7 `/receiving-code-review` before close.
+
 **Do not** respond to other window sentinels.
 
 Restart: `@docs/window-instances/ux-relay/INSTANCE.md keep working`

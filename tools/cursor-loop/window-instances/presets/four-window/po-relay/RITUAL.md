@@ -3,6 +3,10 @@
 **extends:** `product`  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
+## Phase 2 — Orient
+
+Read CHECKPOINT, backlogs, `git log -5 --oneline`; update `LAST_REVIEW`.
+
 ## Phase 4 — Execute (3-lens brainstorm)
 
 Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
@@ -21,7 +25,7 @@ Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
 - RICE top 5 candidates
 - Merge duplicates; drop vague items
 - Rewrite AC as Given/When/Then
-- Feed `relay-*` to `worker-relay/STATE.md` BACKLOG
+- Feed `task-*` to `worker-relay/STATE.md` BACKLOG
 
 ### Business owner lens
 
@@ -34,28 +38,42 @@ Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
 
 Log all three lenses in `BRAINSTORM_LOG` with timestamp. At least one backlog mutation (not read-only).
 
-## Phase 6 — Product code review
+```bash
+git diff --stat HEAD -- pwa/ server/
+git diff --stat --cached -- pwa/ server/
+```
+
+Set `code_changed` (usually `no` for PO — PO does not ship code). If reviewing others' shipped code in Phase 6, set `review_diff_range` to branch range (e.g. `main...HEAD`).
+
+## Phase 6 — Product code review (Round N)
+
+Run when reviewing shipped code (typical every tick) OR when `code_changed=yes`.
 
 1. `git log -10 --oneline` + `git diff main...HEAD --stat`
 2. Skim `pwa/src/` and `server/` (read-only)
-3. `/code-review` with PO lens: missing features, weak AC, RICE, cross-feed
+3. [`/code-review`](../../../.cursor/commands/code-review.md) with PO lens: missing features, weak AC, RICE, cross-feed
 4. Validate `UI_PROPOSALS`; read `ux-relay/STATE.md` `UX_GAPS`
 5. Cross-check `worker-relay/STATE.md` BACKLOG vs shipped code
 
-**Output template** (HISTORY or REVIEW_FINDINGS):
+Log **all** output as REVIEW_FINDINGS rows (`pr-r{N}-{seq}`, `source=round-{N}`). Do not use freeform Product review blocks.
 
-```
-## Product review — {date}
-- Shipped vs backlog: ...
-- Missing features (relay-*): ...
-- UI proposals (prop-ui-*): ...
-- Quality flags (maint-* / ch-*): ...
-- AC gaps: ...
-```
+Categories to cover each tick:
 
-## Phase 7 — Triage
+- Shipped vs backlog
+- Missing features (`task-*`)
+- UI proposals (`prop-ui-*`)
+- Quality flags (`maint-*` / `ch-*`)
+- AC gaps
 
-Route findings: fix-now | target window backlog | REVIEW_FINDINGS | closed.
+Zero issues → sentinel `pr-r{N}-000`.
+
+## Phase 7 — Receive review (Round N)
+
+1. [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) on round-N rows
+2. Route valid findings: fix-now (handoff note) | target window backlog | closed | pushback
+3. Do not implement code — feed Worker, UX, Code backlogs
+
+Also route: `UI_PROPOSALS` triage, `UX_GAPS` promotion where agreed.
 
 ## Phase 8 — Close
 

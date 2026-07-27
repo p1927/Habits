@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T11:22:00Z |
-| where_we_are | Session #19 — ui-038 unblocked; relay-149/150 fed Worker |
-| confirmed_next | UX verify ui-038; Worker relay-169; triage dd-004 vs relay-149 |
+| reviewed_at | 2026-07-27T11:41:00Z |
+| where_we_are | Session #20 — relay-170 verified shipped; relay-169 WIP; prop-ui-038 closed |
+| confirmed_next | Worker close relay-170 + finish relay-169; Worker relay-150; UX prop-ui-039 polish |
 
 ---
 
@@ -18,13 +18,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:35:00Z |
-| current_item_id | po-tick-001 |
+| last_wake | 2026-07-27T11:41:00Z |
+| current_item_id | po-tick-002 |
 | phase | `9-arm` |
-| review_status | `done` |
+| review_status | `triaged` |
 | review_skip_reason | — |
-| confirmed_next | UX verify ui-038; Worker relay-169 |
-| loops | po-relay backup wake pid 24470 (658177 aborted → re-armed) |
+| review_round | `2` |
+| review_diff_range | `main...HEAD` + uncommitted WIP |
+| code_changed | `no` |
+| confirmed_next | Worker relay-170 close + relay-169 commit; Worker relay-150 |
+| loops | po-relay backup wake — arm at end of turn |
 
 ### Loop status (verify with `loop-status.sh`)
 
@@ -53,7 +56,7 @@
 
 - [x] maint-001 | Confirm before dismiss food queue | from RELAY BRAINSTORM | `Log.tsx` — done tick #7
 - [x] maint-002 | Accessibility audit ARIA/focus/contrast | ROADMAP | ui-008/009/011 done — Settings aria-live shipped
-- [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run mobile Lighthouse on `vite preview /Habits/` after ch-006–114 refactor batch lands; confirm precache still ~500 KiB
+- [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run mobile Lighthouse after ch-119/120 lands; ch-batch still uncommitted |
 
 ---
 
@@ -84,8 +87,8 @@
 
 | id | status | origin | surface | proposal | acceptance criteria | ux_response |
 |----|--------|--------|---------|----------|---------------------|-------------|
-| prop-ui-038 | refined | po | Agent | Token-by-token streaming assistant bubble | **Backend live** (relay-165 SSE + `agentChatStream`); UX verify Gemini bubble + blinking cursor; no layout shift; mark ui-038 done if pass | UX: verify on device |
-| prop-ui-039 | proposed | po | Home → Log | Saved recipe “See full recipe” deep link | Given saved recipe on Home, When user taps secondary link, Then navigate to Log **Recipes** sub-tab with sheet data loaded | — |
+| prop-ui-038 | refined | po | Agent | Token-by-token streaming assistant bubble | **Backend live** (relay-165 SSE + `agentChatStream`); UX verified ui-038 done | Verified done ui-038 2026-07-27 |
+| prop-ui-039 | refined | po | Home → Log | Saved recipe “See full recipe” deep link | Given saved recipe on Home, When user taps “See full recipe” secondary link, Then App navigates to Log tab with Recipes sub-tab active and sheet recipe loaded (no full page reload) | UX: ux-gap-039 po-agreed |
 
 **Status values:** `proposed` → UX reviews | `agreed` → copied to UX_STATE `UI_POLISH_BACKLOG` | `refined` → UX sent AC changes, PO updates row | `rejected` → dropped with reason in `ux_response`
 
@@ -96,6 +99,16 @@
 ---
 
 ## BRAINSTORM_LOG (newest first)
+
+### 2026-07-27 — Session #20 (PO tick po-tick-002)
+
+**UX lens (ux-heuristics):** prop-ui-038 **closed** — UX verified ui-038 streaming bubble. prop-ui-039 **refined** — Home saved recipe card lacks secondary navigation affordance (recognition over recall vs Log Recipes tab). Day `Week PDF` header button matches Calendar export pattern (390px pill in header row).
+
+**PO lens (define-prioritization-framework):** RICE open Worker items: **relay-150** (reach×impact, not shipped) > **relay-169** (Day PDF WIP uncommitted — finish+commit) > **relay-149** (Agent mic parity E2E). **relay-170 verified shipped** in HEAD (`ringShareCard` streak pill + `useHomeDashboardActions`) — Worker should close. dd-004 stays verify pending relay-149.
+
+**Business lens (jobs-to-be-done):** Saved-recipe deep link = “log without spreadsheet” investment loop. Streak on share card = social proof variable reward (Hook). Day PDF export = weekly reflection habit for retention.
+
+---
 
 ### 2026-07-27 — Session #19 (PO tick po-tick-001)
 
@@ -161,19 +174,18 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
-| pr-001 | info | relay-165/168 shipped SSE streaming + cancel; ui-038 backend done | git log | UX verify ui-038 | ui-038 | open |
-| pr-002 | low | relay-149/150 brainstormed in #18 but missing from Worker BACKLOG | PO audit | Added relay-149/150 | worker BACKLOG | closed |
-| pr-003 | info | Code window ch-006–114 structural refactors uncommitted | git status | Code continues; no PO action | ch-115+ | open |
-
----
-
-## Product review — 2026-07-27
-
-- **Shipped vs backlog:** relay-163–168 on main (vision attach, SSE stream, streak toast, gallery, log tab memory, stream cancel). Worker next: relay-169/170.
-- **Missing features:** relay-149 VoiceStatusOrb E2E, relay-150 Home→Recipes deep link (now queued).
-- **UI proposals:** prop-ui-038 refined (backend live); prop-ui-039 new (Home deep link).
-- **Quality flags:** maint-003 near done (Lighthouse 97); Code ch-batch uncommitted.
-- **AC gaps:** relay-170 may overlap existing `ringShareCard` streak pill — Worker confirm delta vs done.
+| pr-001 | low | relay-165/168 shipped SSE streaming + cancel; ui-038 backend done | round-0 /code-review | backlog | ui-038 | open |
+| pr-002 | low | relay-149/150 brainstormed in #18 but missing from Worker BACKLOG | round-0 /code-review | closed | worker BACKLOG | closed |
+| pr-003 | low | Code window ch-006–114 structural refactors uncommitted | round-0 /code-review | backlog | ch-115+ | open |
+| pr-r1-001 | low | Shipped relay-163–168 on main; Worker next relay-169/170 | round-1 /code-review | closed | — | closed |
+| pr-r1-002 | low | prop-ui-038 refined (backend live); prop-ui-039 new Home deep link | round-1 /code-review | closed | prop-ui-039 | closed |
+| pr-r1-003 | low | relay-170 may overlap existing ringShareCard streak pill — confirm delta | round-1 /code-review | closed | relay-170 | closed |
+| pr-r1-004 | low | maint-003 near done (Lighthouse 97); Code ch-batch uncommitted | round-1 /code-review | backlog | maint-003 | open |
+| pr-r2-001 | low | relay-170 shipped — streak pill in `ringShareCard` + Home share | round-2 /code-review | backlog | relay-170 | open |
+| pr-r2-002 | low | relay-169 Day Week PDF wired in uncommitted WIP (`DaySectionHeader`, `weekReportExport`) | round-2 /code-review | backlog | relay-169 | open |
+| pr-r2-003 | low | prop-ui-038 closed — UX ui-038 verified | round-2 /code-review | closed | prop-ui-038 | closed |
+| pr-r2-004 | low | prop-ui-039 refined AC; ux-gap-039 po-agreed | round-2 /code-review | backlog | relay-150 | open |
+| pr-r2-005 | low | Code ch-119/120 landed in WIP; maint-003 Lighthouse re-run still Code-owned | round-2 /code-review | backlog | maint-003 | open |
 
 ---
 
@@ -181,6 +193,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | PO | po-tick-002 | Session #20 + relay-170 verify + prop-ui-038 close | brainstorm | — |
 | 2026-07-27 | PO | po-tick-001 | Session #19 + relay-149/150 feed + ui-038 refined | brainstorm | — |
 | 2026-07-27 | PO | tick-370210-003 | relay-149 VoiceStatusOrb + dd-004 | brainstorm | — |
 | 2026-07-27 | PO | tick-370210-002 | ui-016 seed + maint-003 → Code | brainstorm | — |

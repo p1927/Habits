@@ -21,6 +21,11 @@ python3 .cursor/skills/ui-ux-pro-max/scripts/search.py "<screen> modern mobile" 
 python3 .cursor/skills/21st-cache/scripts/run.py search "<component query>" --limit 10 --json
 ```
 
+## Code review cycle (mandatory on code-changing ticks)
+
+- **Phase 6:** [`/code-review`](../../../.cursor/commands/code-review.md) — log `ux-r{N}-*` + 390px visual parity
+- **Phase 7:** [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) — fix-now UI fixes; triage UI_PROPOSALS
+
 ## Inspiration matrix (steal patterns, not pixel clones)
 
 | Reference | Project surface | Patterns | Audit focus |

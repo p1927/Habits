@@ -7,12 +7,12 @@ All Window Instances run phases **1–9** with the same names. Phases **4–6** 
 | Phase | Name | All windows |
 |-------|------|-------------|
 | 1 | **Wake** | Read INSTANCE → IDENTITY → STATE → RITUAL; confirm `loop_id` from wake JSON |
-| 2 | **Review** | Update `LAST_REVIEW`; read CHECKPOINT + git status |
+| 2 | **Orient** | Update `LAST_REVIEW`; read CHECKPOINT + git status |
 | 3 | **Select** | Resume `IN_PROGRESS` or pick top backlog item |
 | 4 | **Execute** | Archetype-specific (see table) |
-| 5 | **Verify** | Archetype-specific (see table) |
-| 6 | **Review** | Archetype-specific (see table) |
-| 7 | **Triage** | Fix blockers now OR log to REVIEW_FINDINGS / backlog |
+| 5 | **Verify** | Archetype-specific (see table) + change detection (below) |
+| 6 | **Code review** | `/code-review` Round N (see below) |
+| 7 | **Receive review** | `/receiving-code-review` Round N (see below) |
 | 8 | **Close** | HISTORY row, clear IN_PROGRESS, update CHECKPOINT |
 | 9 | **Arm** | `checkpoint-loop.py --product` + `arm-wake.sh` per agent-loop-contract |
 
@@ -22,18 +22,56 @@ All Window Instances run phases **1–9** with the same names. Phases **4–6** 
 |-------|----------|----------|---------|-----|
 | 4 Execute | Ship feature code | Ship UI diff | Brainstorm + backlog mutate | Run test plan / automation |
 | 5 Verify | `npm run build` (pwa/) | build + 390px check | lens sessions logged | tests pass + repro steps |
-| 6 Review | `/code-review` bugs/regressions | `/code-review` + visual | Product code review template | `/code-review` + coverage gaps |
+| 6 Code review | `/code-review` bugs/regressions | `/code-review` + visual | Product code review template | `/code-review` + coverage gaps |
 
-## Phase 7 — Triage rules
+## Phase 5 end — change detection
+
+After archetype-specific verify steps:
+
+```bash
+git diff --stat HEAD -- pwa/ server/
+git diff --stat --cached -- pwa/ server/
+```
+
+Set `CHECKPOINT.code_changed` to `yes` or `no`. If `yes`:
+
+1. Increment `CHECKPOINT.review_round`
+2. Set `CHECKPOINT.review_diff_range` (e.g. `uncommitted`, `HEAD~1..HEAD`, or tick commit range)
+
+If `no`: may skip Phase 6/7 with `review_status=skipped` and non-empty `review_skip_reason`.
+
+## Phase 6 — Code review (Round N)
+
+**Required when `code_changed=yes`.**
+
+1. Invoke [`/code-review`](../../../.cursor/commands/code-review.md) on `review_diff_range`.
+2. Log every finding to `REVIEW_FINDINGS` with id `{prefix}-r{N}-{seq}` and `source=round-{N}`.
+3. If zero issues: add sentinel row `{prefix}-r{N}-000 | low | No issues in reviewed diff | round-{N} /code-review | closed | — | closed`.
+4. Set `CHECKPOINT.phase=6-review`; keep `review_status=pending`.
+
+## Phase 7 — Receive review (Round N)
+
+**Required when `code_changed=yes`.** Follow [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) against **only** rows where `source=round-{N}`.
+
+1. READ → VERIFY → EVALUATE → RESPOND → IMPLEMENT (fix-now only).
+2. Update each row's `action` and `status`; append HISTORY note for pushbacks.
+3. Set `review_status=done` (all closed/pushback) or `triaged` (backlog items remain open).
+4. Set `CHECKPOINT.phase=7-triage`.
+
+If `code_changed=no`, Phase 7 may triage backlog/handoffs only; set `review_status=skipped`.
+
+## Phase 7 — Triage rules (all ticks)
 
 Sort findings into:
 
-- **Fix now** — blocks closing current item
+- **Fix now** — blocks closing current item; implement before Phase 8
 - **REVIEW_FINDINGS** — non-blocking, stays in STATE until resolved
+- **Pushback** — finding rejected with documented technical reason
 - **New backlog item** — with id, AC, target window
 
 ## Phase 8 — Close checklist
 
+- [ ] Round-N findings triaged (when `code_changed=yes`)
 - [ ] HISTORY row appended
 - [ ] IN_PROGRESS cleared or updated
 - [ ] CHECKPOINT: `phase=8-close`, `review_status` set, `current_item_id` recorded
@@ -45,6 +83,7 @@ Sort findings into:
 
 - `CHECKPOINT.phase < 8-close`
 - `review_status=pending`
+- `code_changed=yes` and round-N findings untriaged
 
 **Allowed skip:** `review_status=skipped` with `review_skip_reason` (docs-only ticks).
 

@@ -16,6 +16,11 @@ Dedicated loop for: bugs, patchwork detection, separation of concerns, DRY, modu
 
 `.agents/skills/vercel-react-best-practices/SKILL.md`
 
+## Code review cycle (mandatory on code-changing ticks)
+
+- **Phase 6:** [`/code-review`](../../../.cursor/commands/code-review.md) — log `ch-r{N}-*` structure/DRY findings
+- **Phase 7:** [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) — implement fix-now; route cross-cutting to Worker
+
 ## Patchwork scan
 
 Same file in 3+ consecutive fix commits → root refactor, not another patch.

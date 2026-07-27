@@ -12,6 +12,8 @@ When woken by `AGENT_LOOP_WAKE_CODE_HEALTH` or `AGENT_LOOP_TICK_CODE_HEALTH`:
 2. Bundle: IDENTITY → STATE → RITUAL
 3. Ship from REFACTOR_BACKLOG / BUG_BACKLOG
 
+**Code-changing ticks:** Phase 6 `/code-review` then Phase 7 `/receiving-code-review` before close.
+
 Do **not** run UI polish or PO brainstorm here.
 
 Restart: `@docs/window-instances/code-health/INSTANCE.md keep working`

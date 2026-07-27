@@ -1,4 +1,4 @@
-# Window Instance Spec v1
+# Window Instance Spec v2
 
 A **Window Instance** is a bundled Cursor loop agent with four required files and a manifest entry.
 
@@ -26,12 +26,12 @@ A **Window Instance** is a bundled Cursor loop agent with four required files an
 | `state_file` | `docs/window-instances/worker-relay/STATE.md` | State path |
 | `contract_doc` | `docs/window-instances/worker-relay/INSTANCE.md` | Contract path |
 | `archetype` | `engineer` | Ritual variant for phases 4–6 |
-| `instance_version` | `1` | Schema migration tag |
+| `instance_version` | `2` | Schema migration tag |
 
 ## Archetypes
 
-| Archetype | Phase 4 Execute | Phase 5 Verify | Phase 6 Review |
-|-----------|-----------------|----------------|----------------|
+| Archetype | Phase 4 Execute | Phase 5 Verify | Phase 6 Code review |
+|-----------|-----------------|----------------|---------------------|
 | `engineer` | Ship feature code | `npm run build` | `/code-review` bugs/regressions |
 | `designer` | Ship UI diff | build + 390px | `/code-review` + visual |
 | `product` | Brainstorm + backlog mutate | lens sessions logged | Product code review template |
@@ -61,14 +61,38 @@ Optional sections declared in `instances.manifest.json` (e.g. `UI_PROPOSALS`, `U
 | `phase` | `1-wake` … `9-arm` | Recovery resumes here |
 | `review_status` | `pending` / `done` / `skipped` / `triaged` | Review gate |
 | `review_skip_reason` | text | Required when skipped |
+| `review_round` | integer | Incremented on each code-changing tick |
+| `review_diff_range` | e.g. `HEAD~1..HEAD` or `uncommitted` | Scope Phase 6 reviewed |
+| `code_changed` | `yes` / `no` | Set at end of Phase 5 |
 | `confirmed_next` | backlog id | Next item after close |
 | `loops` | text | Optional human note: last verify-wake result / arm pid |
+
+## Mandatory code-change trigger
+
+**Code changed** = any diff under `pwa/`, `server/`, or instance bundle docs that affect ritual/state since tick start (committed or uncommitted).
+
+At end of Phase 5, detect with:
+
+```bash
+git diff --stat HEAD -- pwa/ server/
+git diff --stat --cached -- pwa/ server/
+```
+
+| Condition | Required phases | `review_status` |
+|-----------|-----------------|-----------------|
+| `code_changed=yes` | Phase 6 `/code-review` **and** Phase 7 `/receiving-code-review` | `done` or `triaged` (never `skipped`) |
+| `code_changed=no` (docs-only) | Phase 6/7 may skip | `skipped` + non-empty `review_skip_reason` |
+
+**Round N** = `CHECKPOINT.review_round`. Phase 6 logs findings with `source=round-{N}`; Phase 7 processes only those rows.
 
 ## Phase gate rules
 
 1. Agent cannot set `phase: 8-close` unless `review_status` is `done`, `triaged`, or `skipped` (with reason).
 2. Agent cannot arm wake (Phase 9) if `phase < 8-close` or `review_status=pending`.
-3. Phase 7 triage must move each REVIEW_FINDINGS row to fix-now, backlog, or closed.
+3. Cannot Phase 8 close if `code_changed=yes` and `review_status=pending`.
+4. Cannot Phase 8 close if `code_changed=yes` and no `REVIEW_FINDINGS` row with `source` containing `round-{N}` (includes zero-finding sentinel).
+5. Phase 7 must set each round-N finding `action` ∈ {fix-now, backlog, closed, pushback} and `status` ∈ {open, closed}.
+6. `fix-now` items from Phase 7 must be implemented before Phase 8 (re-verify in Phase 5 if needed).
 
 ### Dynamic wake lifecycle
 
@@ -87,12 +111,12 @@ See [`.cursor/rules/agent-loop-contract.mdc`](../../../.cursor/rules/agent-loop-
 | Phase | Name |
 |-------|------|
 | 1 | Wake |
-| 2 | Review |
+| 2 | Orient |
 | 3 | Select |
 | 4 | Execute |
 | 5 | Verify |
-| 6 | Review |
-| 7 | Triage |
+| 6 | Code review |
+| 7 | Receive review |
 | 8 | Close |
 | 9 | Arm |
 
@@ -103,8 +127,10 @@ See [`RITUAL.base.md`](RITUAL.base.md) for phase actions per archetype.
 | id | severity | finding | source | action | backlog_ref | status |
 
 Severity: `critical` | `high` | `medium` | `low`  
-Action: `fix-now` | `backlog` | `closed`  
+Action: `fix-now` | `backlog` | `closed` | `pushback`  
 Status: `open` | `closed`
+
+Finding id convention: `{prefix}-r{N}-{seq}` (e.g. `rf-r3-001`). Zero-finding sentinel: `{prefix}-r{N}-000`.
 
 ## Manifest entry
 

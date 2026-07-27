@@ -8,10 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:35:00Z |
-| uncommitted_files | ch-006–119 refactors + window-instances |
-| where_we_are | Backup wake tick #97; ch-119 done |
-| confirmed_next | ch-120 — ringShareCardCanvas (143) split |
+| reviewed_at | 2026-07-27T13:40:00Z |
+| where_we_are | ch-120 ringShareCardCanvas split shipped |
+| confirmed_next | ch-121 — weekReportPdf (136) or api.ts (302) |
 
 ---
 
@@ -19,11 +18,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:35:00Z |
+| last_wake | 2026-07-27T13:40:00Z |
+| code_changed | `yes` |
+| confirmed_next | ch-121 |
+| loops | wake **ARMED** PID 36183 (120s) — no duplicate arm this turn |
 | phase | 9-arm |
-| review_status | done |
-| confirmed_next | ch-120 |
-| loops | primary code-health PID 24462; backup wake code-health pid 23804; po-relay backup wake pid 24470 |
+| review_status | triaged |
+| review_round | `1` |
 
 ---
 
@@ -154,7 +155,8 @@
 - [x] ch-117 | Line scan — top: api 302, Day 156, ringShareCardCanvas 143, useCameraCapture 137, weekReportPdf 136 | structure | done tick #95
 - [x] ch-118 | `Day.tsx` → header + meal + schedule + alerts stacks (156→54) | structure | done tick #96
 - [x] ch-119 | `useCameraCapture.ts` → stream + actions modules (137→26) | structure | done tick #97
-- [ ] ch-120 | `ringShareCardCanvas.ts` (143) split | structure | queued
+- [x] ch-120 | `ringShareCardCanvas.ts` (143) split | structure | drawRings + render + export; canvas 143→16 re-export |
+- [ ] ch-121 | `weekReportPdf.ts` (136) split | structure | queued |
 
 ---
 
@@ -279,6 +281,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | ch-120 | ringShareCardCanvas split (draw/render/export) | build | pending |
 | 2026-07-27 | loop-setup | AGENT_WAKE.md + dynamic re-arm protocol | docs | pending |
 | 2026-07-27 | ch-001 + ch-002 | MealPlanSyncAwarenessSlot + label in lib | build | pending |
 | 2026-07-27 | ch-003 | mealPlanQueueCountStore singleton | build | pending |

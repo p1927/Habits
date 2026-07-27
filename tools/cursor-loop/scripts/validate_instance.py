@@ -18,12 +18,13 @@ REQUIRED_STATE_SECTIONS = (
     "HISTORY",
 )
 REQUIRED_CHECKPOINT_FIELDS = ("phase", "review_status")
+V2_CHECKPOINT_FIELDS = ("review_round", "code_changed")
 VALID_ARCHETYPES = frozenset({"engineer", "designer", "product", "qa"})
+VALID_SEVERITIES = frozenset({"critical", "high", "medium", "low"})
+VALID_ACTIONS = frozenset({"fix-now", "backlog", "closed", "pushback", "open", "—", "-"})
 
 
 def load_instances_manifest(root: Path) -> dict:
-    import loop_hook_lib as mod
-
     try:
         manifest = mod.load_manifest(root)
     except (FileNotFoundError, ValueError):
@@ -34,10 +35,55 @@ def load_instances_manifest(root: Path) -> dict:
     return mod.load_instances_manifest(root, manifest)
 
 
+def parse_review_findings_rows(state_text: str) -> list[dict[str, str]]:
+    if "## REVIEW_FINDINGS" not in state_text:
+        return []
+    section = state_text.split("## REVIEW_FINDINGS", 1)[1]
+    if "\n## " in section:
+        section = section.split("\n## ", 1)[0]
+    rows: list[dict[str, str]] = []
+    for line in section.splitlines():
+        if not line.strip().startswith("|"):
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 9:
+            continue
+        cells = parts[1:-1]
+        if len(cells) < 7:
+            continue
+        header = cells[0].lower()
+        if header in ("id", "----"):
+            continue
+        if cells[0] in ("—", "-", ""):
+            continue
+        rows.append(
+            {
+                "id": cells[0],
+                "severity": cells[1],
+                "action": cells[4],
+            }
+        )
+    return rows
+
+
+def instance_version_from_bundle(bundle: Path) -> int:
+    instance_path = bundle / "INSTANCE.md"
+    if not instance_path.is_file():
+        return 1
+    cfg = mod.parse_loop_config(instance_path.read_text(encoding="utf-8"))
+    raw = cfg.get("instance_version", "1")
+    try:
+        return int(str(raw).strip("`"))
+    except ValueError:
+        return 1
+
+
 def validate_bundle(root: Path, bundle_rel: str, entry: dict) -> list[str]:
     errors: list[str] = []
+    warnings: list[str] = []
     bundle = root / bundle_rel
     loop_id = entry.get("loop_id", "")
+    version = instance_version_from_bundle(bundle)
 
     for name in REQUIRED_BUNDLE_FILES:
         if not (bundle / name).is_file():
@@ -53,8 +99,23 @@ def validate_bundle(root: Path, bundle_rel: str, entry: dict) -> list[str]:
         for field in REQUIRED_CHECKPOINT_FIELDS:
             if field not in checkpoint_lower:
                 errors.append(f"{loop_id}: CHECKPOINT missing field {field}")
+        if version >= 2:
+            for field in V2_CHECKPOINT_FIELDS:
+                if field not in checkpoint_lower:
+                    warnings.append(f"{loop_id}: CHECKPOINT missing v2 field {field}")
         if "REVIEW_FINDINGS" in state_text and "| severity |" not in state_text:
             errors.append(f"{loop_id}: REVIEW_FINDINGS missing schema table header")
+        for row in parse_review_findings_rows(state_text):
+            sev = row["severity"].lower()
+            if sev and sev not in VALID_SEVERITIES:
+                errors.append(
+                    f"{loop_id}: REVIEW_FINDINGS row {row['id']} invalid severity '{sev}'"
+                )
+            action = row["action"].lower()
+            if action and action not in VALID_ACTIONS:
+                errors.append(
+                    f"{loop_id}: REVIEW_FINDINGS row {row['id']} invalid action '{action}'"
+                )
 
     instance_path = bundle / "INSTANCE.md"
     if instance_path.is_file():
@@ -78,7 +139,14 @@ def validate_bundle(root: Path, bundle_rel: str, entry: dict) -> list[str]:
         if "Phase" not in ritual and "phase" not in ritual.lower():
             if "RITUAL.base" not in ritual and "9" not in ritual:
                 errors.append(f"{loop_id}: RITUAL.md should reference 9-phase ritual")
+        if version >= 2:
+            if "/code-review" not in ritual:
+                warnings.append(f"{loop_id}: RITUAL.md should reference /code-review")
+            if "/receiving-code-review" not in ritual:
+                warnings.append(f"{loop_id}: RITUAL.md should reference /receiving-code-review")
 
+    for w in warnings:
+        print(f"WARN: {w}", file=sys.stderr)
     return errors
 
 

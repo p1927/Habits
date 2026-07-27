@@ -17,7 +17,7 @@
 | state_file | `docs/window-instances/po-relay/STATE.md` |
 | contract_doc | `docs/window-instances/po-relay/INSTANCE.md` |
 | archetype | `product` |
-| instance_version | `1` |
+| instance_version | `2` |
 
 ---
 

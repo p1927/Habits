@@ -3,7 +3,7 @@
 **extends:** `engineer` (refactor variant)  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
-## Phase 2 — Review
+## Phase 2 — Orient
 
 `git status`; `git log -10 --oneline`; `git diff --stat`; patchwork clusters; update `LAST_REVIEW`.
 
@@ -13,7 +13,7 @@ Resume `IN_PROGRESS` OR top `REFACTOR_BACKLOG` / `BUG_BACKLOG` OR next `SCAN_COV
 
 ## Phase 4 — Execute
 
-Brainstorm 2 approaches; pick minimal structural fix. Evaluate touched code against checklist below.
+Brainstorm 2 approaches; pick minimal structural fix. Evaluate touched code against checklist below (self-check before formal review).
 
 ### Line-by-line checklist (score pass / warn / fail)
 
@@ -35,8 +35,12 @@ Brainstorm 2 approaches; pick minimal structural fix. Evaluate touched code agai
 
 ```bash
 cd pwa && npm run build
-cd server && python -m compileall habits_api   # when Python touched
+cd server && python -m compileall app_api   # when Python touched
+git diff --stat HEAD -- pwa/ server/
+git diff --stat --cached -- pwa/ server/
 ```
+
+Set `code_changed`; increment `review_round` if yes. Record `review_diff_range`.
 
 **Regression spot-checks (when area touched):**
 
@@ -47,13 +51,21 @@ cd server && python -m compileall habits_api   # when Python touched
 | Cards | Search/filter + FAB create |
 | Offline | Queue banners when server offline |
 
-## Phase 6 — Review
+## Phase 6 — Code review (Round N)
 
-`/code-review` — structure, DRY, naming, patchwork vs root-cause.
+Required when `code_changed=yes`. Phase 4 checklist = self-check; Phase 6 = formal review.
 
-## Phase 7 — Triage
+1. [`/code-review`](../../../.cursor/commands/code-review.md) — structure, DRY, naming, patchwork vs root-cause
+2. Log findings as `ch-r{N}-{seq}` with `source=round-{N}`
+3. Zero issues → sentinel `ch-r{N}-000`
 
-REVIEW_FINDINGS or BUG_BACKLOG; feed Worker if cross-cutting.
+## Phase 7 — Receive review (Round N)
+
+Required when `code_changed=yes`.
+
+1. [`/receiving-code-review`](../../../.cursor/commands/receiving-code-review.md) on round-N rows
+2. Implement fix-now; re-verify build if needed
+3. Route cross-cutting items to Worker BACKLOG; else REVIEW_FINDINGS or BUG_BACKLOG
 
 ## Phase 8 — Close
 

@@ -8,11 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T11:22:00Z |
-| git_branch | main |
-| uncommitted_files | window-instances + code-health refactor WIP |
-| where_we_are | relay-168 shipped; relay-149/150 queued from PO |
-| confirmed_next | relay-169 |
+| reviewed_at | 2026-07-27T11:43:00Z |
+| where_we_are | relay-169 Day week PDF export shipped |
+| confirmed_next | relay-149 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -21,13 +19,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T11:25:00Z |
-| current_item_id | — |
-| phase | `9-arm` |
-| review_status | `done` |
-| confirmed_next | relay-169 |
-| next_action | relay-169 Day tab week report PDF export |
+| last_wake | 2026-07-27T11:43:00Z |
+| confirmed_next | relay-149 |
+| next_action | relay-149 VoiceStatusOrb live mic state from iframe |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
+| phase | 9-arm |
+| review_status | done |
+| review_round | `0` |
+| code_changed | `no` |
 
 ---
 
@@ -48,8 +47,8 @@
 - [x] relay-167 | Log tab remember last sub-tab on return | polish | localStorage `habits-log-last-tab`
 
 - [x] relay-168 | Agent chat cancel in-flight stream on new send | polish | AbortController + generation guard; send while streaming
-- [ ] relay-169 | Day tab export week report PDF from header action | feature
-- [ ] relay-170 | Home rings card share image with streak label | feature
+- [x] relay-169 | Day tab export week report PDF from header action | feature | `DaySectionHeader` Week PDF + `useDayWeekReportExport`
+- [x] relay-170 | Home rings card share image with streak label | feature | PO round-2 verified shipped — `ringShareCard` streak pill + `useHomeDashboardActions`
 - [ ] relay-149 | VoiceStatusOrb reflects live mic state from voice iframe postMessage | feature | Given voice coach iframe open or persisted, When mic toggles, Then header orb matches `listening`/`thinking`/`speaking` within 200ms; pairs dd-004
 - [ ] relay-150 | Home saved recipe → Log Recipes sub-tab deep link | feature | Given `HomeSavedRecipeCard` shows saved recipe, When user taps “See full recipe”, Then App navigates to Log tab Recipes sub-tab and refreshes sheet data
 
@@ -77,6 +76,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-169 | done | build | f441e32 |
 | 2026-07-27 | relay-168 | done | build | 990a581 |
 | 2026-07-27 | relay-167 | done | build | cfa947a |
 | 2026-07-27 | relay-166 | done | build | ad69715 |

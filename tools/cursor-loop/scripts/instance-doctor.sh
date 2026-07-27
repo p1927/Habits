@@ -50,6 +50,16 @@ def parse_checkpoint(state_text: str) -> dict[str, str]:
 def count_open_backlog(state_text: str) -> int:
     return len(re.findall(r"^\s*-\s*\[\s*\]", state_text, re.MULTILINE))
 
+def has_round_findings(state_text: str, review_round: str) -> bool:
+    if not review_round or review_round in ("?", "—", "-", "0"):
+        return True
+    pattern = f"round-{review_round.lstrip('`').rstrip('`')}"
+    return pattern in state_text
+
+def parse_phase_num(phase: str) -> int:
+    m = re.search(r"(\d+)", phase or "")
+    return int(m.group(1)) if m else 0
+
 def read_wake_armed_at(loop_id: str) -> str | None:
     import os
     tmp = Path(os.environ.get("TMPDIR") or "/tmp")
@@ -97,12 +107,23 @@ for entry in instances:
         cp = parse_checkpoint(state_text)
         phase = cp.get("phase", "?")
         review = cp.get("review_status", "?")
+        code_changed = cp.get("code_changed", "no").lower()
+        review_round = cp.get("review_round", "0")
         open_items = count_open_backlog(state_text)
         wake = wake_status(loop_id)
-        if review == "pending" and phase not in ("1-wake", "2-review", "3-select"):
+        phase_num = parse_phase_num(phase)
+        if review == "pending" and phase_num >= 4:
             status = "WARN"
+            notes.append("review_status=pending past verify")
+        if code_changed == "yes" and review == "pending" and phase_num >= 7:
+            status = "WARN"
+            notes.append("code_changed=yes but review pending at phase>=7")
+        if code_changed == "yes" and review == "done" and not has_round_findings(state_text, review_round):
+            status = "WARN"
+            notes.append(f"review_status=done but no round-{review_round.strip('`')} findings")
         print(
             f"{loop_id:16} {status:4}  phase={phase:12} review={review:8} "
+            f"code_changed={code_changed:3} round={review_round:3} "
             f"backlog_open={open_items:2}  wake={wake}"
         )
         if notes:
