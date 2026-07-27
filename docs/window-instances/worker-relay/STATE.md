@@ -24,12 +24,10 @@
 | next_action | relay-185 Cards tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 9-arm |
-| review_status | `pending` |
-| review_skip_reason | relay-184 reviewed round 10; committed ac53858 |
-| review_round | `11` |
-| last_reviewed_round | `10` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| review_status | skipped |
+| review_skip_reason | round-11 checkpoint hygiene; committed ee7580c |
+| review_diff_range | `ee7580c` |
+| code_changed | `no` |
 
 ---
 
@@ -38,8 +36,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
-| review_fingerprint | `76bc7ac4d2c88063` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -111,6 +109,7 @@
 | rf-r9-001 | low | Duplicate event title in BottomSheet h2 and Card h3 | round-9 /code-review | fix-now | — | closed |
 | rf-r9-002 | low | Unused `.day-event-detail` wrapper CSS after Card refactor | round-9 /code-review | fix-now | — | closed |
 | rf-r10-001 | low | No issues in relay-184 composer shortcut diff | round-10 /code-review | closed | — | closed |
+| rf-r11-001 | low | Duplicate `last_wake` row in CHECKPOINT from prior 9-arm edit | round-11 /code-review | fix-now | — | closed |
 
 ---
 
