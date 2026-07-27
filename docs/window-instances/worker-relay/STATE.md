@@ -24,9 +24,9 @@
 | next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
 | phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-187 reviewed round 14; committed pending` |
+| review_skip_reason | `relay-187 reviewed round 14; committed 4c3ad70` |
 | review_diff_range | `relay-187` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `14` |
 | last_reviewed_round | `14` |
 | worktree_status | `none` |
@@ -122,7 +122,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-187 | done | build | — |
+| 2026-07-27 | relay-187 | done | build | 4c3ad70 |
 | 2026-07-27 | relay-186 | done | build | 41d31b5 |
 | 2026-07-27 | relay-185 | done | build | 2303dab |
 | 2026-07-27 | relay-184 | done | build | ac53858 |
