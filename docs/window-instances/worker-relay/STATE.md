@@ -19,10 +19,10 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:15:00Z` |
+| last_wake | `2026-07-27T21:18:00Z` |
 | confirmed_next | `relay-188` |
 | next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-187 round 15 review done; aria fix committed ac57cf8` |
 | review_diff_range | `relay-187-r15` |
