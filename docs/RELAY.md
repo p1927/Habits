@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-088 | Queue retry failed items only shortcut | maintenance
 - [ ] relay-089 | Meal plan queue section wrapper component | maintenance
 
 ---
@@ -57,6 +56,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-088 | done | build | — |
 | 2026-07-27 | relay-087 | done | build | 4d623e3 |
 | 2026-07-27 | relay-086 | done | build | 39f4535 |
 | 2026-07-27 | relay-085 | done | build | 2719131 |
