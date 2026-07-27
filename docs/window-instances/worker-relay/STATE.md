@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:12:00Z |
-| where_we_are | relay-185 shipped |
-| confirmed_next | relay-186 |
-| brainstorm_notes | Cards ⌘1–4 filter shortcuts + first-visit hint |
+| reviewed_at | 2026-07-27T13:18:00Z |
+| where_we_are | relay-186 shipped |
+| confirmed_next | relay-187 |
+| brainstorm_notes | Settings ⌘/Ctrl+, shortcut + header gear hint |
 
 ---
 
@@ -23,19 +23,19 @@
 | confirmed_next | `relay-186` |
 | next_action | `relay-186 Settings tab keyboard shortcut from header gear hint` |
 | phase | `8-close` |
-| review_status | `skipped` |
+| review_status | `pending` |
 | review_skip_reason | `relay-185 reviewed round 12; committed pending` |
-| review_diff_range | `relay-185` |
+| review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| review_round | `12` |
+| review_round | `13` |
 | last_reviewed_round | `12` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/CardsFilterBar.tsx pwa/src/hooks/useCardsFilterShortcuts.ts pwa/src/lib/cardsSectionShared.ts pwa/src/sections/Cards.tsx` |
-| review_fingerprint | `f2acfe37a1ce1f59` |
+| review_changed_files | `pwa/src/App.css pwa/src/App.tsx pwa/src/components/AppHeader.tsx pwa/src/lib/appShellShared.ts` |
+| review_fingerprint | `30970493c75344cd` |
 
 ## IN_PROGRESS
 

@@ -1733,6 +1733,17 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  position: relative;
+}
+
+.header-settings-shortcut-hint {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.header-settings-shortcut-hint kbd {
+  font-size: inherit;
 }
 
 .header-gear {
