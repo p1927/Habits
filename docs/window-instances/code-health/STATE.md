@@ -20,21 +20,29 @@
 |-------|-------|
 | last_wake | `2026-07-27T21:10:00Z` |
 | confirmed_next | `ch-126` |
-| phase | `9-arm` |
-| code_changed | `no` |
-| review_status | `skipped` |
-| review_round | `5` |
-| last_reviewed_round | `4` |
-| loops | `wake ARMED (120s)` |
-| worktree_status | `none` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md` |
-| review_fingerprint | `2b91e7074ac58d73` |
-| review_diff_range | `uncommitted` |
-| review_skip_reason | `pwa shipped in ch-125 commits; tick close STATE-only` |
+| phase | `6-review` |
+| code_changed | `yes` |
+| review_status | `pending` |
+| review_round | `7` |
+| last_reviewed_round | `6` |
+| loops | `wake ARMED PID 49727 (120s)` |
+| worktree_status | `active` |
+| current_item_id | `ch-126` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
+| worktree_branch | `loop/code-health/ch-126` |
+| worktree_item_id | `ch-126` |
+| review_changed_files | `pwa/src/hooks/useAgentChat.ts pwa/src/hooks/useAgentChatStream.ts` |
+| review_fingerprint | `d43599524d311fa2` |
+| review_diff_range | `uncommitted (staged + unstaged)` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
+| ritual_step | `6-review` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `Split useAgentChat: useAgentChatStream (runStream + abort refs) + thin composition hook for state/actions` |
+| execute_started | `yes` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
+| commit_hash | `—` |
+| receive_review_done | `no` |
 
 ## IN_PROGRESS
 
@@ -293,6 +301,9 @@
 | ch-r3-001 | low | `pwa/src/hooks/useHomeDashboard.ts:1` — refresh/state extracted to useHomeDashboardRefresh; derived metrics to homeDashboardDerived; composition hook stays thin | round-3 /code-review | closed | — | closed |
 | ch-r3-002 | low | `tools/cursor-loop/scripts/ritual_phase.py:1` — review gate manifest + worktree close checks; no behavior change in pwa runtime | round-3 /code-review | closed | — | closed |
 | ch-r4-001 | low | `pwa/src/hooks/homeDashboardDerived.ts:1` — duplicate misplaced during worktree cp; removed; canonical module stays at pwa/src/lib/homeDashboardDerived.ts | round-4 /code-review | closed | — | closed |
+| ch-r5-001 | low | `docs/window-instances/code-health/STATE.md:1` — tick close checkpoint/backlog sync for ch-125 ship | round-5 /code-review | closed | — | closed |
+| ch-r6-001 | low | `docs/window-instances/code-health/STATE.md:1` — worktree ch-126 prep merge cycle; next execute useAgentChat split | round-6 /code-review | closed | — | closed |
+| ch-r7-001 | low | `pwa/src/hooks/useAgentChatStream.ts:1` — stream/abort + beginStream extracted; `useAgentChat.ts` composition 171→99 | round-7 /code-review | closed | — | closed |
 
 ---
 

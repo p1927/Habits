@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:06:14Z |
-| where_we_are | Backlog complete (ui-001–055); prop-ui-041 shipped; awaiting PO proposals |
-| confirmed_next | await new PO UI_PROPOSALS |
+| reviewed_at | 2026-07-27T22:00:00Z |
+| where_we_are | Round 11 — ui-056 ring + Day empty panel shipped; ui-057 tab shortcuts closed |
+| confirmed_next | await PO prop-ui-042 formalize; backlog idle |
 
 ---
 
@@ -18,24 +18,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:06:14Z |
+| last_wake | `2026-07-27T21:53:20Z` |
 | next_mode | `C` |
-| current_item_id | — |
-| phase | `1-wake` |
-| review_status | skipped |
-| review_skip_reason | await new PO UI_PROPOSALS — idle window; use checkpoint-loop --blocker |
-| review_round | `8` |
-| last_reviewed_round | `8` |
-| review_diff_range | none |
-| code_changed | no |
-| confirmed_next | await new PO UI_PROPOSALS |
-| loops | dynamic wake — paste `@docs/window-instances/ux-relay/INSTANCE.md keep working` |
-| worktree_status | none |
-| worktree_path | — |
-| worktree_branch | — |
-| worktree_item_id | — |
-| review_changed_files | — |
-| review_fingerprint | — |
+| current_item_id | `ui-057` |
+| phase | `9-arm` |
+| review_status | `triaged` |
+| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_round | `11` |
+| last_reviewed_round | `11` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| confirmed_next | `await new PO UI_PROPOSALS` |
+| worktree_status | `none` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/DayTimelineCard.tsx pwa/src/components/HomeSectionChrome.tsx` |
+| review_fingerprint | `d3814f28fee79a91` |
+| ritual_step | `9-arm` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `Close ui-057: verify tab shortcuts + hint on main; fix ux-r10-002 if App.css drift; then ship ui-056 ring in follow-up tick` |
+| execute_started | `yes` |
+| fix_verify_done | `yes` |
+| reflect_done | `yes` |
+| commit_hash | `62120c61904a` |
+| receive_review_done | `yes` |
+| commit_done | `yes` |
+| merge_done | `yes` |
 
 ## IN_PROGRESS
 
@@ -53,6 +62,8 @@
 | ux-gap-040 | po-agreed | Global CSS | Remove unused legacy `.card`, `.card-placeholder`, `.btn-decline` rules | — | shipped this tick |
 | ux-gap-041 | po-agreed | Log History | prop-ui-040 verified — Export CSV pill shipped | Google Sheets export | shipped ui-054 |
 | ux-gap-042 | ux-proposed | Day | prop-ui-041 verified — DayCalendarEventSheet Revolut card + time pill shipped ui-055 | Google Calendar popup | PO: close prop-ui-041 |
+| ux-gap-043 | po-agreed | Home | relay-176 pull-refresh — UIRefreshControl ring + label (ui-056) | Apple Health refresh | shipped ui-056 |
+| ux-gap-044 | po-agreed | Global nav | Main tab ⌘1–5 shortcuts + dismissible hint (ui-057) | Gemini keyboard hints | shipped ui-057 |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -117,6 +128,8 @@
 - [x] ui-053 | **Home recipe deep link:** “See full recipe” → Log Recipes sub-tab (prop-ui-039) | P2 | done 2026-07-27
 - [x] ui-054 | **Log History CSV export:** header Export CSV pill + download (prop-ui-040) | P2 | done 2026-07-27 — verified relay-172 + empty-state hint
 - [x] ui-055 | **Day event detail sheet:** Revolut card + color time pill + Close CTA (prop-ui-041) | P2 | done 2026-07-27 — Calendar popup parity
+- [x] ui-056 | **Home pull-refresh + Day empty:** UIRefreshControl ring indicator + Revolut empty schedule panel | P3 | done 2026-07-27 — Round 11 ring SVG + empty panel
+- [x] ui-057 | **App tab shortcuts:** ⌘1–5 nav + localStorage hint + conditional aria-keyshortcuts | P3 | done 2026-07-27 — prop-ui-042 logic verified
 
 ---
 
@@ -124,6 +137,13 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r11-001 | low | HomeSectionChrome.tsx pull-refresh ring + App.css spin keyframes; DayTimelineCard.tsx Revolut empty panel — build pass | round-11 /code-review | closed | ui-056 | closed |
+| ux-r11-000 | low | No issues in reviewed diff — ring indicator + Day empty panel; build pass | round-11 /code-review | closed | ui-056 | closed |
+| ux-r10-003 | medium | Tab buttons always advertised aria-keyshortcuts while handler suppressed on Log/Day/Cards | round-10 /code-review | fix-now | ui-057 | closed |
+| ux-r10-002 | medium | App.css `.app-tab-shortcut-hint` uncommitted alongside hook wiring — stage App.css on commit | round-10 /code-review | closed | ui-057 | closed |
+| ux-r10-001 | high | useAppTabShortcuts.ts was untracked while App.tsx imports it — commit would break | round-10 /code-review | fix-now | ui-057 | closed |
+| ux-r10-004 | low | ui-056 marked done in STATE but HomeSectionChrome/DayTimeline have no pull-refresh/empty polish | round-10 /code-review | closed | ui-056 | closed |
+| ux-r9-001 | low | ui-056 pull-refresh ring + Day empty panel; build pass | round-9 /code-review | closed | ui-056 | closed |
 | ux-r8-001 | low | Audit tick — no new pwa diff; backlog idle; build pass | round-8 /code-review | closed | — | closed |
 | ux-r7-001 | low | Audit tick — no new pwa diff; ui-055 prop-ui-041 verified; build pass | round-7 /code-review | closed | ui-055 | closed |
 | ux-r6-001 | low | ui-055 DayCalendarEventSheet Revolut card + time pill; build pass | round-6 /code-review | closed | ui-055 | closed |
@@ -143,6 +163,10 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-27 | C | ui-056, ui-057 | Pull-refresh ring + Day empty panel; tab shortcuts closed | build | 62120c6 |
+| 2026-07-27 | C | ui-057 | Tab shortcuts Round 10 review + aria-keyshortcuts fix | build | pending |
+| 2026-07-27 | C | ui-056 | Pull-refresh ring + Day empty Revolut panel | build | pending |
+| 2026-07-27 | C | idle | Wake checkpoint; backlog idle; await PO | — | pending |
 | 2026-07-27 | C | audit | Idle backlog; build verify; await PO | build | pending |
 | 2026-07-27 | C | audit | Backlog idle; prop-ui-041 close note (ux-gap-042); build verify | build | pending |
 | 2026-07-27 | C | ui-055 | Day event detail Revolut pass (prop-ui-041) | build | pending |

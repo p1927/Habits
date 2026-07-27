@@ -1,6 +1,12 @@
 {
   "version": 1,
   "hooks": {
+    "preToolUse": [
+      {
+        "command": ".cursor/hooks/loop-guard-edit.sh",
+        "matcher": "Write|StrReplace|EditNotebook|Delete"
+      }
+    ],
     "beforeSubmitPrompt": [
       {
         "command": ".cursor/hooks/loop-bind.sh",

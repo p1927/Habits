@@ -4,6 +4,17 @@
 
 | Window | Paste this message |
 |--------|-------------------|
-| Example | `@docs/agents/my-task.md keep working` |
+| Worker | `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
+| UX | `@docs/window-instances/ux-relay/INSTANCE.md keep working` |
+| Code health | `@docs/window-instances/code-health/INSTANCE.md keep working` |
+| PO | `@docs/window-instances/po-relay/INSTANCE.md keep working` |
 
-Stop: say **stop loop** or close the window.
+**Pause all:** `cwin pause --all` — keeps STATE and bindings; wake disarmed.
+
+**Resume all:** `cwin resume --all` or say **resume loop** / **keep working** in each chat.
+
+**Stop all:** `cwin stop --all` — infra cleared (stopped + locks released); STATE.md kept.
+
+**Status:** `cwin status`
+
+Per-chat: **pause loop**, **resume loop**, **stop loop**.

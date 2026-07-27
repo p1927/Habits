@@ -10,6 +10,7 @@ from pathlib import Path
 import ritual_phase as rp
 import state_checkpoint as sc
 import worktree_lib as wt
+from ritual_directive import AgentDirective, DirectiveAction
 
 LOOP_ARCHETYPE_FALLBACK: dict[str, str] = {
     "worker-relay": "engineer",
@@ -74,9 +75,14 @@ def main() -> int:
         worktree_state = "none"
 
     pkg = "tools/cursor-loop/scripts"
+    step = "3.3-worktree"
     create_cmd = (
         f"bash {pkg}/instance_worktree.sh create . "
         f"--loop-id {loop_id} --item-id {item_id} --state-file {args.state_file}"
+    )
+    apply_cmd = (
+        f"bash {pkg}/prepare_select_tick.sh . --state-file {args.state_file} "
+        f"--loop-id {loop_id} --apply"
     )
 
     print("PREPARE_SELECT_BEGIN")
@@ -93,9 +99,12 @@ def main() -> int:
         print(f"worktree_branch={wt_status.get('branch', '')}")
 
     exit_code = 0
+    workdir = wt_status.get("path", checkpoint.get("worktree_path", ""))
+
     if requires and worktree_state != "active":
         print(f"suggested_command={create_cmd}")
         print("PREPARE_SELECT_ACTION=create_worktree_before_phase_4")
+        print("PHASE_4_BLOCKED=yes")
         if args.apply and item_id:
             try:
                 info = wt.create_worktree(root, loop_id, item_id)
@@ -116,18 +125,52 @@ def main() -> int:
                 print(f"WORKTREE_BRANCH={info['branch']}")
                 print("APPLIED=yes")
                 worktree_state = "active"
+                workdir = info["path"]
                 exit_code = 0
             except RuntimeError as exc:
                 print(f"PREPARE_SELECT_ERROR {exc}", file=sys.stderr)
-                exit_code = 1
+                AgentDirective(
+                    ritual_step=step,
+                    ok=False,
+                    instruction=f"Worktree create failed: {exc}",
+                    fix=create_cmd,
+                    forbidden=["edit pwa/ or server/ on main"],
+                ).emit()
+                return 1
         else:
-            exit_code = 1
+            AgentDirective(
+                ritual_step=step,
+                ok=False,
+                instruction=f"Create worktree before Phase 4: {apply_cmd}",
+                then_step="4-execute",
+                forbidden=["edit pwa/ or server/ on main until worktree_status=active"],
+                next_actions=[
+                    DirectiveAction(kind="shell", cmd=apply_cmd, primary=True),
+                ],
+                fix=apply_cmd,
+            ).emit()
+            print("PREPARE_SELECT_END")
+            return 1
     elif requires and worktree_state == "active":
         print("PREPARE_SELECT_ACTION=use_worktree_path_for_phases_4_7")
-        print(f"suggested_workdir={wt_status.get('path', checkpoint.get('worktree_path', ''))}")
+        print(f"suggested_workdir={workdir}")
+        print("PHASE_4_BLOCKED=no")
+        AgentDirective(
+            ritual_step=step,
+            ok=True,
+            instruction=f"Worktree ready — cd {workdir}; implement Phases 4–7 there only",
+            then_step="4-execute",
+        ).emit()
     else:
         print("PREPARE_SELECT_ACTION=skip_worktree")
         print("suggested_command=")
+        print("PHASE_4_BLOCKED=no")
+        AgentDirective(
+            ritual_step=step,
+            ok=True,
+            instruction="No worktree required (docs-only / product tick)",
+            then_step="4-execute",
+        ).emit()
 
     print("PREPARE_SELECT_END")
     return exit_code

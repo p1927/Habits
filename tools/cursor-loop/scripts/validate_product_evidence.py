@@ -114,8 +114,9 @@ def validate_evidence(
         po_scope = rs.review_paths("po-relay", state_file)
         changed = rs.list_changed_files(project_root, po_scope)
         commit_files = last_commit_files(project_root)
-        if changed and not touches_scope(changed, po_scope):
-            issues.append("PO evidence but diff outside PO doc scope")
+        if changed:
+            if not touches_scope(changed, po_scope):
+                issues.append("PO evidence but diff outside PO doc scope")
         elif commit_files and not touches_scope(commit_files, po_scope):
             issues.append("PO evidence but last commit outside PO doc scope")
 

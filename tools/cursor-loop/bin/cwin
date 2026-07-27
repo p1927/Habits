@@ -176,6 +176,9 @@ def cmd_refresh(project: Path, loop_id: str | None) -> int:
     if loop_id:
         cmd.extend(["--loop-id", loop_id])
     return subprocess.call(cmd, cwd=project)
+
+
+def cmd_sync(project: Path) -> int:
     manifest = load_json(project / ".cursor" / "cursor-loop.json")
     preset = manifest.get("instances_preset") or ""
     if not preset:
@@ -187,6 +190,9 @@ def cmd_refresh(project: Path, loop_id: str | None) -> int:
     migrate = scripts_dir(project) / "migrate_state_checkpoint.py"
     if migrate.is_file():
         subprocess.call(["python3", str(migrate), str(project), "--apply"], cwd=project)
+    repair = scripts_dir(project) / "repair_v060_state.py"
+    if repair.is_file():
+        subprocess.call(["python3", str(repair), str(project)], cwd=project)
     return cmd_refresh(project, None)
 
 
@@ -290,7 +296,9 @@ def main() -> int:
         "template-check": lambda: cmd_template_check(project),
         "worktree-status": lambda: cmd_worktree(project, "status", args.loop_id, ""),
         "worktree-prune": lambda: cmd_worktree(project, "prune", "", ""),
-        "stop": lambda: cmd_refresh(project, None if args.all or not args.loop_id else args.loop_id),
+        "stop": lambda: cmd_stop(
+            project, None if args.all else (args.loop_id or None), args.all
+        ),
         "bootstrap": lambda: cmd_bootstrap(project, args.preset, args.mode, args.refresh),
         "install": lambda: cmd_install(project, args.preset or None),
         "create": lambda: cmd_create(project, args.loop_id, args.extra),

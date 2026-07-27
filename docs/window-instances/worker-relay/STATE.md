@@ -22,20 +22,28 @@
 | last_wake | `2026-07-27T21:18:00Z` |
 | confirmed_next | `relay-192` |
 | next_action | `relay-192 Cards create sheet Escape to close` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_skip_reason | `relay-191 reviewed round 22; committed ad3d6a0` |
-| review_diff_range | `relay-191` |
-| code_changed | `no` |
-| review_round | `22` |
+| phase | `6-review` |
+| review_status | `pending` |
+| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `23` |
 | last_reviewed_round | `22` |
-| worktree_status | `none` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/AgentToolsSheet.tsx,pwa/src/App.css` |
-| review_fingerprint | `ad3d6a0` |
+| worktree_status | `active` |
+| current_item_id | `relay-192` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
+| worktree_branch | `loop/worker-relay/relay-192` |
+| worktree_item_id | `relay-192` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/CardsCreateSheet.tsx` |
+| review_fingerprint | `7607214c0697e329` |
+| ritual_step | `6-review` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `CardsCreateSheet: add muted Escape hint; BottomSheet already handles keydown` |
+| execute_started | `yes` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
+| commit_hash | `—` |
+| receive_review_done | `no` |
 
 ## IN_PROGRESS
 
@@ -128,6 +136,7 @@
 | rf-r20-001 | low | No issues in STATE checkpoint restore (confirmed_next + next_action) | round-20 /code-review | closed | — | closed |
 | rf-r21-001 | low | No issues in relay-190 OAuth aria-live diff | round-21 /code-review | closed | — | closed |
 | rf-r22-000 | low | No issues in relay-191 Agent tools sheet Escape hint diff | round-22 /code-review | closed | — | closed |
+| rf-r23-000 | low | No issues in relay-192 Cards create sheet Escape hint diff | round-23 /code-review | closed | — | closed |
 
 ---
 
