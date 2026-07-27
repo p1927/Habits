@@ -18,23 +18,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:53:20Z` |
+| last_wake | `2026-07-27T22:05:00Z` |
 | next_mode | `C` |
-| current_item_id | `ui-057` |
+| current_item_id | `—` |
 | phase | `9-arm` |
-| review_status | `triaged` |
+| review_status | `skipped` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
 | review_round | `11` |
 | last_reviewed_round | `11` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| confirmed_next | `await new PO UI_PROPOSALS` |
+| review_diff_range | `none` |
+| code_changed | `no` |
+| confirmed_next | `backlog idle; await PO prop-ui-042` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/DayTimelineCard.tsx pwa/src/components/HomeSectionChrome.tsx` |
-| review_fingerprint | `d3814f28fee79a91` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `Close ui-057: verify tab shortcuts + hint on main; fix ux-r10-002 if App.css drift; then ship ui-056 ring in follow-up tick` |
