@@ -107,12 +107,13 @@ Reset CHECKPOINT: `worktree_status=none`, clear `worktree_path` / `worktree_bran
 
 **Required when `code_changed=yes`.**
 
-**Mandatory command:** Invoke [`/code-review`](../../../.cursor/commands/code-review.md) — read the full command file before reviewing. Announce: "Using /code-review to review Round N."
+Phase 6 = **Bugbot subagent** + **`/code-review` window lens**.
 
-1. Run `/code-review` on `review_diff_range` (do not freestyle review).
-2. Log every finding to `REVIEW_FINDINGS` with id `{prefix}-r{N}-{seq}` and `source=round-{N}`.
-3. If zero issues: add sentinel row `{prefix}-r{N}-000 | low | No issues in reviewed diff | round-{N} /code-review | closed | — | closed`.
-4. Set `CHECKPOINT.phase=6-review`; keep `review_status=pending`.
+1. Run `prepare_bugbot_review.sh` — read **review-bugbot** skill; launch `Task(subagent_type=bugbot)`.
+2. Log Bugbot findings with `source=round-{N} bugbot`.
+3. Invoke [`/code-review`](../../../.cursor/commands/code-review.md) for supplemental window lens.
+4. Bugbot zero-issue sentinel: `source=round-{N} bugbot`.
+5. Run `prepare_review_phase.sh --apply`.
 
 ## Phase 7 — Receive + backlog reflect (Round N)
 

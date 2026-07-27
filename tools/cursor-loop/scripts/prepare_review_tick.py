@@ -150,11 +150,13 @@ def main() -> int:
         print("PHASE_5_PREP=complete")
         print("PHASE_6_REQUIRED=yes")
         print("PHASE_6_NOT_SATISFIED_BY_THIS_SCRIPT=yes")
+        print("MANDATORY_SKILL=review-bugbot")
         print("MANDATORY_CURSOR_COMMAND=/code-review")
         print("MANDATORY_READ=tools/cursor-loop/cursor/commands/code-review.md")
         print(
-            "NEXT_ACTION=Announce 'Using /code-review to review Round "
-            f"{suggested_round}'; read command file; open every changed_files path"
+            "NEXT_ACTION=Using review-bugbot skill: run prepare_bugbot_review.sh; "
+            f"launch Task(subagent_type=bugbot) Round {suggested_round}; "
+            "then /code-review window lens; prepare_review_phase.sh --apply"
         )
     else:
         suggested_round = current_round

@@ -4,9 +4,27 @@ Review the current branch changes or uncommitted diff with a critical eye.
 
 ## Mandatory invocation (Phase 6)
 
-**You MUST invoke this Cursor command in Phase 6** — read this entire file first; do not freestyle review or substitute ad-hoc checklists.
+Phase 6 is **two steps** — Bugbot first, then this command for window lens + logging.
 
-Announce: **"Using /code-review to review Round N diff"** then follow the process below.
+**Announcing "Using /code-review" alone is NOT compliance.** You must launch Bugbot via the **review-bugbot** skill before manual review.
+
+### Step A — Bugbot (required when `changed_files` non-empty)
+
+1. Run prep to get the Task prompt:
+
+```bash
+bash tools/cursor-loop/scripts/prepare_bugbot_review.sh . \
+  --state-file <STATE.md> --loop-id <loop_id>
+```
+
+2. Read **review-bugbot** skill (`.cursor/skills-cursor/review-bugbot/SKILL.md`).
+3. Announce: **"Using review-bugbot skill to launch Bugbot for Round N"**
+4. Launch **exactly one** `Task` subagent with `subagent_type=bugbot`, `description=Bugbot`, using the `BUGBOT_TASK_PROMPT` from prep output.
+5. Log **every Bugbot finding** to `REVIEW_FINDINGS` with `source=round-{N} bugbot`.
+
+### Step B — This command (window lens + merge)
+
+**Read this entire file** after Bugbot returns. Announce: **"Using /code-review to merge Bugbot + window lens for Round N"** then follow the process below.
 
 **Required on every code-changing tick** in all window instances (`worker-relay`, `ux-relay`, `code-health`, `po-relay`) before Phase 8 close.
 
@@ -50,13 +68,12 @@ Phase 6 `/code-review` must cover the full diff on those paths (use `CHECKPOINT.
 ## Process
 
 0. If `CHECKPOINT.review_changed_files` is empty or stale vs git, run Phase 5 prep with `--apply` first.
-1. Read `review_paths` and `CHECKPOINT.review_changed_files` from Phase 5 prep (or wake JSON `changed_files`).
-2. Run `git diff --name-only` on `review_paths`; **open and read every file** in `changed_files`.
-3. Read changed files in full context — not just diff hunks.
-4. List findings by severity: critical, high, medium, low.
-5. For each finding: cite `path:line` (or file-level for config/docs), issue, suggested fix.
+1. **Complete Step A (Bugbot)** when `changed_files` is non-empty — gate requires `source` containing `bugbot`.
+2. Merge Bugbot findings into `REVIEW_FINDINGS`; add supplemental window-lens findings with `source=round-{N} /code-review`.
+3. **Open and read every file** in `changed_files`; verify Bugbot output.
+4. For each finding: cite `path:line`, issue, suggested fix.
 
-**Sentinel rule:** `{prefix}-r{N}-000` is allowed **only** when `changed_files` is empty. Arm gate and stop hook reject sentinel-only review when files changed.
+**Sentinel rule:** Bugbot zero issues → `{prefix}-r{N}-000 | low | Bugbot: no issues… | round-{N} bugbot | closed | — | closed`.
 
 ## Round numbering
 
@@ -64,11 +81,7 @@ Use `CHECKPOINT.review_round` as **Round N**.
 
 - Log every finding with id `{prefix}-r{N}-{seq}` (instance prefix: `rf`, `ux`, `pr`, `ch`)
 - Set `source=round-{N}` in REVIEW_FINDINGS
-- If zero issues, add sentinel row:
-
-```
-{prefix}-r{N}-000 | low | No issues in reviewed diff | round-{N} /code-review | closed | — | closed
-```
+- Bugbot sentinel uses `source=round-{N} bugbot`; manual findings use `source=round-{N} /code-review`.
 
 ## Output format
 
@@ -109,4 +122,4 @@ Focus on structure, DRY, naming clarity, patchwork vs root-cause fixes. Include 
 
 ## Next step
 
-After logging findings, proceed to **Phase 7a** — read the Superpowers **receiving-code-review** skill and invoke [`/receiving-code-review`](receiving-code-review.md) for the same Round N, then complete **Phase 7b Backlog reflect** (mandatory).
+Run `prepare_review_phase.sh --apply`, then **Phase 7a** — read the Superpowers **receiving-code-review** skill and invoke [`/receiving-code-review`](receiving-code-review.md) for the same Round N, then complete **Phase 7b Backlog reflect** (mandatory).

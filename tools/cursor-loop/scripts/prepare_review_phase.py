@@ -69,12 +69,15 @@ def main() -> int:
         directive = AgentDirective(
             ritual_step=step,
             ok=False,
-            instruction="Announce 'Using /code-review to review Round N'; read code-review.md; "
-            "log REVIEW_FINDINGS; run this script --apply",
+            instruction=(
+                "Using review-bugbot skill: launch Bugbot Task subagent; "
+                "log findings with source containing 'bugbot'; then read /code-review"
+            ),
             fix=result.fix or result.reason,
-            forbidden=["set review_status=done without round-N findings"],
+            forbidden=["Announce-only /code-review without Bugbot Task subagent"],
             next_actions=[
-                DirectiveAction(kind="command", name="/code-review", primary=True),
+                DirectiveAction(kind="skill", name="review-bugbot", primary=True),
+                DirectiveAction(kind="command", name="/code-review", primary=False),
             ],
         )
         print("PREPARE_REVIEW_PHASE_END")
