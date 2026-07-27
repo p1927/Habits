@@ -8,8 +8,8 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T13:05:00Z |
-| where_we_are | relay-184 shipped |
+| reviewed_at | 2026-07-27T13:08:00Z |
+| where_we_are | Round 11 review complete — CHECKPOINT table hygiene |
 | confirmed_next | relay-185 |
 | brainstorm_notes | Agent ⌘/Ctrl+K composer focus + empty-state hint |
 
@@ -19,18 +19,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T13:05:00Z |
+| last_wake | 2026-07-27T13:02:10Z |
 | confirmed_next | relay-185 |
 | next_action | relay-185 Cards tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 9-arm |
-| last_wake | 2026-07-27T13:02:10Z |
-| review_status | skipped |
+| review_status | `pending` |
 | review_skip_reason | relay-184 reviewed round 10; committed ac53858 |
-| review_round | `10` |
+| review_round | `11` |
 | last_reviewed_round | `10` |
-| review_diff_range | `ac53858` |
-| code_changed | `no` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
 
 ---
 
@@ -39,8 +38,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/AgentChatComposer.tsx pwa/src/hooks/useAgentComposerFocusShortcut.ts pwa/src/sections/Agent.tsx` |
-| review_fingerprint | `relay-184` |
+| review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
+| review_fingerprint | `76bc7ac4d2c88063` |
 ## IN_PROGRESS
 
 *(empty)*
