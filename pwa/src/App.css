@@ -1164,6 +1164,19 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.log-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.log-history-export-btn {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
 .log-history-trends {
   display: flex;
   flex-direction: column;

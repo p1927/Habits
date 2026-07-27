@@ -1,5 +1,6 @@
 import { Sparkline } from './MacroChart';
 import { Card } from './ui/Card';
+import { downloadLogHistoryCsv } from '../lib/logHistoryExport';
 
 export interface LogHistoryPanelProps {
   days: { date: string; calories: number; protein: number }[];
@@ -11,8 +12,22 @@ export function LogHistoryPanel({ days }: LogHistoryPanelProps) {
 
   return (
     <Card className="log-history-card home-export-card--health">
-      <p className="section-eyebrow">History</p>
-      <h2>14-day history</h2>
+      <div className="log-history-header">
+        <div>
+          <p className="section-eyebrow">History</p>
+          <h2>14-day history</h2>
+        </div>
+        {days.length > 0 && (
+          <button
+            type="button"
+            className="btn-pill btn-pill-outline log-history-export-btn"
+            aria-label="Export food history as CSV"
+            onClick={() => downloadLogHistoryCsv(days)}
+          >
+            Export CSV
+          </button>
+        )}
+      </div>
       {!days.length ? (
         <p className="muted">No history in Followed tab.</p>
       ) : (
