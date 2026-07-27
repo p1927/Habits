@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T14:20:00Z |
-| where_we_are | relay-171–173 shipped |
-| confirmed_next | refill BACKLOG |
+| reviewed_at | 2026-07-27T14:32:00Z |
+| where_we_are | relay-175 shipped |
+| confirmed_next | relay-176 |
 | brainstorm_notes | This window = worker-relay only (`AGENT_LOOP_TICK_HABITS`) |
 
 ---
@@ -19,13 +19,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T14:20:00Z |
-| confirmed_next | relay-174 |
-| next_action | relay-174 Day schedule empty state Agent quick prompt |
+| last_wake | 2026-07-27T14:32:00Z |
+| confirmed_next | relay-176 |
+| next_action | relay-176 Home dashboard pull-to-refresh gesture |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
 | phase | 8-close |
 | review_status | done |
-| review_round | `0` |
+| review_round | `2` |
+| review_diff_range | `c3d1f04` |
 | code_changed | `yes` |
 
 ---
@@ -56,8 +57,8 @@
 - [x] relay-172 | Log History export CSV from header | feature | Export CSV pill + downloadLogHistoryCsv
 - [x] relay-173 | Day timeline tap event → calendar detail sheet | feature | DayCalendarEventSheet + tappable agenda/grid events
 
-- [ ] relay-174 | Day schedule empty state → Agent quick add prompt | feature
-- [ ] relay-175 | Log History CSV include meal count per day | polish
+- [x] relay-174 | Day schedule empty state → Agent quick add prompt | feature | Add with Coach → navigateAgentPrompt + composer prefill
+- [x] relay-175 | Log History CSV include meal count per day | polish | Followed col B → meal_count; CSV date,meals,calories,protein
 - [ ] relay-176 | Home dashboard pull-to-refresh gesture | polish
 
 ---
@@ -77,6 +78,8 @@
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
 | rf-r0-000 | low | No issues in relay-171–173 diff | round-0 /code-review | closed | — | closed |
+| rf-r1-000 | low | No issues in relay-174 diff | round-1 /code-review | closed | — | closed |
+| rf-r2-000 | low | No issues in relay-175 diff | round-2 /code-review | closed | — | closed |
 
 ---
 
@@ -84,6 +87,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-175 | done | build | c3d1f04 |
+| 2026-07-27 | relay-174 | done | build | e8edd4b |
 | 2026-07-27 | relay-173 | done | build | 8b0e3d3 |
 | 2026-07-27 | relay-172 | done | build | ceeeed2 |
 | 2026-07-27 | relay-171 | done | build | 3d602a9 |
