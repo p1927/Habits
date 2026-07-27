@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:20:00Z |
-| where_we_are | relay-189 closed; checkpoint sync round 20 |
-| confirmed_next | relay-190 |
-| brainstorm_notes | Share PNG opens BottomSheet preview; Escape closes |
+| reviewed_at | 2026-07-27T23:22:00Z |
+| where_we_are | relay-190 shipped |
+| confirmed_next | relay-191 |
+| brainstorm_notes | OAuth banner role=status + aria-live=polite on show |
 
 ---
 
@@ -23,14 +23,14 @@
 | confirmed_next | `relay-190` |
 | next_action | `relay-190 Settings OAuth banner aria-live polite on show` |
 | phase | `9-arm` |
-| review_status | `skipped` |
+| review_status | `pending` |
 | review_skip_reason | `round 20 STATE checkpoint sync; committed 62a8b43` |
-| review_diff_range | `state-checkpoint-r20` |
-| code_changed | `no` |
-| review_round | `20` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `21` |
 | last_reviewed_round | `20` |
 | worktree_status | `none` |
-| current_item_id | `—` |
+| current_item_id | `relay-190` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
@@ -80,9 +80,10 @@
 - [x] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish | useAppTabShortcuts + AppTabBar hint; defers on Log/Day/Cards
 - [x] relay-188 | OAuth success banner auto-dismiss after 5s | polish | Settings useEffect 5s auto-dismiss
 - [x] relay-189 | Home rings share sheet keyboard Escape to close | polish | HomeRingShareSheet + BottomSheet Escape
-- [ ] relay-190 | Settings OAuth banner aria-live polite on show | polish
+- [x] relay-190 | Settings OAuth banner aria-live polite on show | polish | role=status aria-live=polite on OAuth success banner
 - [ ] relay-191 | Agent tools sheet Escape to close | polish
 - [ ] relay-192 | Cards create sheet Escape to close | polish
+- [ ] relay-193 | Log food edit sheet Escape to close | polish
 
 ---
 
