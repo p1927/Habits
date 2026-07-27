@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:00:00Z |
+| reviewed_at | 2026-07-27T05:01:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #129; relay-135 meal plan queue sort consolidated onto shared helper. |
+| where_we_are | Loop tick #130; relay-136 habit queue empty hint on sync clear shipped. |
 | blockers | [] |
-| confirmed_next | relay-136 queue empty hint on habit sync clear |
-| brainstorm_notes | all three offline queues now share sortQueueByCreatedAt |
+| confirmed_next | relay-137 recipe scan queue sort by created_at |
+| brainstorm_notes | HabitQueueSection + queueSyncClearedToken mirror meal plan empty hint |
 
 ---
 
@@ -42,6 +42,7 @@
 
 - [ ] relay-136 | Queue empty hint on habit sync clear | feature
 - [ ] relay-137 | Recipe scan queue sort by created_at | maintenance
+- [ ] relay-138 | Habit queue empty hint on sync clear | feature
 
 ---
 
@@ -58,7 +59,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-135 | done | build | pending |
+| 2026-07-27 | relay-135 | done | build | 6c27112 |
 | 2026-07-27 | relay-134 | done | build | 2f35cdb |
 | 2026-07-27 | relay-133 | done | build | 9551e3c |
 | 2026-07-27 | relay-132 | done | build | 65e1755 |
