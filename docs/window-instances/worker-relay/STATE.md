@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:18:00Z` |
-| confirmed_next | `relay-190` |
-| next_action | `relay-190 Settings OAuth banner aria-live polite on show` |
-| phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `round 20 STATE checkpoint sync; committed 62a8b43` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| last_wake | `2026-07-27T23:22:00Z` |
+| confirmed_next | `relay-191` |
+| next_action | `relay-191 Agent tools sheet Escape to close` |
+| phase | `8-close` |
+| review_status | `skipped` |
+| review_skip_reason | `relay-190 reviewed round 21; committed 57e63d9` |
+| review_diff_range | `relay-190` |
+| code_changed | `no` |
 | review_round | `21` |
-| last_reviewed_round | `20` |
+| last_reviewed_round | `21` |
 | worktree_status | `none` |
-| current_item_id | `relay-190` |
+| current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
-| review_fingerprint | `76bc7ac4d2c88063` |
+| review_changed_files | `pwa/src/sections/Settings.tsx` |
+| review_fingerprint | `57e63d9` |
 
 ## IN_PROGRESS
 
@@ -126,6 +126,7 @@
 | rf-r18-001 | low | No issues in STATE checkpoint sync diff (last_wake + phase 9-arm) | round-18 /code-review | closed | — | closed |
 | rf-r19-001 | low | No issues in relay-189 ring share sheet diff | round-19 /code-review | closed | — | closed |
 | rf-r20-001 | low | No issues in STATE checkpoint restore (confirmed_next + next_action) | round-20 /code-review | closed | — | closed |
+| rf-r21-001 | low | No issues in relay-190 OAuth aria-live diff | round-21 /code-review | closed | — | closed |
 
 ---
 
@@ -133,6 +134,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-190 | done | build | 57e63d9 |
 | 2026-07-27 | relay-189 | done | build | 9fb62aa |
 | 2026-07-27 | relay-188 | done | build | 9d012ca |
 | 2026-07-27 | relay-187 | done | build | 4c3ad70 |
