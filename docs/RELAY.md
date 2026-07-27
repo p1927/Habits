@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T05:03:00Z |
+| reviewed_at | 2026-07-27T05:04:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #132; relay-138 food log queue empty hint on sync clear shipped. |
+| where_we_are | Loop tick #133; relay-140 recipe scan queue relative timestamps shipped. |
 | blockers | [] |
-| confirmed_next | relay-140 recipe scan queue relative timestamps |
-| brainstorm_notes | FoodQueueBanner + queueSyncClearedToken; Log.tsx WIP reverted to fix build |
+| confirmed_next | relay-141 recipe scan queue empty hint on sync clear |
+| brainstorm_notes | RecipeScanQueueSection lists queued photos with formatRelativeTime |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T05:02:00Z |
+| last_wake | 2026-07-27T05:04:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: feature) |
-| next_action | relay-138 food log queue empty hint on sync clear |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-141 recipe scan queue empty hint on sync clear |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,9 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-138 | Food log queue empty hint on sync clear | feature
-- [ ] relay-139 | Revert or finish Log.tsx WIP blocking build | maintenance
-- [ ] relay-140 | Recipe scan queue relative timestamps | feature
+- [ ] relay-141 | Recipe scan queue empty hint on sync clear | feature
+- [ ] relay-142 | Shared QueueEmptyHint base styles | maintenance
 
 ---
 
@@ -59,6 +58,9 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-140 | done | build | pending |
+| 2026-07-27 | relay-139 | done | build | c71a71a |
+| 2026-07-27 | relay-138 | done | build | c71a71a |
 | 2026-07-27 | relay-137 | done | build | 5e4e9fa |
 | 2026-07-27 | relay-136 | done | build | 095e089 |
 | 2026-07-27 | relay-135 | done | build | 6c27112 |
