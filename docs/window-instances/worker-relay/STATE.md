@@ -19,10 +19,8 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:16:00Z` |
-| confirmed_next | `relay-190` |
-| next_action | `relay-190 Settings OAuth banner aria-live polite on show` |
-| phase | `8-close` |
+| last_wake | `2026-07-27T23:18:00Z` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `relay-189 reviewed round 19; committed 9fb62aa` |
 | review_diff_range | `relay-189` |
@@ -123,6 +121,7 @@
 | rf-r16-002 | low | Extraction to useHomeDashboardRefresh + homeDashboardDerived preserves behavior | round-16 /code-review | closed | — | closed |
 | rf-r17-001 | low | No issues in relay-188 OAuth auto-dismiss diff | round-17 /code-review | closed | — | closed |
 | rf-r18-001 | low | No issues in STATE checkpoint sync diff (last_wake + phase 9-arm) | round-18 /code-review | closed | — | closed |
+| rf-r19-001 | low | No issues in relay-189 ring share sheet diff | round-19 /code-review | closed | — | closed |
 
 ---
 
@@ -130,6 +129,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-189 | done | build | 9fb62aa |
 | 2026-07-27 | relay-188 | done | build | 9d012ca |
 | 2026-07-27 | relay-187 | done | build | 4c3ad70 |
 | 2026-07-27 | relay-186 | done | build | 41d31b5 |
