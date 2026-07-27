@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:45:00Z |
+| last_wake | 2026-07-27T03:50:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-095 meal plan sync failure haptic |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-096 queue empty hint aria-live on transition |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-095 | Meal plan sync failure haptic | feature
 - [ ] relay-096 | Queue empty hint aria-live on transition | maintenance
+- [ ] relay-097 | Remote sync banner on Day tab | feature
+- [ ] relay-098 | Clear stale failed ids on queue dismiss all | maintenance
 
 ---
 
@@ -57,6 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-095 | done | build | 2557202 |
 | 2026-07-27 | relay-094 | done | build | 1cab646 |
 | 2026-07-27 | relay-093 | done | build | 9345536 |
 | 2026-07-27 | relay-092 | done | build | 8d6c73f |
