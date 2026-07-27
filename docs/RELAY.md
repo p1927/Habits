@@ -8,12 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:14:00Z |
-| git_branch | main |
-| uncommitted_files | none (pushed f3af1b5) |
-| where_we_are | Legacy inline + script loops discarded; **cursor-loop** worker-relay armed fresh (PID 74904, 60s). |
-| blockers | [] |
-| confirmed_next | relay-152 accessibility audit |
+| reviewed_at | 2026-07-27T12:22:00Z |
+| where_we_are | relay-152 a11y pass on Log tabs + Day schedule grid (tabpanels, aria-live, focus rings). |
+| confirmed_next | relay-153 optimistic UI + retry |
 | brainstorm_notes | Worker only in this window — paste other contracts from `docs/START_LOOPS.md` for UX/Code/PO |
 
 ---
@@ -22,13 +19,10 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T12:14:00Z |
-| status | ready |
-| current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-152 accessibility audit |
+| last_wake | 2026-07-27T12:22:00Z |
+| next_action | relay-153 optimistic UI + retry on food log failures |
 | blockers | [] |
-| loops | **Worker** `tools/cursor-loop/scripts/agent-loop.sh` — `loop_id=worker-relay`, sentinel `^AGENT_LOOP_TICK_HABITS`, interval 60s, PID **74904**, shell **316284**. Verify: `bash tools/cursor-loop/scripts/verify-loop.sh worker-relay`. **All legacy loops discarded** (inline `while true`, `scripts/agent-*-loop.sh`). UX/Code/PO: arm by pasting contract in separate windows (`docs/START_LOOPS.md`). |
+| loops | **Worker** `cursor-loop` `worker-relay` — PID **76951**, sentinel `^AGENT_LOOP_TICK_HABITS`, 60s. First tick confirmed. Verify: `bash tools/cursor-loop/scripts/verify-loop.sh worker-relay`. |
 
 ---
 
@@ -40,7 +34,7 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-152 | Accessibility audit — ARIA, focus rings, contrast on new tabs | maintenance
+- [x] relay-152 | Accessibility audit — ARIA, focus rings, contrast on new tabs | maintenance | Day schedule tabpanels + now-line sr-only; Log sub-tabs roving tabindex; Type tab aria-live + failed alerts; meal-plan quick-add focus + aria-busy
 - [ ] relay-153 | Optimistic UI + retry on food log failures | feature
 
 ---
