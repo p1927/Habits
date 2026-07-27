@@ -40,8 +40,8 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-099 | Log remote sync banner on non-Plan tabs | feature
 - [ ] relay-100 | Shared meal-plan-remote-sync CSS class | maintenance
+- [ ] relay-101 | Meal plan queue count hook sync failed on dismiss | maintenance
 
 ---
 
@@ -57,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-099 | done | build | — |
 | 2026-07-27 | relay-098 | done | build | 74dfcaf |
 | 2026-07-27 | relay-097 | done | build | e1d9f29 |
 | 2026-07-27 | relay-096 | done | build | 8f5cb6b |
