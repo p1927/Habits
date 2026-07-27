@@ -168,7 +168,7 @@ function App() {
           {TABS.map((t) => {
             const showQueueBadge =
               mealPlanQueueCount > 0 &&
-              (t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards') &&
+              (t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards' || t.id === 'agent') &&
               tab !== t.id;
             const badgeCount = mealPlanFailedCount > 0 ? mealPlanFailedCount : mealPlanQueueCount;
             const queueBadgeCountLabel =
@@ -177,7 +177,7 @@ function App() {
                 : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`) +
               mealPlanSyncSourceHint;
             const queueBadgeActionable =
-              t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards';
+              t.id === 'home' || t.id === 'log' || t.id === 'day' || t.id === 'cards' || t.id === 'agent';
             const cardsQueueTarget = getMealPlanQueueLastSource() ?? 'home';
             return (
             <button
@@ -202,13 +202,16 @@ function App() {
                             ? `${queueBadgeCountLabel} — tap to open queue`
                             : t.id === 'cards'
                               ? `${queueBadgeCountLabel} — tap to open ${mealPlanQueueSourceLabel(cardsQueueTarget)} queue`
-                              : undefined
+                              : t.id === 'agent'
+                                ? `${queueBadgeCountLabel} — tap to open ${mealPlanQueueSourceLabel(cardsQueueTarget)} queue`
+                                : undefined
                     }
                     onClick={
                       queueBadgeActionable
                         ? (e) => {
                             e.stopPropagation();
-                            const targetTab = t.id === 'cards' ? cardsQueueTarget : t.id;
+                            const targetTab =
+                              t.id === 'cards' || t.id === 'agent' ? cardsQueueTarget : t.id;
                             scrollToMealPlanQueue(targetTab, { openLogPlan: targetTab === 'log' });
                           }
                         : undefined

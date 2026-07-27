@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T08:31:00Z |
+| reviewed_at | 2026-07-27T08:37:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Inline agent loop aborted; script loops running in dedicated terminals. |
+| where_we_are | relay-146 Coach tab queue badge shipped. |
 | blockers | [] |
-| confirmed_next | relay-146 Coach tab meal plan queue badge |
-| brainstorm_notes | monitor ^AGENT_LOOP_WAKE_HABITS for relay script, not TICK |
+| confirmed_next | relay-147 Commit meal plan queue event bus + count store |
+| brainstorm_notes | relay loop script uses PID file + AGENT_LOOP_TICK_HABITS |
 
 ---
 
@@ -22,13 +22,13 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T08:31:00Z |
+| last_wake | 2026-07-27T08:37:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: feature) |
-| next_action | relay-146 Coach tab meal plan queue badge |
+| cycle_parity | even (next: maintenance) |
+| next_action | relay-147 Commit meal plan queue event bus + count store |
 | blockers | [] |
-| loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 13722, running) |
+| loops | relay `scripts/agent-relay-loop.sh` (^AGENT_LOOP_TICK_HABITS, PID file); restart only in Habits terminal |
 
 ---
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-146 | Coach tab meal plan queue badge | feature
 - [ ] relay-147 | Commit meal plan queue event bus + count store | maintenance
 - [ ] relay-148 | Home section sub-panel refactor finish | feature
 
@@ -59,7 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-145 | done | build | 02d531a |
+| 2026-07-27 | relay-146 | done | build | — |
 | 2026-07-27 | relay-144 | done | build | 6269dd1 |
 | 2026-07-27 | relay-143 | done | build | c77ad53 |
 | 2026-07-27 | relay-142 | done | build | 4fe608c |
