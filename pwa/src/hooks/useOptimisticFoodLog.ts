@@ -15,6 +15,7 @@ export interface OptimisticFoodEntry {
   quantity_g: number;
   status: 'pending' | 'failed' | 'queued';
   source?: 'macros';
+  created_at?: string;
 }
 
 interface UseOptimisticFoodLogOptions {
@@ -26,7 +27,13 @@ interface UseOptimisticFoodLogOptions {
 
 function queueToEntry(item: QueuedFoodLog): OptimisticFoodEntry {
   if (item.kind === 'item') {
-    return { id: item.id, food: item.food, quantity_g: item.quantity_g, status: 'queued' };
+    return {
+      id: item.id,
+      food: item.food,
+      quantity_g: item.quantity_g,
+      status: 'queued',
+      created_at: item.created_at,
+    };
   }
   if (item.kind === 'macros') {
     return {
@@ -35,9 +42,16 @@ function queueToEntry(item: QueuedFoodLog): OptimisticFoodEntry {
       quantity_g: item.quantity_g,
       status: 'queued',
       source: 'macros',
+      created_at: item.created_at,
     };
   }
-  return { id: item.id, food: item.description, quantity_g: 0, status: 'queued' };
+  return {
+    id: item.id,
+    food: item.description,
+    quantity_g: 0,
+    status: 'queued',
+    created_at: item.created_at,
+  };
 }
 
 export function useOptimisticFoodLog({

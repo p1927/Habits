@@ -28,6 +28,7 @@ import {
   clearRecipeScanQueue,
 } from '../lib/recipeScanQueue';
 import { isOfflineError } from '../lib/foodQueue';
+import { formatRelativeTime } from '../lib/relativeTime';
 import {
   cacheMealPlan,
   dismissAllMealPlanQueue,
@@ -962,7 +963,17 @@ export function Log({
               <p className="muted">No entries yet.</p>
             ) : (
               <ul className="food-list">
-                {pending.map((entry) => (
+                {pending.map((entry) => {
+                  const queuedAgo = entry.created_at ? formatRelativeTime(entry.created_at) : '';
+                  const statusSuffix =
+                    entry.status === 'pending'
+                      ? ' · Saving…'
+                      : entry.status === 'queued'
+                        ? queuedAgo
+                          ? ` · Queued ${queuedAgo}`
+                          : ' · Queued offline'
+                        : ' · Failed to save';
+                  return (
                   <li
                     key={entry.id}
                     className={`food-row food-row--${entry.status}`}
@@ -972,11 +983,7 @@ export function Log({
                       <span className="muted">
                         {entry.quantity_g > 0 ? ` · ${entry.quantity_g}g` : ''}
                         {entry.source === 'macros' ? ' · Open Food Facts' : ''}
-                        {entry.status === 'pending'
-                          ? ' · Saving…'
-                          : entry.status === 'queued'
-                            ? ' · Queued offline'
-                            : ' · Failed to save'}
+                        {statusSuffix}
                       </span>
                     </div>
                     {entry.status === 'failed' && (
@@ -990,7 +997,8 @@ export function Log({
                       </div>
                     )}
                   </li>
-                ))}
+                  );
+                })}
                 {data?.items.map((item: FoodLogItem) => (
                   <li key={item.row} className="food-row">
                     <div>
