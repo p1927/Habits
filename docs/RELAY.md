@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T02:53:00Z |
+| reviewed_at | 2026-07-27T03:05:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #78; relay-086 Day empty hint gated on meal plan shipped. |
+| where_we_are | Loop tick #80; relay-087 useMealPlanQueueSync shared hook shipped. |
 | blockers | [] |
-| confirmed_next | relay-087 useMealPlanQueueSync shared hook |
-| brainstorm_notes | relay-086 done; Day/ Home/ Log all gate empty hint on meal plan |
+| confirmed_next | relay-088 queue retry failed items only shortcut |
+| brainstorm_notes | relay-087 done; Home/Day/Log share useMealPlanQueueSync |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T02:53:00Z |
+| last_wake | 2026-07-27T03:05:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-087 useMealPlanQueueSync shared hook |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-088 queue retry failed items only shortcut |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,6 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-087 | useMealPlanQueueSync shared hook | feature
 - [ ] relay-088 | Queue retry failed items only shortcut | maintenance
 - [ ] relay-089 | Meal plan queue section wrapper component | maintenance
 
@@ -58,6 +57,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-27 | relay-087 | done | build | — |
 | 2026-07-27 | relay-086 | done | build | 39f4535 |
 | 2026-07-27 | relay-085 | done | build | 2719131 |
 | 2026-07-27 | relay-084 | done | build | 13dc88c |
