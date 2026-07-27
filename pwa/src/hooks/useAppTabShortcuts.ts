@@ -11,6 +11,11 @@ function shouldHandleAppTabShortcut(activeTab: TabId, keyNum: number): boolean {
   return true;
 }
 
+/** Whether ⌘/Ctrl+N should be advertised on a main tab button (matches keydown handler). */
+export function isAppTabShortcutAvailable(activeTab: TabId, tabIndex: number): boolean {
+  return shouldHandleAppTabShortcut(activeTab, tabIndex + 1);
+}
+
 export function useAppTabShortcuts(
   activeTab: TabId,
   onTabChange: (id: TabId) => void,

@@ -1,4 +1,5 @@
 import { APP_TABS } from '../lib/appShellShared';
+import { isAppTabShortcutAvailable } from '../hooks/useAppTabShortcuts';
 import { shortcutModifierLabel } from '../lib/logSectionShared';
 import { getMealPlanQueueLastSource, mealPlanQueueSourceLabel, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 import type { TabId } from '../lib/config';
@@ -64,7 +65,9 @@ export function AppTabBar({
             onPointerEnter={() => preloadTab(t.id)}
             onFocus={() => preloadTab(t.id)}
             aria-current={tab === t.id ? 'page' : undefined}
-            aria-keyshortcuts={`${mod}${index + 1}`}
+            {...(isAppTabShortcutAvailable(tab, index)
+              ? { 'aria-keyshortcuts': `${mod}${index + 1}` }
+              : {})}
             aria-label={showQueueBadge ? `${t.label}, ${queueBadgeCountLabel}` : t.label}
           >
             <span className="tab-icon-wrap">

@@ -23,19 +23,19 @@
 | confirmed_next | `relay-188` |
 | next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
 | phase | `9-arm` |
-| review_status | `skipped` |
+| review_status | `pending` |
 | review_skip_reason | `relay-187 reviewed round 14; committed 4c3ad70` |
-| review_diff_range | `relay-187` |
-| code_changed | `no` |
-| review_round | `14` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `15` |
 | last_reviewed_round | `14` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/App.tsx pwa/src/components/AppTabBar.tsx pwa/src/hooks/useAppTabShortcuts.ts pwa/src/lib/appShellShared.ts` |
-| review_fingerprint | `69135bdcf5ee146c` |
+| review_changed_files | `pwa/src/components/AppTabBar.tsx pwa/src/hooks/useAppTabShortcuts.ts` |
+| review_fingerprint | `f1271529cafb5f15` |
 
 ## IN_PROGRESS
 
@@ -115,6 +115,7 @@
 | rf-r12-001 | low | No issues in relay-185 Cards filter shortcut diff | round-12 /code-review | closed | — | closed |
 | rf-r13-001 | low | No issues in relay-186 Settings shortcut diff | round-13 /code-review | closed | — | closed |
 | rf-r14-001 | low | No issues in relay-187 app tab shortcut diff | round-14 /code-review | closed | — | closed |
+| rf-r15-001 | low | No issues in relay-187 aria-keyshortcuts alignment diff | round-15 /code-review | closed | — | closed |
 
 ---
 
