@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T21:15:00Z |
-| where_we_are | relay-187 review complete (round 15) |
+| reviewed_at | 2026-07-27T21:22:00Z |
+| where_we_are | round 16 review — useHomeDashboard refactor |
 | confirmed_next | relay-188 |
-| brainstorm_notes | aria-keyshortcuts now match deferred shortcut handler |
+| brainstorm_notes | split refresh hook + derived metrics helper |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:18:00Z` |
+| last_wake | `2026-07-27T21:22:00Z` |
 | confirmed_next | `relay-188` |
 | next_action | `relay-188 OAuth success banner auto-dismiss after 5s` |
-| phase | `9-arm` |
+| phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-187 round 15 review done; aria fix committed ac57cf8` |
-| review_diff_range | `relay-187-r15` |
+| review_skip_reason | `round 16 review done; refactor 3757406 + duplicate removal` |
+| review_diff_range | `useHomeDashboard-refactor-r16` |
 | code_changed | `no` |
-| review_round | `15` |
-| last_reviewed_round | `15` |
+| review_round | `16` |
+| last_reviewed_round | `16` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/AppTabBar.tsx pwa/src/hooks/useAppTabShortcuts.ts` |
-| review_fingerprint | `f1271529cafb5f15` |
+| review_changed_files | `pwa/src/hooks/useHomeDashboard.ts pwa/src/hooks/useHomeDashboardRefresh.ts pwa/src/lib/homeDashboardDerived.ts pwa/src/hooks/homeDashboardDerived.ts` |
+| review_fingerprint | `fe53348d94250e48` |
 
 ## IN_PROGRESS
 
@@ -116,6 +116,8 @@
 | rf-r13-001 | low | No issues in relay-186 Settings shortcut diff | round-13 /code-review | closed | — | closed |
 | rf-r14-001 | low | No issues in relay-187 app tab shortcut diff | round-14 /code-review | closed | — | closed |
 | rf-r15-001 | low | No issues in relay-187 aria-keyshortcuts alignment diff | round-15 /code-review | closed | — | closed |
+| rf-r16-001 | high | Duplicate hooks/homeDashboardDerived.ts used wrong ./api imports; lib/ copy is canonical | round-16 /code-review | fix-now | — | closed |
+| rf-r16-002 | low | Extraction to useHomeDashboardRefresh + homeDashboardDerived preserves behavior | round-16 /code-review | closed | — | closed |
 
 ---
 
