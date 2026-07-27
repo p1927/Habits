@@ -235,9 +235,20 @@ export function Day({ serverOnline }: DayProps) {
       setSyncingMealPlanQueue(false);
       setMealPlanSyncProgress(null);
       syncMealPlanQueue();
-      if (getMealPlanQueue().length === 0) {
+      const remainingIds = new Set(getMealPlanQueue().map((item) => item.id));
+      if (remainingIds.size === 0) {
         setFailedMealPlanIds(new Set());
         setError('');
+      } else {
+        setFailedMealPlanIds((prev) => {
+          let changed = false;
+          const next = new Set<string>();
+          for (const id of prev) {
+            if (remainingIds.has(id)) next.add(id);
+            else changed = true;
+          }
+          return changed ? next : prev;
+        });
       }
     }
   }, [
