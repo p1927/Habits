@@ -26,7 +26,7 @@ export function RecipeScanQueueSection({
   if (queue.length > 0) {
     return (
       <>
-        <div className="banner banner-warn banner-row" role="status">
+        <div className="banner banner-warn banner-row banner-revolut" role="status">
           <span>
             {queue.length} recipe photo{queue.length === 1 ? '' : 's'} queued — will scan when online.
           </span>

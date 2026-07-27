@@ -2,100 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
-
 from habits_api.config import Settings
 from habits_api.db import TokenDB
+from habits_api.future_self.habit_cards import ACCEPT_METRIC_MAP, build_habit_cards, projection_prompts
+from habits_api.future_self.image_client import generate_body_image
 from habits_api.habits import service as habits_service
-
-
-async def generate_body_image(settings: Settings, prompt: str) -> str | None:
-    if not settings.minimax_api_key:
-        return None
-    url = f"{settings.minimax_base_url.rstrip('/')}/images/generations"
-    headers = {
-        "Authorization": f"Bearer {settings.minimax_api_key}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "model": "image-01",
-        "prompt": prompt,
-        "aspect_ratio": "3:4",
-        "response_format": "url",
-    }
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        resp = await client.post(url, headers=headers, json=payload)
-        if resp.status_code != 200:
-            return None
-        data = resp.json()
-        urls = data.get("data", {}).get("image_urls") or data.get("image_urls") or []
-        if urls:
-            return urls[0]
-        b64 = data.get("data", {}).get("image_base64") or data.get("image_base64")
-        if b64:
-            return f"data:image/png;base64,{b64}"
-    return None
-
-
-def _build_cards(tracker: dict, strategy_hint: str) -> list[dict[str, Any]]:
-    metrics = tracker.get("metrics") or {}
-    cards = [
-        {
-            "id": "sleep",
-            "title": "Protect your sleep block",
-            "habit": "sleep",
-            "metric": "sleep",
-            "target_hours": 7,
-            "current": metrics.get("sleep"),
-            "accept_action": "Log 7h sleep target in tracker",
-            "decline_action": "Skip sleep discipline today",
-            "image_prompt": "Athletic person waking up energized at sunrise, healthy lifestyle, photorealistic portrait",
-        },
-        {
-            "id": "work",
-            "title": "Deep work session",
-            "habit": "work",
-            "metric": "work",
-            "target_hours": 4,
-            "current": metrics.get("work"),
-            "accept_action": "Schedule 2h focused work block",
-            "decline_action": "Allow distraction today",
-            "image_prompt": "Focused professional at desk, productive future self, cinematic lighting",
-        },
-        {
-            "id": "read",
-            "title": "Read to compound",
-            "habit": "read",
-            "metric": "read",
-            "target_hours": 1,
-            "current": metrics.get("read"),
-            "accept_action": "Read 30 minutes tonight",
-            "decline_action": "Skip reading today",
-            "image_prompt": "Person reading book in calm evening light, intellectual future self",
-        },
-        {
-            "id": "protein",
-            "title": "Hit protein target",
-            "habit": "nutrition",
-            "metric": "protein",
-            "accept_action": "Log high-protein meal now",
-            "decline_action": "Skip macro tracking today",
-            "image_prompt": "Fit person with healthy high-protein meal, lean athletic physique, natural light",
-        },
-    ]
-    if strategy_hint:
-        cards.insert(
-            0,
-            {
-                "id": "strategy",
-                "title": "Weekly strategy focus",
-                "habit": "strategy",
-                "accept_action": strategy_hint[:120],
-                "decline_action": "Defer strategy focus",
-                "image_prompt": "Determined person planning goals on whiteboard, ambitious future self",
-            },
-        )
-    return cards
 
 
 async def get_summary(settings: Settings, db: TokenDB) -> dict[str, Any]:
@@ -115,7 +26,7 @@ async def get_summary(settings: Settings, db: TokenDB) -> dict[str, Any]:
             n=week.get("days_tracked", 0)
         )
 
-    cards = _build_cards(tracker, strategy_hint)
+    cards = build_habit_cards(tracker, strategy_hint)
     work_avg = week.get("averages", {}).get("work")
     summary = (
         f"Today is {tracker.get('weekday', '')}. "
@@ -153,27 +64,7 @@ async def generate_projections(
     """Generate decline vs accept future-self images from baseline photo."""
     await db.set_setting_cache("baseline_photo", photo_base64)
 
-    decline_prompt = (
-        "Photorealistic full-body portrait of the same person, 6 months later after bad habits: "
-        "sedentary lifestyle, poor sleep, skipped workouts, unhealthy weight gain, tired expression, "
-        "slouched posture, realistic lighting"
-    )
-    accept_prompt = (
-        "Photorealistic full-body portrait of the same person, 6 months later after disciplined habits: "
-        "consistent gym, good nutrition, lean athletic physique, confident posture, energized expression, "
-        "realistic lighting"
-    )
-
-    if habit_id == "sleep":
-        decline_prompt += ", dark circles, exhausted"
-        accept_prompt += ", well rested, vibrant"
-    elif habit_id == "work":
-        decline_prompt += ", stressed, cluttered environment"
-        accept_prompt += ", focused, organized workspace"
-    elif habit_id == "protein":
-        decline_prompt += ", soft physique, fast food"
-        accept_prompt += ", muscular definition, healthy meal"
-
+    decline_prompt, accept_prompt = projection_prompts(habit_id)
     decline_url = await generate_body_image(settings, decline_prompt)
     accept_url = await generate_body_image(settings, accept_prompt)
 
@@ -198,12 +89,7 @@ async def get_baseline_photo(db: TokenDB) -> str | None:
 
 
 async def accept_card(settings: Settings, db: TokenDB, card_id: str) -> dict:
-    mapping = {
-        "sleep": ("sleep", 7.0),
-        "work": ("work", 2.0),
-        "read": ("read", 0.5),
-    }
-    if card_id in mapping:
-        metric, val = mapping[card_id]
+    if card_id in ACCEPT_METRIC_MAP:
+        metric, val = ACCEPT_METRIC_MAP[card_id]
         await habits_service.update_metric(settings, db, metric, val)
     return await get_summary(settings, db)

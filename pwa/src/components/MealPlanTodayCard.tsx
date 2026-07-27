@@ -36,7 +36,8 @@ export function MealPlanTodayCard({
   const logAllDisabled = loggingMeals || (disableLogAllWhenItemLogging && !!loggingMealKey);
 
   return (
-    <Card className={className}>
+    <Card className={['home-export-card--health', className].filter(Boolean).join(' ')}>
+      <p className="section-eyebrow">Meal plan</p>
       <h2>Today&apos;s meal plan</h2>
       <p className="muted">
         From WEEK MEALS sheet
@@ -47,7 +48,7 @@ export function MealPlanTodayCard({
           </>
         )}
       </p>
-      {message && !hideMessage && <p className="banner banner-ok home-meal-plan-msg">{message}</p>}
+      {message && !hideMessage && <p className="banner banner-ok banner-revolut home-meal-plan-msg">{message}</p>}
       {!mealPlan.length ? (
         <p className="muted">No meals planned for today.</p>
       ) : (
@@ -61,7 +62,7 @@ export function MealPlanTodayCard({
                 </div>
                 <button
                   type="button"
-                  className="btn-small"
+                  className="btn-pill"
                   disabled={loggingMealKey === m.meal}
                   aria-label={`Log ${m.label}`}
                   onClick={() => onLogEntry(m)}
@@ -71,7 +72,12 @@ export function MealPlanTodayCard({
               </li>
             ))}
           </ul>
-          <button type="button" className={logAllClassName} disabled={logAllDisabled} onClick={onLogAll}>
+          <button
+            type="button"
+            className={`btn-pill ${logAllClassName ?? ''}`.trim()}
+            disabled={logAllDisabled}
+            onClick={onLogAll}
+          >
             {loggingMeals ? 'Logging…' : 'Log all planned meals'}
           </button>
         </>

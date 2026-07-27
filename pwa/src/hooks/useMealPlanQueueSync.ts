@@ -1,22 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import { api, type FoodTodayResponse } from '../lib/api';
-import { vibrateMealPlanSyncFailure, vibrateMealPlanSyncSuccess } from '../lib/haptics';
+import { useCallback } from 'react';
+import { type FoodTodayResponse } from '../lib/api';
 import {
-  addMealPlanFailedId,
-  clearMealPlanFailedIds,
-  getMealPlanFailedIds,
   getMealPlanQueue,
-  isOfflineError,
-  MEAL_PLAN_QUEUE_CHANGE,
   mealPlanQueueLabel,
-  mealPlanSyncUndoLabel,
-  pruneMealPlanFailedIds,
-  removeMealPlanQueueItem,
-  setMealPlanFailedIds,
-  setMealPlanQueueSyncStatus,
   type MealPlanSyncSource,
   type QueuedMealPlanLog,
 } from '../lib/mealPlanQueue';
+import {
+  runMealPlanBatchSync,
+  runMealPlanSingleSync,
+  type MealPlanSyncUndoContext,
+} from '../lib/mealPlanQueueSyncRunner';
+import { useMealPlanQueueSyncEffects } from './useMealPlanQueueSyncEffects';
+import { useMealPlanQueueSyncState } from './useMealPlanQueueSyncState';
 
 export interface UseMealPlanQueueSyncOptions {
   serverOnline: boolean;
@@ -59,48 +55,35 @@ export function useMealPlanQueueSync({
   setError,
   clearError,
 }: UseMealPlanQueueSyncOptions) {
-  const [mealPlanQueue, setMealPlanQueue] = useState<QueuedMealPlanLog[]>(() => getMealPlanQueue());
-  const [syncingMealPlanQueue, setSyncingMealPlanQueue] = useState(false);
-  const [mealPlanSyncProgress, setMealPlanSyncProgress] = useState<{ done: number; total: number } | null>(null);
-  const [failedMealPlanIds, setFailedMealPlanIds] = useState<Set<string>>(
-    () => new Set(getMealPlanFailedIds()),
-  );
-  const [retryingMealPlanId, setRetryingMealPlanId] = useState<string | null>(null);
+  const {
+    mealPlanQueue,
+    syncingMealPlanQueue,
+    setSyncingMealPlanQueue,
+    mealPlanSyncProgress,
+    setMealPlanSyncProgress,
+    failedMealPlanIds,
+    setFailedMealPlanIds,
+    retryingMealPlanId,
+    setRetryingMealPlanId,
+    syncMealPlanQueue,
+    applySuccessfulSync,
+    markItemFailed,
+    pruneFailedIds,
+    dismissMealPlanItem,
+    resetFailedIds,
+  } = useMealPlanQueueSyncState(clearError);
 
-  const syncMealPlanQueue = useCallback(() => {
-    setMealPlanQueue(getMealPlanQueue());
-  }, []);
-
-  const syncOneMealPlanItem = useCallback(async (item: QueuedMealPlanLog): Promise<FoodTodayResponse | null> => {
-    let summary: FoodTodayResponse | null = null;
-    if (item.kind === 'all') {
-      summary = (await api.logMealPlanToday()).summary;
-    } else if (item.meal) {
-      summary = (await api.logMealPlanItem(item.meal)).summary;
-    } else {
-      return null;
-    }
-    removeMealPlanQueueItem(item.id);
-    setFailedMealPlanIds((prev) => {
-      if (!prev.has(item.id)) return prev;
-      const next = new Set(prev);
-      next.delete(item.id);
-      setMealPlanFailedIds(next);
-      return next;
-    });
-    return summary;
-  }, []);
-
-  const pruneFailedIds = useCallback(() => {
-    pruneMealPlanFailedIds();
-    const remaining = getMealPlanFailedIds();
-    if (remaining.length === 0) {
-      setFailedMealPlanIds(new Set());
-      clearError?.();
-      return;
-    }
-    setFailedMealPlanIds(new Set(remaining));
-  }, [clearError]);
+  const undoContext: MealPlanSyncUndoContext = {
+    getFoodBeforeSync,
+    snapshotFoodRows,
+    offerUndoFromSummary,
+    onFoodUpdated,
+    onBatchSynced,
+    onItemLogged,
+    onItemOffline,
+    afterSync,
+    setError,
+  };
 
   const runQueueSync = useCallback(
     async (items: QueuedMealPlanLog[]) => {
@@ -110,54 +93,20 @@ export function useMealPlanQueueSync({
       setSyncingMealPlanQueue(true);
       clearError?.();
       dismissMealPlanUndo();
-      const total = items.length;
-      setMealPlanSyncProgress({ done: 0, total });
-      setMealPlanQueueSyncStatus({ syncing: true, done: 0, total, source: syncSource });
-      let synced = 0;
-      const labels: string[] = [];
-      let lastSummary: FoodTodayResponse | null = null;
 
       try {
-        const beforeRaw = await getFoodBeforeSync();
-        const before = beforeRaw ?? (await api.getFoodToday());
-        const beforeRows = snapshotFoodRows(before);
-
-        for (const item of items) {
-          try {
-            const summary = await syncOneMealPlanItem(item);
-            if (summary) {
-              lastSummary = summary;
-              synced += 1;
-              labels.push(mealPlanQueueLabel(item));
-              setMealPlanSyncProgress({ done: synced, total });
-              setMealPlanQueueSyncStatus({ syncing: true, done: synced, total, source: syncSource });
-              syncMealPlanQueue();
-            }
-          } catch (e) {
-            if (isOfflineError(e)) break;
-            addMealPlanFailedId(item.id);
-            setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
-            vibrateMealPlanSyncFailure();
+        await runMealPlanBatchSync(items, syncSource, undoContext, {
+          onProgress: (done, total) => setMealPlanSyncProgress({ done, total }),
+          onItemSuccess: applySuccessfulSync,
+          onItemFailure: (item, e) => {
+            markItemFailed(item.id);
             setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
-            break;
-          }
-        }
-
-        if (synced > 0 && lastSummary) {
-          vibrateMealPlanSyncSuccess();
-          onFoodUpdated?.(lastSummary);
-          const label = mealPlanSyncUndoLabel(synced, labels);
-          const offeredUndo = offerUndoFromSummary(beforeRows, lastSummary, label);
-          onBatchSynced?.(synced, offeredUndo);
-          afterSync?.();
-        }
-      } catch (e) {
-        if (!isOfflineError(e)) vibrateMealPlanSyncFailure();
-        setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
+          },
+          onQueueRefresh: syncMealPlanQueue,
+        });
       } finally {
         setSyncingMealPlanQueue(false);
         setMealPlanSyncProgress(null);
-        setMealPlanQueueSyncStatus(null);
         syncMealPlanQueue();
         pruneFailedIds();
       }
@@ -168,16 +117,21 @@ export function useMealPlanQueueSync({
       syncSource,
       clearError,
       dismissMealPlanUndo,
+      applySuccessfulSync,
+      markItemFailed,
+      syncMealPlanQueue,
+      pruneFailedIds,
+      setSyncingMealPlanQueue,
+      setMealPlanSyncProgress,
       getFoodBeforeSync,
       snapshotFoodRows,
       offerUndoFromSummary,
       onFoodUpdated,
       onBatchSynced,
+      onItemLogged,
+      onItemOffline,
       afterSync,
       setError,
-      syncOneMealPlanItem,
-      syncMealPlanQueue,
-      pruneFailedIds,
     ],
   );
 
@@ -198,27 +152,15 @@ export function useMealPlanQueueSync({
       clearError?.();
       dismissMealPlanUndo();
       try {
-        const beforeRaw = await getFoodBeforeSync();
-        const before = beforeRaw ?? (await api.getFoodToday());
-        const summary = await syncOneMealPlanItem(item);
-        if (summary) {
-          vibrateMealPlanSyncSuccess();
-          onFoodUpdated?.(summary);
-          syncMealPlanQueue();
-          const label = mealPlanQueueLabel(item);
-          const offeredUndo = offerUndoFromSummary(snapshotFoodRows(before), summary, label);
-          onItemLogged?.(label, offeredUndo);
-          afterSync?.();
-        }
-      } catch (e) {
-        if (isOfflineError(e)) {
-          onItemOffline?.(mealPlanQueueLabel(item));
-        } else {
-          addMealPlanFailedId(item.id);
-          setFailedMealPlanIds((prev) => new Set(prev).add(item.id));
-          vibrateMealPlanSyncFailure();
-          setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
-        }
+        await runMealPlanSingleSync(item, undoContext, {
+          onSuccess: applySuccessfulSync,
+          onOffline: () => onItemOffline?.(mealPlanQueueLabel(item)),
+          onFailure: (e) => {
+            markItemFailed(item.id);
+            setError?.(e instanceof Error ? e.message : 'Meal plan sync failed');
+          },
+          onQueueRefresh: syncMealPlanQueue,
+        });
       } finally {
         setRetryingMealPlanId(null);
       }
@@ -229,73 +171,31 @@ export function useMealPlanQueueSync({
       retryingMealPlanId,
       clearError,
       dismissMealPlanUndo,
+      applySuccessfulSync,
+      markItemFailed,
+      syncMealPlanQueue,
+      setRetryingMealPlanId,
       getFoodBeforeSync,
+      snapshotFoodRows,
+      offerUndoFromSummary,
       onFoodUpdated,
       onItemLogged,
       onItemOffline,
       afterSync,
       setError,
-      syncOneMealPlanItem,
-      syncMealPlanQueue,
-      snapshotFoodRows,
-      offerUndoFromSummary,
     ],
   );
 
-  const dismissMealPlanItem = useCallback(
-    (id: string) => {
-      removeMealPlanQueueItem(id);
-      setFailedMealPlanIds((prev) => {
-        if (!prev.has(id)) return prev;
-        const next = new Set(prev);
-        next.delete(id);
-        setMealPlanFailedIds(next);
-        return next;
-      });
-      syncMealPlanQueue();
-    },
-    [syncMealPlanQueue],
-  );
-
-  const resetFailedIds = useCallback(() => {
-    clearMealPlanFailedIds();
-    setFailedMealPlanIds(new Set());
-  }, []);
-
-  useEffect(() => {
-    const syncFailedFromStorage = () => {
-      setFailedMealPlanIds(new Set(getMealPlanFailedIds()));
-    };
-    window.addEventListener(MEAL_PLAN_QUEUE_CHANGE, syncFailedFromStorage);
-    return () => window.removeEventListener(MEAL_PLAN_QUEUE_CHANGE, syncFailedFromStorage);
-  }, []);
-
-  useEffect(() => {
-    if (!active || !watchQueueChanges) return;
-    syncMealPlanQueue();
-    const onQueueChange = () => syncMealPlanQueue();
-    window.addEventListener(MEAL_PLAN_QUEUE_CHANGE, onQueueChange);
-    return () => window.removeEventListener(MEAL_PLAN_QUEUE_CHANGE, onQueueChange);
-  }, [active, watchQueueChanges, syncMealPlanQueue]);
-
-  useEffect(() => {
-    if (!active || !autoFlushOnMount) return;
-    void flushMealPlanQueue();
-  }, [active, autoFlushOnMount, flushMealPlanQueue]);
-
-  useEffect(() => {
-    if (!active || (!watchOnline && !watchFocus)) return;
-    const onWake = () => {
-      syncMealPlanQueue();
-      void flushMealPlanQueue();
-    };
-    if (watchOnline) window.addEventListener('online', onWake);
-    if (watchFocus) window.addEventListener('focus', onWake);
-    return () => {
-      if (watchOnline) window.removeEventListener('online', onWake);
-      if (watchFocus) window.removeEventListener('focus', onWake);
-    };
-  }, [active, watchOnline, watchFocus, syncMealPlanQueue, flushMealPlanQueue]);
+  useMealPlanQueueSyncEffects({
+    active,
+    autoFlushOnMount,
+    watchOnline,
+    watchFocus,
+    watchQueueChanges,
+    syncMealPlanQueue,
+    flushMealPlanQueue,
+    setFailedMealPlanIds,
+  });
 
   return {
     mealPlanQueue,

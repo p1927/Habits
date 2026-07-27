@@ -136,7 +136,7 @@ export function MealPlanQueuePanel({
       }${failedCount > 0 ? ` ${panelClass}--has-failed` : ''}`}
       role="status"
     >
-      <div className={`banner banner-row${failedCount > 0 ? ' banner-err' : ' banner-warn'}`}>
+      <div className={`banner banner-row banner-revolut${failedCount > 0 ? ' banner-err' : ' banner-warn'}`}>
         <span
           aria-live={announceSyncProgress ? 'polite' : undefined}
           aria-atomic={announceSyncProgress ? 'true' : undefined}

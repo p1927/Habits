@@ -24,6 +24,10 @@ export function ScanInlineOverlay({
 }: ScanInlineOverlayProps) {
   return (
     <div className="scan-inline-overlay">
+      <div className="scan-inline-mode-pill" aria-hidden="true">
+        <span className="scan-inline-mode-dot" />
+        Food scan
+      </div>
       <img src={imageUrl} alt="Captured food" className="scan-inline-photo" />
       <div className="scan-inline-shade" aria-hidden="true" />
 
@@ -36,7 +40,7 @@ export function ScanInlineOverlay({
 
       {!loading && scan && onAction && onEdit && (
         <div className="scan-inline-result">
-          <SwipeFoodCard scan={scan} onAction={onAction} onEdit={onEdit} />
+          <SwipeFoodCard scan={scan} overlay onAction={onAction} onEdit={onEdit} />
         </div>
       )}
 

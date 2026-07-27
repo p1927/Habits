@@ -19,7 +19,7 @@ export function FoodQueueBanner({ queuedCount, queueSyncClearedToken, onDismiss 
 
   if (queuedCount > 0) {
     return (
-      <div className="banner banner-warn banner-row" role="status">
+      <div className="banner banner-warn banner-row banner-revolut" role="status">
         <span>
           {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
         </span>

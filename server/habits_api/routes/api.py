@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import parse_qs, urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -10,9 +9,14 @@ from pydantic import BaseModel, Field
 from habits_api.auth import require_admin, require_bearer
 from habits_api.config import Settings
 from habits_api.db import TokenDB
-from habits_api.google.oauth_store import pop_flow, store_flow
-from habits_api.google.sheets import oauth_flow
-from habits_api.routes import settings as settings_routes
+from habits_api.google.oauth_service import (
+    disconnect_google,
+    finish_google_oauth,
+    start_google_oauth,
+)
+from habits_api.routes.api_schemas import SettingsUpdate, oauth_http_exception
+from habits_api.routes.service_invoke import invoke_service
+from habits_api.settings import service as settings_service
 
 router = APIRouter()
 
@@ -25,12 +29,6 @@ class IssueRequest(BaseModel):
 class IssueResponse(BaseModel):
     device_id: str
     bearer: str
-
-
-class SettingsUpdate(BaseModel):
-    body: dict[str, Any] | None = None
-    meal_plan: dict[str, Any] | None = None
-    notification_times: dict[str, str] | None = None
 
 
 def get_db(request: Request) -> TokenDB:
@@ -58,11 +56,10 @@ async def issue_token(body: IssueRequest, db: TokenDB = Depends(get_db)) -> Issu
 
 @router.get("/auth/google")
 async def auth_google(settings: Settings = Depends(get_settings)):
-    if not settings.google_client_id:
-        raise HTTPException(503, "Google OAuth not configured")
-    flow = oauth_flow(settings)
-    url, state = flow.authorization_url(access_type="offline", prompt="consent")
-    store_flow(state, flow)
+    try:
+        url = await start_google_oauth(settings)
+    except Exception as exc:
+        raise oauth_http_exception(exc) from exc
     return RedirectResponse(url)
 
 
@@ -72,34 +69,16 @@ async def auth_callback(
     settings: Settings = Depends(get_settings),
     db: TokenDB = Depends(get_db),
 ):
-    if not settings.google_client_id:
-        raise HTTPException(503, "Google OAuth not configured")
-
-    query = parse_qs(urlparse(str(request.url)).query)
-    state = query.get("state", [None])[0]
-    if not state:
-        raise HTTPException(400, "Missing OAuth state")
-    flow = pop_flow(state)
-    if not flow:
-        raise HTTPException(400, "OAuth session expired — start Connect Google again")
-
     try:
-        flow.fetch_token(authorization_response=str(request.url))
+        redirect_url = await finish_google_oauth(settings, db, str(request.url))
     except Exception as exc:
-        raise HTTPException(400, f"Google OAuth failed: {exc}") from exc
-
-    creds = flow.credentials
-    if not creds or not creds.refresh_token:
-        raise HTTPException(400, "No refresh token — revoke app access and retry")
-    await db.save_google_token(creds.refresh_token, " ".join(creds.scopes or []))
-    pwa = settings.habits_pwa_url.rstrip("/")
-    return RedirectResponse(f"{pwa}/?google=connected#settings")
+        raise oauth_http_exception(exc) from exc
+    return RedirectResponse(redirect_url)
 
 
 @router.delete("/auth/google", dependencies=[Depends(require_bearer)])
 async def auth_google_disconnect(db: TokenDB = Depends(get_db)) -> dict:
-    await db.clear_google_token()
-    return {"ok": True, "google_connected": False}
+    return await disconnect_google(db)
 
 
 @router.get("/api/settings", dependencies=[Depends(require_bearer)])
@@ -107,7 +86,7 @@ async def get_settings_route(
     db: TokenDB = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> dict:
-    return await settings_routes.load_settings(settings, db)
+    return await invoke_service(settings_service.load_settings(settings, db))
 
 
 @router.put("/api/settings", dependencies=[Depends(require_bearer)])
@@ -116,4 +95,6 @@ async def put_settings_route(
     db: TokenDB = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> dict:
-    return await settings_routes.save_settings(settings, db, body.model_dump(exclude_none=True))
+    return await invoke_service(
+        settings_service.save_settings(settings, db, body.model_dump(exclude_none=True)),
+    )

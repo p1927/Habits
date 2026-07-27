@@ -153,7 +153,7 @@ export function BarcodeScanner({ onScan, disabled }: BarcodeScannerProps) {
         </button>
       </form>
 
-      {error && <div className="banner banner-warn" role="alert">{error}</div>}
+      {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
     </div>
   );
 }

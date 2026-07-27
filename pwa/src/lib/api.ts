@@ -258,7 +258,7 @@ export const api = {
       body: JSON.stringify({ value }),
     }),
   getCalendarToday: () =>
-    request<{ events: { id: string; summary: string; start: string }[] }>(
+    request<{ events: { id: string; summary: string; start: string; end?: string }[] }>(
       '/api/calendar/today',
     ),
   createCalendarEvent: (title: string, start: string, duration_minutes = 60) =>

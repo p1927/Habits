@@ -30,7 +30,7 @@ export function HabitQueueSection({
   if (queuedCount > 0) {
     return (
       <>
-        <div className="banner banner-warn banner-row" role="status">
+        <div className="banner banner-warn banner-row banner-revolut" role="status">
           <span>
             {queuedCount} habit update{queuedCount === 1 ? '' : 's'} queued — will sync when online.
           </span>

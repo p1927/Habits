@@ -1,57 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { api, type FoodTodayResponse } from '../lib/api';
 import {
   enqueueFoodLog,
   getFoodLogQueue,
-  isOfflineError,
   removeFoodLogQueueItem,
   clearFoodLogQueue,
-  type QueuedFoodLog,
 } from '../lib/foodQueue';
+import {
+  executeOptimisticFoodLog,
+  queueToOptimisticEntry,
+  type OptimisticFoodEntry,
+} from '../lib/optimisticFoodLog';
+import { useFoodLogQueueFlush } from './useFoodLogQueueFlush';
 
-export interface OptimisticFoodEntry {
-  id: string;
-  food: string;
-  quantity_g: number;
-  status: 'pending' | 'failed' | 'queued';
-  source?: 'macros';
-  created_at?: string;
-}
+export type { OptimisticFoodEntry };
 
 interface UseOptimisticFoodLogOptions {
   serverOnline: boolean;
   setData: (data: FoodTodayResponse | null) => void;
   setSuccess: (msg: string) => void;
   setError: (msg: string) => void;
-}
-
-function queueToEntry(item: QueuedFoodLog): OptimisticFoodEntry {
-  if (item.kind === 'item') {
-    return {
-      id: item.id,
-      food: item.food,
-      quantity_g: item.quantity_g,
-      status: 'queued',
-      created_at: item.created_at,
-    };
-  }
-  if (item.kind === 'macros') {
-    return {
-      id: item.id,
-      food: item.food,
-      quantity_g: item.quantity_g,
-      status: 'queued',
-      source: 'macros',
-      created_at: item.created_at,
-    };
-  }
-  return {
-    id: item.id,
-    food: item.description,
-    quantity_g: 0,
-    status: 'queued',
-    created_at: item.created_at,
-  };
 }
 
 export function useOptimisticFoodLog({
@@ -61,107 +29,48 @@ export function useOptimisticFoodLog({
   setError,
 }: UseOptimisticFoodLogOptions) {
   const [pending, setPending] = useState<OptimisticFoodEntry[]>(() =>
-    getFoodLogQueue().map(queueToEntry),
+    getFoodLogQueue().map(queueToOptimisticEntry),
   );
   const [queueSyncClearedToken, setQueueSyncClearedToken] = useState(0);
 
   const syncQueuedFromStorage = useCallback(() => {
     setPending((current) => {
-      const queued = getFoodLogQueue().map(queueToEntry);
+      const queued = getFoodLogQueue().map(queueToOptimisticEntry);
       const active = current.filter((x) => x.status !== 'queued');
       const activeIds = new Set(active.map((x) => x.id));
       return [...active, ...queued.filter((q) => !activeIds.has(q.id))];
     });
   }, []);
 
-  const flushQueue = useCallback(async () => {
-    if (!serverOnline || typeof navigator !== 'undefined' && !navigator.onLine) return;
-    const queue = getFoodLogQueue();
-    if (!queue.length) return;
+  const { flushQueue } = useFoodLogQueueFlush({
+    serverOnline,
+    setData,
+    setSuccess,
+    setError,
+    setPending,
+    setQueueSyncClearedToken,
+    syncQueuedFromStorage,
+  });
 
-    let synced = 0;
-    for (const item of queue) {
-      setPending((p) =>
-        p.map((x) => (x.id === item.id ? { ...x, status: 'pending' as const } : x)),
-      );
-      try {
-        const res =
-          item.kind === 'item'
-            ? await api.logFoodItem(item.food, item.quantity_g)
-            : item.kind === 'macros'
-              ? await api.logFoodMacros({
-                  food: item.food,
-                  quantity_g: item.quantity_g,
-                  calories: item.calories,
-                  carbs: item.carbs,
-                  protein: item.protein,
-                  fat: item.fat,
-                })
-              : await api.logFood(item.description, item.meal_type);
-        setData(res.summary);
-        removeFoodLogQueueItem(item.id);
-        setPending((p) => p.filter((x) => x.id !== item.id));
-        synced += 1;
-      } catch (e) {
-        if (isOfflineError(e)) break;
-        setPending((p) =>
-          p.map((x) => (x.id === item.id ? { ...x, status: 'failed' as const } : x)),
-        );
-        setError(e instanceof Error ? e.message : 'Sync failed');
-        break;
-      }
-    }
-    if (synced > 0) {
-      setSuccess(`Synced ${synced} queued food log${synced === 1 ? '' : 's'}`);
-      if (getFoodLogQueue().length === 0) {
-        setQueueSyncClearedToken((token) => token + 1);
-      }
-    }
-  }, [serverOnline, setData, setSuccess, setError]);
-
-  useEffect(() => {
-    void flushQueue();
-  }, [flushQueue]);
-
-  useEffect(() => {
-    const onOnline = () => {
-      syncQueuedFromStorage();
-      void flushQueue();
-    };
-    window.addEventListener('online', onOnline);
-    return () => window.removeEventListener('online', onOnline);
-  }, [flushQueue, syncQueuedFromStorage]);
+  const optimisticCtx = {
+    serverOnline,
+    setData,
+    setSuccess,
+    setError,
+    setPending,
+  };
 
   const logItem = useCallback(
     async (food: string, quantity_g: number, onSuccess?: (summary: FoodTodayResponse) => void) => {
       const id = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      setPending((p) => [...p, { id, food, quantity_g, status: 'pending' }]);
-      setError('');
-
-      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-        const q = enqueueFoodLog({ kind: 'item', food, quantity_g });
-        setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
-        setSuccess('Saved offline — will sync when back online');
-        return;
-      }
-
-      try {
-        const res = await api.logFoodItem(food, quantity_g);
-        setData(res.summary);
-        setSuccess(res.message);
-        setPending((p) => p.filter((x) => x.id !== id));
-        onSuccess?.(res.summary);
-      } catch (e) {
-        if (isOfflineError(e)) {
-          const q = enqueueFoodLog({ kind: 'item', food, quantity_g });
-          setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
-          setSuccess('Saved offline — will sync when back online');
-          return;
-        }
-        const msg = e instanceof Error ? e.message : 'Log failed';
-        setPending((p) => p.map((x) => (x.id === id ? { ...x, status: 'failed' as const } : x)));
-        setError(msg);
-      }
+      await executeOptimisticFoodLog({
+        ...optimisticCtx,
+        id,
+        pendingEntry: { id, food, quantity_g, status: 'pending' },
+        enqueue: () => enqueueFoodLog({ kind: 'item', food, quantity_g }),
+        submit: () => api.logFoodItem(food, quantity_g),
+        onSuccess,
+      });
     },
     [serverOnline, setData, setSuccess, setError],
   );
@@ -174,33 +83,14 @@ export function useOptimisticFoodLog({
       onSuccess?: (summary: FoodTodayResponse) => void,
     ) => {
       const id = `pending-macros-${Date.now()}`;
-      setPending((p) => [...p, { id, food, quantity_g, status: 'pending', source: 'macros' }]);
-      setError('');
-
-      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-        const q = enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros });
-        setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
-        setSuccess('Saved offline — will sync when back online');
-        return;
-      }
-
-      try {
-        const res = await api.logFoodMacros({ food, quantity_g, ...macros });
-        setData(res.summary);
-        setSuccess(res.message);
-        setPending((p) => p.filter((x) => x.id !== id));
-        onSuccess?.(res.summary);
-      } catch (e) {
-        if (isOfflineError(e)) {
-          const q = enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros });
-          setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
-          setSuccess('Saved offline — will sync when back online');
-          return;
-        }
-        const msg = e instanceof Error ? e.message : 'Log failed';
-        setPending((p) => p.map((x) => (x.id === id ? { ...x, status: 'failed' as const } : x)));
-        setError(msg);
-      }
+      await executeOptimisticFoodLog({
+        ...optimisticCtx,
+        id,
+        pendingEntry: { id, food, quantity_g, status: 'pending', source: 'macros' },
+        enqueue: () => enqueueFoodLog({ kind: 'macros', food, quantity_g, ...macros }),
+        submit: () => api.logFoodMacros({ food, quantity_g, ...macros }),
+        onSuccess,
+      });
     },
     [serverOnline, setData, setSuccess, setError],
   );
@@ -208,35 +98,15 @@ export function useOptimisticFoodLog({
   const logMeal = useCallback(
     async (description: string, meal_type: string, onSuccess?: () => void) => {
       const id = `pending-meal-${Date.now()}`;
-      setPending((p) => [...p, { id, food: description, quantity_g: 0, status: 'pending' }]);
-      setError('');
-
-      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-        const q = enqueueFoodLog({ kind: 'meal', description, meal_type });
-        setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
-        setSuccess('Saved offline — will sync when back online');
-        onSuccess?.();
-        return;
-      }
-
-      try {
-        const res = await api.logFood(description, meal_type);
-        setData(res.summary);
-        setSuccess(res.message);
-        setPending((p) => p.filter((x) => x.id !== id));
-        onSuccess?.();
-      } catch (e) {
-        if (isOfflineError(e)) {
-          const q = enqueueFoodLog({ kind: 'meal', description, meal_type });
-          setPending((p) => p.map((x) => (x.id === id ? queueToEntry(q) : x)));
-          setSuccess('Saved offline — will sync when back online');
-          onSuccess?.();
-          return;
-        }
-        const msg = e instanceof Error ? e.message : 'Log failed';
-        setPending((p) => p.map((x) => (x.id === id ? { ...x, status: 'failed' as const } : x)));
-        setError(msg);
-      }
+      await executeOptimisticFoodLog({
+        ...optimisticCtx,
+        id,
+        pendingEntry: { id, food: description, quantity_g: 0, status: 'pending' },
+        enqueue: () => enqueueFoodLog({ kind: 'meal', description, meal_type }),
+        submit: () => api.logFood(description, meal_type),
+        onOfflineComplete: onSuccess,
+        onSuccess: () => onSuccess?.(),
+      });
     },
     [serverOnline, setData, setSuccess, setError],
   );

@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react';
-import { api, type SettingsResponse } from '../lib/api';
-import { getBearer, getBuildLabel, getConfig, setBearer } from '../lib/config';
-import {
-  cacheNotificationTimes,
-  getNotificationPermission,
-  isMealRemindersEnabled,
-  requestNotificationPermission,
-  setMealRemindersEnabled,
-} from '../lib/mealNotifications';
+import { SettingsBodyTargetsCard } from '../components/SettingsBodyTargetsCard';
+import { SettingsConnectionCard } from '../components/SettingsConnectionCard';
+import { SettingsGoogleCard } from '../components/SettingsGoogleCard';
+import { SettingsMealNotificationsCard } from '../components/SettingsMealNotificationsCard';
+import { SettingsMealPlanCard } from '../components/SettingsMealPlanCard';
+import { useSettingsSection } from '../hooks/useSettingsSection';
+import { getBuildLabel } from '../lib/config';
 
 interface SettingsProps {
   serverOnline: boolean;
@@ -17,259 +14,91 @@ interface SettingsProps {
   onDismissOauth?: () => void;
 }
 
-const NOTIFICATION_LABELS: Record<string, string> = {
-  breakfast: 'Breakfast',
-  mid_day_snack: 'Mid-day snack',
-  lunch: 'Lunch',
-  evening_snack: 'Evening snack',
-  late_evening_snack: 'Late evening snack',
-  dinner: 'Dinner',
-  late_night_snack: 'Late night snack',
-  bedtime: 'Bedtime',
-};
-
-const MEAL_PLAN_KEYS = [
-  'breakfast',
-  'mid_day_snack',
-  'lunch',
-  'evening_snack',
-  'late_evening_snack',
-  'dinner',
-  'late_night_snack',
-];
-
-const WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-export function Settings({ serverOnline, googleConnected, onBearerSaved, oauthSuccess, onDismissOauth }: SettingsProps) {
-  const [bearerInput, setBearerInput] = useState(getBearer() ?? '');
-  const [settings, setSettings] = useState<SettingsResponse | null>(null);
-  const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [mealDay, setMealDay] = useState('monday');
-  const [remindersEnabled, setRemindersEnabled] = useState(isMealRemindersEnabled);
-  const [notifyPermission, setNotifyPermission] = useState(getNotificationPermission());
-
-  useEffect(() => {
-    if (!serverOnline || !getBearer()) return;
-    api.getSettings()
-      .then((s) => {
-        cacheNotificationTimes(s.notification_times);
-        setSettings(s);
-      })
-      .catch((e: Error) => setError(e.message));
-  }, [serverOnline, googleConnected]);
-
-  async function saveBearer() {
-    setBearer(bearerInput.trim());
-    setError('');
-    onBearerSaved?.();
-    if (serverOnline && bearerInput.trim()) {
-      try {
-        const s = await api.getSettings();
-        setSettings(s);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to connect');
-      }
-    }
-  }
-
-  async function saveSettings() {
-    if (!settings) return;
-    setSaving(true);
-    setError('');
-    try {
-      const updated = await api.updateSettings(settings);
-      cacheNotificationTimes(updated.notification_times);
-      setSettings(updated);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Save failed');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function disconnectGoogle() {
-    try {
-      await api.disconnectGoogle();
-      onBearerSaved?.();
-      setSettings((s) => (s ? { ...s, sheets_connected: false } : s));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Disconnect failed');
-    }
-  }
-
-  const { apiUrl } = getConfig();
-  const authUrl = serverOnline && apiUrl
-    ? `${apiUrl.replace(/\/$/, '')}/auth/google`
-    : null;
+export function Settings({
+  serverOnline,
+  googleConnected,
+  onBearerSaved,
+  oauthSuccess,
+  onDismissOauth,
+}: SettingsProps) {
+  const {
+    bearerInput,
+    setBearerInput,
+    settings,
+    error,
+    saving,
+    mealDay,
+    setMealDay,
+    remindersEnabled,
+    notifyPermission,
+    saveBearer,
+    saveSettings,
+    disconnectGoogle,
+    authUrl,
+    updateBody,
+    updateNotificationTime,
+    updateMealPlan,
+    handleRemindersChange,
+    handleRequestPermission,
+  } = useSettingsSection({ serverOnline, googleConnected, onBearerSaved });
 
   return (
-    <section className="section">
+    <section className="section settings-page">
+      <p className="section-eyebrow">Account</p>
       <h1>Settings</h1>
-      <p className="muted">Everything settable here syncs to your Google Sheets — same as Excel.</p>
+      <p className="muted settings-lede">Everything settable here syncs to your Google Sheets — same as Excel.</p>
 
       {oauthSuccess && (
-        <div className="banner banner-ok">
+        <div className="banner banner-ok banner-revolut banner-row">
           Google connected successfully.
           <button type="button" className="btn-small" onClick={onDismissOauth}>Dismiss</button>
         </div>
       )}
 
-      <div className="card">
-        <h2>Server connection</h2>
-        <label className="field">
-          Bearer token
-          <input
-            value={bearerInput}
-            onChange={(e) => setBearerInput(e.target.value)}
-            placeholder="Paste token from Mac server"
-            autoComplete="off"
-          />
-        </label>
-        <button type="button" onClick={() => void saveBearer()}>Save token</button>
-      </div>
+      <SettingsConnectionCard
+        bearerInput={bearerInput}
+        onBearerChange={setBearerInput}
+        onSave={() => void saveBearer()}
+      />
 
-      <div className="card">
-        <h2>Google account</h2>
-        <p>{googleConnected ? 'Connected' : 'Not connected'}</p>
-        {authUrl && !googleConnected && (
-          <a className="btn-link" href={authUrl}>Connect Google Sheets & Calendar</a>
-        )}
-        {googleConnected && (
-          <button type="button" onClick={() => void disconnectGoogle()}>Disconnect Google</button>
-        )}
-      </div>
+      <SettingsGoogleCard
+        googleConnected={googleConnected}
+        authUrl={authUrl}
+        onDisconnect={() => void disconnectGoogle()}
+      />
 
       {settings && (
         <>
-          <div className="card">
-            <h2>Body & targets</h2>
-            {Object.entries(settings.body).map(([key, val]) => (
-              <label key={key} className="field">
-                {key}
-                <input
-                  value={val ?? ''}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      body: { ...settings.body, [key]: e.target.value },
-                    })
-                  }
-                />
-              </label>
-            ))}
-            <button type="button" disabled={saving} onClick={() => void saveSettings()}>
-              {saving ? 'Saving…' : 'Save to Google Sheet'}
-            </button>
-          </div>
+          <SettingsBodyTargetsCard
+            settings={settings}
+            saving={saving}
+            onBodyChange={updateBody}
+            onSave={() => void saveSettings()}
+          />
 
-          <div className="card">
-            <h2>Meal notifications</h2>
-            <p className="muted">
-              Browser reminders at each meal time while Habits is installed. Keep the app open or pinned for best results.
-            </p>
-            <label className="field field-row">
-              <span>Enable meal reminders</span>
-              <input
-                type="checkbox"
-                checked={remindersEnabled}
-                disabled={notifyPermission === 'unsupported'}
-                onChange={(e) => {
-                  const on = e.target.checked;
-                  setMealRemindersEnabled(on);
-                  setRemindersEnabled(on);
-                }}
-              />
-            </label>
-            {notifyPermission === 'unsupported' && (
-              <p className="muted">Notifications are not supported in this browser.</p>
-            )}
-            {notifyPermission === 'default' && (
-              <button
-                type="button"
-                onClick={() => {
-                  void requestNotificationPermission().then((p) => {
-                    setNotifyPermission(p);
-                    if (p === 'granted') {
-                      setMealRemindersEnabled(true);
-                      setRemindersEnabled(true);
-                    }
-                  });
-                }}
-              >
-                Allow notifications
-              </button>
-            )}
-            {notifyPermission === 'denied' && (
-              <p className="banner banner-warn">Notifications blocked — enable them in browser settings.</p>
-            )}
-            {notifyPermission === 'granted' && remindersEnabled && (
-              <p className="muted">Reminders active for today&apos;s schedule.</p>
-            )}
-            {Object.entries(settings.notification_times).map(([key, val]) => (
-              <label key={key} className="field">
-                {NOTIFICATION_LABELS[key] ?? key}
-                <input
-                  type="time"
-                  value={val}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      notification_times: {
-                        ...settings.notification_times,
-                        [key]: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </label>
-            ))}
-            <button type="button" disabled={saving} onClick={() => void saveSettings()}>
-              Save notification times
-            </button>
-          </div>
+          <SettingsMealNotificationsCard
+            settings={settings}
+            saving={saving}
+            remindersEnabled={remindersEnabled}
+            notifyPermission={notifyPermission}
+            onRemindersChange={handleRemindersChange}
+            onRequestPermission={handleRequestPermission}
+            onNotificationTimeChange={updateNotificationTime}
+            onSave={() => void saveSettings()}
+          />
 
-          <div className="card">
-            <h2>Weekly meal plan</h2>
-            <label className="field">
-              Day
-              <select value={mealDay} onChange={(e) => setMealDay(e.target.value)}>
-                {WEEKDAYS.map((d) => (
-                  <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>
-                ))}
-              </select>
-            </label>
-            {MEAL_PLAN_KEYS.map((mealKey) => {
-              const val = settings.meal_plan[mealKey]?.[mealDay] ?? '';
-              return (
-                <label key={mealKey} className="field">
-                  {NOTIFICATION_LABELS[mealKey] ?? mealKey.replace(/_/g, ' ')}
-                  <input
-                    value={val}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        meal_plan: {
-                          ...settings.meal_plan,
-                          [mealKey]: {
-                            ...(settings.meal_plan[mealKey] ?? {}),
-                            [mealDay]: e.target.value,
-                          },
-                        },
-                      })
-                    }
-                  />
-                </label>
-              );
-            })}
-            <button type="button" disabled={saving} onClick={() => void saveSettings()}>
-              Save meal plan
-            </button>
-          </div>
+          <SettingsMealPlanCard
+            settings={settings}
+            mealDay={mealDay}
+            saving={saving}
+            onMealDayChange={setMealDay}
+            onMealPlanChange={updateMealPlan}
+            onSave={() => void saveSettings()}
+          />
         </>
       )}
 
-      {error && <div className="banner banner-warn">{error}</div>}
+      {error && <div className="banner banner-warn banner-revolut">{error}</div>}
       <p className="muted build-label">Build {getBuildLabel()}</p>
     </section>
   );

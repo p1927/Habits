@@ -14,7 +14,7 @@ export function MealPlanRemoteSyncBanner({ sync, onGoToSource }: MealPlanRemoteS
   return (
     <button
       type="button"
-      className="banner banner-warn meal-plan-remote-sync meal-plan-remote-sync--actionable"
+      className="banner banner-warn banner-revolut meal-plan-remote-sync meal-plan-remote-sync--actionable"
       role="status"
       aria-live={prefersReducedMotion ? undefined : 'polite'}
       aria-atomic="true"

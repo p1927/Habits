@@ -99,3 +99,18 @@ export function ActivityRings({ protein, calories, habits }: ActivityRingsProps)
     </div>
   );
 }
+
+export function ActivityRingsSkeleton() {
+  return (
+    <div
+      className="ui-rings-stack ui-rings-stack--skeleton"
+      role="status"
+      aria-label="Loading activity rings"
+      aria-busy="true"
+    >
+      <div className="ui-ring ui-ring--skeleton" style={{ width: 120, height: 120 }} />
+      <div className="ui-ring ui-ring--skeleton" style={{ width: 96, height: 96 }} />
+      <div className="ui-ring ui-ring--skeleton" style={{ width: 72, height: 72 }} />
+    </div>
+  );
+}

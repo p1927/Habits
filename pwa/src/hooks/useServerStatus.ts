@@ -10,7 +10,7 @@ export function useServerStatus(pollMs = 30_000) {
 
   const check = useCallback(async () => {
     const { apiUrl } = getConfig();
-    if (!apiUrl) {
+    if (!apiUrl && import.meta.env.PROD) {
       setStatus('no-config');
       return;
     }

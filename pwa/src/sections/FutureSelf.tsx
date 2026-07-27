@@ -1,16 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CameraCapture } from '../components/CameraCapture';
+import { FutureSelfBaselineCard } from '../components/FutureSelfBaselineCard';
+import { FutureSelfProjectionGrid } from '../components/FutureSelfProjectionGrid';
+import { FutureSelfSwipeCard } from '../components/FutureSelfSwipeCard';
+import { FutureSelfTrackerCard } from '../components/FutureSelfTrackerCard';
 import { api, ApiError, type FutureSelfCard, type HabitsTodayResponse } from '../lib/api';
+import type { FutureSelfProjectionOutcome } from '../lib/futureSelfSectionShared';
 
 interface FutureSelfProps {
   serverOnline: boolean;
-}
-
-const METRICS = ['sleep', 'work', 'wasted', 'speak', 'game', 'read'] as const;
-
-interface ProjectionOutcome {
-  label: string;
-  image_url: string | null;
 }
 
 export function FutureSelf({ serverOnline }: FutureSelfProps) {
@@ -22,8 +19,8 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
   const [loading, setLoading] = useState(false);
   const [swipeDir, setSwipeDir] = useState<'left' | 'right' | null>(null);
   const [baselinePhoto, setBaselinePhoto] = useState<string | null>(null);
-  const [declineOutcome, setDeclineOutcome] = useState<ProjectionOutcome | null>(null);
-  const [acceptOutcome, setAcceptOutcome] = useState<ProjectionOutcome | null>(null);
+  const [declineOutcome, setDeclineOutcome] = useState<FutureSelfProjectionOutcome | null>(null);
+  const [acceptOutcome, setAcceptOutcome] = useState<FutureSelfProjectionOutcome | null>(null);
   const [generating, setGenerating] = useState(false);
 
   const load = useCallback(async () => {
@@ -58,7 +55,7 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
     }
   }
 
-  async function handlePhotoCapture(dataUrl: string) {
+  function handlePhotoCapture(dataUrl: string) {
     setBaselinePhoto(dataUrl);
     setDeclineOutcome(null);
     setAcceptOutcome(null);
@@ -123,85 +120,36 @@ export function FutureSelf({ serverOnline }: FutureSelfProps) {
       <p className="muted">{summary || 'Take a photo, see your two futures, then swipe to decide.'}</p>
 
       {!serverOnline && (
-        <div className="banner banner-warn">Mac server offline — cards unavailable.</div>
+        <div className="banner banner-warn banner-revolut">Mac server offline — cards unavailable.</div>
       )}
 
-      {error && <div className="banner banner-warn">{error}</div>}
+      {error && <div className="banner banner-warn banner-revolut">{error}</div>}
 
-      <div className="card">
-        <h2>Baseline photo</h2>
-        <CameraCapture onCapture={handlePhotoCapture} disabled={generating} />
-        {baselinePhoto && (
-          <button
-            type="button"
-            disabled={generating || !serverOnline}
-            onClick={() => void generateProjections()}
-          >
-            {generating ? 'Generating futures…' : 'Show decline vs accept outcomes'}
-          </button>
-        )}
-      </div>
+      <FutureSelfBaselineCard
+        baselinePhoto={baselinePhoto}
+        generating={generating}
+        serverOnline={serverOnline}
+        onCapture={handlePhotoCapture}
+        onGenerate={() => void generateProjections()}
+      />
 
-      {(declineOutcome || acceptOutcome) && (
-        <div className="projection-grid">
-          <div className="projection-card card">
-            <p className="projection-label-decline">{declineOutcome?.label ?? 'Decline path'}</p>
-            {declineOutcome?.image_url ? (
-              <img src={declineOutcome.image_url} alt="Decline future self" />
-            ) : (
-              <div className="card-image-placeholder">No image</div>
-            )}
-          </div>
-          <div className="projection-card card">
-            <p className="projection-label-accept">{acceptOutcome?.label ?? 'Accept path'}</p>
-            {acceptOutcome?.image_url ? (
-              <img src={acceptOutcome.image_url} alt="Accept future self" />
-            ) : (
-              <div className="card-image-placeholder">No image</div>
-            )}
-          </div>
-        </div>
-      )}
+      <FutureSelfProjectionGrid declineOutcome={declineOutcome} acceptOutcome={acceptOutcome} />
 
       {tracker?.sheets_connected && (
-        <div className="card">
-          <h2>Today&apos;s tracker</h2>
-          <p className="muted">{tracker.weekday} · {tracker.date}</p>
-          <div className="tracker-grid">
-            {METRICS.map((m) => (
-              <label key={m} className="field tracker-field">
-                {m}
-                <input
-                  type="number"
-                  step="0.5"
-                  value={tracker.metrics[m] ?? ''}
-                  onChange={(e) => void updateMetric(m, e.target.value)}
-                  placeholder="h"
-                />
-              </label>
-            ))}
-          </div>
-        </div>
+        <FutureSelfTrackerCard
+          tracker={tracker}
+          onUpdateMetric={(metric, value) => void updateMetric(metric, value)}
+        />
       )}
 
       {card ? (
-        <div className={`swipe-card card ${swipeDir ? `swipe-${swipeDir}` : ''}`}>
-          {card.image_url ? (
-            <img src={card.image_url} alt="" className="card-image" />
-          ) : (
-            <div className="card-image card-image-placeholder">✦</div>
-          )}
-          <h2>{card.title}</h2>
-          {card.accept_action && <p className="muted">{card.accept_action}</p>}
-          <div className="swipe-actions">
-            <button type="button" className="btn-decline" onClick={handleDecline} disabled={loading}>
-              Decline
-            </button>
-            <button type="button" className="btn-accept" onClick={() => void handleAccept()} disabled={loading}>
-              Accept
-            </button>
-          </div>
-        </div>
+        <FutureSelfSwipeCard
+          card={card}
+          swipeDir={swipeDir}
+          loading={loading}
+          onDecline={handleDecline}
+          onAccept={() => void handleAccept()}
+        />
       ) : (
         !error && serverOnline && (
           <div className="card card-placeholder">

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import './ui.css';
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down';
@@ -15,6 +15,7 @@ interface SwipeStackProps {
 }
 
 const THRESHOLD = 80;
+const MAX_ROTATION = 12;
 
 export function SwipeStack({
   children,
@@ -63,44 +64,86 @@ export function SwipeStack({
     setOffset({ x: 0, y: 0 });
   }, [offset, fire]);
 
-  const rotation = offset.x * 0.05;
-  const opacity = 1 - Math.min(Math.abs(offset.x) + Math.abs(offset.y), 200) / 400;
+  const rotation = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, offset.x * 0.08));
+  const dampedY = offset.y * 0.3;
+  const dragProgress = Math.min((Math.abs(offset.x) + Math.abs(offset.y)) / THRESHOLD, 1);
+  const stampRightOpacity = Math.min(Math.max(offset.x / THRESHOLD, 0), 1);
+  const stampLeftOpacity = Math.min(Math.max(-offset.x / THRESHOLD, 0), 1);
+  const stampUpOpacity = Math.min(Math.max(-offset.y / THRESHOLD, 0), 1);
+  const nextCardScale = 0.96 + dragProgress * 0.04;
 
   return (
-    <div className={`ui-swipe-stack ${className}`.trim()}>
+    <div className={`ui-swipe-stack ${className}`.trim()} style={{ '--swipe-next-scale': nextCardScale } as CSSProperties}>
       <div className="ui-swipe-hints" aria-hidden="true">
         <span className="ui-swipe-hint ui-swipe-hint--left">{hintLeft}</span>
         <span className="ui-swipe-hint ui-swipe-hint--up">{hintUp}</span>
         <span className="ui-swipe-hint ui-swipe-hint--right">{hintRight}</span>
       </div>
-      <div
-        className={`ui-swipe-card ${dragging ? 'ui-swipe-card--dragging' : ''}`}
-        style={{
-          transform: `translate(${offset.x}px, ${offset.y}px) rotate(${rotation}deg)`,
-          opacity,
-        }}
-        role="group"
-        aria-label={label}
-        onTouchStart={(e) => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchMove={(e) => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchEnd={handleEnd}
-        onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
-        onMouseMove={(e) => dragging && handleMove(e.clientX, e.clientY)}
-        onMouseUp={handleEnd}
-        onMouseLeave={() => dragging && handleEnd()}
-      >
-        {children}
+      <div className="ui-swipe-card-wrap">
+        <span
+          className="ui-swipe-stamp ui-swipe-stamp--right"
+          style={{ opacity: stampRightOpacity }}
+          aria-hidden="true"
+        >
+          {hintRight}
+        </span>
+        <span
+          className="ui-swipe-stamp ui-swipe-stamp--left"
+          style={{ opacity: stampLeftOpacity }}
+          aria-hidden="true"
+        >
+          {hintLeft}
+        </span>
+        <span
+          className="ui-swipe-stamp ui-swipe-stamp--up"
+          style={{ opacity: stampUpOpacity }}
+          aria-hidden="true"
+        >
+          {hintUp}
+        </span>
+        <div
+          className={`ui-swipe-card ${dragging ? 'ui-swipe-card--dragging' : ''}`}
+          style={{
+            transform: `translate(${offset.x}px, ${dampedY}px) rotate(${rotation}deg)`,
+          }}
+          role="group"
+          aria-label={label}
+          onTouchStart={(e) => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
+          onTouchMove={(e) => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
+          onTouchEnd={handleEnd}
+          onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
+          onMouseMove={(e) => dragging && handleMove(e.clientX, e.clientY)}
+          onMouseUp={handleEnd}
+          onMouseLeave={() => dragging && handleEnd()}
+        >
+          {children}
+        </div>
       </div>
       {showKeyboardActions && onSwipe && (
-        <div className="ui-swipe-actions" role="group" aria-label={`${label} actions`}>
-          <button type="button" className="btn-secondary btn-small" onClick={() => fire('left')}>
-            {hintLeft}
+        <div className="ui-swipe-actions ui-swipe-actions--tinder" role="group" aria-label={`${label} actions`}>
+          <button
+            type="button"
+            className="ui-swipe-circle ui-swipe-circle--left"
+            aria-label={hintLeft}
+            onClick={() => fire('left')}
+          >
+            <span aria-hidden="true">✎</span>
           </button>
-          <button type="button" className="btn-secondary btn-small" onClick={() => fire('up')}>
-            {hintUp}
+          <button
+            type="button"
+            className="ui-swipe-circle ui-swipe-circle--up"
+            aria-label={hintUp}
+            onClick={() => fire('up')}
+          >
+            <span aria-hidden="true">↑</span>
           </button>
-          <button type="button" className="btn-secondary btn-small" onClick={() => fire('right')}>
-            {hintRight}
+          <button
+            type="button"
+            className="ui-swipe-circle ui-swipe-circle--right"
+            aria-label={hintRight}
+            onClick={() => fire('right')}
+          >
+            <span aria-hidden="true">✓</span>
           </button>
         </div>
       )}

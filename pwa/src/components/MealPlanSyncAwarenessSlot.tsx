@@ -1,7 +1,10 @@
 import { MealPlanQueuePendingBanner } from './MealPlanQueuePendingBanner';
 import { MealPlanRemoteSyncBanner } from './MealPlanRemoteSyncBanner';
 import { useMealPlanQueueCount } from '../hooks/useMealPlanQueueCount';
-import { useMealPlanQueueRemoteSync, type MealPlanSyncViewer } from '../hooks/useMealPlanQueueRemoteSync';
+import {
+  useMealPlanQueueRemoteSync,
+  type MealPlanSyncViewer,
+} from '../lib/mealPlanQueueRemoteSyncStore';
 import { getMealPlanQueueLastSource, type MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 export interface MealPlanSyncAwarenessSlotProps {

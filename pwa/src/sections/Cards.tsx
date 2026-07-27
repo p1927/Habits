@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Card } from '../components/ui/Card';
-import { BottomSheet } from '../components/ui/BottomSheet';
-import { SicknessTimeline } from '../components/SicknessTimeline';
+import { CardsCreateSheet } from '../components/CardsCreateSheet';
+import { CardsFilterBar } from '../components/CardsFilterBar';
+import { CardsKeepGrid } from '../components/CardsKeepGrid';
+import { CardsSicknessTimelineCard } from '../components/CardsSicknessTimelineCard';
 import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSlot';
 import { api, ApiError, type KeepCard, type SicknessTimelineEvent } from '../lib/api';
+import { filterCardsBySearch, type CardsFilter } from '../lib/cardsSectionShared';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
 interface CardsProps {
@@ -11,16 +13,9 @@ interface CardsProps {
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
 }
 
-const FILTERS = ['all', 'sickness', 'notes', 'strategy'] as const;
-const KEEP_VARIANTS: Record<string, 'keep-yellow' | 'keep-blue' | 'keep-green' | 'keep-pink' | 'keep-purple'> = {
-  sickness: 'keep-yellow',
-  notes: 'keep-blue',
-  strategy: 'keep-green',
-};
-
 export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps) {
   const [cards, setCards] = useState<KeepCard[]>([]);
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('all');
+  const [filter, setFilter] = useState<CardsFilter>('all');
   const [search, setSearch] = useState('');
   const [fabOpen, setFabOpen] = useState(false);
   const [newType, setNewType] = useState<'sickness' | 'notes' | 'strategy'>('notes');
@@ -49,11 +44,7 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
     void refresh();
   }, [refresh]);
 
-  const filtered = cards.filter((c) => {
-    const q = search.toLowerCase();
-    if (!q) return true;
-    return c.title.toLowerCase().includes(q) || c.body.toLowerCase().includes(q);
-  });
+  const filtered = filterCardsBySearch(cards, search);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -80,9 +71,10 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
   }
 
   return (
-    <section className="section cards-section" aria-labelledby="cards-heading">
-      <h1 id="cards-heading">Cards</h1>
-      <p className="muted">Notes, sickness, strategy — like Google Keep</p>
+    <section className="section cards-section cards-section--keep" aria-labelledby="cards-heading">
+      <p className="section-eyebrow">Notes</p>
+      <h1 id="cards-heading">Keep</h1>
+      <p className="muted cards-lede">Quick capture — notes, sickness, strategy</p>
 
       <MealPlanSyncAwarenessSlot
         viewer="external"
@@ -90,96 +82,37 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
         showPendingWhenIdle
       />
 
-      <label className="sr-only" htmlFor="cards-search">Search cards</label>
-      <input
-        id="cards-search"
-        className="cards-search"
-        placeholder="Search cards…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+      <CardsFilterBar
+        search={search}
+        filter={filter}
+        onSearchChange={setSearch}
+        onFilterChange={setFilter}
       />
 
-      <div className="sub-tabs" role="tablist" aria-label="Card filters">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            type="button"
-            role="tab"
-            aria-selected={filter === f}
-            className={`sub-tab ${filter === f ? 'sub-tab-active' : ''}`}
-            onClick={() => setFilter(f)}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-
       {(filter === 'all' || filter === 'sickness') && (
-        <Card variant="keep-yellow">
-          <h2>Sickness timeline</h2>
-          <p className="muted">Last 90 days from Nutrition sheet</p>
-          <SicknessTimeline events={sicknessEvents} />
-        </Card>
+        <CardsSicknessTimelineCard events={sicknessEvents} />
       )}
 
-      <div className="cards-grid" role="list" aria-label="Keep cards">
-        {filtered.map((card) => (
-          <Card
-            key={card.id}
-            variant={KEEP_VARIANTS[card.type] ?? 'keep-purple'}
-            className="keep-card"
-            onClick={() => {}}
-            ariaLabel={`${card.type} card: ${card.title}`}
-          >
-            <div className="keep-card-header">
-              <span className="keep-card-type">{card.type}</span>
-              <button
-                type="button"
-                className="btn-small btn-danger"
-                aria-label={`Delete ${card.title}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void handleDelete(card);
-                }}
-              >
-                ×
-              </button>
-            </div>
-            <h3>{card.title}</h3>
-            {card.body && <p>{card.body}</p>}
-          </Card>
-        ))}
-      </div>
+      <CardsKeepGrid cards={filtered} onDelete={(card) => void handleDelete(card)} />
 
-      {!filtered.length && <p className="muted">No cards yet.</p>}
-
-      <button type="button" className="fab" onClick={() => setFabOpen(true)} aria-label="Add card">
+      <button type="button" className="fab fab--keep" onClick={() => setFabOpen(true)} aria-label="Add note">
         +
       </button>
 
-      <BottomSheet open={fabOpen} onClose={() => setFabOpen(false)} title="New card">
-        <form onSubmit={(e) => void handleCreate(e)}>
-          <label className="field">
-            Type
-            <select value={newType} onChange={(e) => setNewType(e.target.value as typeof newType)}>
-              <option value="notes">Notes</option>
-              <option value="sickness">Sickness</option>
-              <option value="strategy">Strategy</option>
-            </select>
-          </label>
-          <label className="field">
-            Title
-            <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} required />
-          </label>
-          <label className="field">
-            Body
-            <textarea value={newBody} onChange={(e) => setNewBody(e.target.value)} rows={3} />
-          </label>
-          <button type="submit" disabled={!serverOnline}>Save</button>
-        </form>
-      </BottomSheet>
+      <CardsCreateSheet
+        open={fabOpen}
+        serverOnline={serverOnline}
+        newType={newType}
+        newTitle={newTitle}
+        newBody={newBody}
+        onClose={() => setFabOpen(false)}
+        onTypeChange={setNewType}
+        onTitleChange={setNewTitle}
+        onBodyChange={setNewBody}
+        onSubmit={(e) => void handleCreate(e)}
+      />
 
-      {error && <div className="banner banner-warn" role="alert">{error}</div>}
+      {error && <div className="banner banner-warn banner-revolut" role="alert">{error}</div>}
     </section>
   );
 }

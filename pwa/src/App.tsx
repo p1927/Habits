@@ -108,13 +108,13 @@ function App() {
       </header>
 
       {status === 'no-config' && (
-        <div className="banner banner-warn" role="alert">
+        <div className="banner banner-warn banner-revolut" role="alert">
           API URL not configured. Set VITE_HABITS_API_URL in GitHub secrets or pwa/.env.development.
         </div>
       )}
 
       {status === 'online-unauthorized' && (
-        <div className="banner banner-warn" role="alert">
+        <div className="banner banner-warn banner-revolut" role="alert">
           Server reachable — paste your bearer token in Settings.
         </div>
       )}

@@ -1,5 +1,6 @@
-import type { CSSProperties } from 'react';
 import type { AgentContextState } from '../hooks/useAgentContext';
+import { habitCompletionPct } from '../lib/homeSectionShared';
+import { HomeSummaryTiles } from './HomeSummaryTiles';
 import { MealPlanSyncAwarenessSlot } from './MealPlanSyncAwarenessSlot';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
@@ -29,50 +30,38 @@ export function AgentContextPanel({ context, onNavigateMealPlanSyncSource }: Age
   const { food, habits, calendar, summary, loading, error } = context;
 
   if (loading && !food) {
-    return <div className="agent-context agent-context-loading muted">Loading daily context…</div>;
+    return (
+      <div className="agent-context agent-context--gemini">
+        <HomeSummaryTiles loading calTarget={2200} proteinTarget={150} habitsPct={0} />
+      </div>
+    );
   }
 
   if (error && !food) {
-    return <div className="agent-context banner banner-warn">{error}</div>;
+    return <div className="agent-context banner banner-warn banner-revolut">{error}</div>;
   }
 
-  const protein = food?.protein_g ?? 0;
-  const target = food?.protein_target_g ?? 150;
-  const pct = target > 0 ? Math.min(100, Math.round((protein / target) * 100)) : 0;
-
+  const proteinTarget = food?.protein_target_g ?? 150;
+  const habitsPct = habitCompletionPct(habits);
   const metrics = habits?.metrics ?? {};
   const habitEntries = Object.entries(metrics).filter(([, v]) => v != null && v > 0);
 
   return (
-    <div className="agent-context">
+    <div className="agent-context agent-context--gemini">
       <MealPlanSyncAwarenessSlot
         viewer="external"
         onNavigate={onNavigateMealPlanSyncSource}
         showPendingWhenIdle
       />
 
-      <div className="agent-context-row">
-        <div className="agent-protein-ring" style={{ '--pct': `${pct}%` } as CSSProperties}>
-          <div className="agent-protein-ring-inner">
-            <span className="agent-protein-value">{Math.round(protein)}g</span>
-            <span className="agent-protein-label">protein</span>
-          </div>
-        </div>
-        <div className="agent-context-stats">
-          <div className="agent-stat">
-            <span className="agent-stat-value">{target ? `${Math.round(protein)}/${target}g` : '—'}</span>
-            <span className="agent-stat-label">Protein target</span>
-          </div>
-          <div className="agent-stat">
-            <span className="agent-stat-value">{food ? Math.round(food.calories) : '—'}</span>
-            <span className="agent-stat-label">Calories</span>
-          </div>
-          <div className="agent-stat">
-            <span className="agent-stat-value">{food?.items.length ?? 0}</span>
-            <span className="agent-stat-label">Meals logged</span>
-          </div>
-        </div>
-      </div>
+      <HomeSummaryTiles
+        loading={loading && !food}
+        calories={food?.calories}
+        calTarget={2200}
+        protein={food?.protein_g}
+        proteinTarget={proteinTarget}
+        habitsPct={habitsPct}
+      />
 
       {habitEntries.length > 0 && (
         <div className="agent-habit-chips">
@@ -86,7 +75,7 @@ export function AgentContextPanel({ context, onNavigateMealPlanSyncSource }: Age
 
       {calendar.length > 0 && (
         <ul className="agent-events">
-          {calendar.slice(0, 4).map((ev) => (
+          {calendar.slice(0, 3).map((ev) => (
             <li key={ev.id}>
               <span className="agent-event-time">{formatTime(ev.start)}</span>
               <span className="agent-event-title">{ev.summary}</span>

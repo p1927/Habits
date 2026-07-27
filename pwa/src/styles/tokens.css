@@ -1,9 +1,21 @@
 :root {
+  /* Reference app tokens (dark-mode adaptations) */
+  --gemini-bg: #131314;
+  --gemini-surface: #1e1f20;
+  --gemini-assistant: #282a2c;
+  --gemini-user: #394457;
+  --gemini-accent: #8ab4f8;
+  --translate-blue: #1a73e8;
+  --translate-pill-bg: rgba(26, 115, 232, 0.92);
+  --health-tile-radius: 16px;
+  --revolut-card-radius: 20px;
+  --revolut-pill-radius: 9999px;
+
   /* Surfaces */
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface2: #334155;
-  --surface-elevated: #1a2744;
+  --bg: #131314;
+  --surface: #1e1f20;
+  --surface2: #282a2c;
+  --surface-elevated: #232427;
 
   /* Text */
   --text: #f1f5f9;
@@ -11,8 +23,8 @@
   --muted: #94a3b8;
 
   /* Brand & semantic */
-  --accent: #38bdf8;
-  --accent-dim: rgba(56, 189, 248, 0.15);
+  --accent: #8ab4f8;
+  --accent-dim: rgba(138, 180, 248, 0.14);
   --warn: #fbbf24;
   --ok: #4ade80;
   --err: #f87171;
@@ -21,6 +33,7 @@
   --carbs: #74c0fc;
   --fat: #ffd43b;
   --habits: #a78bfa;
+  --hinge-rose: #e8b4b8;
 
   /* Rings (Apple Health inspired) */
   --ring-protein: #ff375f;

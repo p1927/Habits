@@ -24,7 +24,7 @@ export function MealPlanQueuePendingBanner({
   return (
     <button
       type="button"
-      className="banner banner-warn meal-plan-queue-awareness meal-plan-remote-sync--actionable"
+      className="banner banner-warn banner-revolut meal-plan-queue-awareness meal-plan-remote-sync--actionable"
       role="status"
       aria-live={prefersReducedMotion ? undefined : 'polite'}
       aria-atomic="true"

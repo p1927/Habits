@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, type HabitsTodayResponse } from '../lib/api';
+import type { HabitsTodayResponse } from '../lib/api';
 import {
   applyLocalMetric,
   cacheHabitsToday,
-  enqueueHabitUpdate,
+  clearHabitLogQueue,
   getCachedHabitsToday,
   getHabitLogQueue,
-  isOfflineError,
   removeHabitQueueItem,
-  clearHabitLogQueue,
-  type QueuedHabitUpdate,
 } from '../lib/habitQueue';
+import {
+  executeOptimisticHabitUpdate,
+  queueToHabitEntry,
+  type QueuedHabitEntry,
+} from '../lib/optimisticHabitLog';
+import { useHabitLogQueueFlush } from './useHabitLogQueueFlush';
+
+export type { QueuedHabitEntry };
 
 interface UseOptimisticHabitLogOptions {
   serverOnline: boolean;
@@ -18,24 +23,6 @@ interface UseOptimisticHabitLogOptions {
   setHabits: (habits: HabitsTodayResponse | null) => void;
   setError: (msg: string) => void;
   setSyncMessage: (msg: string) => void;
-}
-
-export interface QueuedHabitEntry {
-  id: string;
-  metric: string;
-  value: number | null;
-  status: 'pending' | 'failed' | 'queued';
-  created_at: string;
-}
-
-function queueToEntry(item: QueuedHabitUpdate): QueuedHabitEntry {
-  return {
-    id: item.id,
-    metric: item.metric,
-    value: item.value,
-    status: 'queued',
-    created_at: item.created_at,
-  };
 }
 
 export function useOptimisticHabitLog({
@@ -46,7 +33,7 @@ export function useOptimisticHabitLog({
   setSyncMessage,
 }: UseOptimisticHabitLogOptions) {
   const [pending, setPending] = useState<QueuedHabitEntry[]>(() =>
-    getHabitLogQueue().map(queueToEntry),
+    getHabitLogQueue().map(queueToHabitEntry),
   );
   const [saving, setSaving] = useState<string | null>(null);
   const [queueSyncClearedToken, setQueueSyncClearedToken] = useState(0);
@@ -65,92 +52,32 @@ export function useOptimisticHabitLog({
     setHabits(cached);
   }, [habits, serverOnline, setHabits]);
 
-  const flushQueue = useCallback(async () => {
-    if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
-    const queue = getHabitLogQueue();
-    if (!queue.length) return;
-
-    let synced = 0;
-    for (const item of queue) {
-      setPending((p) =>
-        p.map((x) => (x.id === item.id ? { ...x, status: 'pending' as const } : x)),
-      );
-      try {
-        const latest = await api.updateHabitMetric(item.metric, item.value);
-        setHabits(latest);
-        removeHabitQueueItem(item.id);
-        setPending((p) => p.filter((x) => x.id !== item.id));
-        synced += 1;
-      } catch (e) {
-        if (isOfflineError(e)) break;
-        setPending((p) =>
-          p.map((x) => (x.id === item.id ? { ...x, status: 'failed' as const } : x)),
-        );
-        setError(e instanceof Error ? e.message : 'Habit sync failed');
-        break;
-      }
-    }
-    if (synced > 0) {
-      setSyncMessage(`Synced ${synced} queued habit update${synced === 1 ? '' : 's'}`);
-      if (getHabitLogQueue().length === 0) {
-        setQueueSyncClearedToken((token) => token + 1);
-      }
-    }
-  }, [serverOnline, setHabits, setError, setSyncMessage]);
-
-  useEffect(() => {
-    void flushQueue();
-  }, [flushQueue]);
-
-  useEffect(() => {
-    const onOnline = () => void flushQueue();
-    window.addEventListener('online', onOnline);
-    return () => window.removeEventListener('online', onOnline);
-  }, [flushQueue]);
+  useHabitLogQueueFlush({
+    serverOnline,
+    setHabits,
+    setError,
+    setSyncMessage,
+    setPending,
+    setQueueSyncClearedToken,
+  });
 
   const updateMetric = useCallback(
     async (metric: string, rawValue: string) => {
       const value = rawValue === '' ? null : Number.parseFloat(rawValue);
-      setSaving(metric);
-      setError('');
-      setHabits(applyLocalMetric(habits, metric, value));
-
-      if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
-        const q = enqueueHabitUpdate(metric, value);
-        setPending((p) => {
-          const withoutMetric = p.filter((x) => x.metric !== metric);
-          return [...withoutMetric, queueToEntry(q)];
-        });
-        setSyncMessage('Saved offline — will sync when back online');
-        setSaving(null);
-        return;
-      }
-
-      try {
-        setHabits(await api.updateHabitMetric(metric, value));
-        for (const q of getHabitLogQueue().filter((x) => x.metric === metric)) {
-          removeHabitQueueItem(q.id);
-        }
-        setPending((p) => p.filter((x) => x.metric !== metric));
-      } catch (e) {
-        if (isOfflineError(e)) {
-          const q = enqueueHabitUpdate(metric, value);
-          setPending((p) => {
-            const withoutMetric = p.filter((x) => x.metric !== metric);
-            return [...withoutMetric, queueToEntry(q)];
-          });
-          setSyncMessage('Saved offline — will sync when back online');
-        } else {
-          setError(e instanceof Error ? e.message : 'Update failed');
-        }
-      } finally {
-        setSaving(null);
-      }
+      await executeOptimisticHabitUpdate({
+        serverOnline,
+        habits,
+        metric,
+        value,
+        setHabits,
+        setError,
+        setSyncMessage,
+        setPending,
+        setSaving,
+      });
     },
     [habits, serverOnline, setHabits, setError, setSyncMessage],
   );
-
-  const queuedCount = pending.filter((x) => x.status === 'queued').length;
 
   const dismiss = useCallback((id: string) => {
     removeHabitQueueItem(id);
@@ -171,5 +98,14 @@ export function useOptimisticHabitLog({
     [updateMetric],
   );
 
-  return { pending, saving, updateMetric, queuedCount, retry, dismiss, dismissAllQueued, queueSyncClearedToken };
+  return {
+    pending,
+    saving,
+    updateMetric,
+    queuedCount: pending.filter((x) => x.status === 'queued').length,
+    retry,
+    dismiss,
+    dismissAllQueued,
+    queueSyncClearedToken,
+  };
 }

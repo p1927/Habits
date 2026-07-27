@@ -2,7 +2,6 @@ import { CameraCapture } from './CameraCapture';
 import { ScanInlineOverlay } from './ScanInlineOverlay';
 import { ScanHistoryStrip } from './ScanHistoryStrip';
 import { SwipeFoodCard } from './SwipeFoodCard';
-import { Card } from './ui/Card';
 import type { FoodScanResult } from '../lib/api';
 import type { ScanHistoryEntry } from '../lib/scanHistory';
 import type { SwipeDirection } from './ui/SwipeStack';
@@ -60,24 +59,37 @@ export function LogScanTabPanel({
   }
 
   if (scanResult) {
-    return <SwipeFoodCard scan={scanResult} onAction={handleSwipe} onEdit={onEditOpen} />;
+    return (
+      <SwipeFoodCard
+        scan={scanResult}
+        imageUrl={scanPreviewUrl}
+        onAction={handleSwipe}
+        onEdit={onEditOpen}
+      />
+    );
   }
 
   return (
-    <Card>
-      <h2>Camera scan</h2>
-      <p className="muted">Point at your food — like Google Translate</p>
+    <div className="log-scan-panel">
+      <div className="log-scan-panel__header">
+        <span className="log-scan-mode-pill">
+          <span className="scan-inline-mode-dot" aria-hidden="true" />
+          Food scan
+        </span>
+      </div>
+      <p className="log-scan-panel__hint">Point at your food — like Google Translate</p>
       <CameraCapture
         facingMode="environment"
-        placeholder="Point at your food — like Google Translate"
+        placeholder="Point at your food"
         onCapture={onCapture}
         disabled={!serverOnline || loading}
       />
       <ScanHistoryStrip
         items={scanHistory}
+        variant="translate"
         onSelect={onRestoreScan}
         onClear={onClearScanHistory}
       />
-    </Card>
+    </div>
   );
 }

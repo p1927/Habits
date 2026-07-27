@@ -182,7 +182,7 @@ export function CameraCapture({
           </button>
         )}
       </div>
-      {error && <div className="banner banner-warn">{error}</div>}
+      {error && <div className="banner banner-warn banner-revolut">{error}</div>}
     </div>
   );
 }

@@ -5,7 +5,7 @@ from datetime import date
 from habits_api.config import Settings
 from habits_api.db import TokenDB
 from habits_api.food import service as food_service
-from habits_api.routes.settings import MEAL_PLAN_ROWS, WEEKDAYS, _load_meal_plan
+from habits_api.settings.service import MEAL_PLAN_ROWS, WEEKDAYS, load_meal_plan
 
 
 def _today_key() -> str:
@@ -17,7 +17,7 @@ async def get_today_meal_plan(settings: Settings, db: TokenDB) -> dict:
     if not connected:
         return {"date": date.today().isoformat(), "weekday": _today_key(), "meals": [], "sheets_connected": False}
 
-    plan = await _load_meal_plan(settings, db)
+    plan = await load_meal_plan(settings, db)
     today = _today_key()
     meals: list[dict] = []
     for meal_row in MEAL_PLAN_ROWS:

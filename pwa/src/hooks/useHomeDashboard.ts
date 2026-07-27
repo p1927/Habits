@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { usePullToRefresh } from './usePullToRefresh';
+import { useHomeDashboardActions } from './useHomeDashboardActions';
+import { useHomeRefreshShortcut } from './useHomeRefreshShortcut';
 import {
-  api,
   ApiError,
   type FoodHistoryDay,
   type FoodTodayResponse,
@@ -10,12 +11,8 @@ import {
   type HabitsWeekResponse,
 } from '../lib/api';
 import { getTodayMealPhotos, type MealPhoto } from '../lib/mealPhotos';
-import { cacheHabitStreak, getCachedHabitStreak } from '../lib/habitQueue';
-import {
-  cacheMealPlan,
-  getCachedMealPlan,
-  type MealPlanEntry,
-} from '../lib/mealPlanQueue';
+import { fetchHomeDashboardData } from '../lib/homeDashboardFetch';
+import { getCachedMealPlan, type MealPlanEntry } from '../lib/mealPlanQueue';
 import {
   estimateActiveBurn,
   habitCompletionPct,
@@ -50,27 +47,14 @@ export function useHomeDashboard({ serverOnline, syncMealPlanQueue }: UseHomeDas
     }
     setError('');
     try {
-      const [f, h, hist, targets, cards, week, streaks, mealPlanToday] = await Promise.all([
-        api.getFoodToday(),
-        api.getHabitsToday(),
-        api.getFoodHistory(7),
-        api.getFoodTargets(),
-        api.getFutureSelfCards(true),
-        api.getHabitsWeek(),
-        api.getHabitStreaks(),
-        api.getMealPlanToday(),
-      ]);
-      setFood(f);
-      setHabits(h);
-      setHistory(hist.days);
-      setHabitWeek(week);
-      cacheHabitStreak(streaks.overall);
-      setMealPlan(mealPlanToday.meals ?? []);
-      cacheMealPlan(mealPlanToday.meals ?? []);
-      setCalTarget(targets.calorie_target ?? 2200);
-      if (cards.cards.length > 0) {
-        setDecisionCard(cards.cards[0]);
-      }
+      const data = await fetchHomeDashboardData();
+      setFood(data.food);
+      setHabits(data.habits);
+      setHistory(data.history);
+      setHabitWeek(data.habitWeek);
+      setMealPlan(data.mealPlan);
+      setCalTarget(data.calTarget);
+      setDecisionCard(data.decisionCard);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return;
       setError(e instanceof Error ? e.message : 'Failed to load dashboard');
@@ -90,21 +74,7 @@ export function useHomeDashboard({ serverOnline, syncMealPlanQueue }: UseHomeDas
     return () => window.clearInterval(id);
   }, [refresh]);
 
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key !== 'r' && e.key !== 'R') return;
-      const target = e.target;
-      if (target instanceof HTMLElement) {
-        const tag = target.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
-      }
-      e.preventDefault();
-      void triggerRefresh();
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [triggerRefresh]);
+  useHomeRefreshShortcut(triggerRefresh);
 
   const proteinTarget = food?.protein_target_g ?? 150;
   const habitPct = habitCompletionPct(habits);
@@ -117,71 +87,20 @@ export function useHomeDashboard({ serverOnline, syncMealPlanQueue }: UseHomeDas
         )
       : undefined;
 
-  const handleShareRings = useCallback(async () => {
-    setSharingRings(true);
-    setError('');
-    try {
-      let streakDays = getCachedHabitStreak();
-      if (serverOnline) {
-        try {
-          const st = await api.getHabitStreaks();
-          streakDays = st.overall;
-          cacheHabitStreak(st.overall);
-        } catch {
-          /* use cached streak when fetch fails */
-        }
-      }
-      const { downloadRingShareCard } = await import('../lib/ringShareCard');
-      downloadRingShareCard({
-        protein: { value: food?.protein_g ?? 0, max: proteinTarget },
-        calories: { value: food?.calories ?? 0, max: calTarget },
-        habits: { value: habitPct, max: 100 },
-        date: habits?.date || new Date().toISOString().slice(0, 10),
-        streakDays,
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Share card export failed');
-    } finally {
-      setSharingRings(false);
-    }
-  }, [serverOnline, food, proteinTarget, calTarget, habitPct, habits?.date]);
-
-  const handleExportWeekPdf = useCallback(async () => {
-    if (!serverOnline) return;
-    setExporting(true);
-    setError('');
-    try {
-      const [hist, week, streaks, targets] = await Promise.all([
-        api.getFoodHistory(7),
-        api.getHabitsWeek(),
-        api.getHabitStreaks(),
-        api.getFoodTargets(),
-      ]);
-      const { downloadWeekReportPdf } = await import('../lib/weekReportPdf');
-      downloadWeekReportPdf({
-        foodDays: hist.days,
-        habitWeek: week,
-        streaks,
-        calorieTarget: targets.calorie_target ?? 2200,
-        proteinTarget: targets.protein_target_g ?? 150,
-      });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'PDF export failed');
-    } finally {
-      setExporting(false);
-    }
-  }, [serverOnline]);
-
-  const handleAcceptCard = useCallback(async () => {
-    if (!decisionCard) return;
-    try {
-      await api.acceptFutureSelfCard(decisionCard.id);
-      setDecisionCard(null);
-      void refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Accept failed');
-    }
-  }, [decisionCard, refresh]);
+  const { handleShareRings, handleExportWeekPdf, handleAcceptCard } = useHomeDashboardActions({
+    serverOnline,
+    food,
+    habits,
+    proteinTarget,
+    calTarget,
+    habitPct,
+    decisionCard,
+    setDecisionCard,
+    setError,
+    setExporting,
+    setSharingRings,
+    onRefresh: refresh,
+  });
 
   return {
     food,

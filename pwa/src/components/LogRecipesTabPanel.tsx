@@ -1,6 +1,5 @@
 import { CameraCapture } from './CameraCapture';
 import { SwipeFoodCard } from './SwipeFoodCard';
-import { Card } from './ui/Card';
 import type { FoodScanResult } from '../lib/api';
 import type { SwipeDirection } from './ui/SwipeStack';
 
@@ -44,10 +43,11 @@ export function LogRecipesTabPanel({
   onLogEntireRecipe,
 }: LogRecipesTabPanelProps) {
   return (
-    <>
-      <Card>
+    <div className="recipes-tab">
+      <article className="recipes-card recipes-scan-card">
+        <p className="section-eyebrow">Scan</p>
         <h2>Recipe photo</h2>
-        <p className="muted">
+        <p className="muted settings-card-note">
           Photograph your prepared meal — AI identifies it for logging and saves to Home gallery
         </p>
         {recipePhoto && (
@@ -70,21 +70,27 @@ export function LogRecipesTabPanel({
             Identifying recipe…
           </p>
         )}
-      </Card>
+      </article>
 
       {recipeScanResult && (
-        <SwipeFoodCard scan={recipeScanResult} onAction={onRecipeScanSwipe} onEdit={onRecipeEditOpen} />
+        <SwipeFoodCard
+          scan={recipeScanResult}
+          imageUrl={recipePhoto}
+          onAction={onRecipeScanSwipe}
+          onEdit={onRecipeEditOpen}
+        />
       )}
 
-      <Card>
-        <div className="home-export-row">
+      <article className="recipes-card recipes-saved-card">
+        <div className="recipes-saved-header">
           <div>
+            <p className="section-eyebrow">Sheet</p>
             <h2>Saved recipe</h2>
-            <p className="muted">From Save Reciepe tab in Nutrition sheet</p>
+            <p className="muted settings-card-note">From Save Reciepe tab in Nutrition sheet</p>
           </div>
           <button
             type="button"
-            className="btn-small"
+            className="btn-pill btn-pill-outline"
             disabled={!serverOnline || recipeLoading}
             aria-label="Refresh saved recipe from sheet"
             onClick={onRefreshRecipe}
@@ -93,18 +99,18 @@ export function LogRecipesTabPanel({
           </button>
         </div>
         {!serverOnline ? (
-          <p className="muted">Connect to server to browse Save Reciepe sheet.</p>
+          <p className="muted settings-card-note">Connect to server to browse Save Reciepe sheet.</p>
         ) : recipeSheetsConnected === false ? (
-          <p className="muted">Google Sheets not connected — link in Settings.</p>
+          <p className="muted settings-card-note">Google Sheets not connected — link in Settings.</p>
         ) : !recipe ? (
-          <p className="muted">No saved recipe found in Save Reciepe tab.</p>
+          <p className="muted settings-card-note">No saved recipe found in Save Reciepe tab.</p>
         ) : (
           <>
-            <h3>{recipe.name}</h3>
-            <ul className="food-list">
+            <h3 className="recipes-saved-name">{recipe.name}</h3>
+            <ul className="recipes-item-list">
               {recipe.items.map((item) => (
-                <li key={item.food} className="food-row">
-                  <div>
+                <li key={item.food} className="settings-row settings-row--input recipes-item-row">
+                  <div className="recipes-item-copy">
                     <strong>{item.food}</strong>
                     <span className="muted">
                       {item.quantity_g}g · {item.protein.toFixed(1)}g protein · {item.calories.toFixed(0)} kcal
@@ -112,7 +118,7 @@ export function LogRecipesTabPanel({
                   </div>
                   <button
                     type="button"
-                    className="btn-small"
+                    className="btn-pill"
                     disabled={!serverOnline || loading}
                     aria-label={`Log ${item.food}`}
                     onClick={() => onLogRecipeItem(item.food, item.quantity_g)}
@@ -123,16 +129,23 @@ export function LogRecipesTabPanel({
               ))}
             </ul>
             {recipe.totals && (
-              <p className="muted">
+              <p className="recipes-totals muted">
                 Total: {recipe.totals.calories.toFixed(0)} kcal · {recipe.totals.protein.toFixed(1)}g protein
               </p>
             )}
-            <button type="button" disabled={!serverOnline || loading} onClick={onLogEntireRecipe}>
-              Log entire recipe today
-            </button>
+            <div className="settings-actions">
+              <button
+                type="button"
+                className="btn-pill"
+                disabled={!serverOnline || loading}
+                onClick={onLogEntireRecipe}
+              >
+                Log entire recipe today
+              </button>
+            </div>
           </>
         )}
-      </Card>
-    </>
+      </article>
+    </div>
   );
 }

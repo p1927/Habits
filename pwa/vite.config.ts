@@ -75,6 +75,7 @@ export default defineConfig({
       workbox: {
         importScripts: ['sw-notification-click.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        globIgnores: ['**/html2canvas-*.js', '**/weekReportPdf-*.js'],
         navigateFallback: `${base}index.html`,
         runtimeCaching: [
           {

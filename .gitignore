@@ -12,3 +12,5 @@ dist/
 .habits/
 pwa/dev-dist/
 .server-data/
+.agents
+.cursor/loop-bindings/
