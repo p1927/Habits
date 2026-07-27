@@ -8,8 +8,8 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T12:55:00Z |
-| where_we_are | relay-183 shipped |
+| reviewed_at | 2026-07-27T13:00:00Z |
+| where_we_are | Round 9 review complete — DayCalendarEventSheet polish committed |
 | confirmed_next | relay-184 |
 | brainstorm_notes | Day schedule ⌘1/⌘2 shortcuts + first-visit hint on DayTimelineCard |
 
@@ -23,13 +23,13 @@
 | confirmed_next | relay-184 |
 | next_action | relay-184 Agent composer focus shortcut (⌘/Ctrl+K) |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 9-arm |
-| review_status | `pending` |
-| review_skip_reason | relay-183 reviewed round 8; committed 2055d88 |
+| phase | 8-close |
+| review_status | skipped |
+| review_skip_reason | round-9 reviewed; committed d87aa56 |
 | review_round | `9` |
-| last_reviewed_round | `8` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| last_reviewed_round | `9` |
+| review_diff_range | `d87aa56` |
+| code_changed | `no` |
 
 ---
 
@@ -107,6 +107,8 @@
 | rf-r6-000 | low | No issues in relay-180 diff | round-6 /code-review | closed | — | closed |
 | rf-r7-000 | low | No issues in relay-181 diff | round-7 /code-review | closed | — | closed |
 | rf-r8-000 | low | No issues in relay-183 diff | round-8 /code-review | closed | — | closed |
+| rf-r9-001 | low | Duplicate event title in BottomSheet h2 and Card h3 | round-9 /code-review | fix-now | — | closed |
+| rf-r9-002 | low | Unused `.day-event-detail` wrapper CSS after Card refactor | round-9 /code-review | fix-now | — | closed |
 
 ---
 
