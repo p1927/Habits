@@ -23,7 +23,8 @@
 | confirmed_next | relay-185 |
 | next_action | relay-185 Cards tab keyboard shortcut hint on first visit |
 | loops | **Worker** dynamic wake — paste `@docs/window-instances/worker-relay/INSTANCE.md keep working` |
-| phase | 8-close |
+| phase | 9-arm |
+| last_wake | 2026-07-27T13:02:10Z |
 | review_status | skipped |
 | review_skip_reason | relay-184 reviewed round 10; committed ac53858 |
 | review_round | `10` |
