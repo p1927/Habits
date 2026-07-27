@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:55:00Z |
+| reviewed_at | 2026-07-27T04:56:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #124; relay-130 meal plan queue sort by created_at shipped. |
+| where_we_are | Loop tick #125; relay-131 Cards badge last queue source navigation shipped. |
 | blockers | [] |
-| confirmed_next | relay-131 Cards tab badge last queue source navigation |
-| brainstorm_notes | getMealPlanQueue returns oldest-first; sync + UI follow same order |
+| confirmed_next | relay-132 meal plan queue source label Plan for Log tab |
+| brainstorm_notes | Cards tab badge title + click use getMealPlanQueueLastSource like pending banner |
 
 ---
 
@@ -58,7 +58,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-130 | done | build | pending |
+| 2026-07-27 | relay-130 | done | build | cbbbc5e |
 | 2026-07-27 | relay-129 | done | build | f1f65f6 |
 | 2026-07-27 | relay-128 | done | build | 96f6f3e |
 | 2026-07-27 | relay-127 | done | build | 745e1fd |
