@@ -2,7 +2,9 @@
 # Install cursor-loop into a consumer project.
 #
 # Usage:
-#   ./install.sh TARGET [options]
+#   ./install.sh [TARGET] [options]
+#
+#   TARGET defaults to current directory (.)
 #
 # Options:
 #   --symlink          Symlink rule + hooks to package (default)
@@ -24,7 +26,7 @@ PRESET=""
 UNINSTALL=0
 
 usage() {
-  sed -n '2,14p' "$0"
+  sed -n '2,15p' "$0"
 }
 
 args=("$@")
@@ -56,8 +58,7 @@ for ((i = 0; i < ${#args[@]}; i++)); do
 done
 
 if [[ -z "$TARGET" ]]; then
-  usage >&2
-  exit 1
+  TARGET="."
 fi
 
 if ! command -v bash >/dev/null 2>&1; then

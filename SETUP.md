@@ -1,12 +1,15 @@
 # Habits — setup & deploy
 
-PWA on GitHub Pages (`https://p1927.github.io/Habits/`) + Mac backend via Tailscale Funnel.
+**Recommended:** PWA on Cloudflare Pages + Mac backend via Cloudflare Tunnel + Access (works when Tailscale/VPN is blocked).
+
+**Legacy:** GitHub Pages + Tailscale Funnel — see [§ Tailscale Funnel](#4-tailscale-funnel-legacy).
 
 ## Prerequisites
 
 - Node 24+, Python 3.11+, Docker
 - [`../local-voice-ai`](../local-voice-ai) cloned beside this repo (for voice stack)
-- Tailscale on your Mac
+- Cloudflare account (reuse `CLOUDFLARE_API_TOKEN` from [`../LinkedInPost`](../LinkedInPost))
+- FreeDNS subdomain (e.g. `app.osphere.*` / `api.osphere.*`) — CNAME to Cloudflare
 - Google Cloud OAuth client (Sheets + Calendar scopes)
 
 ## 1. Environment
@@ -14,16 +17,7 @@ PWA on GitHub Pages (`https://p1927.github.io/Habits/`) + Mac backend via Tailsc
 ```bash
 cp .env.example .env
 # Fill: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MINIMAX_API_KEY
-# After Tailscale Funnel: HABITS_PUBLIC_URL, GOOGLE_REDIRECT_URI
-# Voice: run local-voice-ai via ./scripts/up-with-voice.sh; funnel ports 8080 + 7880
-```
-
-In `../local-voice-ai/.env` (copy from `.env.example`):
-
-```bash
-AGENT_PROFILE=habits
-HABITS_API_URL=http://host.docker.internal:8787
-HABITS_INTERNAL_BEARER=<bearer from step 3>
+# After Cloudflare deploy: HABITS_PUBLIC_URL, HABITS_PWA_URL, GOOGLE_REDIRECT_URI
 ```
 
 Rotate `HABITS_ADMIN_SECRET` before exposing the API publicly.
@@ -44,45 +38,49 @@ cd server && python -m venv .venv && .venv/bin/pip install -e . && .venv/bin/hab
 ADMIN=your-admin-secret
 API=http://127.0.0.1:8787
 
-# Phone PWA — paste in Settings
 curl -X POST $API/api/issue \
   -H "X-Admin-Token: $ADMIN" \
   -H "Content-Type: application/json" \
   -d '{"device_id":"phone","label":"PWA"}'
 ```
 
-Use the same bearer in `../local-voice-ai/.env` as `HABITS_INTERNAL_BEARER` so the voice agent can log food and calendar events.
+Paste the bearer in PWA Settings after first login.
 
-## 4. Tailscale Funnel
+## 4. Cloudflare (Tunnel + Access + Pages)
+
+```bash
+cp deploy/cloudflare/env.example deploy/cloudflare/.env
+# Edit hostnames + HABITS_CF_ALLOWED_EMAIL (your Gmail)
+bash deploy/cloudflare/setup.sh
+```
+
+Uses `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` from `../LinkedInPost/.env` when not set locally.
+
+After `setup.sh`:
+
+1. **FreeDNS** — CNAME `api.*` → `<tunnel-id>.cfargotunnel.com` (printed by script)
+2. **FreeDNS** — CNAME `app.*` → Pages target (Cloudflare dashboard → Pages → custom domain)
+3. **Run tunnel:** `bash deploy/cloudflare/tunnel-run.sh` (keep running)
+4. **Update `.env`** with printed `HABITS_PUBLIC_URL`, `HABITS_PWA_URL`, `GOOGLE_REDIRECT_URI`, CORS
+5. **Google OAuth** — JS origin = app hostname; redirect = `https://api.*/auth/callback`
+
+**Security layers:** Cloudflare Access on the **PWA hostname only** (email OTP) → bearer token in Settings → Google OAuth for Sheets. The API tunnel is bearer-protected (no Access on API, so cross-origin fetch works).
+
+First visit to `https://app.*` prompts Cloudflare Access, then paste bearer in Settings.
+
+## 4b. Tailscale Funnel (legacy)
 
 ```bash
 ./deploy/tailscale-funnel.sh
 ```
 
-Updates needed in `.env`:
+Requires Tailscale (not VPN-blocked). See previous Tailscale/GitHub Pages flow below if needed.
 
-- `HABITS_PUBLIC_URL=https://<machine>.<tailnet>.ts.net`
-- `GOOGLE_REDIRECT_URI=https://<machine>.<tailnet>.ts.net/auth/callback`
-
-In `../local-voice-ai/.env`:
-
-- `NEXT_PUBLIC_LIVEKIT_URL=wss://<machine>.<tailnet>.ts.net:7880`
-
-Google Cloud OAuth:
-
-- Authorized JavaScript origins: `https://p1927.github.io`
-- Redirect URI: your funnel `/auth/callback`
-
-## 5. GitHub Pages
+## 5. GitHub Pages (optional legacy)
 
 1. Push repo to `p1927/Habits`
 2. Settings → Pages → Source: **GitHub Actions**
-3. Repository secrets:
-
-| Secret | Value |
-|--------|--------|
-| `VITE_HABITS_API_URL` | `https://<machine>.<tailnet>.ts.net` |
-| `VITE_VOICE_UI_URL` | `https://<machine>.<tailnet>.ts.net:8080` |
+3. Repository secrets: `VITE_HABITS_API_URL`, `VITE_VOICE_UI_URL`
 
 Push to `main` triggers [deploy-pages.yml](.github/workflows/deploy-pages.yml).
 
@@ -90,15 +88,12 @@ Push to `main` triggers [deploy-pages.yml](.github/workflows/deploy-pages.yml).
 
 ```bash
 cd pwa && npm install && npm run dev
-# http://localhost:5173/Habits/
+# http://localhost:5174/Habits/
 ```
-
-Uses `pwa/.env.development` for API URL (`VITE_VOICE_UI_URL=http://localhost:8080`).
 
 ## Verification
 
-- [ ] `GET /healthz` returns `{"ok":true}`
+- [ ] `GET https://api.*/healthz` returns `{"ok":true}` (after Access login in browser)
 - [ ] PWA shows green status with bearer saved
 - [ ] Google connect works; food log writes to Nutrition sheet
-- [ ] Voice Agent tab shows daily context panel + local-voice-ai iframe (Docker on :8080)
-- [ ] Voice: "I had 200g paneer" logs food; "Schedule deep work at 2pm" creates calendar event
+- [ ] Cloudflare Access blocks strangers before app loads

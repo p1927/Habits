@@ -15,4 +15,6 @@ pwa/dev-dist/
 .agents
 .cursor/loop-bindings/
 .worktrees/
+deploy/cloudflare/.env
+deploy/cloudflare/.provision-state.json
 ./cursor/skills/ui-ux-pro-max
