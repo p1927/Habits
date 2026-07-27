@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:36:00Z |
+| reviewed_at | 2026-07-27T04:37:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #105; relay-109 pending queue banner aria-live shipped. |
+| where_we_are | Loop tick #106; relay-110 tab badge sync source label shipped. |
 | blockers | [] |
-| confirmed_next | relay-110 meal plan sync source label in tab badge title |
-| brainstorm_notes | relay-109 done; pending queue banner announces count/failed updates politely |
+| confirmed_next | relay-111 Home/Day tab badge tap scroll to queue |
+| brainstorm_notes | relay-110 done; badge title/aria-label includes syncing-on-{Home|Day|Log} hint |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:35:00Z |
+| last_wake | 2026-07-27T04:36:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-109 pending queue banner aria-live on count change |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-110 meal plan sync source label in tab badge title |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-110 | Meal plan sync source label in tab badge title | maintenance
 - [ ] relay-111 | Home/Day tab badge tap scroll to queue | feature
+- [ ] relay-112 | Actionable Home/Day tab queue badges | feature
+- [ ] relay-113 | Meal plan queue sync progress aria-live | maintenance
 
 ---
 
@@ -57,7 +58,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-109 | done | build | — |
+| 2026-07-27 | relay-110 | done | build | — |
+| 2026-07-27 | relay-109 | done | build | be01dfe |
 | 2026-07-27 | relay-108 | done | build | cb2d7e2 |
 | 2026-07-27 | relay-107 | done | build | ca1b156 |
 | 2026-07-27 | relay-106 | done | build | 9b3209e |

@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { TabId } from './lib/config';
 import type { MealPlanSyncSource } from './lib/mealPlanQueue';
+import { mealPlanSyncSourceLabel } from './lib/mealPlanQueue';
 import { useMealNotifications } from './hooks/useMealNotifications';
 import { useMealPlanQueueCount } from './hooks/useMealPlanQueueCount';
+import { useMealPlanQueueRemoteSync } from './hooks/useMealPlanQueueRemoteSync';
 import { bindNotificationNavigation } from './lib/notificationNavigation';
 import { useServerStatus } from './hooks/useServerStatus';
 import { Home } from './sections/Home';
@@ -46,6 +48,11 @@ function App() {
   useMealNotifications(serverOnline);
   const { count: mealPlanQueueCount, failedCount: mealPlanFailedCount, badgePulse: mealPlanBadgePulse } =
     useMealPlanQueueCount();
+  const mealPlanRemoteSync = useMealPlanQueueRemoteSync('external');
+  const mealPlanSyncSourceHint =
+    mealPlanRemoteSync?.syncing
+      ? ` — syncing on ${mealPlanSyncSourceLabel(mealPlanRemoteSync.source)}`
+      : '';
 
   const handleTabChange = useCallback((id: TabId) => {
     setTab(id);
@@ -151,9 +158,10 @@ function App() {
               tab !== t.id;
             const badgeCount = mealPlanFailedCount > 0 ? mealPlanFailedCount : mealPlanQueueCount;
             const queueBadgeCountLabel =
-              mealPlanFailedCount > 0
+              (mealPlanFailedCount > 0
                 ? `${mealPlanFailedCount} meal log${mealPlanFailedCount === 1 ? '' : 's'} failed to sync`
-                : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`;
+                : `${mealPlanQueueCount} meal log${mealPlanQueueCount === 1 ? '' : 's'} queued`) +
+              mealPlanSyncSourceHint;
             return (
             <button
               key={t.id}
