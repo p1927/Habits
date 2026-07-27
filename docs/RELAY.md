@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T03:25:00Z |
+| reviewed_at | 2026-07-27T03:30:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #85; relay-090 tab badge failed count shipped. |
+| where_we_are | Loop tick #86; relay-091 Log enqueue queue UI refresh shipped. |
 | blockers | [] |
-| confirmed_next | relay-091 Log offline enqueue refresh queue UI |
-| brainstorm_notes | relay-090 done; failed syncs show red badge count on tabs |
+| confirmed_next | relay-092 meal plan sync success haptic |
+| brainstorm_notes | relay-091 done; Log calls syncMealPlanQueue after offline enqueue |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T03:25:00Z |
+| last_wake | 2026-07-27T03:30:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | even (next: feature) |
-| next_action | relay-091 Log offline enqueue refresh queue UI immediately |
+| cycle_parity | odd (next: maintenance) |
+| next_action | relay-092 meal plan sync success haptic |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,8 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-- [ ] relay-091 | Log offline enqueue refresh queue UI immediately | maintenance
 - [ ] relay-092 | Meal plan sync success haptic | feature
+- [ ] relay-093 | Queue panel focus on first failed item | maintenance
+- [ ] relay-094 | Home queue banner when sync in progress on other tab | feature
 
 ---
 
@@ -57,7 +58,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-090 | done | build | — |
+| 2026-07-27 | relay-091 | done | build | — |
+| 2026-07-27 | relay-090 | done | build | 68b6136 |
 | 2026-07-27 | relay-089 | done | build | a11a247 |
 | 2026-07-27 | relay-088 | done | build | b63a49f |
 | 2026-07-27 | relay-087 | done | build | 4d623e3 |

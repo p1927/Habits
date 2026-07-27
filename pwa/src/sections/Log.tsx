@@ -299,6 +299,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
           label: entry.label,
           description: entry.description,
         });
+        syncMealPlanQueue();
         setSuccess(`${entry.label} queued — will log when online`);
         setLoggingMealKey(null);
         return;
@@ -320,6 +321,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
               label: entry.label,
               description: entry.description,
             });
+            syncMealPlanQueue();
             setSuccess(`${entry.label} queued — will log when online`);
             return;
           }
@@ -329,7 +331,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
         }
       })();
     },
-    [serverOnline, data, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError],
+    [serverOnline, data, syncMealPlanQueue, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError],
   );
 
   const logAllMealPlan = useCallback(() => {
@@ -340,6 +342,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
 
     if (!serverOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
       enqueueMealPlanLog({ kind: 'all' });
+      syncMealPlanQueue();
       setSuccess('All planned meals queued — will log when online');
       setLoggingMeals(false);
       return;
@@ -356,6 +359,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
       } catch (e) {
         if (isOfflineError(e)) {
           enqueueMealPlanLog({ kind: 'all' });
+          syncMealPlanQueue();
           setSuccess('All planned meals queued — will log when online');
           return;
         }
@@ -364,7 +368,7 @@ export function Log({ serverOnline, openMealPlan, onMealPlanOpened }: LogProps) 
         setLoggingMeals(false);
       }
     })();
-  }, [serverOnline, data, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError]);
+  }, [serverOnline, data, syncMealPlanQueue, dismissMealPlanUndo, snapshotFoodRows, offerUndoFromSummary, setData, setSuccess, setError]);
 
   const loadSavedRecipe = useCallback(async () => {
     if (!serverOnline) return;
