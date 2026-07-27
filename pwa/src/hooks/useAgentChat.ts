@@ -1,16 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { agentChatStream } from '../lib/agentChatStream';
+import { useCallback, useRef, useState } from 'react';
 import type { AgentChatMessage } from '../lib/agentSectionShared';
-
 import type { ChatResponse } from '../lib/api';
+import { useAgentChatStream } from './useAgentChatStream';
 
 interface UseAgentChatOptions {
   serverOnline: boolean;
   onToolResults?: (results: ChatResponse['tool_results']) => void;
-}
-
-function isAbortError(e: unknown): boolean {
-  return e instanceof DOMException && e.name === 'AbortError';
 }
 
 export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOptions) {
@@ -19,84 +14,21 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
   const [loading, setLoading] = useState(false);
   const [attachImage, setAttachImage] = useState<string | null>(null);
   const [error, setError] = useState('');
-  const listRef = useRef<HTMLDivElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const streamGenRef = useRef(0);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
 
-  useEffect(() => () => abortRef.current?.abort(), []);
-
-  const runStream = useCallback(
-    async (
-      gen: number,
-      message: string,
-      imageUrl: string | undefined,
-      history: { role: string; content: string }[],
-    ) => {
-      try {
-        await agentChatStream(
-          message,
-          history,
-          imageUrl,
-          {
-            onToken: (token) => {
-              if (gen !== streamGenRef.current) return;
-              setMessages((m) => {
-                const copy = [...m];
-                const last = copy[copy.length - 1];
-                if (last?.role !== 'assistant') return m;
-                copy[copy.length - 1] = { ...last, content: last.content + token };
-                return copy;
-              });
-              requestAnimationFrame(() => {
-                listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'auto' });
-              });
-            },
-            onDone: (res) => {
-              if (gen !== streamGenRef.current) return;
-              setMessages((m) => {
-                const copy = [...m];
-                const last = copy[copy.length - 1];
-                if (last?.role === 'assistant') {
-                  copy[copy.length - 1] = { ...last, content: res.reply || last.content || 'Done.' };
-                }
-                return copy;
-              });
-              if (res.tool_results.length) onToolResults?.(res.tool_results);
-            },
-            onError: (msg) => {
-              if (gen !== streamGenRef.current) return;
-              setError(msg);
-            },
-          },
-          { signal: abortRef.current?.signal },
-        );
-      } catch (e) {
-        if (isAbortError(e) || gen !== streamGenRef.current) return;
-        setMessages((m) =>
-          m[m.length - 1]?.role === 'assistant' && !m[m.length - 1]?.content ? m.slice(0, -1) : m,
-        );
-        setError(e instanceof Error ? e.message : 'Chat failed');
-      } finally {
-        if (gen === streamGenRef.current) {
-          setLoading(false);
-          listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
-        }
-      }
-    },
-    [onToolResults],
-  );
+  const { listRef, runStream, beginStream } = useAgentChatStream({
+    onToolResults,
+    setMessages,
+    setLoading,
+    setError,
+  });
 
   const send = useCallback(async () => {
     const text = input.trim();
     if ((!text && !attachImage) || !serverOnline) return;
 
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    const gen = ++streamGenRef.current;
-
+    const gen = beginStream();
     const message = text || 'What is in this photo?';
     setInput('');
     setLoading(true);
@@ -115,7 +47,7 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
       .map((m) => ({ role: m.role, content: m.content }));
 
     await runStream(gen, message, imageUrl, history);
-  }, [input, attachImage, serverOnline, messages, runStream]);
+  }, [input, attachImage, serverOnline, messages, runStream, beginStream]);
 
   const regenerateLastReply = useCallback(async () => {
     if (loading || !serverOnline) return;
@@ -137,17 +69,13 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
       .slice(0, lastUserIdx)
       .map((m) => ({ role: m.role, content: m.content }));
 
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    const gen = ++streamGenRef.current;
-
+    const gen = beginStream();
     setLoading(true);
     setError('');
     setMessages((m) => [...m.slice(0, -1), { role: 'assistant', content: '' }]);
 
     await runStream(gen, userMsg.content, userMsg.imageUrl, history);
-  }, [loading, serverOnline, runStream]);
+  }, [loading, serverOnline, runStream, beginStream]);
 
   const clearAttach = useCallback(() => {
     setAttachImage(null);
