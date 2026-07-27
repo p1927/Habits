@@ -8,13 +8,13 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T04:47:00Z |
+| reviewed_at | 2026-07-27T04:49:00Z |
 | git_branch | main |
 | uncommitted_files | maintenance docs |
-| where_we_are | Loop tick #117; relay-122 focus helper extracted; relay-123 remote sync banner aria-live. |
+| where_we_are | Loop tick #118; backlog refilled; relay-124 relative queue timestamps shipped. |
 | blockers | [] |
-| confirmed_next | refill backlog (BACKLOG < 3) |
-| brainstorm_notes | relay-123 mirrors relay-121 — aria-live off under prefers-reduced-motion |
+| confirmed_next | relay-125 pending banner reduced motion aria-live |
+| brainstorm_notes | relay-124 uses formatRelativeTime helper; queue rows show "Queued 5m ago" |
 
 ---
 
@@ -22,11 +22,11 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | 2026-07-27T04:48:00Z |
+| last_wake | 2026-07-27T04:49:00Z |
 | status | ready |
 | current_item_id | — |
-| cycle_parity | odd (next: feature) |
-| next_action | refill backlog from brainstorm + web research |
+| cycle_parity | even (next: maintenance) |
+| next_action | relay-125 pending queue banner reduced motion aria-live |
 | blockers | [] |
 | loops | `/loop` 60s `AGENT_LOOP_TICK_HABITS` (PID 76081, running) |
 
@@ -40,7 +40,9 @@
 
 ## BACKLOG (priority ordered)
 
-*(empty — refill on next wake)*
+- [ ] relay-125 | Pending queue banner reduced motion aria-live | maintenance
+- [ ] relay-126 | Queue empty hint reduced motion aria-live | maintenance
+- [ ] relay-127 | Habit queue relative timestamps (parity with meal plan) | feature
 
 ---
 
@@ -48,7 +50,9 @@
 
 | Idea | Inspiration | Notes |
 |------|-------------|-------|
-| — | — | — |
+| Habit queue relative timestamps | relay-124 | reuse formatRelativeTime |
+| Pending banner dynamic tab label | Cards awareness | open Home vs source tab |
+| Queue sort by created_at | UX | oldest first for sync order visibility |
 
 ---
 
@@ -56,7 +60,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-27 | relay-123 | done | build | ac7ac22 |
+| 2026-07-27 | relay-124 | done | build | pending |
+| 2026-07-27 | relay-123 | done | build | e99dc96 |
 | 2026-07-27 | relay-122 | done | build | 6c5e958 |
 | 2026-07-27 | relay-121 | done | build | a605006 |
 | 2026-07-27 | relay-120 | done | build | 15492bc |
