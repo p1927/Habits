@@ -3,7 +3,7 @@
   --surface: #1e293b;
   --surface2: #334155;
   --text: #f1f5f9;
-  --muted: #94a3b8;
+  --muted: #a8b4c4;
   --accent: #38bdf8;
   --warn: #fbbf24;
   --ok: #4ade80;
@@ -140,7 +140,7 @@ body {
 .banner-warn {
   background: rgba(251, 191, 36, 0.15);
   border: 1px solid rgba(251, 191, 36, 0.4);
-  color: var(--warn);
+  color: #fcd34d;
 }
 
 .banner-err {
@@ -164,7 +164,7 @@ body {
 .banner-ok {
   background: rgba(74, 222, 128, 0.15);
   border: 1px solid rgba(74, 222, 128, 0.4);
-  color: var(--ok);
+  color: #86efac;
 }
 
 .field-row {
@@ -281,7 +281,7 @@ button:disabled {
   padding: 0.5rem 0.25rem;
   background: none;
   border: none;
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 0.6875rem;
   cursor: pointer;
 }
@@ -340,6 +340,12 @@ button:disabled {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-badge--pulse {
+    animation: none;
   }
 }
 
@@ -2187,18 +2193,18 @@ button:disabled {
 }
 
 .keep-chip--yellow {
-  background: color-mix(in srgb, var(--keep-yellow) 35%, transparent);
-  color: color-mix(in srgb, var(--keep-yellow) 80%, var(--text));
+  background: color-mix(in srgb, var(--keep-yellow) 22%, var(--surface));
+  color: #fde68a;
 }
 
 .keep-chip--blue {
-  background: color-mix(in srgb, var(--keep-blue) 35%, transparent);
-  color: color-mix(in srgb, var(--keep-blue) 80%, var(--text));
+  background: color-mix(in srgb, var(--keep-blue) 22%, var(--surface));
+  color: #93c5fd;
 }
 
 .keep-chip--green {
-  background: color-mix(in srgb, var(--keep-green) 35%, transparent);
-  color: color-mix(in srgb, var(--keep-green) 80%, var(--text));
+  background: color-mix(in srgb, var(--keep-green) 22%, var(--surface));
+  color: #86efac;
 }
 
 .cards-empty {
