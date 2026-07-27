@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Card } from './ui/Card';
 import { DayScheduleGrid } from './DayScheduleGrid';
 import { DayCalendarEventSheet } from './DayCalendarEventSheet';
-import type { DayCalendarEvent } from '../lib/daySectionShared';
+import { useDayScheduleShortcuts } from '../hooks/useDayScheduleShortcuts';
+import type { DayCalendarEvent, DayScheduleView } from '../lib/daySectionShared';
 import {
   calendarEventColor,
   formatEventTime,
@@ -10,9 +11,10 @@ import {
   isPastEvent,
   sortEventsByStart,
 } from '../lib/daySectionShared';
+import { shortcutModifierLabel } from '../lib/logSectionShared';
 import type { CSSProperties } from 'react';
 
-export type DayScheduleView = 'agenda' | 'day';
+export type { DayScheduleView };
 
 export interface DayTimelineCardProps {
   events: DayCalendarEvent[];
@@ -21,9 +23,16 @@ export interface DayTimelineCardProps {
 
 export function DayTimelineCard({ events, onAgentSchedulePrompt }: DayTimelineCardProps) {
   const [view, setView] = useState<DayScheduleView>('agenda');
+  const { showShortcutHint, dismissShortcutHint } = useDayScheduleShortcuts(setView);
   const [selectedEvent, setSelectedEvent] = useState<DayCalendarEvent | null>(null);
   const sorted = sortEventsByStart(events);
   const dayLabel = formatScheduleDayLabel();
+  const mod = shortcutModifierLabel();
+
+  const selectView = (next: DayScheduleView) => {
+    setView(next);
+    dismissShortcutHint();
+  };
 
   const emptySchedule = (
     <div className="day-schedule-empty">
@@ -57,7 +66,8 @@ export function DayTimelineCard({ events, onAgentSchedulePrompt }: DayTimelineCa
             className={`day-schedule-view-pill ${view === 'agenda' ? 'day-schedule-view-pill--active' : ''}`}
             aria-selected={view === 'agenda'}
             tabIndex={view === 'agenda' ? 0 : -1}
-            onClick={() => setView('agenda')}
+            aria-keyshortcuts={`${mod}1`}
+            onClick={() => selectView('agenda')}
           >
             Schedule
           </button>
@@ -69,12 +79,22 @@ export function DayTimelineCard({ events, onAgentSchedulePrompt }: DayTimelineCa
             className={`day-schedule-view-pill ${view === 'day' ? 'day-schedule-view-pill--active' : ''}`}
             aria-selected={view === 'day'}
             tabIndex={view === 'day' ? 0 : -1}
-            onClick={() => setView('day')}
+            aria-keyshortcuts={`${mod}2`}
+            onClick={() => selectView('day')}
           >
             Day
           </button>
         </div>
       </div>
+
+      {showShortcutHint && (
+        <p className="log-shortcut-hint muted day-schedule-shortcut-hint" role="note">
+          Tip: press <kbd>{mod}1</kbd> for Schedule, <kbd>{mod}2</kbd> for Day view.{' '}
+          <button type="button" className="link-btn" onClick={dismissShortcutHint}>
+            Got it
+          </button>
+        </p>
+      )}
 
       {!events.length ? (
         view === 'day' ? (

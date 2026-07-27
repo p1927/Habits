@@ -3748,6 +3748,10 @@ form.log-type-card {
   font-weight: 600;
 }
 
+.day-schedule-shortcut-hint {
+  margin: -0.35rem 0 0.75rem;
+}
+
 .day-schedule-empty {
   display: flex;
   flex-direction: column;

@@ -3,6 +3,12 @@ export const STREAK_HAPTIC_METRICS_KEY = 'habits-streak-haptic-metrics';
 export const STREAK_LEGEND_SEEN_KEY = 'habits-streak-legend-seen';
 export const STREAK_LEGEND_COLLAPSED_KEY = 'habits-streak-legend-collapsed';
 
+export const DAY_SHORTCUT_HINT_KEY = 'habits-day-shortcuts-hint-seen';
+
+export type DayScheduleView = 'agenda' | 'day';
+
+export const DAY_SCHEDULE_VIEWS: DayScheduleView[] = ['agenda', 'day'];
+
 export const DAY_METRIC_COLORS: Record<string, string> = {
   sleep: 'var(--ring-habits)',
   work: 'var(--accent)',

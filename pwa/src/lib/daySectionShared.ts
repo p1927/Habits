@@ -3,6 +3,8 @@ export {
   STREAK_HAPTIC_METRICS_KEY,
   STREAK_LEGEND_SEEN_KEY,
   STREAK_LEGEND_COLLAPSED_KEY,
+  DAY_SHORTCUT_HINT_KEY,
+  DAY_SCHEDULE_VIEWS,
   DAY_METRIC_COLORS,
   DAY_METRICS,
   DAY_GRID_START_HOUR,
@@ -10,6 +12,8 @@ export {
   DAY_GRID_SLOT_MINUTES,
   CALENDAR_EVENT_COLORS,
 } from './daySectionConstants';
+
+export type { DayScheduleView } from './daySectionConstants';
 
 export type { DayCalendarEvent } from './dayCalendarUtils';
 
