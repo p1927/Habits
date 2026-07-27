@@ -16,9 +16,10 @@ import {
 
 export interface DayScheduleGridProps {
   events: DayCalendarEvent[];
+  onEventSelect?: (event: DayCalendarEvent) => void;
 }
 
-export function DayScheduleGrid({ events }: DayScheduleGridProps) {
+export function DayScheduleGrid({ events, onEventSelect }: DayScheduleGridProps) {
   const { allDay, timed } = partitionCalendarEvents(events);
   const slotCount = dayGridSlotCount();
   const gridStartMinutes = DAY_GRID_START_HOUR * 60;
@@ -47,12 +48,16 @@ export function DayScheduleGrid({ events }: DayScheduleGridProps) {
           <span className="schedule-allday-label">All day</span>
           <ul className="schedule-allday-list">
             {allDay.map((event) => (
-              <li
-                key={event.id}
-                className="schedule-allday-chip"
-                style={{ '--event-color': calendarEventColor(event.id) } as CSSProperties}
-              >
-                {event.summary}
+              <li key={event.id}>
+                <button
+                  type="button"
+                  className="schedule-allday-chip schedule-allday-chip--button"
+                  style={{ '--event-color': calendarEventColor(event.id) } as CSSProperties}
+                  onClick={() => onEventSelect?.(event)}
+                  aria-label={`All day: ${event.summary}`}
+                >
+                  {event.summary}
+                </button>
               </li>
             ))}
           </ul>
@@ -96,20 +101,23 @@ export function DayScheduleGrid({ events }: DayScheduleGridProps) {
               const past = isPastEvent(event.start);
 
               return (
-                <article
+                <button
+                  type="button"
                   key={event.id}
-                  className={`schedule-grid-event ${past ? 'schedule-grid-event--past' : ''}`}
+                  className={`schedule-grid-event schedule-grid-event--button ${past ? 'schedule-grid-event--past' : ''}`}
                   style={{
                     '--event-color': calendarEventColor(event.id),
                     top: `${topPct}%`,
                     height: `${Math.min(heightPct, 100 - topPct)}%`,
                   } as CSSProperties}
+                  onClick={() => onEventSelect?.(event)}
+                  aria-label={`${event.summary}, ${new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
                 >
                   <span className="schedule-grid-event-title">{event.summary}</span>
                   <time className="schedule-grid-event-time" dateTime={event.start}>
                     {new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </time>
-                </article>
+                </button>
               );
             })}
           </div>

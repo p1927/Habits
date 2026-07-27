@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card } from './ui/Card';
 import { DayScheduleGrid } from './DayScheduleGrid';
+import { DayCalendarEventSheet } from './DayCalendarEventSheet';
 import type { DayCalendarEvent } from '../lib/daySectionShared';
 import {
   calendarEventColor,
@@ -19,10 +20,12 @@ export interface DayTimelineCardProps {
 
 export function DayTimelineCard({ events }: DayTimelineCardProps) {
   const [view, setView] = useState<DayScheduleView>('agenda');
+  const [selectedEvent, setSelectedEvent] = useState<DayCalendarEvent | null>(null);
   const sorted = sortEventsByStart(events);
   const dayLabel = formatScheduleDayLabel();
 
   return (
+    <>
     <Card className="day-schedule-card day-schedule-card--calendar">
       <div className="day-schedule-card__header">
         <div>
@@ -69,8 +72,8 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
         )
       ) : view === 'day' ? (
         <div role="tabpanel" id="day-schedule-panel-day" aria-labelledby="day-schedule-tab-day">
-          <DayScheduleGrid events={events} />
-        </div>
+            <DayScheduleGrid events={events} onEventSelect={setSelectedEvent} />
+          </div>
       ) : (
         <div role="tabpanel" id="day-schedule-panel-agenda" aria-labelledby="day-schedule-tab-agenda">
           <div className="schedule-agenda" aria-label="Today's schedule">
@@ -79,19 +82,23 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
             {sorted.map((ev) => {
               const past = isPastEvent(ev.start);
               return (
-                <li
-                  key={ev.id}
-                  className={`schedule-event ${past ? 'schedule-event--past' : 'schedule-event--upcoming'}`}
-                  style={{ '--event-color': calendarEventColor(ev.id) } as CSSProperties}
-                >
-                  <span className="schedule-event-bar" aria-hidden="true" />
-                  <time className="schedule-event-time" dateTime={ev.start}>
-                    {formatEventTime(ev.start)}
-                  </time>
-                  <div className="schedule-event-body">
-                    <span className="schedule-event-title">{ev.summary}</span>
-                    {past && <span className="schedule-event-badge">Passed</span>}
-                  </div>
+                <li key={ev.id}>
+                  <button
+                    type="button"
+                    className={`schedule-event schedule-event--button ${past ? 'schedule-event--past' : 'schedule-event--upcoming'}`}
+                    style={{ '--event-color': calendarEventColor(ev.id) } as CSSProperties}
+                    onClick={() => setSelectedEvent(ev)}
+                    aria-label={`${ev.summary}, ${formatEventTime(ev.start)}`}
+                  >
+                    <span className="schedule-event-bar" aria-hidden="true" />
+                    <time className="schedule-event-time" dateTime={ev.start}>
+                      {formatEventTime(ev.start)}
+                    </time>
+                    <div className="schedule-event-body">
+                      <span className="schedule-event-title">{ev.summary}</span>
+                      {past && <span className="schedule-event-badge">Passed</span>}
+                    </div>
+                  </button>
                 </li>
               );
             })}
@@ -100,5 +107,7 @@ export function DayTimelineCard({ events }: DayTimelineCardProps) {
         </div>
       )}
     </Card>
+    <DayCalendarEventSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+    </>
   );
 }

@@ -3773,6 +3773,21 @@ form.log-type-card {
   border: 1px solid color-mix(in srgb, var(--event-color, var(--gemini-accent)) 35%, transparent);
 }
 
+.schedule-allday-chip--button {
+  cursor: pointer;
+  font: inherit;
+  transition: filter 0.15s ease;
+}
+
+.schedule-allday-chip--button:hover {
+  filter: brightness(1.08);
+}
+
+.schedule-allday-chip--button:focus-visible {
+  outline: 2px solid var(--gemini-accent);
+  outline-offset: 2px;
+}
+
 .schedule-grid-scroll {
   max-height: min(420px, 55dvh);
   overflow-y: auto;
@@ -3855,6 +3870,26 @@ form.log-type-card {
   z-index: 1;
 }
 
+.schedule-grid-event--button {
+  margin: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.schedule-grid-event--button:hover {
+  filter: brightness(1.06);
+  z-index: 2;
+}
+
+.schedule-grid-event--button:focus-visible {
+  outline: 2px solid var(--gemini-accent);
+  outline-offset: 1px;
+  z-index: 2;
+}
+
 .schedule-grid-event--past {
   opacity: 0.65;
 }
@@ -3907,6 +3942,28 @@ form.log-type-card {
   border-bottom: 1px solid color-mix(in srgb, var(--surface2) 35%, transparent);
 }
 
+.schedule-event--button {
+  width: 100%;
+  margin: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+}
+
+.schedule-event--button:hover {
+  background: color-mix(in srgb, var(--surface2) 35%, transparent);
+}
+
+.schedule-event--button:focus-visible {
+  outline: 2px solid var(--gemini-accent);
+  outline-offset: 2px;
+}
+
 .schedule-event:last-child {
   border-bottom: none;
 }
@@ -3957,6 +4014,52 @@ form.log-type-card {
   padding: 0.1rem 0.35rem;
   border-radius: var(--revolut-pill-radius);
   background: color-mix(in srgb, var(--warn) 15%, transparent);
+}
+
+.day-event-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.day-event-detail__swatch {
+  width: 100%;
+  height: 4px;
+  border-radius: var(--radius-full);
+}
+
+.day-event-detail__meta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.day-event-detail__row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.day-event-detail__row dt {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.day-event-detail__row dd {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.day-event-detail__time {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .agent-composer-bar {
