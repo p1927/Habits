@@ -62,6 +62,7 @@ export function AgentSectionOverlays({
           disabled={!serverOnline || scanning}
           onCapture={onCapture}
         />
+        <p className="muted agent-camera-sheet-hint">Press Escape to close</p>
       </BottomSheet>
 
       {voiceUiUrl ? (
