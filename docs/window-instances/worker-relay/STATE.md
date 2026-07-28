@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:17:18Z |
-| where_we_are | relay-212 shipped (17f37c1); relay-213 next |
+| reviewed_at | 2026-07-28T13:17:12Z |
+| where_we_are | relay-212 shipped (17f37c1); relay-213 verify |
 | confirmed_next | relay-213 |
-| brainstorm_notes |  |
+| brainstorm_notes | AgentToolsSheet already auto-sends on row tap |
 
 ---
 
@@ -19,29 +19,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:17:18Z` |
-| next_action | `relay-213 next` |
-| phase | `9-arm` |
+| last_wake | `2026-07-28T13:17:12Z` |
+| next_action | `await PO backlog proposals` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
-| review_round | `68` |
-| last_reviewed_round | `69` |
+| review_round | `70` |
+| last_reviewed_round | `70` |
 | worktree_status | `none` |
 | review_fingerprint | `relay212macros` |
-| ritual_step | `9-arm` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
+| execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `17f37c1` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Recovery wake 2026-07-28T13:17:18Z; relay-212 shipped in primary SPIN; STATE sync only` |
+| review_skip_reason | `relay-213 verify-only; AgentToolsSheet onSelect+onClose+sendPrompt satisfies AC` |
 | review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
+| current_item_id | `relay-213` |
 
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -111,7 +115,7 @@
 - [x] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
 - [x] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
 - [x] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
-- [ ] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
+- [x] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -162,8 +166,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r70-000 | low | relay-213 verify: AgentToolsSheet row tap calls sendPrompt(text) then onClose — AC satisfied in main (cfec619+) | round-70 /code-review | closed | — | closed |
 | rf-r69-000 | low | Recovery wake STATE sync; relay-212 shipped in same turn primary SPIN | round-69 /code-review | closed | — | closed |
 | rf-r68-000 | low | relay-212: navigateLogType drill-down matches relay-162 history pattern; HomeMacrosCard tappable with aria-label | round-68 /code-review | closed | — | closed |
 | rf-r67-000 | low | relay-211: ul role=list + aria-label matches AC; explicit attrs satisfy WCAG 1.3.1 | round-67 /code-review | closed | — | closed |
@@ -277,9 +283,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | relay-213 | done | verify | cfec619 |
 | — | relay-212 | done | build | 17f37c1 |
 | — | relay-211 | done | build | 5c2c524 |
 | 2026-07-28 | relay-210 | done | build | d96e0f3 |
@@ -345,6 +353,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
