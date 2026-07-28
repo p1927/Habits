@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:36:47Z |
-| where_we_are | relay-208 shipped (17c55ab); relay-209 next |
-| confirmed_next | relay-209 |
+| reviewed_at | 2026-07-28T12:41:06Z |
+| where_we_are | relay-209 shipped (a62bd3c); relay-210 next |
+| confirmed_next | relay-210 |
 | brainstorm_notes | relay-208/209/210 derived from rf-r37-002/004/003 deferred backlog findings |
 
 ---
@@ -19,17 +19,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:40:51Z` |
-| next_action | `relay-209` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `50` |
-| last_reviewed_round | `51` |
+| last_wake | `2026-07-28T12:41:06Z` |
+| next_action | `relay-210` |
+| phase | `8-close` |
+| review_status | `done` |
+| review_diff_range | `main...HEAD` |
+| code_changed | `yes` |
+| review_round | `52` |
+| last_reviewed_round | `52` |
 | worktree_status | `none` |
-| review_fingerprint | `relay208css` |
-| ritual_step | `9-arm` |
+| review_fingerprint | `relay209a11y` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
@@ -40,7 +40,7 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `Recovery arm wake 2026-07-28T12:40:51Z; relay-209 deferred to next tick` |
-| review_changed_files | `pwa/src/App.css` |
+| review_changed_files | `pwa/src/lib/foodQueueFocus.ts pwa/src/components/LogTypeTodayList.tsx` |
 
 ## IN_PROGRESS
 
@@ -104,7 +104,7 @@
 - [x] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
 - [x] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
 - [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style
-- [ ] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
+- [x] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
 - [ ] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
 
 ## BRAINSTORM (unprioritized)
@@ -139,8 +139,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r52-000 | low | relay-209: queued li exposes aria-label Pending:<food> via foodQueuePendingAriaLabel; AC satisfied | round-52 /code-review | closed | relay-209 | closed |
 | rf-r51-000 | low | Recovery arm wake 2026-07-28T12:40:51Z; no diff — relay-209 queued for next tick | round-51 /code-review | closed | — | closed |
 | rf-r50-000 | low | relay-208: :focus-visible uses --focus-ring tokens on .food-row--queued; AC satisfied | round-50 /code-review | closed | relay-208 | closed |
 | rf-r49-000 | low | Idle SPIN tick 2026-07-28T12:34:04Z; checkpoint sync only — no product diff | round-49 /code-review | closed | — | closed |
@@ -232,9 +234,11 @@
 ---
 ## HISTORY
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-07-28 | relay-209 | done | build | a62bd3c |
 | 2026-07-28 | relay-208 | done | build | 17c55ab |
 | — | relay-207 | done | build | 487aed2 |
 |-----------|------|---------|----------|--------|
@@ -296,6 +300,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
