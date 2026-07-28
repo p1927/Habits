@@ -28,6 +28,14 @@
 | worktree_path | — |
 | worktree_branch | — |
 | worktree_item_id | — |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | — |
+| execute_started | `no` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
+| commit_hash | — |
+| receive_review_done | `no` |
 
 ## IN_PROGRESS
 

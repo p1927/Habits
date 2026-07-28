@@ -34,7 +34,7 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/AgentChatPanel.tsx pwa/src/components/AgentSectionBody.tsx pwa/src/sections/Agent.tsx` |
+| review_changed_files | `—` |
 | review_fingerprint | `—` |
 | ritual_step | `8-close` |
 | brainstorm_done | `no` |
@@ -107,7 +107,7 @@
 - [ ] relay-204 | Agent composer disclaimer hide when attach preview open | polish | showDisclaimer excludes attachImage like greeting hide
 - [ ] relay-205 | Agent attach sheet close returns focus to composer | polish | After pick/cancel attach sheet, focus textarea
 - [ ] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
-- [ ] relay-204 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
+- [ ] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
 
 ## BRAINSTORM (unprioritized)
 

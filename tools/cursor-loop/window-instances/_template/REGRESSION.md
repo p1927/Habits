@@ -7,7 +7,7 @@ Why autonomous wake broke (v0.6.1–v0.6.2) and how to prevent similar regressio
 1. **Fixed the wrong layer** — ritual gates, review compliance, and worktree rules expanded while **wake delivery** regressed.
 2. **Inverted the working model** — v0.6.0 used background `arm-wake.sh` + `notify_on_output`. v0.6.1 made foreground `--exec` primary; v0.6.2 blocked bare `arm-wake.sh`. Agents end turns in seconds, so foreground sleep never completes with a listener.
 3. **Trusted misleading status** — `ARMED` only means a bash sleeper PID is alive, not that Cursor will wake this chat.
-4. **Assumed hooks replace notify** — only `stop`/`subagentStop` support `followup_message` per Cursor docs; `afterShellExecution` has no output fields; `beforeSubmitPrompt` has no `followup_message`; idle unfocused chats need `notify_on_output` or **ui_push**.
+4. **Assumed hooks replace notify** — only `stop`/`subagentStop` support `followup_message` per Cursor docs; `afterShellExecution` has no output fields; `beforeSubmitPrompt` has no `followup_message`; idle unfocused chats need `notify_on_output` (manual paste when NOTIFY=orphan).
 5. **Shipped in session, not in git** — large fixes were lost when uncommitted; disk stayed on broken v0.6.2.
 
 ## Non-negotiable wake contract (do not change without E2E proof)
@@ -18,7 +18,7 @@ Why autonomous wake broke (v0.6.1–v0.6.2) and how to prevent similar regressio
 | Steady-state `--exec` forbidden unless `--recovery-foreground` | Agents cannot hold Shell for full interval |
 | `prove_wake.sh` must pass per loop before merging cursor-loop wake changes | Prevents repeat regressions |
 | No new hook “auto-wake” without Cursor docs proving `followup_message` on that hook | afterShell/beforeSubmitPrompt are not followup channels |
-| Operator idle wake without NOTIFY | `cwin trigger-all` ladder: inject → macOS ui_push by `ui_window_slot`; `cwin migrate-autonomous` for full reprovision |
+| Operator idle wake without NOTIFY | Focus chat → paste `@INSTANCE keep working`; `cwin migrate-autonomous` for reprovision |
 
 ## Proven wake delivery matrix (v0.9.0)
 
@@ -29,13 +29,12 @@ Why autonomous wake broke (v0.6.1–v0.6.2) and how to prevent similar regressio
 | `stop` → `followup_message` | No | Requires agent turn to end in that chat |
 | `beforeSubmitPrompt` → `followup_message` | No | Not in Cursor hook schema |
 | `afterShellExecution` → `followup_message` | No | Observe-only; records `wake.fired` |
-| macOS ui_push (`push_composer_wake.py`) | Yes | Requires Accessibility + tab title = loop_id |
 
 ## Before merging any cursor-loop change
 
 1. Run `bash tools/cursor-loop/tests/run-all.sh`
 2. Run `bash tools/cursor-loop/scripts/prove_wake.sh .` — all loops `ready_for_autonomous_tick` or documented SPIN recovery
-3. Run `cwin trigger-all --force` E2E once per release (unfocused SPIN/orphan wakes via ui_push)
+3. Run `cwin trigger-all --force` E2E once per release (inject into notify-armed sleepers only)
 4. Run `bash tools/cursor-loop/install.sh . --preset habits-pwa --symlink`
 5. Re-paste `@INSTANCE.md keep working` in each chat after install or `refresh-loops.sh`
 
@@ -70,7 +69,7 @@ Why autonomous wake broke (v0.6.1–v0.6.2) and how to prevent similar regressio
 
 1. Run `bash tools/cursor-loop/tests/run-all.sh`
 2. Run `bash tools/cursor-loop/scripts/prove_wake.sh .` — all loops `ready_for_autonomous_tick` or documented SPIN recovery
-3. Run `cwin trigger-all` E2E once per release (unfocused chats wake without paste)
+3. Run `cwin trigger-all` E2E once per release (notify-armed inject only)
 4. Bump `tools/cursor-loop/VERSION` + `CHANGELOG.md` in the **same commit** as behavior changes
 5. Run `bash tools/cursor-loop/install.sh . --preset habits-pwa --symlink`
 6. Re-paste `@INSTANCE.md keep working` in each chat after install or `refresh-loops.sh`

@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T03:00:00Z |
-| where_we_are | ch-134 post-split line scan complete |
-| confirmed_next | ch-135 — AgentActionFeed.tsx (138) split |
+| reviewed_at | 2026-07-28T08:50:00Z |
+| where_we_are | ch-136 post-ch-135 line scan complete |
+| confirmed_next | ch-137 — Settings.tsx (136) split |
 
 ---
 
@@ -18,30 +18,30 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T03:00:00Z` |
-| confirmed_next | `ch-135` |
+| confirmed_next | `ch-137` |
 | phase | `9-arm` |
+| current_item_id | `—` |
+| last_wake | `2026-07-28T08:50:00Z` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `14` |
-| last_reviewed_round | `13` |
-| worktree_status | `active` |
-| current_item_id | `ch-135` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
-| worktree_branch | `loop/code-health/ch-135` |
-| worktree_item_id | `ch-135` |
+| review_round | `16` |
+| last_reviewed_round | `16` |
+| worktree_status | `none` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| ritual_step | `1-wake` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
-| fix_verify_done | `no` |
-| reflect_done | `no` |
+| execute_started | `yes` |
+| fix_verify_done | `yes` |
+| reflect_done | `yes` |
 | commit_hash | `—` |
-| receive_review_done | `no` |
+| receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_tick_applied_at | `2026-07-28T00:57:26+00:00` |
@@ -188,7 +188,9 @@
 - [x] ch-132 | `api.ts` (319) domain split | structure | apiClient + apiTypes + 8 modules; 319→39 | done tick #132
 - [x] ch-133 | `useAppShellNavigation` onBeforeLogScroll stabilize | structure | useCallback; fixes ch-r11-001 | done tick #133
 - [x] ch-134 | Line scan — post api split targets | structure | api 39; top: AgentActionFeed 138, Settings 133 | done tick #134
-- [ ] ch-135 | `AgentActionFeed.tsx` (138) split | structure | queued — top post-split target |
+- [x] ch-135 | `AgentActionFeed.tsx` (138) split | structure | hook + poll lib + types; main 138→28 | done tick #135
+- [x] ch-136 | line scan — post ch-135 targets | structure | top: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 | done tick #136
+- [ ] ch-137 | `Settings.tsx` (136) split | structure | queued — top post-scan target |
 
 ---
 
@@ -274,7 +276,7 @@
 | `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
 | `pwa/src/hooks/useMealPlanShell.ts` | 2026-07-28 tick #98 | ch-127: useMealPlanShellSyncContext; 155→128 |
 | `pwa/src/components/DayTimelineCard.tsx` | 2026-07-28 tick #99 | ch-128: agenda + empty panels; 151→99 |
-| `pwa/src/lib/api.ts` + hooks/components | 2026-07-28 tick #134 | post-split scan: api 39, AgentActionFeed 138, Settings 133, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 |
+| `pwa/src/sections/*` + hooks + components + lib | 2026-07-28 tick #136 | post-ch-135 scan: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132, useHomeDashboardActions 131, AppTabBar 130; api 39 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -340,6 +342,19 @@
 | ch-r12-012 | low | ch-r2-004 resolved — ch-132 re-implements reverted ch-123 api domain split | round-12 /code-review | closed | ch-r2-004 | closed |
 | ch-r13-b001 | low | Bugbot: no bugs in diff — useCallback stabilizes onBeforeLogScroll; scrollToMealPlanQueue identity fixed | round-13 bugbot | closed | — | closed |
 | ch-r13-001 | low | `pwa/src/hooks/useAppShellNavigation.ts:28-35` — onBeforeLogScroll memoized; behavior unchanged; fixes ch-r11-001 | round-13 /code-review | closed | ch-133 | closed |
+| ch-r15-b001 | low | Bugbot: no functional regressions vs main — init gate, seed merge, poll interval, emitAgentDataRefresh preserved | round-15 bugbot | closed | — | closed |
+| ch-r15-001 | low | `pwa/src/components/AgentActionFeed.tsx:1-8` — thin shell; public props unchanged | round-15 /code-review | closed | — | closed |
+| ch-r15-002 | low | `pwa/src/hooks/useAgentActionFeed.ts:33-66` — poll/interval/pollToken/seedActions parity with monolith | round-15 /code-review | closed | — | closed |
+| ch-r15-003 | low | `pwa/src/lib/agentActionFeedPoll.ts:32` — initialized gate equivalent to monolith wrapper | round-15 /code-review | closed | — | closed |
+| ch-r15-004 | low | `pwa/src/lib/agentActionFeedPoll.ts:37-50` — food diff prevFoodFp guard parity | round-15 /code-review | closed | — | closed |
+| ch-r15-005 | low | `pwa/src/lib/agentActionFeedPoll.ts:43` — single `at` per poll batch; ids still unique | round-15 /code-review | closed | — | closed |
+| ch-r15-006 | low | `pwa/src/lib/agentToolFeed.ts:2` — AgentAction import from lib/types breaks lib→component coupling | round-15 /code-review | closed | — | closed |
+| ch-r15-007 | low | `agentActionFeedPoll.ts` imports CalendarEvent from hooks — pre-existing lib→hooks pattern | round-15 /code-review | pushback | — | closed |
+| ch-r15-008 | low | overlapping async poll() without in-flight guard — pre-existing | round-15 /code-review | pushback | — | closed |
+| ch-r15-009 | low | pipe-delimited fingerprints break on (pipe) in food/summary — pre-existing | round-15 /code-review | pushback | — | closed |
+| ch-r15-010 | low | update_habit uses kind food in toolFeed — pre-existing | round-15 /code-review | pushback | — | closed |
+| ch-r15-011 | low | no unit tests for detectNewActionsFromPoll — deferred per ch-129 policy | round-15 /code-review | pushback | — | closed |
+| ch-r16-000 | low | Docs-only tick: STATE.md sync for ch-135 closure + ch-136 scan; backlog/scan coverage/checkpoint aligned; no runtime code in diff | round-16 /code-review | closed | — | closed |
 
 ---
 
@@ -347,6 +362,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-136 | Post-ch-135 line scan; queue ch-137 Settings | scan | — |
+| 2026-07-28 | ch-135 | AgentActionFeed split (hook + poll lib + types); 138→28 | build | f47ac8a |
 | 2026-07-28 | ch-134 | Post-split line scan; queue ch-135 AgentActionFeed | scan | — |
 | 2026-07-28 | ch-133 | useAppShellNavigation onBeforeLogScroll stabilize | build | 2fe55e3 |
 | 2026-07-28 | ch-132 | api.ts domain split (client + types + 8 modules) | build | 4b7e546 |

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Poll unhealthy window instances; operator wake ladder + macOS notify.
+# Poll unhealthy window instances; inject when NOTIFY=yes + macOS notify.
 # Usage: tick_daemon.sh [project] [--interval SEC] [--notify-after SEC]
 # Env: INJECT_AUTO=1  INJECT_COOLDOWN_SEC=600
 set -euo pipefail
@@ -54,6 +54,8 @@ for row in report.get("results") or []:
         print(json.dumps({"kind": "WAKE_OK", "loop_id": lid, "method": method}))
     elif method == "inject_pending":
         print(json.dumps({"kind": "INJECT", "loop_id": lid, "reason": row.get("reason", "daemon")}))
+    elif method == "needs_notify":
+        print(json.dumps({"kind": "NEEDS_NOTIFY", "loop_id": lid, "reason": row.get("reason", "daemon"), "wake": row.get("wake", "?")}))
     elif method == "failed" or row.get("error"):
         print(json.dumps({"kind": "WAKE_FAIL", "loop_id": lid, "error": row.get("error", "failed")}))
 for row in report.get("needs_bind") or []:
@@ -94,6 +96,12 @@ PY
         METHOD="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('method',''))" "$line")"
         notify_macos "Habits ${LOOP_ID} wake" "Operator wake succeeded (${METHOD})."
         echo "TICK_DAEMON_WAKE_OK loop_id=${LOOP_ID} method=${METHOD}"
+        ;;
+      NEEDS_NOTIFY)
+        REASON="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('reason','daemon'))" "$line")"
+        WAKE="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('wake','?'))" "$line")"
+        notify_macos "Habits ${LOOP_ID} ${WAKE}" "Focus chat and paste @INSTANCE keep working (${REASON})."
+        echo "TICK_DAEMON_NEEDS_NOTIFY loop_id=${LOOP_ID} wake=${WAKE} reason=${REASON}"
         ;;
       INJECT)
         REASON="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('reason','daemon'))" "$line")"

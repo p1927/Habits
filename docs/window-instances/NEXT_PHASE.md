@@ -27,7 +27,7 @@ cwin status                    # SLOT + OP_WAKE columns (shared Habits window sl
 cwin migrate-autonomous        # reuse-first (default)
 cwin migrate-autonomous --reset-locks   # force-reset + rebind
 cwin provision-all             # provision only (no prove-wake poll)
-cwin trigger-all --force       # ladder: inject (NOTIFY=yes) → ui_push by SLOT+tab
+cwin trigger-all --force       # inject when NOTIFY=yes only
 cwin bind-hint worker-relay    # slot, conversation_id metadata
 bash tools/cursor-loop/scripts/tick_daemon.sh .
 ```
@@ -36,7 +36,7 @@ bash tools/cursor-loop/scripts/tick_daemon.sh .
 
 - All four loops share one `ui_window_slot` (Habits window index)
 - Each loop differs by `chat_title` / Agent tab match (`loop_id`)
-- `ui_push` raises Habits window → focuses Agent tab → paste
+- Unhealthy loops without NOTIFY → macOS notify; focus chat and paste manually
 - Phase 9 notify arm → `OP_WAKE=ready` / `NOTIFY=yes`
 
 ## Recovery (SPIN / orphan / STALE)

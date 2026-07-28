@@ -32,6 +32,13 @@ V2_CHECKPOINT_FIELDS = (
 VALID_ARCHETYPES = frozenset({"engineer", "designer", "product", "qa"})
 VALID_SEVERITIES = frozenset({"critical", "high", "medium", "low"})
 VALID_ACTIONS = frozenset({"fix-now", "backlog", "closed", "pushback", "open", "—", "-"})
+VALID_REVIEW_STATUSES = frozenset({"done", "triaged", "skipped", "pending"})
+
+
+def _split_table_row(line: str) -> list[str]:
+    """Split a markdown table row on | but not on \\| (escaped pipe in cell text)."""
+    _PH = "\x00"
+    return [p.strip().replace(_PH, "|") for p in line.replace(r"\|", _PH).split("|")]
 
 
 def load_instances_manifest(root: Path) -> dict:
@@ -55,7 +62,7 @@ def parse_review_findings_rows(state_text: str) -> list[dict[str, str]]:
     for line in section.splitlines():
         if not line.strip().startswith("|"):
             continue
-        parts = [p.strip() for p in line.split("|")]
+        parts = _split_table_row(line)
         if len(parts) < 9:
             continue
         cells = parts[1:-1]
@@ -74,6 +81,26 @@ def parse_review_findings_rows(state_text: str) -> list[dict[str, str]]:
             }
         )
     return rows
+
+
+def _parse_checkpoint_kv(state_text: str) -> dict[str, str]:
+    """Return CHECKPOINT field→value pairs for validation."""
+    out: dict[str, str] = {}
+    if "## CHECKPOINT" not in state_text:
+        return out
+    section = state_text.split("## CHECKPOINT", 1)[1]
+    if "\n## " in section:
+        section = section.split("\n## ", 1)[0]
+    for line in section.splitlines():
+        if "|" not in line:
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) >= 3 and parts[1] and parts[2]:
+            key = parts[1].strip("`")
+            val = parts[2].strip("`").strip()
+            if key.lower() not in ("field", "-------"):
+                out[key] = val
+    return out
 
 
 def parse_checkpoint_fields(state_text: str) -> set[str]:
@@ -153,6 +180,13 @@ def validate_bundle(root: Path, bundle_rel: str, entry: dict) -> list[str]:
                     warnings.append(f"{loop_id}: CHECKPOINT missing v2 field {field}")
         if "REVIEW_FINDINGS" in state_text and "| severity |" not in state_text:
             errors.append(f"{loop_id}: REVIEW_FINDINGS missing schema table header")
+        cp_kv = _parse_checkpoint_kv(state_text)
+        rs_val = cp_kv.get("review_status", "")
+        if rs_val and rs_val.lower() not in VALID_REVIEW_STATUSES:
+            errors.append(
+                f"{loop_id}: CHECKPOINT review_status='{rs_val}' invalid "
+                f"(valid: {', '.join(sorted(VALID_REVIEW_STATUSES))})"
+            )
         for row in parse_review_findings_rows(state_text):
             sev = row["severity"].lower()
             if sev and sev not in VALID_SEVERITIES:

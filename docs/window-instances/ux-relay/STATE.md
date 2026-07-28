@@ -21,13 +21,13 @@
 | last_wake | `2026-07-28T08:45:00Z` |
 | next_mode | `C` |
 | current_item_id | `audit` |
-| phase | `8-close` |
-| review_status | `pending` |
-| review_skip_reason | `No diff in window scope (pwa/ docs/window-instances/ux-relay/) this tick` |
+| phase | `9-arm` |
+| review_status | `skipped` |
+| review_skip_reason | `UX audit tick — no code changes in pwa/ scope` |
 | review_round | `17` |
-| last_reviewed_round | `15` |
+| last_reviewed_round | `17` |
 | review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | confirmed_next | `backlog idle; ux-gap-046 proposed; await PO UI_PROPOSALS` |
 | worktree_status | `none` |
 | worktree_path | `—` |
@@ -35,19 +35,19 @@
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/ux-relay/STATE.md` |
 | review_fingerprint | `08101cac58b1348d` |
-| ritual_step | `1-wake` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `no` |
 | reflect_done | `no` |
 | commit_hash | `—` |
-| receive_review_done | `no` |
+| receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `Compact greeting + flex-wrap composer pills (dedupe grid)` |
-| design_mitigations | `Chip labels carry intent; Gemini Nov2025 subline matches reference` |
+| design_chosen_approach | `Greeting grid sole empty-state surface (relay-200); ux-gap-046 for Gemini density polish` |
+| design_mitigations | `Single surface dedupes prompts; disabled state when offline/scanning (relay-202)` |
 
 ## IN_PROGRESS
 
@@ -78,7 +78,7 @@
 | ux-gap-043 | po-agreed | Home | relay-176 pull-refresh — UIRefreshControl ring + label (ui-056) | Apple Health refresh | shipped ui-056 |
 | ux-gap-044 | po-agreed | Global nav | Main tab ⌘1–5 shortcuts + dismissible hint (ui-057) | Gemini keyboard hints | shipped ui-057 |
 | ux-gap-045 | po-agreed | Settings | Disconnect success banner + aria-live on Settings error (prop-ui-044) | Revolut Settings | shipped ui-058 |
-| ux-gap-046 | ux-proposed | Agent | relay-200 restored 2x2 greeting grid (supersedes ui-059 wrap pills) — compact card density + Gemini subline at 390px | Gemini Android Nov2025 | pending PO |
+| ux-gap-046 | ux-proposed | Agent | relay-200 restored 2x2 greeting grid (supersedes ui-059 wrap pills) — compact card density, hover/disabled affordance, Gemini subline at 390px | Gemini Android Nov2025 | pending PO |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -146,7 +146,7 @@
 - [x] ui-056 | **Home pull-refresh + Day empty:** UIRefreshControl ring indicator + Revolut empty schedule panel | P3 | done 2026-07-27 — Round 11 ring SVG + empty panel
 - [x] ui-057 | **App tab shortcuts:** ⌘1–5 nav + localStorage hint + conditional aria-keyshortcuts | P3 | done 2026-07-27 — prop-ui-042 logic verified
 - [x] ui-058 | **Settings OAuth UX:** disconnect success banner + aria-live error banner (prop-ui-044 / ux-gap-045) | P3 | done 2026-07-27
-- [x] ui-059 | **Agent starter chips:** Gemini wrap pills above composer, compact greeting (prop-ui-045) | P2 | done 2026-07-28
+- [x] ui-059 | **Agent starter chips:** Gemini wrap pills above composer, compact greeting (prop-ui-045) — superseded on main by relay-200 greeting grid; follow-up ux-gap-046 | P2 | done 2026-07-28
 
 ---
 
@@ -154,6 +154,18 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r17-000 | low | Bugbot: no issues in STATE.md-only diff | round-17 bugbot | closed | — | closed |
+| ux-r17-001 | medium | CHECKPOINT review_skip_reason contradicted code_changed=yes | round-17 /code-review | fix-now | — | closed |
+| ux-r17-002 | medium | design_chosen_approach stale vs relay-200 greeting grid | round-17 /code-review | fix-now | — | closed |
+| ux-r17-003 | medium | App.css drops greeting-card hover transform from agent-gemini.css | round-17 /code-review | backlog | ux-gap-046 | open |
+| ux-r17-004 | low | last_reviewed_round lagged review_round | round-17 /code-review | fix-now | — | closed |
+| ux-r17-005 | low | ui-059 backlog text claimed wrap pills; relay-200 superseded | round-17 /code-review | fix-now | ux-gap-046 | closed |
+| ux-r17-006 | low | Greeting cards disabled offline/scanning but no disabled visual styles | round-17 /code-review | backlog | ux-gap-046 | open |
+| ux-r17-007 | low | Orphan .agent-greeting--compact CSS unused | round-17 /code-review | backlog | ux-gap-040 | open |
+| ux-r17-008 | low | Duplicate unused .agent-chat-empty blocks in App.css | round-17 /code-review | backlog | ux-gap-040 | open |
+| ux-r17-009 | low | Duplicate agent-greeting CSS cascade App.css vs agent-gemini.css | round-17 /code-review | backlog | ux-gap-040 | open |
+| ux-r17-010 | low | relay-203 attach gating already in AgentChatPanel showGreeting | round-17 /code-review | closed | relay-203 | closed |
+| ux-r17-011 | low | Subline copy vs Gemini — tracked ux-gap-046 | round-17 /code-review | backlog | ux-gap-046 | open |
 | ux-r16-000 | low | Idle audit — relay-200/202 on main; PO proposals refined; build pass; ux-gap-046 proposed | round-16 /code-review | closed | ux-gap-046 | closed |
 | ux-r15-000 | low | ui-059: wrap chips + compact greeting; build pass; no regressions | round-15 /code-review | closed | ui-059 | closed |
 | ux-r14-001 | low | docs/window-instances/ux-relay/STATE.md idle audit — backlog idle ui-001–058; build pass | round-14 bugbot | closed | — | closed |

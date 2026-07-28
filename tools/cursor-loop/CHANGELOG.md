@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.4
+
+- **Remove ui_push** — deleted `push_composer_wake.py`; no clipboard paste into frontmost window
+- **Inject-only operator wake** — `cwin trigger-all` and `tick_daemon` inject only when `NOTIFY=yes`
+- **`OPERATOR_WAKE` label** — `needs_notify` replaces `ui_push` when orphan NOTIFY
+- **tick_daemon** — macOS notify on `needs_notify` (DOWN/SPIN without notify arm)
+
 ## 0.9.3
 
 - **Reuse-first provision** — default path reuses one Habits Cursor window + four Agent tabs; no new windows unless `--create-window`

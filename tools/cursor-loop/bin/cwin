@@ -136,7 +136,7 @@ def cmd_status(project: Path, as_json: bool) -> int:
             "\nSTALE = last_wake much older than interval — run: cwin migrate-autonomous"
         )
     print(
-        "\nAutonomous ops: cwin migrate-autonomous  |  cwin trigger-all  (inject → ui_push by SLOT+tab)"
+        "\nAutonomous ops: cwin migrate-autonomous  |  cwin trigger-all  (inject when NOTIFY=yes)"
     )
     if any(r.get("operator_wake") == "needs_bind" for r in rows):
         print("Unbound: cwin migrate-autonomous  (reuse Habits window + Agent tabs)")
@@ -486,13 +486,13 @@ def main() -> int:
     p = sub.add_parser("rearm", help="Rearm instances that are DOWN/SPIN")
     p.add_argument("--force", action="store_true", help="Pass RITUAL_GATE_FORCE=1")
     p.add_argument("--all", action="store_true", help="Rearm every instance")
-    p = sub.add_parser("trigger-all", help="Operator wake ladder (inject → ui_push)")
+    p = sub.add_parser("trigger-all", help="Operator inject wake (notify-armed sleepers only)")
     p.add_argument("--loop-id", default="")
     p.add_argument("--force", action="store_true", help="Wake even if ready_for_autonomous_tick")
     p.add_argument(
         "--mode",
         default="ladder",
-        choices=("ladder", "inject-only", "ui-push-only"),
+        choices=("ladder", "inject-only"),
     )
     p.add_argument(
         "--reason",

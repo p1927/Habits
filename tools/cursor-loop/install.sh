@@ -180,8 +180,6 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/rearm_all_instances.sh" \
   "${INSTALL_PACKAGE}/scripts/trigger_instance_wake.py" \
   "${INSTALL_PACKAGE}/scripts/wake_ladder.py" \
-  "${INSTALL_PACKAGE}/scripts/push_composer_wake.py" \
-  "${INSTALL_PACKAGE}/scripts/push_composer_wake.sh" \
   "${INSTALL_PACKAGE}/scripts/cursor_ui_discover.py" \
   "${INSTALL_PACKAGE}/scripts/provision_instances.py" \
   "${INSTALL_PACKAGE}/scripts/consume_inject_arm.py" \

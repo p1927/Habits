@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Operator wake trigger — inject + ui_push ladder for window instances."""
+"""Operator wake trigger — inject for notify-armed window instances."""
 from __future__ import annotations
 
 import argparse
@@ -11,7 +11,7 @@ import wake_ladder as wl
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Wake window instances via operator ladder")
+    parser = argparse.ArgumentParser(description="Wake window instances via operator inject")
     parser.add_argument("project", nargs="?", default=".")
     parser.add_argument("--loop-id", default="")
     parser.add_argument(
@@ -25,16 +25,14 @@ def main() -> int:
     parser.add_argument(
         "--mode",
         default="ladder",
-        choices=("ladder", "inject-only", "ui-push-only", "bootstrap"),
-        help="ladder=inject then ui_push; inject-only; ui-push-only; bootstrap=unbound only",
+        choices=("ladder", "inject-only", "bootstrap"),
+        help="ladder/inject-only=notify-armed inject; bootstrap=unbound provision only",
     )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
     root = Path(args.project).resolve()
-    mode = args.mode
-    if mode == "ui-push-only":
-        mode = "ui_push"
+    mode = "inject" if args.mode == "inject-only" else args.mode
 
     report = wl.run_wake_ladder(
         root,

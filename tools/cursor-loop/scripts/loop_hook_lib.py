@@ -761,7 +761,7 @@ def wake_status_detail(
 
 
 def ui_target_for_loop(root: Path, loop_id: str) -> dict:
-    """Return ui_window_slot, chat_title, conversation_id for ui_push targeting."""
+    """Return ui_window_slot, chat_title, conversation_id for provision targeting."""
     lock = read_loop_lock(root, loop_id) or {}
     cid = str(lock.get("conversation_id") or "")
     out: dict = {
@@ -827,7 +827,7 @@ def operator_wake_label(root: Path, loop_id: str, detail: dict | None = None) ->
         return "ready"
     if detail.get("notify_attached") or is_notify_attached(read_wake_meta(loop_id)):
         return "inject_ok"
-    return "ui_push"
+    return "needs_notify"
 
 
 def wake_timer_label(loop_id: str, interval_sec: int) -> str:

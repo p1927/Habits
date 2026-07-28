@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""Operator wake ladder: inject → ui_push → open_cursor → bootstrap."""
+"""Operator wake: inject for notify-armed sleepers; bootstrap unbound."""
 from __future__ import annotations
 
 import json
-import subprocess
 import time
 from pathlib import Path
 
 import build_wake_prompt
 import loop_hook_lib as lh
-import push_composer_wake as pcw
 import ritual_phase as rp
 
 
@@ -64,10 +62,6 @@ def _bootstrap_unbound(root: Path, loop_id: str, contract_doc: str) -> dict:
     }
 
 
-def json_escape(s: str) -> str:
-    return json.dumps(s)
-
-
 def _wait_inject_consumed(loop_id: str, timeout_sec: float = 5.0) -> bool:
     deadline = time.time() + timeout_sec
     while time.time() < deadline:
@@ -107,9 +101,8 @@ def run_wake_ladder(
     cooldown_sec: int = 0,
     mode: str = "ladder",
     inject_wait_sec: float = 5.0,
-    open_delay_sec: float = 2.0,
 ) -> dict:
-    """Run operator wake ladder for unhealthy instances."""
+    """Run operator inject wake for unhealthy notify-armed instances."""
     manifest = lh.load_manifest(root)
     instances = lh.load_instances_manifest(root, manifest).get("instances") or []
     if loop_id:
@@ -120,6 +113,8 @@ def run_wake_ladder(
     results: list[dict] = []
     skipped: list[dict] = []
     needs_bind: list[dict] = []
+
+    inject_modes = ("ladder", "inject", "inject-only")
 
     for entry in instances:
         lid, wake_sentinel, _state_text, detail = _instance_context(root, entry)
@@ -147,8 +142,35 @@ def run_wake_ladder(
             skipped.append({"loop_id": lid, "reason": "inject_cooldown"})
             continue
 
-        if not wake_sentinel and mode != "ui_push":
+        if not wake_sentinel:
             skipped.append({"loop_id": lid, "reason": "missing_wake_sentinel"})
+            continue
+
+        inject_reason = reason
+        if detail["wake"] == "SPIN":
+            inject_reason = "spin"
+        elif detail["stale"]:
+            inject_reason = "stale"
+        elif detail["wake"] == "DOWN":
+            inject_reason = "down"
+
+        if mode not in inject_modes:
+            skipped.append({"loop_id": lid, "reason": f"unsupported_mode:{mode}"})
+            continue
+
+        if not detail.get("notify_attached"):
+            results.append(
+                {
+                    "loop_id": lid,
+                    "reason": inject_reason,
+                    "wake": detail["wake"],
+                    "notify": detail["notify"],
+                    "attempted": attempted,
+                    "succeeded": None,
+                    "method": "needs_notify",
+                    "error": "notify_not_attached",
+                }
+            )
             continue
 
         payload_json = build_wake_prompt.build_prompt(
@@ -159,35 +181,25 @@ def run_wake_ladder(
             recovery=True,
         )
         payload_line = f"{wake_sentinel} {payload_json}"
-        inject_reason = reason
-        if detail["wake"] == "SPIN":
-            inject_reason = "spin"
-        elif detail["stale"]:
-            inject_reason = "stale"
-        elif detail["wake"] == "DOWN":
-            inject_reason = "down"
+
+        attempted.append("inject")
+        lh.write_inject_request(
+            lid,
+            payload_line=payload_line,
+            reason=inject_reason,
+            source=source,
+        )
+        _set_operator_wake_pending(root, lid)
+        if cooldown_sec > 0:
+            lh.write_inject_cooldown(lid)
 
         succeeded: str | None = None
         error: str | None = None
-
-        if mode in ("ladder", "inject", "inject-only"):
-            attempted.append("inject")
-            lh.write_inject_request(
-                lid,
-                payload_line=payload_line,
-                reason=inject_reason,
-                source=source,
-            )
-            _set_operator_wake_pending(root, lid)
-            if cooldown_sec > 0:
-                lh.write_inject_cooldown(lid)
-
-            if detail.get("notify_attached") and mode != "ui_push":
-                if _wait_inject_consumed(lid, inject_wait_sec):
-                    succeeded = "inject"
-                    _clear_operator_wake_pending(root, lid)
-                else:
-                    error = "inject_not_consumed"
+        if _wait_inject_consumed(lid, inject_wait_sec):
+            succeeded = "inject"
+            _clear_operator_wake_pending(root, lid)
+        else:
+            error = "inject_not_consumed"
 
         if succeeded:
             results.append(
@@ -203,42 +215,6 @@ def run_wake_ladder(
             )
             continue
 
-        if mode in ("inject-only", "inject"):
-            results.append(
-                {
-                    "loop_id": lid,
-                    "reason": inject_reason,
-                    "wake": detail["wake"],
-                    "notify": detail["notify"],
-                    "attempted": attempted,
-                    "succeeded": None,
-                    "method": "inject_pending",
-                    "error": error,
-                }
-            )
-            continue
-
-        if not pcw.is_cursor_running():
-            attempted.append("open_cursor")
-            pcw.open_cursor_workspace(root, delay_sec=open_delay_sec)
-
-        if mode in ("ladder", "ui_push", "ui-push-only"):
-            attempted.append("ui_push")
-            paste_prompt = f"@{contract} keep working"
-            push = pcw.push_loop_wake(
-                root,
-                lid,
-                prompt=paste_prompt,
-                open_if_closed=True,
-                open_delay_sec=open_delay_sec,
-            )
-            if push.get("ok"):
-                succeeded = "ui_push"
-                lh.clear_inject_request(lid)
-                _clear_operator_wake_pending(root, lid)
-            else:
-                error = push.get("error") or "ui_push_failed"
-
         results.append(
             {
                 "loop_id": lid,
@@ -246,8 +222,8 @@ def run_wake_ladder(
                 "wake": detail["wake"],
                 "notify": detail["notify"],
                 "attempted": attempted,
-                "succeeded": succeeded,
-                "method": succeeded or "failed",
+                "succeeded": None,
+                "method": "inject_pending",
                 "error": error,
             }
         )
@@ -260,17 +236,14 @@ def run_wake_ladder(
         "skipped": skipped,
         "needs_bind": needs_bind,
         "ok_count": ok_count,
-        # legacy keys for tick_daemon
         "triggered": [r for r in results if r.get("succeeded") or r.get("method") == "inject_pending"],
     }
 
 
 if __name__ == "__main__":
     import argparse
-    import json
-    import sys
 
-    parser = argparse.ArgumentParser(description="Operator wake ladder")
+    parser = argparse.ArgumentParser(description="Operator inject wake for window instances")
     parser.add_argument("project", nargs="?", default=".")
     parser.add_argument("--loop-id", default="")
     parser.add_argument("--reason", default="manual")
@@ -280,7 +253,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mode",
         default="ladder",
-        choices=("ladder", "inject-only", "ui-push-only", "bootstrap"),
+        choices=("ladder", "inject-only", "bootstrap"),
     )
     args = parser.parse_args()
     report = run_wake_ladder(
@@ -290,7 +263,7 @@ if __name__ == "__main__":
         force=args.force,
         source=args.source,
         cooldown_sec=args.cooldown_sec,
-        mode="inject-only" if args.mode == "inject-only" else ("ui_push" if args.mode == "ui-push-only" else args.mode),
+        mode="inject" if args.mode == "inject-only" else args.mode,
     )
     print(json.dumps(report, indent=2))
     raise SystemExit(0 if report["ok_count"] else 1)

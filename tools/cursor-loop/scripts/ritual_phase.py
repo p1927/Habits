@@ -126,6 +126,12 @@ def phase_exit_criteria(phase: str, code_changed: bool) -> list[str]:
     return items
 
 
+def _split_table_row(line: str) -> list[str]:
+    """Split a markdown table row on | but not on \\| (escaped pipe in cell text)."""
+    _PH = "\x00"
+    return [p.strip().replace(_PH, "|") for p in line.replace(r"\|", _PH).split("|")]
+
+
 def parse_checkpoint_table(state_text: str) -> dict[str, str]:
     out: dict[str, str] = {}
     if "## CHECKPOINT" not in state_text:
@@ -155,7 +161,7 @@ def parse_review_findings_sources(state_text: str) -> list[str]:
     for line in section.splitlines():
         if not line.strip().startswith("|"):
             continue
-        parts = [p.strip() for p in line.split("|")]
+        parts = _split_table_row(line)
         if len(parts) < 8:
             continue
         cells = parts[1:-1]
@@ -181,7 +187,7 @@ def parse_round_finding_rows(state_text: str, review_round: str) -> list[dict[st
     for line in section.splitlines():
         if not line.strip().startswith("|"):
             continue
-        parts = [p.strip() for p in line.split("|")]
+        parts = _split_table_row(line)
         if len(parts) < 9:
             continue
         cells = parts[1:-1]
@@ -235,7 +241,7 @@ def round_finding_rows_full(state_text: str, review_round: str) -> list[dict[str
     for line in section.splitlines():
         if not line.strip().startswith("|"):
             continue
-        parts = [p.strip() for p in line.split("|")]
+        parts = _split_table_row(line)
         if len(parts) < 9:
             continue
         cells = parts[1:-1]
