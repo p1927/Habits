@@ -21,25 +21,25 @@
 |-------|-------|
 | last_wake | `2026-07-28T12:44:50Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `8-close` |
-| review_status | `done` |
+| phase | `9-arm` |
+| review_status | `skipped` |
 | review_diff_range | `main...HEAD` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `54` |
 | last_reviewed_round | `54` |
 | worktree_status | `none` |
 | review_fingerprint | `relay210tests` |
-| ritual_step | `5-verify` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
+| execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `a62bd3c` |
+| commit_hash | `d96e0f3` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Recovery arm wake 2026-07-28T12:44:45Z; relay-210 deferred to next tick` |
+| review_skip_reason | `relay-210 shipped; idle awaiting PO` |
 | review_changed_files | `pwa/package.json pwa/vitest.config.ts pwa/src/lib/foodQueueFocus.test.ts pwa/src/hooks/useFoodQueuePendingFocus.test.tsx` |
 
 ## IN_PROGRESS
