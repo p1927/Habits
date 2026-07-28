@@ -22,19 +22,19 @@
 | next_mode | `C` |
 | current_item_id | `audit` |
 | phase | `8-close` |
-| review_status | `skipped` |
+| review_status | `pending` |
 | review_skip_reason | `No diff in window scope (pwa/ docs/window-instances/ux-relay/) this tick` |
-| review_round | `15` |
+| review_round | `17` |
 | last_reviewed_round | `15` |
-| review_diff_range | `none` |
-| code_changed | `no` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
 | confirmed_next | `backlog idle; ux-gap-046 proposed; await PO UI_PROPOSALS` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
+| review_changed_files | `docs/window-instances/ux-relay/STATE.md` |
+| review_fingerprint | `08101cac58b1348d` |
 | ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -154,6 +154,7 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r16-000 | low | Idle audit — relay-200/202 on main; PO proposals refined; build pass; ux-gap-046 proposed | round-16 /code-review | closed | ux-gap-046 | closed |
 | ux-r15-000 | low | ui-059: wrap chips + compact greeting; build pass; no regressions | round-15 /code-review | closed | ui-059 | closed |
 | ux-r14-001 | low | docs/window-instances/ux-relay/STATE.md idle audit — backlog idle ui-001–058; build pass | round-14 bugbot | closed | — | closed |
 | ux-r13-005 | low | useSettingsSection.ts passthrough disconnectSuccess + dismissDisconnectSuccess | round-13 bugbot | closed | ui-058 | closed |
@@ -195,6 +196,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-28 | C | audit | Idle tick — triaged PO (all refined); relay-200 superseded ui-059; proposed ux-gap-046 | build | — |
 | 2026-07-28 | C | ui-059 | prop-ui-045 agreed; wrap starter chips + compact Agent greeting | build | 55c3a86 |
 | 2026-07-27 | C | audit | Backlog idle ui-001–058; prop-ui-044 shipped note for PO; build pass | build | — |
 | 2026-07-27 | C | ui-058 | Settings disconnect success banner + error role=alert (prop-ui-044) | build | d97f0e0 |
