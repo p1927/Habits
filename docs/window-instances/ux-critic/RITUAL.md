@@ -5,7 +5,17 @@
 
 ## Phase 2 — Orient
 
-Read CHECKPOINT (`tick_count`, `tick_mode`), `JOURNEY_BACKLOG`, `AUDIT_ROTATION`, `CRITIQUE_LOG`, `CRITIQUE_OUTCOMES`; read-only skim `../po-relay/STATE.md` `UI_PROPOSALS` and `../ux-relay/STATE.md` `CRITIQUE_BACKLOG` + `UI_POLISH_BACKLOG`; update `LAST_REVIEW`.
+Read cross-instance state via handoff — never open STATE.md files directly:
+
+```bash
+# po-relay UI_PROPOSALS (to avoid proposing already-queued items)
+state_api.sh . --loop-id ux-critic get handoff --target po-relay
+
+# ux-relay CRITIQUE_BACKLOG (proposed rows + in-progress ux items)
+state_api.sh . --loop-id ux-critic get handoff --target ux-relay
+```
+
+Read own CHECKPOINT (`tick_count`, `tick_mode`), `JOURNEY_BACKLOG`, `AUDIT_ROTATION`, `CRITIQUE_LOG`, `CRITIQUE_OUTCOMES` from wake JSON `state_snapshot`. Update `LAST_REVIEW`.
 
 If ux-relay has `CRITIQUE_BACKLOG` rows with `status=shipped` and no `CRITIQUE_OUTCOMES` row → next tick is **validation** (override tick mode).
 
@@ -47,6 +57,7 @@ Run **five mandatory substeps** in order. Cannot proceed to Phase 5 without all 
 - Read Superpowers **brainstorming** skill
 - 2–3 design directions (not implementation)
 - Pros/cons debate → pick recommended direction; **name rejected alternatives**
+- **Journey ticks:** invoke `define-opportunity-tree` skill — map the gap to a user outcome node and ≥1 opportunity node. Critiques without an outcome anchor score lower on the Journey fit rubric dimension.
 - Set `design_deliberation_done=yes`, log in `CRITIQUE_LOG`
 
 #### 4b — App grounding (mandatory before research)
@@ -63,6 +74,7 @@ Run **five mandatory substeps** in order. Cannot proceed to Phase 5 without all 
 
 #### 4d — App teardown
 
+- Invoke `competitive-teardown` skill — score Habits vs the primary reference on the specific journey feature using the 12-dimension rubric. Document the delta score in `CRITIQUE_LOG`.
 - Compare Habits vs primary reference from inspiration matrix
 - Document **mobile (390px)** and **desktop** separately
 - Journey tick: cover ≥2 touchpoints in teardown
@@ -71,7 +83,15 @@ Run **five mandatory substeps** in order. Cannot proceed to Phase 5 without all 
 
 - Run: `critique`, `plan-design-review`, `ux-heuristics`, `web-design-guidelines`, `adapt`
 - Score rubric (5 dimensions, 1–5); avg must be ≥3.0; `impact` must be ≥3
-- Append full-schema row to local `CRITIQUE_BACKLOG` and mirror to `../ux-relay/STATE.md` `CRITIQUE_BACKLOG` with `status=proposed`
+- Append full-schema row to own `CRITIQUE_LOG` (own state via `state_api.sh . --loop-id ux-critic append ...`)
+- Mirror to ux-relay `CRITIQUE_BACKLOG` via `state_api` — **never write ux-relay/STATE.md directly**:
+
+```bash
+state_api.sh . --loop-id ux-relay append backlog-row \
+  --section CRITIQUE_BACKLOG \
+  --id crit-N \
+  --row "| crit-N | proposed | <journey_ref> | <persona> | <impact> | <touchpoints> | <before_state> | <after_state> | <acceptance_criteria> | <evidence> | <depends_on> | — |"
+```
 
 ## Phase 5 — Verify
 
@@ -81,6 +101,7 @@ Confirm hard gates:
 - [ ] ≥2 `pwa/src/` paths in `habits_files_read` column
 - [ ] ≥1 web citation
 - [ ] ≥1 reference-app comparison (mobile + desktop)
+- [ ] Journey tick: `competitive-teardown` rubric score logged in `CRITIQUE_LOG` with delta vs reference
 - [ ] `crit-*` row present in ux-relay `CRITIQUE_BACKLOG` with full schema
 - [ ] No duplicate of open PO/UX items (grep confirmed)
 - [ ] Journey tick: ≥2 tabs in `touchpoints`
@@ -96,7 +117,14 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --apply
 ```
 
-`validate_critique_tick.py` must exit 0 before arm. Set `code_changed=no` (typical). Increment `tick_count`. Set `review_status=skipped` with reason `docs-only critique tick` unless validation tick.
+`validate_critique_tick.py` must exit 0 before arm. Update CHECKPOINT via `state_api` — never edit STATE.md directly:
+
+```bash
+# typical docs-only tick:
+state_api.sh . --loop-id ux-critic set checkpoint code_changed=no tick_count=<N+1>
+```
+
+Set `review_status=skipped` with reason `docs-only critique tick` unless validation tick.
 
 ## Phase 6 — Critique quality review (Round N)
 

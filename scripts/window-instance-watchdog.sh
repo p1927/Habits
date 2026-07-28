@@ -15,8 +15,11 @@ ROOT="$(cd "$ROOT" && pwd)"
 CHECK_SEC="${WATCHDOG_CHECK_SEC:-60}"
 IDLE_SEC="${WATCHDOG_IDLE_SEC:-300}"
 SCRIPTS="${ROOT}/tools/cursor-loop/scripts"
+WATCHDOG_LOG="${ROOT}/.cursor/watchdog_health.jsonl"
 
 echo "AGENT_LOOP_WAKE_INSTANCE_WATCHDOG {\"prompt\":\"Window instance watchdog started. check_sec=${CHECK_SEC} idle_sec=${IDLE_SEC}\"}"
+mkdir -p "$(dirname "$WATCHDOG_LOG")"
+echo "{\"event\":\"start\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"check_sec\":${CHECK_SEC},\"idle_sec\":${IDLE_SEC}}" >> "$WATCHDOG_LOG"
 
 # Initial rearm if instances are unhealthy (runs in this persistent shell so arm-wake survives).
 bash "${SCRIPTS}/rearm_all_instances.sh" "$ROOT" --force || true
@@ -42,8 +45,10 @@ print('yes' if d.get('should_rearm') else 'no')
 
   if [[ "$SHOULD" == "yes" ]]; then
     echo "AGENT_LOOP_WAKE_INSTANCE_WATCHDOG {\"prompt\":\"Code idle ${IDLE}s (>=${IDLE_SEC}s) with ${UNHEALTHY} unhealthy window instance(s). Run rearm_all_instances.sh --force and report cwin status.\",\"action\":\"rearm_all\"}"
+    echo "{\"event\":\"rearm\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"idle_sec\":${IDLE},\"unhealthy\":${UNHEALTHY}}" >> "$WATCHDOG_LOG"
     bash "${SCRIPTS}/rearm_all_instances.sh" "$ROOT" --force || true
   else
     echo "AGENT_LOOP_WAKE_INSTANCE_WATCHDOG {\"prompt\":\"Watchdog tick: idle=${IDLE}s unhealthy=${UNHEALTHY}. Check window instances; rearm if idle>=${IDLE_SEC}s and not ARMED.\",\"action\":\"check\"}"
+    echo "{\"event\":\"check\",\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"idle_sec\":${IDLE},\"unhealthy\":${UNHEALTHY}}" >> "$WATCHDOG_LOG"
   fi
 done

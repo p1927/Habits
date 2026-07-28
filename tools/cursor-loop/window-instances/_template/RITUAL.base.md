@@ -56,11 +56,19 @@ Manual fallback (if script unavailable):
 bash tools/cursor-loop/scripts/detect_code_changed.sh . --loop-id <loop_id> --state-file <STATE.md>
 ```
 
-Set `CHECKPOINT.code_changed` to `yes` or `no`. If `yes`:
+Then update via `state_api` — **never edit STATE.md directly**:
 
-1. Increment `CHECKPOINT.review_round` (must be > `last_reviewed_round`)
-2. Set `CHECKPOINT.review_diff_range` (e.g. `uncommitted`, `HEAD~1..HEAD`)
-3. Set `review_status=pending`
+```bash
+# code_changed=no
+state_api.sh . --loop-id <loop_id> set checkpoint code_changed=no
+
+# code_changed=yes (increment N from current review_round value)
+state_api.sh . --loop-id <loop_id> set checkpoint \
+  code_changed=yes \
+  review_round=<N+1> \
+  review_diff_range=uncommitted \
+  review_status=pending
+```
 
 If `no`: may skip Phase 6/7 with `review_status=skipped` and non-empty `review_skip_reason`.
 
@@ -142,9 +150,17 @@ For every round-N row with `action=backlog` (and any low-priority finding not fi
 
 Cannot enter Phase 8 until every round-N row is triaged and every `backlog` row has a real `backlog_ref`.
 
-4. Set `review_status=done` (all closed/pushback) or `triaged` (backlog items remain open).
-5. Set `CHECKPOINT.last_reviewed_round` to N.
-6. Set `CHECKPOINT.phase=7-triage`.
+4–6. Update CHECKPOINT via `state_api` — **never edit STATE.md directly**:
+
+```bash
+# all closed/pushback:
+state_api.sh . --loop-id <loop_id> set checkpoint \
+  review_status=done \
+  last_reviewed_round=<N> \
+  phase=7-triage
+
+# backlog items remain open: use review_status=triaged instead
+```
 
 If `code_changed=no`, Phase 7 may triage backlog/handoffs only; set `review_status=skipped`.
 
@@ -163,10 +179,10 @@ Do not leave findings as untriaged `open` at Phase 8.
 
 - [ ] Round-N findings triaged in 7a; every `backlog` row has `backlog_ref` + backlog entry (7b)
 - [ ] Worktree merged to `main` and removed (when `worktree_status=active`)
-- [ ] HISTORY row appended
+- [ ] HISTORY row appended via `state_api append history --item-id <id> --outcome <...> --evidence <commit>`
 - [ ] IN_PROGRESS cleared or updated
-- [ ] CHECKPOINT: `phase=8-close`, `review_status` set, `worktree_status=none`
-- [ ] Backlog checkboxes updated
+- [ ] CHECKPOINT updated via `state_api set checkpoint phase=8-close review_status=<status> worktree_status=none`
+- [ ] Backlog checkboxes updated via `state_api mark backlog-done --id <id>`
 
 ## Phase 9 — Arm (dynamic mode)
 

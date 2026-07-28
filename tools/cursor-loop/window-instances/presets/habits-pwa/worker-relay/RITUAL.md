@@ -63,7 +63,20 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --apply
 ```
 
-Apply script output: set `code_changed`, increment `review_round` if yes, set `review_status=pending`, record `review_diff_range`. Cannot carry `review_status=done` from a prior tick when git diff is non-empty.
+Apply script output via `state_api` — never edit STATE.md directly:
+
+```bash
+# code_changed=yes
+state_api.sh . --loop-id worker-relay set checkpoint \
+  code_changed=yes \
+  review_round=<N+1> \
+  review_diff_range=uncommitted \
+  review_status=pending
+# code_changed=no
+state_api.sh . --loop-id worker-relay set checkpoint code_changed=no
+```
+
+Cannot carry `review_status=done` from a prior tick when git diff is non-empty.
 
 Area-specific checks when touching: Home rings, Log swipe/scan, Day timeline, Cards CRUD, Agent chat.
 

@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T16:08:00Z |
-| where_we_are | Tick 49 complete — crit-049 first-log celebration sheet proposed |
-| confirmed_next | crit-051 journey-scan-quick re-audit (tick 51, journey mode) |
+| reviewed_at | 2026-07-28T16:20:00Z |
+| where_we_are | Tick 51 complete — crit-051 scan portion stepper proposed |
+| confirmed_next | crit-052 Log element audit (tick 52, element mode) |
 
 ---
 
@@ -18,35 +18,35 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:42:00Z` |
-| current_item_id | `crit-050` |
-| phase | `1-wake` |
-| ritual_step | `1-wake` |
+| last_wake | `2026-07-28T12:52:00Z` |
+| current_item_id | `crit-051` |
+| phase | `9-arm` |
+| ritual_step | `9-arm` |
 | review_status | `done` |
-| review_skip_reason | `docs-only critique tick — round-60 review complete on STATE.md only` |
-| review_round | `60` |
-| last_reviewed_round | `60` |
+| review_skip_reason | `docs-only critique tick — round-66 review complete on STATE+RITUAL+IDENTITY` |
+| review_round | `66` |
+| last_reviewed_round | `66` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `crit-051 journey-scan-quick re-audit (tick 51)` |
-| tick_count | `49` |
-| tick_mode | `element` |
+| confirmed_next | `crit-052 Log element audit (tick 52)` |
+| tick_count | `51` |
+| tick_mode | `journey` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
-| review_fingerprint | `cdade04091fcc370` |
+| review_changed_files | `docs/window-instances/ux-critic/IDENTITY.md docs/window-instances/ux-critic/RITUAL.md docs/window-instances/ux-critic/STATE.md` |
+| review_fingerprint | `ae7c3d7125c72956` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `crit-049 — FirstLogCelebration sheet on items.length===1; rejected UndoToast-only + auto Home tab` |
+| brainstorm_outcome | `crit-051 — ScanPortionStepper on overlay; rejected presets-only + force edit sheet` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `FirstLogCelebration BottomSheet with Day 1 streak + See rings + Log another meal chips` |
-| design_mitigations | `emitAgentDataRefresh food on See rings; sessionStorage guard; complements crit-015 crit-019` |
+| design_chosen_approach | `ScanPortionStepper ±25g + Half/Full chips with live macro rescale on SwipeFoodCard overlay` |
+| design_mitigations | `sync editQty; complements crit-041 edit sheet; high-confidence keeps one-swipe default` |
 
 ## IN_PROGRESS
 
@@ -62,7 +62,7 @@
 |----|------|---------|-----------|-------------|--------------|--------------|
 | journey-first-log | Open app → log first meal → Home rings update | first-week user | action | Home → Log → Home | 2026-07-28T16:08:00Z | crit-049 |
 | journey-daily-checkin | Morning open → rings → Day schedule → Agent nudge | returning user | trigger | Home → Day → Agent | 2026-07-28T15:56:00Z | crit-047 |
-| journey-scan-quick | Log scan → OCR confirm → undo within 5s | busy professional | action | Log → Log | 2026-07-28T14:56:00Z | crit-037 |
+| journey-scan-quick | Log scan → OCR confirm → undo within 5s | busy professional | action | Log → Log | 2026-07-28T16:20:00Z | crit-051 |
 | journey-weekly-review | Home rings → Day history → Cards notes | power user | investment | Home → Day → Cards | 2026-07-28T15:08:00Z | crit-039 |
 | journey-coach-trust | Agent empty → first reply → voice sheet | skeptical new user | variable_reward | Agent → Agent | 2026-07-28T15:14:00Z | crit-040 |
 | journey-capture-thought | Cards quick capture → label → find later | knowledge worker | investment | Cards → Cards | 2026-07-28T15:26:00Z | crit-042 |
@@ -141,6 +141,7 @@
 | crit-048 | handed-off | element-only | returning user | 4 | Day (agenda list) | proposed | agenda all-day section + chips |
 | crit-049 | handed-off | journey-first-log | first-week user | 4 | Log (swipe success) → Home (rings) | proposed | first-log celebration sheet |
 | crit-050 | handed-off | element-only | knowledge worker | 4 | Cards (filter bar) → Cards (note grid) | proposed | Sort by menu (newest/title) |
+| crit-051 | handed-off | journey-scan-quick | busy professional | 4 | Log (scan overlay) → Log (confirm swipe) | proposed | inline portion stepper on scan card |
 
 **Local status:** `draft` → `handed-off` | **ux-relay status:** `proposed` → `agreed` → `shipped` | `rejected`
 
@@ -201,7 +202,8 @@
 | 2026-07-28T15:56:00Z | crit-047 | journey | journey-daily-checkin | A: emitAgentDataRefresh('habits') from useOptimisticHabitLog on successful Day metric save; subscribe useHomeDashboardRefresh to onAgentDataRefresh habits/all + refetch habits+rings; optional Home tab-focus refetch when returning from Day; Agent useAgentContext already listens — closes stale brief; B: Home tab-focus refetch only (rejected: crit-019 partial, Agent step still stale); C: BroadcastChannel bus (rejected: crit-019 rejected over-engineering). Chosen A. | support.google.com/gemini/answer/17077455 Daily Brief uses live Calendar/Gmail/habits context; Apple Health dashboard updates within seconds after logging activity | pwa/src/hooks/useOptimisticHabitLog.ts, pwa/src/hooks/useHomeDashboardRefresh.ts, pwa/src/lib/agentDataRefresh.ts | Habits files: pwa/src/hooks/useOptimisticHabitLog.ts, pwa/src/hooks/useHomeDashboardRefresh.ts. Quote: useOptimisticHabitLog L65-80 updateMetric calls executeOptimisticHabitUpdate — zero emitAgentDataRefresh despite agentDataRefresh.ts L1-5 defining habits kind. grep emitAgentDataRefresh: only agentToolFeed.ts + useAgentActionFeed.ts — manual Day habit edits never broadcast. useHomeDashboardRefresh L88-92 refresh on mount + 60s interval only — no onAgentDataRefresh subscription unlike useDaySectionData L45 and useAgentContext L95. crit-006 proposes Home agenda entry; crit-017 Day Coach pill; crit-033 Agent Daily Brief — all assume fresh habit data but Day→Home→Agent loop breaks when user logs morning habits on Day then returns Home or opens Agent: rings and Daily Brief habit % stale until pull refresh or 60s poll. Gap: returning user morning checkin updates steps/sleep on DayHabitHoursCard, taps Home tab — activity rings unchanged — N for rings reflect habit edit in 2s. 390px: Day habit sliders visible Y; Home rings stale on tab switch — manual pull refresh hunt. Desktop: same disconnected state at wide layout — Agent context drawer shows pre-edit habit %. Rejected: B tab-focus only; C BroadcastChannel. | 4.5 | A habit edit emit + Home subscribe |
 | 2026-07-28T16:02:00Z | crit-048 | element | element-only | A: DayTimelineAgendaPanel partition all-day via partitionCalendarEvents; render schedule-allday-strip above timed list (reuse Day grid chip styling); all-day rows show All day label not formatEventTime midnight; exclude all-day from Passed badge sort; B: formatEventTime fallback All day only (rejected: loses grouped section); C: force Day grid tab for all-day (rejected: agenda is default per crit-016). Chosen A. | android.googlesource.com/platform/packages/apps/Calendar DayView all-day section sticky above scrollable grid; support.google.com/calendar/answer/6110849 schedule list separates all-day | pwa/src/components/DayTimelineAgendaPanel.tsx, pwa/src/components/DayScheduleGrid.tsx, pwa/src/lib/dayCalendarUtils.ts | Habits files: pwa/src/components/DayTimelineAgendaPanel.tsx, pwa/src/lib/dayCalendarUtils.ts. Quote: DayTimelineAgendaPanel L17-44 maps all events in flat sortEventsByStart list — no partitionCalendarEvents call unlike DayScheduleGrid L26. L36-37 formatEventTime(ev.start) on date-only ISO renders midnight local time not All day — dayCalendarUtils L10-12 isAllDayEvent checks !start.includes('T'). L82 formatEventTimeRange returns All day but unused in agenda. DayScheduleGrid L77-96 has schedule-allday-strip with tappable chips — grid-only affordance. crit-016 proposes agenda scroll-to-upcoming; crit-036 proposes timed event range — distinct gap is all-day events invisible/mislabeled in default Schedule tab: user with birthday/OOO all-day block sees 12:00 AM in list or wrong Passed state. Gap: returning user opens Day (default agenda) with all-day event — no All day section, midnight time misleads — N for identify all-day block in 1 glance. 390px: Schedule tab default Y; all-day strip absent — switch to Day grid required. Desktop: same flat list at wide layout — Google Calendar all-day row missing on agenda path. Rejected: B label-only fix; C grid-only. | 4.4 | A agenda all-day strip + All day label |
 | 2026-07-28T16:08:00Z | crit-049 | journey | journey-first-log | A: detect first log (summary.items.length===1 after successful swipe) → FirstLogCelebration BottomSheet with MFP-style copy + Day 1 streak chip + See your rings pill (navigate Home + emitAgentDataRefresh food) + Log another meal chip; suppress generic UndoToast on first log or stack chips below sheet; sessionStorage first_log_celebrated; B: UndoToast See rings chip only per crit-015 (rejected: no dedicated moment); C: auto-switch Home tab (rejected: crit-015 B rejected invasive). Chosen A. | blog.myfitnesspal.com/whats-new-this-summer-at-myfitnesspal First Food Logged Celebration; support.myfitnesspal.com Food Logging Streak Day 1 | pwa/src/hooks/useLogSectionFoodStack.ts, pwa/src/components/LogStatusShell.tsx, pwa/src/lib/optimisticFoodLogExecute.ts | Habits files: pwa/src/hooks/useLogSectionFoodStack.ts, pwa/src/components/LogStatusShell.tsx. Quote: executeOptimisticFoodLog L52-56 onSuccess callback exists but zero first-log branch — grep items.length/firstLog in pwa/src returns no celebration logic. LogStatusShell L90-96 UndoToast shows generic Logged {food} + Undo only — no Day 1 streak or See rings on first commit. useLogFoodUndo offerUndo L46-60 never checks summary.items.length===1. crit-001 proposes Home empty CTA + toast celebration; crit-015 proposes See rings chip on undo toast; crit-019 proposes Home refetch; crit-035 proposes Scan entry coach — distinct gap is payoff moment at swipe commit: first-week user completes first log and gets same 5s undo strip as returning user with no motivational closure or streak seed before journey asks them to find Home rings manually. Gap: first-log journey breaks at emotional payoff step — N for feel first win + know next step in 2s after swipe. 390px: undo toast visible Y; celebration absent — manual tab bar Home hunt. Desktop: same generic toast at wide layout — MFP First Food Logged sheet missing. Rejected: B toast chip only; C auto Home tab. | 4.5 | A FirstLogCelebration sheet + Day 1 streak |
-| 2026-07-28T16:14:00Z | crit-050 | element | element-only | A: CardsSortMenu adjacent to filter tabs — Sort by Sheet order (default row asc), Newest first (row desc per type), Title A–Z; persist cards_sort_mode in sessionStorage; apply before filterCardsBySearch in Cards.tsx; pin-first override when crit-018 ships; B: grid/list column toggle only (rejected: sort solves find-recent without layout churn); C: server modified_at column (rejected: scope — row proxy sufficient). Chosen A. | androidpolice.com/google-keep-on-android-material-3-expressive Sort by creation/modification date; 9to5google.com/2025/07/24/google-keep-material-3-expressive toolbar sort | pwa/src/sections/Cards.tsx, pwa/src/components/CardsFilterBar.tsx, pwa/src/components/CardsKeepGrid.tsx | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsFilterBar.tsx. Quote: Cards L50 filtered = filterCardsBySearch(cards, search) — cards rendered in API list_cards concat order (sickness then notes then strategy) with sheet row ascending — zero client sort. CardsFilterBar L46-63 has type tabs + search only — no Sort by control. create_card append_rows adds newest at sheet bottom but grid shows oldest-first — user must scroll masonry to find note captured 2 min ago. KeepCard L105-106 has row field usable as recency proxy. crit-004 detail sheet; crit-018 pin-first; crit-028 delete; crit-038 colors — distinct gap is organization affordance: knowledge worker with 15+ notes cannot surface recently captured thought without manual scroll hunt. Gap: returning user saves strategy note via FAB — note appears at grid bottom below weeks-old rows — N for see newest note in 1 tap. 390px: filter tabs + search Y; sort menu absent — scroll hunt only. Desktop: same sheet-order grid at wide layout — Keep 2025 Sort by missing. Rejected: B layout toggle only; C server dates. | 4.4 | A Cards Sort by menu |
+| 2026-07-28T16:14:00Z | crit-050 | element | element-only | A: CardsSortMenu adjacent to filter tabs — Sort by Sheet order (default row asc), Newest first (row desc within active filter; on All tab preserve sickness→notes→strategy block order then row desc within each block), Title A–Z; persist cards_sort_mode in sessionStorage; apply before filterCardsBySearch in Cards.tsx; pin-first override when crit-018 ships; B: grid/list column toggle only (rejected: sort solves find-recent without layout churn); C: server modified_at column (rejected: scope — row proxy sufficient). Chosen A. | androidpolice.com/google-keep-on-android-material-3-expressive Sort by creation/modification date; 9to5google.com/2025/07/24/google-keep-material-3-expressive toolbar sort | pwa/src/sections/Cards.tsx, pwa/src/components/CardsFilterBar.tsx, pwa/src/components/CardsKeepGrid.tsx | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsFilterBar.tsx. Quote: Cards L50 filtered = filterCardsBySearch(cards, search) — cards rendered in API list_cards concat order (sickness then notes then strategy) with sheet row ascending — zero client sort. CardsFilterBar L46-63 has type tabs + search only — no Sort by control. create_card append_rows adds newest at sheet bottom but grid shows oldest-first — user must scroll masonry to find note captured 2 min ago. KeepCard L105-106 has row field usable as recency proxy. crit-004 detail sheet; crit-018 pin-first; crit-028 delete; crit-038 colors — distinct gap is organization affordance: knowledge worker with 15+ notes cannot surface recently captured thought without manual scroll hunt. Gap: returning user saves strategy note via FAB — note appears at grid bottom below weeks-old rows — N for see newest note in 1 tap. 390px: filter tabs + search Y; sort menu absent — scroll hunt only. Desktop: same sheet-order grid at wide layout — Keep 2025 Sort by missing. Rejected: B layout toggle only; C server dates. | 4.4 | A Cards Sort by menu |
+| 2026-07-28T16:20:00Z | crit-051 | journey | journey-scan-quick | A: ScanPortionStepper on SwipeFoodCard overlay — ±25g stepper + Half/Full preset chips; scale macros live (qty/suggested_grams); sync editQty state; swipe-right logs adjusted grams without opening edit sheet; aria-live announces kcal change; B: preset Half/Full/Double only (rejected: no 75g fine control); C: require edit sheet before every log (rejected: MFP 1-tap when serving correct). Chosen A. | support.myfitnesspal.com/hc/en-us/articles/360032274592 verify serving size before checkmark; nutrola.app/en/blog/best-app-to-scan-food-labels-for-calories-2026 serving adjustable before logging with live calorie update | pwa/src/components/SwipeFoodCard.tsx, pwa/src/components/LogScanTabPanel.tsx, pwa/src/hooks/useLogFoodScan.ts | Habits files: pwa/src/components/SwipeFoodCard.tsx, pwa/src/components/LogScanTabPanel.tsx. Quote: SwipeFoodCard L47 shows static suggested_grams text — zero stepper/input on overlay card. L48-54 macros display at scan default only — no rescale when editQty changes because overlay has no qty control. LogScanTabPanel L40-42 onLogScan uses editQty but user can only change qty via left-swipe Edit opening LogFoodEditSheet — 2-step detour for common half-portion fix. useLogFoodScan L61-62 sets editQty once from suggested_grams — no inline adjust path. crit-037 proposes low-confidence gate; crit-041 proposes edit sheet live macros; crit-007 undo photo — distinct gap is confirm-step portion accuracy: busy professional scans lunch, ate half plate, must swipe Edit→sheet→type grams→Log — breaks scan-quick journey speed target. Gap: user on scan overlay at 390px sees 320g suggested, ate ~160g — no inline adjust before swipe Log — N for correct portion log in 1 tap without edit sheet. 390px: swipe card + macros visible Y; portion control absent — Edit sheet required. Desktop: same overlay at wide layout — MFP serving verify before checkmark missing. Rejected: B presets only; C force edit sheet. | 4.5 | A ScanPortionStepper on overlay |
 
 ---
 
@@ -379,6 +381,36 @@
 | uc-r61-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 50; reviewed docs/window-instances/ux-critic/STATE.md crit-050 backlog row + CRITIQUE_LOG | round-61 bugbot | closed | — | closed |
 | uc-r61-001 | low | crit-050 Sort by gap distinct from crit-004 detail crit-018 pin crit-028 delete crit-038 colors; Cards.tsx L50 no sort evidence at CRITIQUE_LOG crit-050 row | round-61 /code-review | closed | crit-050 | closed |
 | uc-r61-002 | low | round-61 checkpoint hygiene — crit-050 tick 50 deliverable complete; receive_review_done=yes | round-61 /code-review | closed | — | closed |
+| uc-r62-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 50; reviewed docs/window-instances/ux-critic/STATE.md crit-050 backlog + CRITIQUE_LOG | round-62 bugbot | closed | — | closed |
+| uc-r62-000 | low | crit-050 Sort-by gap validated: Cards.tsx L50 filterCardsBySearch only; CardsFilterBar L46-63 tabs+search; service.py L27-33 concat order; distinct from crit-004/018/028/038 | round-62 /code-review | closed | crit-050 | closed |
+| uc-r62-001 | medium | crit-050 All-tab Newest first ambiguous — row per-sheet not globally comparable; AC tightened: preserve type blocks then row desc within block | round-62 /code-review | backlog | crit-050 | closed |
+| uc-r62-002 | medium | review_status/receive_review_done conflict — fixed round-62 triage | round-62 /code-review | fix-now | — | closed |
+| uc-r62-003 | medium | stale review_skip_reason round-60 — updated to round-62 | round-62 /code-review | fix-now | — | closed |
+| uc-r62-004 | low | tick_count drift 49 vs tick 50 — set tick_count=50 | round-62 /code-review | fix-now | — | closed |
+| uc-r62-005 | low | design checkpoint fields stale crit-049 — updated to crit-050 Sort menu | round-62 /code-review | fix-now | — | closed |
+| uc-r62-006 | low | post-close tracker aligned — confirmed_next crit-051 for tick 51 | round-62 /code-review | fix-now | — | closed |
+| uc-r62-007 | low | last_wake timestamp updated to 2026-07-28T12:48:00Z | round-62 /code-review | fix-now | — | closed |
+| uc-r63-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE+RITUAL diff; reviewed crit-050 closure + state_api handoff ritual updates | round-63 bugbot | closed | — | closed |
+| uc-r63-000 | low | RITUAL.md Phase 2/4/5 state_api handoff pattern valid — no pwa/server impact | round-63 /code-review | closed | — | closed |
+| uc-r63-001 | low | round-63 checkpoint hygiene — tick 50 crit-050 complete; receive_review_done=yes | round-63 /code-review | closed | — | closed |
+| uc-r64-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE+RITUAL diff round 64; reviewed docs/window-instances/ux-critic/STATE.md crit-050 + docs/window-instances/ux-critic/RITUAL.md L8-18 state_api handoff | round-64 bugbot | closed | — | closed |
+| uc-r64-000 | low | crit-050 Cards Sort validated at docs/window-instances/ux-critic/STATE.md L143+L204; All-tab AC clarified; RITUAL.md L81-91 state_api mirror pattern | round-64 /code-review | closed | crit-050 | closed |
+| uc-r64-001 | low | round-64 checkpoint hygiene at docs/window-instances/ux-critic/STATE.md L21-39 — tick_count=50 review_status=done receive_review_done=yes | round-64 /code-review | closed | — | closed |
+| uc-r65-bugbot | low | BUGBOT_REQUIRED=no — docs-only ux-critic diff round 65; reviewed crit-051 at docs/window-instances/ux-critic/STATE.md L144+L207 | round-65 bugbot | closed | — | closed |
+| uc-r65-000 | low | crit-051 portion stepper gap validated SwipeFoodCard.tsx L47-54 LogScanTabPanel.tsx L40-42 useLogFoodScan.ts L61-62; distinct from crit-041 edit sheet crit-037 gate | round-65 /code-review | closed | crit-051 | closed |
+| uc-r65-001 | high | crit-051+crit-050 missing from ux-relay — fixed docs/window-instances/ux-relay/STATE.md L125-126 mirror rows | round-65 /code-review | fix-now | crit-051 | closed |
+| uc-r65-002 | high | crit-050 ux-relay mirror added with crit-051 tick 50 debt resolved | round-65 /code-review | fix-now | crit-050 | closed |
+| uc-r65-003 | medium | checkpoint tick_count=51 phase=8-close aligned with HISTORY crit-051 at docs/window-instances/ux-critic/STATE.md L456 | round-65 /code-review | fix-now | — | closed |
+| uc-r65-004 | medium | confirmed_next crit-052 Log element audit at docs/window-instances/ux-critic/STATE.md L13+L31 | round-65 /code-review | fix-now | — | closed |
+| uc-r65-005 | medium | docs-only tick code_changed=yes retained for uncommitted STATE+RITUAL+IDENTITY diff scope | round-65 /code-review | closed | — | closed |
+| uc-r65-006 | medium | receive_review_done=yes after round-65 triage complete | round-65 /code-review | fix-now | — | closed |
+| uc-r65-007 | medium | crit-051 AC in ux-relay mirror row docs/window-instances/ux-relay/STATE.md L126 Given/When/Then | round-65 /code-review | fix-now | crit-051 | closed |
+| uc-r65-008 | low | competitive-teardown delta optional — MFP/nutrola cited in CRITIQUE_LOG L207 | round-65 /code-review | backlog | crit-051 | closed |
+| uc-r65-009 | low | crit-021 alt C inline stepper noted — crit-051 targets confirm accuracy not failure retry | round-65 /code-review | fix-now | crit-051 | closed |
+| uc-r65-010 | low | crit-051 composes with crit-037 confidence gate — ship order coordinated in depends_on | round-65 /code-review | backlog | crit-037 | closed |
+| uc-r66-bugbot | low | BUGBOT_REQUIRED=no — round-66 fingerprint sync after triage edits docs/window-instances/ux-critic/STATE.md L23-32 | round-66 bugbot | closed | — | closed |
+| uc-r66-000 | low | round-66 triage complete — crit-051 tick 51 validated at docs/window-instances/ux-critic/STATE.md L144+L207; docs/window-instances/ux-critic/RITUAL.md L87-94 state_api mirror | round-66 /code-review | closed | crit-051 | closed |
+| uc-r66-001 | low | round-66 checkpoint hygiene tick_count=51 at docs/window-instances/ux-critic/IDENTITY.md L9 state_api handoff + docs/window-instances/ux-critic/STATE.md L31-32 | round-66 /code-review | closed | — | closed |
 
 ---
 
@@ -436,3 +468,4 @@
 | 2026-07-28T16:02:00Z | crit-048 | 8-close | Day element audit → agenda all-day section proposed | validate_critique_tick OK |
 | 2026-07-28T16:08:00Z | crit-049 | 8-close | journey-first-log re-audit → first-log celebration proposed | validate_critique_tick OK |
 | 2026-07-28T16:14:00Z | crit-050 | 8-close | Cards element audit → Sort by menu proposed | validate_critique_tick OK |
+| 2026-07-28T16:20:00Z | crit-051 | 8-close | journey-scan-quick re-audit → scan portion stepper proposed | validate_critique_tick OK |

@@ -49,7 +49,7 @@ Per-tab reference targets (full matrix in `ux-relay/IDENTITY.md`):
 | `ux-relay` | `UI_PROPOSALS` → UX triages → `UI_POLISH_BACKLOG` | **Never** write UX backlog directly |
 | `code-health` | `QUALITY_BACKLOG` `maint-*` / `ch-*` | Code owns execution |
 
-**UX → PO:** Read `ux-relay/STATE.md` `UX_GAPS` every tick; promote agreed gaps to `UI_PROPOSALS`.
+**UX → PO:** Read ux-relay UX_GAPS every tick via handoff (`state_api.sh . --loop-id po-relay get handoff --target ux-relay`); promote agreed gaps to `UI_PROPOSALS`.
 
 ## Backlog mutation rules
 

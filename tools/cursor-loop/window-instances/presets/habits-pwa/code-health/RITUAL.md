@@ -9,9 +9,11 @@
 
 ```bash
 python3 tools/cursor-loop/scripts/check_module_sizes.py . --threshold 500
+python3 tools/cursor-loop/scripts/patchwork_detector.py . --commits 20 --threshold 3
 ```
 
 Files reported as oversized → add `ch-oversize-*` items to `REFACTOR_BACKLOG` if not already present.
+Patchwork signals → add `ch-patchwork-*` items to `REFACTOR_BACKLOG` if not already present.
 
 ## Phase 3 — Select
 
@@ -42,6 +44,8 @@ Set `CHECKPOINT.refactor_subphase` and advance **plan → smell → execute** in
 | `execute` | `refactoring-specialist` | **One plan step only**; allowlisted files only |
 
 Resume: if `IN_PROGRESS` + incomplete plan → continue at last subphase.
+
+**Python file changes (before `execute` subphase):** Invoke `python-fact-grounded-coding` skill — ground changes in verified Pylance type facts before editing. Then invoke `pylance-refactoring` skill — check for unused imports and infer type annotations on modified functions.
 
 Brainstorm 2 approaches only when subphase=`plan`. Line-by-line checklist below = self-check after expert pass.
 
@@ -76,7 +80,18 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --apply
 ```
 
-Apply script output: set `code_changed`, increment `review_round` if yes, set `review_status=pending`, record `review_diff_range`.
+Apply script output via `state_api` — never edit STATE.md directly:
+
+```bash
+# code_changed=yes
+state_api.sh . --loop-id code-health set checkpoint \
+  code_changed=yes \
+  review_round=<N+1> \
+  review_diff_range=uncommitted \
+  review_status=pending
+# code_changed=no
+state_api.sh . --loop-id code-health set checkpoint code_changed=no
+```
 
 **Regression spot-checks (when area touched):**
 

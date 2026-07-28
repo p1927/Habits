@@ -2,7 +2,6 @@
 description: PO relay loop — product owner brainstorm only (2m, own sentinel + state)
 globs:
   - docs/window-instances/po-relay/**
-  - docs/window-instances/ux-relay/STATE.md
 ---
 
 # PO Relay Loop Mandate

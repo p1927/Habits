@@ -91,14 +91,12 @@ Triage each round-N row in Phase 7a. Complete Phase 7b backlog reflect before Ph
 
 ## State I/O (mandatory)
 
-- **Get:** `bash tools/cursor-loop/scripts/state_api.sh . --loop-id <loop_id> get snapshot|checkpoint|backlog --open`
-- **Set:** `state_api.sh ... set checkpoint field=val` / `append history` / `append review-finding` / `mark backlog-done --id X`
-- **Forbidden:** `Read` STATE.md in Phases 1–3; direct STATE.md table edits
+- **Get own state:** `bash tools/cursor-loop/scripts/state_api.sh . --loop-id <loop_id> get snapshot|checkpoint|backlog --open`
+- **Set own state:** `state_api.sh ... set checkpoint field=val` / `append history` / `append review-finding` / `mark backlog-done --id X`
+- **Cross-instance read:** `state_api.sh . --loop-id <caller_id> get handoff --target <other_loop_id>` (returns sections defined in HANDOFF_RULES)
+- **Cross-instance write:** `state_api.sh . --loop-id <target_loop_id> append backlog-row --section <SECTION> --id <id> --row "| ... |"`
+- **Forbidden:** Direct `Read` or edit of **any** `STATE.md` file at **any** phase — always use `state_api`
 - Wake JSON includes `state_snapshot` — use it before any shell call
-
-- Read/update **only** your instance's state via `state_api` for hot paths; STATE.md is written by scripts
-- Never act on `forbidden_loops` STATE files (from wake JSON)
-- Respond only to your contract's sentinels
 
 Registry: [`docs/window-instances/instances.manifest.json`](../../docs/window-instances/instances.manifest.json)  
 Handoffs: each instance's `IDENTITY.md` (see manifest `handoffs_out`)

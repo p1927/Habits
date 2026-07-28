@@ -34,7 +34,7 @@ Same file in 3+ consecutive fix commits → root refactor, not another patch.
 
 ## Handoffs
 
-- Cross-cutting feature impact → feed `worker-relay/STATE.md` BACKLOG
+- Cross-cutting feature impact → feed worker-relay BACKLOG via `state_api` (never edit worker STATE.md directly): `state_api.sh . --loop-id worker-relay append backlog-row --section BACKLOG --id <ch-N> --row "- [ ] <ch-N> | ..."`
 - Quality items arrive from `po-relay/STATE.md` `QUALITY_BACKLOG`
 
 ## Forbidden

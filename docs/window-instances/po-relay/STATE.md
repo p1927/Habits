@@ -23,8 +23,8 @@
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | `—` |
-| review_round | `26` |
-| last_reviewed_round | `26` |
+| review_round | `27` |
+| last_reviewed_round | `27` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
 | confirmed_next | `Worker relay-208+; Code maint-004/ch-139; UX ui-060 verify-close` |
@@ -34,8 +34,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/instances.manifest.json docs/window-instances/po-relay/STATE.md` |
-| review_fingerprint | `248d0c71170c2079` |
+| review_changed_files | `docs/window-instances/po-relay/STATE.md` |
+| review_fingerprint | `e2e702f4e8ee2fa3` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `Session #36 — stale tick recovery; ch-137/ch-138 + ui-060 sync; Round 23 review` |
 | execute_started | `yes` |
@@ -121,7 +121,7 @@
 
 **PO tick:** add/refine rows; never set `agreed` (UX owns triage).
 
-**UX tick:** read this table first; for each `proposed`/`refined`, set status + `ux_response`; on `agreed`, append matching `ui-*` line to [`ux-relay/STATE.md`](../ux-relay/STATE.md).
+**UX tick:** read this table first; for each `proposed`/`refined`, set status + `ux_response`; on `agreed`, append matching `ui-*` line to ux-relay `UI_POLISH_BACKLOG` via `state_api` (never write ux-relay/STATE.md directly): `state_api.sh . --loop-id ux-relay append backlog-row --section UI_POLISH_BACKLOG --id ui-N --row "| ui-N | ... |"`.
 
 ---
 
@@ -360,8 +360,12 @@
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| pr-r27-001 | low | docs/window-instances/po-relay/STATE.md — loops pid sync after re-arm follow-up | round-27 /code-review | closed | — | closed |
+| pr-r27-000 | low | Bugbot skipped — STATE loops pid sync diff only | round-27 bugbot | closed | — | closed |
 | pr-r26-002 | low | docs/window-instances/instances.manifest.json:32 — ux-relay interval_sec 300→120 | round-26 /code-review | closed | — | closed |
 | pr-r26-001 | low | docs/window-instances/po-relay/STATE.md — Round 25/26 review + fingerprint sync | round-26 /code-review | closed | — | closed |
 | pr-r26-000 | low | Bugbot skipped — manifest + STATE doc diff only | round-26 bugbot | closed | — | closed |
@@ -554,6 +558,8 @@
 - UX-originated gaps → UX writes [`ux-relay/STATE.md`](../ux-relay/STATE.md) `UX_GAPS`; PO promotes to `UI_PROPOSALS` on next PO tick
 - Quality/refactor items → tag **Code window** in QUALITY_BACKLOG
 - Open conflicts → `DESIGN_DECISIONS` (both windows must check before shipping)
+
+
 
 
 

@@ -6,7 +6,7 @@ UX critic / design strategist — deep critique and research only. **No code or 
 
 ## Job
 
-Brainstorm 2–3 directions, web-research industry patterns, teardown reference apps (mobile + desktop), critically audit Habits surfaces **and cross-tab journeys**, write evidence-backed `crit-*` rows to `ux-relay/STATE.md` `CRITIQUE_BACKLOG`. Complements PO's brief UX lens; does not replace it.
+Brainstorm 2–3 directions, web-research industry patterns, teardown reference apps (mobile + desktop), critically audit Habits surfaces **and cross-tab journeys**, write evidence-backed `crit-*` rows to ux-relay `CRITIQUE_BACKLOG` via `state_api` (never write ux-relay/STATE.md directly). Complements PO's brief UX lens; does not replace it.
 
 ## Design decisions (locked)
 

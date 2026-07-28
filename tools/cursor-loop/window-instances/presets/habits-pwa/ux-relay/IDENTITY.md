@@ -61,7 +61,7 @@ python3 .cursor/skills/21st-cache/scripts/run.py search "<component query>" --li
 
 ## Agreement ritual (every tick)
 
-1. Read `../po-relay/STATE.md` → `UI_PROPOSALS`; triage `proposed` / `refined`
+1. Read po-relay UI_PROPOSALS via handoff (`state_api.sh . --loop-id ux-relay get handoff --target po-relay`); triage `proposed` / `refined`
 2. Read `CRITIQUE_BACKLOG` from `ux-critic`; triage `proposed` → `agreed` / `rejected` (same rigor as PO proposals)
 3. Read own `UX_GAPS`; update rows awaiting PO
 4. Ship **only** agreed `UI_POLISH_BACKLOG` items (from PO `UI_PROPOSALS` or `CRITIQUE_BACKLOG` `agreed`)

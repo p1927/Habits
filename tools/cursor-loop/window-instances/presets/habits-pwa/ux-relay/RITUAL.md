@@ -5,7 +5,14 @@
 
 ## Phase 2 — Orient
 
-Read `../po-relay/STATE.md` `UI_PROPOSALS`; triage **≥1** `CRITIQUE_BACKLOG` row with `status=proposed` from `ux-critic` (mandatory SLA); update `LAST_REVIEW`; `git status`.
+Read po-relay UI_PROPOSALS and own CRITIQUE_BACKLOG via handoff — never open STATE.md files directly:
+
+```bash
+# po-relay proposals (UI_PROPOSALS_ACTIVE)
+state_api.sh . --loop-id ux-relay get handoff --target po-relay
+```
+
+Triage **≥1** `CRITIQUE_BACKLOG` row with `status=proposed` from ux-critic (mandatory SLA); update `LAST_REVIEW`; `git status`.
 
 ## Phase 3 — Select
 
@@ -55,7 +62,17 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --apply
 ```
 
-Apply script output: set `code_changed`, increment `review_round` if yes, set `review_status=pending`, record `review_diff_range`.
+Apply script output: set `code_changed`, increment `review_round` if yes, set `review_status=pending`, record `review_diff_range` — always via `state_api`:
+
+```bash
+state_api.sh . --loop-id ux-relay set checkpoint \
+  code_changed=yes \
+  review_round=<N+1> \
+  review_diff_range=uncommitted \
+  review_status=pending
+# or code_changed=no:
+state_api.sh . --loop-id ux-relay set checkpoint code_changed=no
+```
 
 **API (if server touched):**
 
@@ -81,6 +98,7 @@ python3 -c "import habits_api.main"
 - [ ] Visual check at **390px**
 - [ ] `prefers-reduced-motion` not broken
 - [ ] `harden` skill invoked — error/loading/empty states, text overflow, and edge cases verified
+- [ ] `normalize` skill invoked — design tokens, spacing, and component variants match design system
 
 ## Phase 6 — Code review (Round N)
 

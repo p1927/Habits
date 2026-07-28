@@ -2,7 +2,6 @@
 description: UX relay loop — independent UI/UX polish tick (5m, own sentinel)
 globs:
   - docs/window-instances/ux-relay/**
-  - docs/window-instances/po-relay/STATE.md
 ---
 
 # UX Relay Loop Mandate
@@ -10,7 +9,7 @@ globs:
 When woken **only** by `AGENT_LOOP_TICK_UX_RELAY` or `AGENT_LOOP_WAKE_UX_RELAY`:
 
 1. Read [`docs/window-instances/ux-relay/INSTANCE.md`](../../docs/window-instances/ux-relay/INSTANCE.md)
-2. Triage [`po-relay/STATE.md`](../../docs/window-instances/po-relay/STATE.md) `UI_PROPOSALS` and [`CRITIQUE_BACKLOG`](../../docs/window-instances/ux-relay/STATE.md) from ux-critic
+2. Read po-relay UI_PROPOSALS and ux-critic CRITIQUE_BACKLOG via handoff (`state_api.sh . --loop-id ux-relay get handoff --target po-relay`) and own `CRITIQUE_BACKLOG` from wake JSON `state_snapshot`
 3. Ship one agreed `ui-*` from UX STATE `UI_POLISH_BACKLOG`
 4. 9-phase ritual per RITUAL.md
 
