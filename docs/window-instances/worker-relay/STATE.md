@@ -22,9 +22,9 @@
 | last_wake | `2026-07-28T12:36:47Z` |
 | next_action | `relay-209` |
 | phase | `9-arm` |
-| review_status | `done` |
+| review_status | `skipped` |
 | review_diff_range | `main...HEAD` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `50` |
 | last_reviewed_round | `50` |
 | worktree_status | `none` |
@@ -32,14 +32,14 @@
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
+| execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `17c55ab` |
+| commit_hash | `d20b3df` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
+| review_skip_reason | `relay-208 shipped; arm steady state` |
 | review_changed_files | `pwa/src/App.css` |
 
 ## IN_PROGRESS
