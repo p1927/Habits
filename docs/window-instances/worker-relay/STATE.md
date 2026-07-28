@@ -8,7 +8,7 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:23:05Z |
+| reviewed_at | 2026-07-28T12:25:41Z |
 | where_we_are | relay-207 shipped (487aed2); idle |
 | confirmed_next |  |
 | brainstorm_notes | Backlog empty; awaiting PO relay-208+ |
@@ -19,28 +19,28 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:23:05Z` |
+| last_wake | `2026-07-28T12:25:41Z` |
 | next_action | `await PO backlog proposals` |
 | phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `uncommitted` |
 | code_changed | `no` |
 | review_round | `37` |
-| last_reviewed_round | `37` |
+| last_reviewed_round | `45` |
 | worktree_status | `none` |
 | review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
-| review_fingerprint | `76bc7ac4d2c88063` |
+| review_fingerprint | `494643276d8863a3` |
 | ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `25132b6` |
+| commit_hash | `f3a693e` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle SPIN tick 12:23:05Z; STATE sync only — no product diff` |
+| review_skip_reason | `Recovery wake idle tick 12:25:41Z; STATE sync only — out-of-scope uncommitted pwa/server diffs` |
 
 ## IN_PROGRESS
 
@@ -129,8 +129,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r45-000 | low | Recovery wake idle tick 12:25:41Z; STATE sync only — no worker product diff | round-45 /code-review | closed | — | closed |
 | rf-r44-000 | low | Idle SPIN tick 12:23:05Z; STATE checkpoint only — no product diff | round-44 /code-review | closed | — | closed |
 | rf-r43-000 | low | Idle SPIN tick 12:20:12Z; STATE checkpoint only — no product diff | round-43 /code-review | closed | — | closed |
 | rf-r42-000 | low | Idle SPIN tick 12:17:31Z; STATE checkpoint only — no product diff | round-42 /code-review | closed | — | closed |
@@ -277,6 +279,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
