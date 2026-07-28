@@ -25,9 +25,13 @@ export function useAppShellNavigation({
     window.location.hash = id;
   }, []);
 
+  const onBeforeLogScroll = useCallback(() => {
+    setOpenLogMealPlan(true);
+  }, [setOpenLogMealPlan]);
+
   const { scrollToken: mealPlanQueueScrollToken, scrollToMealPlanQueue } = useMealPlanQueueScroll(
     handleTabChange,
-    { onBeforeLogScroll: () => setOpenLogMealPlan(true) },
+    { onBeforeLogScroll },
   );
 
   const navigateMealPlanSyncSource = useCallback(
