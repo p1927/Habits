@@ -21,7 +21,7 @@
 |-------|-------|
 | last_wake | `2026-07-28T12:30:21Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
@@ -29,13 +29,13 @@
 | last_reviewed_round | `47` |
 | worktree_status | `none` |
 | review_fingerprint | `76bc7ac4d2c88063` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `4ab885f` |
+| commit_hash | `cd10682` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
