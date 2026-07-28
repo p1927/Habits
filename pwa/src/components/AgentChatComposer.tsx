@@ -42,7 +42,7 @@ export function AgentChatComposer({
   return (
     <div className="agent-composer-dock" aria-label="Message composer">
       {showVoiceNudge && (
-        <div className="agent-voice-nudge" role="region" aria-label="Voice coach suggestion">
+        <div className="agent-voice-nudge" role="region" aria-label="Voice coach suggestion" aria-live="polite">
           <button type="button" className="agent-voice-nudge__chip" onClick={onOpenVoice}>
             Try voice coach
           </button>

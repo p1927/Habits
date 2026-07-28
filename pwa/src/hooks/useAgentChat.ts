@@ -29,24 +29,24 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
       const message = rawText.trim() || (imageUrl ? 'What is in this photo?' : '');
       if (!message || !serverOnline) return;
 
+      const current = messagesRef.current;
+      const last = current[current.length - 1];
+      const base =
+        last?.role === 'assistant' && (loading || !last.content.trim())
+          ? current.slice(0, -1)
+          : current;
+      const history = base.map((m) => ({ role: m.role, content: m.content }));
+
       const gen = beginStream();
       setLoading(true);
       setError('');
 
       const userMsg: AgentChatMessage = { role: 'user', content: message, imageUrl };
-
-      setMessages((m) => {
-        const base = m[m.length - 1]?.role === 'assistant' ? m.slice(0, -1) : m;
-        return [...base, userMsg, { role: 'assistant', content: '' }];
-      });
-
-      const history = messagesRef.current
-        .filter((m, i, arr) => !(i === arr.length - 1 && m.role === 'assistant'))
-        .map((m) => ({ role: m.role, content: m.content }));
+      setMessages([...base, userMsg, { role: 'assistant', content: '' }]);
 
       await runStream(gen, message, imageUrl, history);
     },
-    [serverOnline, runStream, beginStream],
+    [loading, serverOnline, runStream, beginStream],
   );
 
   const send = useCallback(async () => {

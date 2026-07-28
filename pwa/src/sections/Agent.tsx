@@ -27,9 +27,9 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
 
   const showVoiceNudge = useMemo(() => {
     if (!serverOnline || voiceNudgeDismissed || s.loading || s.voiceOpen) return false;
-    const firstUser = s.messages.find((m) => m.role === 'user');
-    const firstAssistant = s.messages.find((m) => m.role === 'assistant' && m.content.trim());
-    return Boolean(firstUser && firstAssistant);
+    const userCount = s.messages.filter((m) => m.role === 'user').length;
+    const hasAssistantReply = s.messages.some((m) => m.role === 'assistant' && m.content.trim());
+    return userCount === 1 && hasAssistantReply;
   }, [serverOnline, voiceNudgeDismissed, s.loading, s.voiceOpen, s.messages]);
 
   const openVoiceCoach = () => {
