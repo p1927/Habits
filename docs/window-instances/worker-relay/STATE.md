@@ -41,11 +41,7 @@
 | merge_done | `yes` |
 | review_skip_reason | `relay-214 shipped 57b8c2d; review round 72 complete` |
 | review_changed_files | `pwa/src/App.css` |
-| worktree_path | `` |
-| worktree_branch | `` |
-| worktree_item_id | `` |
 
-| current_item_id | `` |
 ## IN_PROGRESS
 
 *(empty)*
