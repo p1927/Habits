@@ -19,28 +19,32 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:05:17Z` |
-| next_action | `await PO backlog proposals` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `63` |
-| last_reviewed_round | `66` |
+| last_wake | `2026-07-28T13:08:21Z` |
+| next_action | `relay-212 next` |
+| phase | `8-close` |
+| review_status | `done` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `67` |
+| last_reviewed_round | `67` |
 | worktree_status | `none` |
-| review_fingerprint | `76bc7ac4d2c88063` |
-| ritual_step | `9-arm` |
+| review_fingerprint | `relay211list` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
+| execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `15c77aa` |
+| commit_hash | `5c2c524` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle SPIN tick 2026-07-28T13:05:17Z; backlog empty` |
-| review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
+| review_changed_files | `pwa/src/components/LogTypeTodayList.tsx` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
+| worktree_branch | `loop/worker-relay/relay-211` |
+| worktree_item_id | `relay-211` |
+| current_item_id | `relay-211` |
 
 ## IN_PROGRESS
 
@@ -109,7 +113,7 @@
 - [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style
 - [x] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
 - [x] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
-- [ ] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
+- [x] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
 - [ ] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
 - [ ] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
 ## BRAINSTORM (unprioritized)
@@ -159,8 +163,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r67-000 | low | relay-211: ul role=list + aria-label matches AC; explicit attrs satisfy WCAG 1.3.1 | round-67 /code-review | closed | — | closed |
 | rf-r66-000 | low | Idle SPIN tick 2026-07-28T13:05:17Z; backlog empty — no product diff | round-66 /code-review | closed | — | closed |
 | rf-r65-000 | low | Recovery wake idle tick 2026-07-28T13:05:22Z; STATE sync only — no product diff | round-65 /code-review | closed | — | closed |
 | rf-r64-000 | low | Idle SPIN tick 2026-07-28T13:01:47Z; backlog empty — no product diff | round-64 /code-review | closed | — | closed |
@@ -269,9 +275,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | relay-211 | done | build | 5c2c524 |
 | 2026-07-28 | relay-210 | done | build | d96e0f3 |
 | 2026-07-28 | relay-209 | done | build | a62bd3c |
 | 2026-07-28 | relay-208 | done | build | 17c55ab |
@@ -335,6 +343,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
