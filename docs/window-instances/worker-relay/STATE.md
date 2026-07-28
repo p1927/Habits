@@ -21,25 +21,25 @@
 |-------|-------|
 | last_wake | `2026-07-28T12:41:06Z` |
 | next_action | `relay-210` |
-| phase | `8-close` |
-| review_status | `done` |
+| phase | `9-arm` |
+| review_status | `skipped` |
 | review_diff_range | `main...HEAD` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `52` |
 | last_reviewed_round | `52` |
 | worktree_status | `none` |
 | review_fingerprint | `relay209a11y` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `17c55ab` |
+| commit_hash | `a62bd3c` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Recovery arm wake 2026-07-28T12:40:51Z; relay-209 deferred to next tick` |
+| review_skip_reason | `relay-209 shipped; arm steady state` |
 | review_changed_files | `pwa/src/lib/foodQueueFocus.ts pwa/src/components/LogTypeTodayList.tsx` |
 
 ## IN_PROGRESS
