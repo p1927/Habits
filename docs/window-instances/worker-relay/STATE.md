@@ -8,7 +8,7 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:29:40Z |
+| reviewed_at | 2026-07-28T12:30:21Z |
 | where_we_are | relay-207 shipped (487aed2); idle |
 | confirmed_next |  |
 | brainstorm_notes | Backlog empty; awaiting PO relay-208+ |
@@ -19,17 +19,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:29:40Z` |
+| last_wake | `2026-07-28T12:30:21Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `9-arm` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `37` |
-| last_reviewed_round | `46` |
+| last_reviewed_round | `47` |
 | worktree_status | `none` |
-| review_fingerprint | `494643276d8863a3` |
-| ritual_step | `9-arm` |
+| review_fingerprint | `76bc7ac4d2c88063` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
@@ -39,7 +39,7 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle recovery wake 2026-07-28T12:29:40Z; no diff` |
+| review_skip_reason | `Idle SPIN tick 2026-07-28T12:30:21Z; STATE sync only — no product diff` |
 
 ## IN_PROGRESS
 
@@ -130,8 +130,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r47-000 | low | Idle SPIN tick 2026-07-28T12:30:21Z; STATE checkpoint only — no product diff | round-47 /code-review | closed | — | closed |
 | rf-r46-000 | low | Idle recovery wake 2026-07-28T12:29:40Z; no diff — checkpoint sync only | round-46 /code-review | closed | — | closed |
 | rf-r45-000 | low | Recovery wake idle tick 12:25:41Z; STATE sync only — no worker product diff | round-45 /code-review | closed | — | closed |
 | rf-r44-000 | low | Idle SPIN tick 12:23:05Z; STATE checkpoint only — no product diff | round-44 /code-review | closed | — | closed |
@@ -280,6 +282,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
