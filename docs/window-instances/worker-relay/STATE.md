@@ -24,7 +24,7 @@
 | next_action | `relay-203 Agent greeting hide when attach preview open` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `33` |
