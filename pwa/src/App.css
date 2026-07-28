@@ -3574,14 +3574,11 @@ button:disabled {
 
 .agent-tool-chips {
   display: flex;
-  gap: 0.4rem;
-  overflow-x: auto;
-  padding: 0.35rem 0 0.5rem;
-  margin: 0 calc(-1 * var(--space-md));
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 0.55rem;
+  padding: 0;
+  max-width: 100%;
 }
 
 .agent-tool-chips::-webkit-scrollbar {
@@ -3589,17 +3586,19 @@ button:disabled {
 }
 
 .agent-tool-chip {
-  flex-shrink: 0;
-  padding: 0.4rem 0.75rem;
+  flex: 0 1 auto;
+  max-width: 100%;
+  padding: 0.45rem 0.85rem;
   border-radius: var(--revolut-pill-radius);
   border: 1px solid color-mix(in srgb, var(--surface2) 80%, transparent);
   background: var(--gemini-surface);
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
-  line-height: 1.2;
-  white-space: nowrap;
+  line-height: 1.25;
+  white-space: normal;
+  text-align: left;
   transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
 }
 
@@ -4520,13 +4519,6 @@ form.log-type-card {
   display: none;
 }
 
-.agent-tool-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: var(--space-md);
-}
-
 .agent-context-drawer {
   margin-top: 0.25rem;
 }
@@ -4546,29 +4538,6 @@ form.log-type-card {
 
 .agent-context-drawer[open] .agent-context-drawer__summary {
   margin-bottom: 0.5rem;
-}
-
-.agent-tool-chip {
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--revolut-pill-radius);
-  border: 1px solid color-mix(in srgb, var(--surface2) 80%, transparent);
-  background: var(--gemini-surface);
-  color: var(--text-secondary);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color var(--duration-fast), background var(--duration-fast), color var(--duration-fast);
-}
-
-.agent-tool-chip:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-dim);
-}
-
-.agent-tool-chip:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .chat-bubble {

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { StreamingDots } from './StreamingDots';
-import { AGENT_GREETING_CATEGORIES, type AgentChatMessage } from '../lib/agentSectionShared';
+import type { AgentChatMessage } from '../lib/agentSectionShared';
 
 export interface AgentChatPanelProps {
   messages: AgentChatMessage[];
@@ -10,7 +10,7 @@ export interface AgentChatPanelProps {
   onRegenerateLastReply?: () => void;
 }
 
-export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt, onRegenerateLastReply }: AgentChatPanelProps) {
+export function AgentChatPanel({ messages, loading, listRef, onRegenerateLastReply }: AgentChatPanelProps) {
   const showGreeting = messages.length === 0;
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
@@ -30,25 +30,9 @@ export function AgentChatPanel({ messages, loading, listRef, onSelectPrompt, onR
   return (
     <div className="agent-chat" ref={listRef} role="log" aria-live="polite" aria-label="Chat messages">
       {showGreeting && (
-        <div className="agent-greeting">
+        <div className="agent-greeting agent-greeting--compact">
           <h2 className="agent-greeting__title">Hello</h2>
-          <p className="agent-greeting__sub">What would you like to do?</p>
-          {onSelectPrompt && (
-            <div className="agent-greeting-grid" role="group" aria-label="Suggested actions">
-              {AGENT_GREETING_CATEGORIES.map(({ label, icon, description, text }) => (
-                <button
-                  key={label}
-                  type="button"
-                  className="agent-greeting-card"
-                  onClick={() => onSelectPrompt(text)}
-                >
-                  <span className="agent-greeting-card__icon" aria-hidden="true">{icon}</span>
-                  <span className="agent-greeting-card__label">{label}</span>
-                  <span className="agent-greeting-card__desc">{description}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          <p className="agent-greeting__sub">Where should we start?</p>
         </div>
       )}
       {messages.map((m, i) => {

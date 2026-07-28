@@ -7,13 +7,14 @@ interface AgentToolChipsProps {
 
 export function AgentToolChips({ disabled = false, onSelect }: AgentToolChipsProps) {
   return (
-    <div className="agent-tool-chips" role="toolbar" aria-label="Suggested prompts">
+    <div className="agent-tool-chips" role="group" aria-label="Suggested prompts">
       {AGENT_QUICK_PROMPTS.map((tool) => (
         <button
           key={tool.label}
           type="button"
           className="agent-tool-chip"
           disabled={disabled}
+          aria-label={`Suggest: ${tool.label}`}
           onClick={() => onSelect(tool.text)}
         >
           {tool.label}
