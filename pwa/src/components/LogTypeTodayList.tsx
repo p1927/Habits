@@ -31,7 +31,7 @@ export function LogTypeTodayList({
       {!pending.length && !data?.items.length ? (
         <p className="muted">No entries yet.</p>
       ) : (
-        <ul className="food-list">
+        <ul className="food-list" role="list" aria-label="Pending offline food entries">
           {pending.map((entry) => {
             const queuedAgo = entry.created_at ? formatRelativeTime(entry.created_at) : '';
             const statusSuffix =
