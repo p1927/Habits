@@ -19,32 +19,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:20:41Z` |
-| next_action | `await PO backlog proposals` |
+| last_wake | `2026-07-28T13:20:36Z` |
+| next_action | `relay-215 next` |
 | phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
-| review_round | `70` |
-| last_reviewed_round | `71` |
+| review_round | `72` |
+| last_reviewed_round | `72` |
 | worktree_status | `none` |
-| review_fingerprint | `relay212macros` |
+| review_fingerprint | `relay214css` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `cc1cec7` |
+| commit_hash | `57b8c2d` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Recovery idle wake 2026-07-28T13:20:41Z; backlog empty post relay-213` |
-| review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| review_skip_reason | `relay-214 shipped 57b8c2d; review round 72 complete` |
+| review_changed_files | `pwa/src/App.css` |
+| worktree_path | `` |
+| worktree_branch | `` |
+| worktree_item_id | `` |
 
+| current_item_id | `` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -52,6 +53,9 @@
 ---
 
 ## BACKLOG
+
+
+
 
 
  (priority ordered)
@@ -115,6 +119,9 @@
 - [x] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
 - [x] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
 - [x] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
+- [x] relay-214 | Remove dead legacy .card/.card-placeholder/.btn-decline CSS | quality | Given App.css legacy selectors unused in pwa/src, When build runs, Then dead rules removed per maint-004
+- [ ] relay-215 | Agent composer tool status chips during streaming | feature | Given Agent loading with tool_results pending, When streaming, Then status chips above composer per crit-002
+- [ ] relay-216 | Home empty rings Log first meal CTA | feature | Given zero food logged today, When Home rings visible, Then primary CTA opens Log Scan per crit-001
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -167,8 +174,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r72-000 | low | relay-214: removed unused .card/.card-placeholder/.btn-decline; build+lint pass | round-72 /code-review | closed | — | closed |
 | rf-r71-000 | low | Recovery idle wake; backlog empty after relay-213 verify — awaiting PO relay-214+ | round-71 /code-review | closed | — | closed |
 | rf-r70-000 | low | relay-213 verify: AgentToolsSheet row tap calls sendPrompt(text) then onClose — AC satisfied in main (cfec619+) | round-70 /code-review | closed | — | closed |
 | rf-r69-000 | low | Recovery wake STATE sync; relay-212 shipped in same turn primary SPIN | round-69 /code-review | closed | — | closed |
@@ -285,9 +294,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | relay-214 | done | build | 57b8c2d |
 | — | relay-213 | done | verify | cfec619 |
 | — | relay-212 | done | build | 17f37c1 |
 | — | relay-211 | done | build | 5c2c524 |
@@ -354,6 +365,10 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
+
 
 
 
