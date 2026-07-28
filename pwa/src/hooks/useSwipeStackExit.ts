@@ -18,6 +18,8 @@ export function useSwipeStackExit({ prefersReducedMotion, onSwipe, onCommit }: U
   const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
   const [exitAnimating, setExitAnimating] = useState(false);
   const exitFromTransform = useRef('translate(0px, 0px) rotate(0deg)');
+  const resetOffsetRef = useRef<(() => void) | null>(null);
+  const committingRef = useRef(false);
   const onSwipeRef = useRef(onSwipe);
   const onCommitRef = useRef(onCommit);
   onSwipeRef.current = onSwipe;
@@ -27,13 +29,16 @@ export function useSwipeStackExit({ prefersReducedMotion, onSwipe, onCommit }: U
 
   const commit = useCallback(
     (direction: SwipeDirection, context: CommitContext, setDragging: (dragging: boolean) => void, resetOffset: () => void) => {
-      if (isExiting) return;
+      if (committingRef.current || isExiting) return;
+      committingRef.current = true;
+      resetOffsetRef.current = resetOffset;
       onCommitRef.current?.(direction);
       vibrateForSwipe(direction);
 
       if (prefersReducedMotion) {
         onSwipeRef.current?.(direction);
         resetOffset();
+        committingRef.current = false;
         return;
       }
 
@@ -57,6 +62,9 @@ export function useSwipeStackExit({ prefersReducedMotion, onSwipe, onCommit }: U
     if (!exitDirection || !exitAnimating) return;
     const timer = window.setTimeout(() => {
       onSwipeRef.current?.(exitDirection);
+      resetOffsetRef.current?.();
+      resetOffsetRef.current = null;
+      committingRef.current = false;
       setExitDirection(null);
       setExitAnimating(false);
     }, SWIPE_EXIT_MS);
