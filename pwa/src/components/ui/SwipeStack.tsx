@@ -21,17 +21,20 @@ export function SwipeStack({
     handleStart,
     handleMove,
     handleEnd,
-    rotation,
-    dampedY,
-    offset,
     nextCardScale,
     stampRightOpacity,
     stampLeftOpacity,
     stampUpOpacity,
+    isExiting,
+    exitAnimating,
+    cardTransform,
   } = useSwipeStack({ onSwipe });
 
   return (
-    <div className={`ui-swipe-stack ${className}`.trim()} style={{ '--swipe-next-scale': nextCardScale } as CSSProperties}>
+    <div
+      className={`ui-swipe-stack ${className}${isExiting ? ' ui-swipe-stack--exiting' : ''}`.trim()}
+      style={{ '--swipe-next-scale': nextCardScale } as CSSProperties}
+    >
       <div className="ui-swipe-hints" aria-hidden="true">
         <span className="ui-swipe-hint ui-swipe-hint--left">{hintLeft}</span>
         <span className="ui-swipe-hint ui-swipe-hint--up">{hintUp}</span>
@@ -60,12 +63,14 @@ export function SwipeStack({
           {hintUp}
         </span>
         <div
-          className={`ui-swipe-card ${dragging ? 'ui-swipe-card--dragging' : ''}`}
+          className={`ui-swipe-card${dragging ? ' ui-swipe-card--dragging' : ''}${exitAnimating ? ' ui-swipe-card--exit' : ''}`}
           style={{
-            transform: `translate(${offset.x}px, ${dampedY}px) rotate(${rotation}deg)`,
+            transform: cardTransform,
+            opacity: exitAnimating ? 0 : 1,
           }}
           role="group"
           aria-label={label}
+          aria-busy={isExiting || undefined}
           onTouchStart={(e) => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
           onTouchMove={(e) => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
           onTouchEnd={handleEnd}
@@ -83,6 +88,7 @@ export function SwipeStack({
             type="button"
             className="ui-swipe-circle ui-swipe-circle--left"
             aria-label={hintLeft}
+            disabled={isExiting}
             onClick={() => fire('left')}
           >
             <span aria-hidden="true">✎</span>
@@ -91,6 +97,7 @@ export function SwipeStack({
             type="button"
             className="ui-swipe-circle ui-swipe-circle--up"
             aria-label={hintUp}
+            disabled={isExiting}
             onClick={() => fire('up')}
           >
             <span aria-hidden="true">↑</span>
@@ -99,6 +106,7 @@ export function SwipeStack({
             type="button"
             className="ui-swipe-circle ui-swipe-circle--right"
             aria-label={hintRight}
+            disabled={isExiting}
             onClick={() => fire('right')}
           >
             <span aria-hidden="true">✓</span>
