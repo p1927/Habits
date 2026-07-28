@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T03:00:00Z |
-| where_we_are | relay-199 + agent LiveKit route fix shipped |
-| confirmed_next | refill backlog |
-| brainstorm_notes | Dedupe greeting/chips; hide composer chips after prefill |
+| reviewed_at | 2026-07-28T03:25:00Z |
+| where_we_are | relay-202 shipped |
+| confirmed_next | relay-203 |
+| brainstorm_notes | Greeting cards disabled offline/scanning; attach preview hide next |
 
 ---
 
@@ -19,31 +19,31 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T03:00:00Z` |
-| confirmed_next | `backlog refill` |
-| next_action | `refill BACKLOG from BRAINSTORM` |
+| last_wake | `2026-07-28T03:25:00Z` |
+| confirmed_next | `relay-203` |
+| next_action | `relay-203 Agent greeting hide when attach preview open` |
 | phase | `9-arm` |
-| review_status | `done` |
-| review_skip_reason | `—` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| review_round | `30` |
-| last_reviewed_round | `30` |
+| review_status | `skipped` |
+| review_skip_reason | `relay-202 reviewed round 33; committed 4fc6ec6` |
+| review_diff_range | `4fc6ec6` |
+| code_changed | `no` |
+| review_round | `33` |
+| last_reviewed_round | `33` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/AgentChatComposer.tsx pwa/src/components/AgentToolChips.tsx pwa/src/lib/agentSectionShared.ts pwa/src/sections/Agent.tsx server/habits_api/routes/agent.py server/habits_api/routes/agent_tools.py server/habits_api/routes/voice.py .env.example` |
-| review_fingerprint | `relay-199-livekit` |
-| ritual_step | `9-arm` |
+| review_changed_files | `pwa/src/components/AgentChatPanel.tsx pwa/src/components/AgentSectionBody.tsx pwa/src/sections/Agent.tsx` |
+| review_fingerprint | `relay-202` |
+| ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| execute_started | `no` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `—` |
-| receive_review_done | `yes` |
+| receive_review_done | `no` |
 | commit_done | `no` |
 | merge_done | `no` |
 
@@ -100,8 +100,10 @@
 - [x] relay-197 | Day event detail sheet Escape hint | polish | BottomSheet Escape + hint text (73c3806)
 - [x] relay-198 | Home meal photo gallery Escape hint | polish | MealPhotoGallery lightbox hint + flex-gap CSS (bbd648c)
 - [x] relay-199 | Agent chat empty-state starter chips | feature | Gemini greeting + composer chips (Log food, Plan day, Review rings, Schedule); prefill composer
-- [ ] relay-200 | Agent empty state: single prompt surface (greeting OR chips) | polish | Hide duplicate greeting grid or composer chips when both show same prompts
-- [ ] relay-201 | Agent tool-chips CSS single rule set | polish | Scope composer chips under .agent-composer-dock; remove flex-wrap conflict with scroll strip
+- [x] relay-200 | Agent empty state: single prompt surface (greeting OR chips) | polish | Greeting grid only; composer chips + AgentToolChips removed; composerDraft hides cards after prefill (ee37839)
+- [x] relay-201 | Remove dead agent-tool-chips CSS | polish | Deleted unused rules from App.css and agent-gemini.css (2d5575c)
+- [x] relay-202 | Agent greeting cards disable when offline or scanning | polish | greetingActionsDisabled via serverOnline/loading/scanning (4fc6ec6)
+- [ ] relay-203 | Agent greeting hide when attach preview open | polish | Hide greeting grid when attachImage set to avoid layout clash above attach preview
 
 ## BRAINSTORM (unprioritized)
 
@@ -174,6 +176,12 @@
 | rf-r30-005 | low | No tests for empty-state chip visibility | round-30 /code-review | backlog | — | closed |
 | rf-r30-006 | low | Chip toolbar aria-label mislabeled Quick tools | round-30 /code-review | fix-now | — | closed |
 | rf-r30-007 | low | Server routes static review clean | round-30 /code-review | closed | — | closed |
+| rf-r31-000 | low | relay-200 AC satisfied: greeting grid sole empty-state surface | round-31 bugbot | closed | relay-200 | closed |
+| rf-r31-001 | low | Greeting cards not disabled when offline/scanning | round-31 /code-review | backlog | relay-202 | closed |
+| rf-r31-002 | low | Greeting visible when attach preview open | round-31 /code-review | backlog | relay-203 | closed |
+| rf-r31-003 | low | Dead .agent-tool-chips CSS after component removal | round-31 /code-review | backlog | relay-201 | closed |
+| rf-r31-004 | low | No tests for showGreeting vs composerDraft | round-31 /code-review | backlog | — | closed |
+| rf-r31-005 | low | No server changes for relay-200 | round-31 /code-review | closed | — | closed |
 
 ---
 
@@ -181,7 +189,9 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
-| 2026-07-28 | relay-199 | done | build | — |
+| 2026-07-28 | relay-202 | done | build | 4fc6ec6 |
+| 2026-07-28 | relay-200 | done | build | ee37839 |
+| 2026-07-28 | relay-199 | done | build | 5aefaef |
 | 2026-07-28 | agent-livekit-routes | done | import+build | — |
 | 2026-07-28 | relay-198 | done | build | bbd648c |
 | 2026-07-28 | relay-196 | done | build | f6b207a |
