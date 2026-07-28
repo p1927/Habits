@@ -7,6 +7,10 @@
         "matcher": "Write|StrReplace|EditNotebook|Delete"
       },
       {
+        "command": ".cursor/hooks/loop-guard-checkpoint.sh",
+        "matcher": "Write|StrReplace|EditNotebook"
+      },
+      {
         "command": ".cursor/hooks/loop-guard-arm.sh",
         "matcher": "Shell"
       }

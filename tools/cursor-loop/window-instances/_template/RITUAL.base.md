@@ -43,27 +43,6 @@ After advancing:
 
 ---
 
-## Phase 1 — Wake
-
-**First action on every wake — before reading any file:**
-
-```bash
-bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
-  --state-file <STATE.md path> \
-  --loop-id <loop_id> \
-  --apply
-```
-
-This advances `CHECKPOINT.phase` from `9-arm → 1-wake` and resets per-tick flags. It is the only supported way to begin a new tick. Once `phase=1-wake` is written, the arm gate (`validate_ritual_gate.py`) blocks any re-arm until phases 2–8 complete. **If this step is skipped, the gate sees stale `phase=9-arm` and passes immediately — the agent re-arms without doing any work.**
-
-After advancing:
-
-1. Read `INSTANCE.md` → `IDENTITY.md` → `RITUAL.md`
-2. Read wake JSON `state_snapshot` (or `state_api get snapshot`) — **never read `STATE.md` directly**
-3. Confirm `loop_id` matches INSTANCE
-
----
-
 ## Phases 4–6 by archetype
 
 | Phase | engineer | designer | product | qa |

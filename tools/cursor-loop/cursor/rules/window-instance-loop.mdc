@@ -24,9 +24,11 @@ Every wake **starts at Phase 1** (`1-wake`). Advance **one phase at a time** onl
 
 **Forbidden:** jumping phases (e.g. `4-execute` → `9-arm`); setting `phase=9-arm` before `verify-wake.sh` passes; arming when `validate_ritual_gate.py` fails.
 
-**Between ticks:** `phase=9-arm` is valid steady state. Every new wake resets to `1-wake`.
+**Phase 1 first action (mandatory — before reading any file):** Run `advance_ritual_step.sh . --state-file <state_file> --loop-id <loop_id> --apply` — advances `9-arm → 1-wake` and resets per-tick flags (**never directly write `CHECKPOINT.phase`**). Until this runs, the checkpoint still shows stale `phase=9-arm` from the prior tick; the arm gate will pass immediately and skip all work. Run this **before** reading INSTANCE, IDENTITY, or STATE.
 
-On wake: set `CHECKPOINT.phase=1-wake` immediately, then walk the line. Phase 3: run `prepare_select_tick.sh` then `instance_worktree.sh create` when required — **cannot enter Phase 4** without active worktree (engineer/designer/qa). Phase 5: run `prepare_review_tick.sh --apply`.
+**Between ticks:** `wake=ARMED` with `phase=9-arm` is expected at rest — the arm sleeper is counting down. On a new wake, Phase 1 must call `advance_ritual_step.sh --apply` first to begin the tick and advance to `1-wake`.
+
+After Phase 1 advances, walk the line. Phase 3: run `prepare_select_tick.sh` then `instance_worktree.sh create` when required — **cannot enter Phase 4** without active worktree (engineer/designer/qa). Phase 5: run `prepare_review_tick.sh --apply`.
 
 ## 9-phase ritual (all windows)
 

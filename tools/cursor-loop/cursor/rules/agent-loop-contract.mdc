@@ -51,7 +51,7 @@ Ending a turn with only “loop re-armed / next tick in N min” is **forbidden*
 
 ## On every wake
 
-1. Read contract **Loop config + Task + Ritual** and **`state_file`**
+1. Read contract **Loop config + Task + Ritual**; get own state via `state_api get snapshot` — **never read `state_file` directly**
 2. If `bind_blocked` — stop and report; do not arm
 3. **Ritual deliverable** — ship backlog item, brainstorm entry, or refactor per contract (Mode-aware for PO)
 4. **Checkpoint** — see below
@@ -151,7 +151,7 @@ Rules:
 
 - **Follow-up turns are not exempt** from the end-of-turn gate.
 - Always run **`verify-wake.sh` fresh** — never treat stale terminal `WAKE_ARMED pid=…` as proof of a live sleeper.
-- `instance-doctor` showing `wake=ARMED` between turns is healthy; `phase=9-arm` between ticks is valid steady state (next wake starts at `1-wake`); sustained `wake=DOWN` at end of turn means re-arm was skipped.
+- `instance-doctor` showing `wake=ARMED` between turns is healthy; sustained `wake=DOWN` at end of turn means re-arm was skipped. **On every new wake, Phase 1 must run `advance_ritual_step.sh --apply` first** — this advances stale `phase=9-arm` (from the prior tick) to `phase=1-wake`; until it does, the arm gate passes immediately and all work is skipped.
 
 ---
 
