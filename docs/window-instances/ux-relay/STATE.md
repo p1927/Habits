@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T00:58:00Z |
-| where_we_are | ui-059 shipped — Agent empty-state wrap chips (prop-ui-045); backlog idle again |
-| confirmed_next | await new PO UI_PROPOSALS |
+| reviewed_at | 2026-07-28T08:45:00Z |
+| where_we_are | Idle audit — relay-200/202 superseded ui-059 wrap pills with greeting grid; PO proposals all refined; build pass |
+| confirmed_next | await PO triage ux-gap-046 (Agent grid Gemini density post-relay-200) |
 
 ---
 
@@ -18,17 +18,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T00:58:00Z` |
+| last_wake | `2026-07-28T08:45:00Z` |
 | next_mode | `C` |
-| current_item_id | `—` |
-| phase | `9-arm` |
+| current_item_id | `audit` |
+| phase | `8-close` |
 | review_status | `skipped` |
-| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_skip_reason | `No diff in window scope (pwa/ docs/window-instances/ux-relay/) this tick` |
 | review_round | `15` |
 | last_reviewed_round | `15` |
 | review_diff_range | `none` |
 | code_changed | `no` |
-| confirmed_next | `backlog idle; await PO UI_PROPOSALS` |
+| confirmed_next | `backlog idle; ux-gap-046 proposed; await PO UI_PROPOSALS` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
@@ -78,6 +78,7 @@
 | ux-gap-043 | po-agreed | Home | relay-176 pull-refresh — UIRefreshControl ring + label (ui-056) | Apple Health refresh | shipped ui-056 |
 | ux-gap-044 | po-agreed | Global nav | Main tab ⌘1–5 shortcuts + dismissible hint (ui-057) | Gemini keyboard hints | shipped ui-057 |
 | ux-gap-045 | po-agreed | Settings | Disconnect success banner + aria-live on Settings error (prop-ui-044) | Revolut Settings | shipped ui-058 |
+| ux-gap-046 | ux-proposed | Agent | relay-200 restored 2x2 greeting grid (supersedes ui-059 wrap pills) — compact card density + Gemini subline at 390px | Gemini Android Nov2025 | pending PO |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 

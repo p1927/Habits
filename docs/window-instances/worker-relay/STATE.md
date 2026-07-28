@@ -29,11 +29,11 @@
 | code_changed | `no` |
 | review_round | `33` |
 | last_reviewed_round | `33` |
-| worktree_status | `none` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| worktree_status | `active` |
+| current_item_id | `relay-203` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
+| worktree_branch | `loop/worker-relay/relay-203` |
+| worktree_item_id | `relay-203` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | ritual_step | `1-wake` |

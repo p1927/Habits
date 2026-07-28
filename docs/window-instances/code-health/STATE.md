@@ -25,11 +25,11 @@
 | review_status | `skipped` |
 | review_round | `14` |
 | last_reviewed_round | `13` |
-| worktree_status | `none` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| worktree_status | `active` |
+| current_item_id | `ch-135` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
+| worktree_branch | `loop/code-health/ch-135` |
+| worktree_item_id | `ch-135` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |

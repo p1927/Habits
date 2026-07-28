@@ -794,6 +794,7 @@ def write_provision_metadata(
     *,
     ui_window_slot: int,
     conversation_id: str | None = None,
+    provision_strategy: str = "reuse_tab",
 ) -> bool:
     """Persist window slot + provision timestamp on the active binding."""
     cid = conversation_id
@@ -809,6 +810,7 @@ def write_provision_metadata(
     binding["ui_window_slot"] = int(ui_window_slot)
     binding["provisioned_at"] = now
     binding["chat_title"] = loop_id
+    binding["provision_strategy"] = provision_strategy
     write_binding(root, cid, binding)
     return True
 

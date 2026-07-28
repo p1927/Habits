@@ -106,8 +106,8 @@ PY
         echo "TICK_DAEMON_WAKE_FAIL loop_id=${LOOP_ID} error=${ERR}"
         ;;
       NEEDS_BIND)
-        python3 "${SCRIPT_DIR}/provision_instances.py" "$ROOT" --loop-id "$LOOP_ID" --force 2>/dev/null || true
-        notify_macos "Habits ${LOOP_ID} unbound" "Auto-provisioning dedicated window…"
+        python3 "${SCRIPT_DIR}/provision_instances.py" "$ROOT" --loop-id "$LOOP_ID" --create-window 2>/dev/null || true
+        notify_macos "Habits ${LOOP_ID} unbound" "Auto-provisioning Agent tab in Habits window…"
         echo "TICK_DAEMON_NEEDS_BIND loop_id=${LOOP_ID} action=provision"
         ;;
       COOLDOWN)

@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 import loop_hook_lib as lh
+import cursor_ui_discover as ui
 
 
 def is_cursor_running() -> bool:
@@ -57,6 +58,7 @@ def build_focus_actions(
     ui_window_slot: int | None = None,
     chat_title: str = "",
     conversation_id: str = "",
+    tab_match: str = "",
 ) -> tuple[list[str], str]:
     """Build AppleScript lines to focus the target Cursor window/chat."""
     actions = [
@@ -67,6 +69,7 @@ def build_focus_actions(
         "    set frontmost to true",
     ]
     method = "none"
+    match = tab_match or chat_title or (conversation_id[:8] if conversation_id else "")
 
     if ui_window_slot is not None and ui_window_slot > 0:
         actions.extend(
@@ -77,6 +80,17 @@ def build_focus_actions(
             ]
         )
         method = "window_slot"
+        if match:
+            actions.extend(["  end tell", "end tell"])
+            actions.extend(ui.build_focus_agent_tab_actions(ui_window_slot, match))
+            actions.extend(
+                [
+                    'tell application "System Events"',
+                    '  tell process "Cursor"',
+                    "    set frontmost to true",
+                ]
+            )
+            method = "window_slot+tab"
     elif chat_title:
         actions.extend(
             [
@@ -157,6 +171,7 @@ def push_prompt_macos(
         ui_window_slot=ui_window_slot,
         chat_title=chat_title,
         conversation_id=conversation_id,
+        tab_match=chat_title,
     )
     paste_actions = build_paste_actions(prompt)
 

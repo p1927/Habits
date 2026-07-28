@@ -44,7 +44,7 @@ def _clear_operator_wake_pending(root: Path, loop_id: str) -> None:
 def _bootstrap_unbound(root: Path, loop_id: str, contract_doc: str) -> dict:
     import provision_instances as prov
 
-    result = prov.provision_loop(root, loop_id, force=True)
+    result = prov.provision_loop(root, loop_id, reuse_existing=True, create_window=True)
     if result.get("ok"):
         return {
             "loop_id": loop_id,

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Segment test: push_composer_wake dry-run + window slot targeting
+# Segment test: push_composer_wake dry-run + window slot + tab targeting
 set -euo pipefail
 
 PKG="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -11,17 +11,21 @@ import push_composer_wake as pcw
 
 result = pcw.push_prompt_macos(
     'hello',
-    ui_window_slot=3,
+    ui_window_slot=1,
     chat_title='worker-relay',
     dry_run=True,
 )
 assert result.get('dry_run') is True, result
-assert result.get('targeting') == 'window_slot', result
+assert result.get('targeting') == 'window_slot+tab', result
+actions = result.get('actions', [])
+assert any('window 1' in line for line in actions), actions
+assert any('targetMatch' in line or 'worker-relay' in line for line in actions), actions
 print('OK push_composer_wake dry-run targeting=' + str(result.get('targeting')))
 
-actions, method = pcw.build_focus_actions(ui_window_slot=3, chat_title='worker-relay')
-assert method == 'window_slot', method
-assert any('window 3' in line for line in actions), actions
+actions, method = pcw.build_focus_actions(ui_window_slot=1, chat_title='worker-relay')
+assert method == 'window_slot+tab', method
+assert any('window 1' in line for line in actions), actions
+assert any('targetMatch' in line for line in actions), actions
 actions2, method2 = pcw.build_focus_actions(chat_title='ux-relay')
 assert method2 == 'chat_title', method2
 print('OK push_composer_wake build_focus_actions')

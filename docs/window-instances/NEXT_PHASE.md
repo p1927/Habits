@@ -1,34 +1,48 @@
-# Autonomous loop provisioning — v0.9.1
+# Autonomous loop provisioning — v0.9.3
 
-## One command (agent-run, zero manual steps)
+## One command (reuse existing Habits window + Agent tabs)
 
 ```bash
-cwin migrate-autonomous --force
+cwin migrate-autonomous
 ```
 
-Opens four dedicated Cursor windows, binds each loop, records `SLOT` metadata, triggers first ticks, verifies `prove-wake`, starts `tick_daemon`.
+Finds your existing Habits Cursor window, focuses each loop's Agent tab (by `loop_id` / binding), pastes bind **only when unbound**, records `SLOT` metadata, triggers first ticks, verifies `prove-wake`, starts `tick_daemon`.
+
+Nuclear rebinding (wipes locks first):
+
+```bash
+cwin migrate-autonomous --reset-locks
+```
+
+If Habits window is not open:
+
+```bash
+cwin migrate-autonomous --create-window
+```
 
 ## Commands
 
 ```bash
-cwin status                    # SLOT + OP_WAKE columns
-cwin migrate-autonomous --force
-cwin provision-all --force     # provision only (no prove-wake poll)
-cwin trigger-all --force       # ladder: inject (NOTIFY=yes) → ui_push by SLOT
-cwin bind-hint worker-relay     # slot, conversation_id metadata
+cwin status                    # SLOT + OP_WAKE columns (shared Habits window slot)
+cwin migrate-autonomous        # reuse-first (default)
+cwin migrate-autonomous --reset-locks   # force-reset + rebind
+cwin provision-all             # provision only (no prove-wake poll)
+cwin trigger-all --force       # ladder: inject (NOTIFY=yes) → ui_push by SLOT+tab
+cwin bind-hint worker-relay    # slot, conversation_id metadata
 bash tools/cursor-loop/scripts/tick_daemon.sh .
 ```
 
 ## Steady state
 
-- Each loop has `ui_window_slot` in binding (1-based Cursor window index)
-- `ui_push` targets window slot — no manual tab rename required
+- All four loops share one `ui_window_slot` (Habits window index)
+- Each loop differs by `chat_title` / Agent tab match (`loop_id`)
+- `ui_push` raises Habits window → focuses Agent tab → paste
 - Phase 9 notify arm → `OP_WAKE=ready` / `NOTIFY=yes`
 
 ## Recovery (SPIN / orphan / STALE)
 
 ```bash
-cwin migrate-autonomous --force
+cwin migrate-autonomous
 # or
 cwin trigger-all --force
 ```

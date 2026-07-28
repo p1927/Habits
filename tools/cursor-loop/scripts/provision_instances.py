@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Autonomous window-instance provisioning via macOS UI automation."""
+"""Autonomous window-instance provisioning via macOS UI automation (reuse-first)."""
 from __future__ import annotations
 
 import argparse
@@ -10,32 +10,15 @@ import sys
 import time
 from pathlib import Path
 
+import cursor_ui_discover as ui
 import loop_hook_lib as lh
 
 
 def count_cursor_windows() -> int:
-    if platform.system() != "Darwin":
-        return 0
-    try:
-        r = subprocess.run(
-            [
-                "osascript",
-                "-e",
-                'tell application "System Events" to tell process "Cursor" to return count of windows',
-            ],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if r.returncode != 0:
-            return 0
-        return max(0, int(r.stdout.strip()))
-    except (subprocess.SubprocessError, OSError, ValueError):
-        return 0
+    return len(ui.list_cursor_windows())
 
 
 def is_cursor_accessible() -> bool:
-    """True when System Events can see the Cursor process and its windows."""
     if platform.system() != "Darwin":
         return False
     try:
@@ -55,7 +38,6 @@ def is_cursor_accessible() -> bool:
 
 
 def ensure_cursor_running(root: Path, *, delay_sec: float = 3.0) -> bool:
-    """Launch or activate Cursor so UI automation can run."""
     if platform.system() != "Darwin":
         return False
     if is_cursor_accessible() and count_cursor_windows() > 0:
@@ -70,20 +52,10 @@ def ensure_cursor_running(root: Path, *, delay_sec: float = 3.0) -> bool:
     return is_cursor_accessible()
 
 
-def _escape_applescript(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
-
-
 def open_new_cursor_window(root: Path, *, delay_sec: float = 2.5) -> tuple[bool, int, str | None]:
-    """Create a persistent new Cursor window with the workspace via UI automation.
-
-    `cursor -n` on an already-open workspace flashes and closes (no window-count
-    increase). Cmd+Shift+N + Open Folder keeps the window alive.
-    Returns (ok, ui_window_slot, error).
-    """
+    """Create one new Cursor window with workspace (--create-window fallback only)."""
     if platform.system() != "Darwin":
         return False, 0, "provision requires macOS"
-
     if not ensure_cursor_running(root):
         return False, 0, "cursor not running or not accessible (check Accessibility)"
 
@@ -99,7 +71,7 @@ def open_new_cursor_window(root: Path, *, delay_sec: float = 2.5) -> tuple[bool,
         "  end tell",
         "end tell",
         "delay 1.2",
-        f'set the clipboard to "{_escape_applescript(root_str)}"',
+        f'set the clipboard to "{ui._escape_applescript(root_str)}"',
         'tell application "System Events"',
         '  tell process "Cursor"',
         '    keystroke "k" using command down',
@@ -112,7 +84,7 @@ def open_new_cursor_window(root: Path, *, delay_sec: float = 2.5) -> tuple[bool,
         "  end tell",
         "end tell",
     ]
-    ok, err = run_applescript_lines(actions, dry_run=False)
+    ok, err = run_applescript_lines(actions)
     if not ok:
         return False, 0, err or "new window applescript failed"
 
@@ -125,26 +97,10 @@ def open_new_cursor_window(root: Path, *, delay_sec: float = 2.5) -> tuple[bool,
         time.sleep(0.4)
 
     if after <= before:
-        return (
-            False,
-            0,
-            "cursor window did not appear (Cmd+Shift+N + Open Folder); "
-            "grant Accessibility to Terminal/iTerm",
-        )
-
-    slot = after
+        return False, 0, "cursor window did not appear (Cmd+Shift+N + Open Folder)"
     if delay_sec > 0:
         time.sleep(delay_sec)
-    return True, slot, None
-
-
-def wait_for_window_count(min_count: int, *, timeout_sec: float = 15.0) -> bool:
-    deadline = time.time() + timeout_sec
-    while time.time() < deadline:
-        if count_cursor_windows() >= min_count:
-            return True
-        time.sleep(0.4)
-    return count_cursor_windows() >= min_count
+    return True, after, None
 
 
 def bind_paste_line(root: Path, loop_id: str) -> str:
@@ -156,81 +112,55 @@ def bind_paste_line(root: Path, loop_id: str) -> str:
     return f"@docs/window-instances/{loop_id}/INSTANCE.md keep working"
 
 
-def build_provision_actions(
+def resolve_habits_slot(root: Path, loop_id: str) -> int | None:
+    target = lh.ui_target_for_loop(root, loop_id)
+    persisted = target.get("ui_window_slot")
+    if isinstance(persisted, int) and persisted > 0:
+        return persisted
+    return ui.find_habits_window_slot(root)
+
+
+def resolve_tab_match(root: Path, loop_id: str) -> str:
+    target = lh.ui_target_for_loop(root, loop_id)
+    for candidate in ui.tab_match_candidates(
+        loop_id,
+        chat_title=str(target.get("chat_title") or ""),
+        conversation_id=str(target.get("conversation_id") or ""),
+    ):
+        if candidate:
+            return candidate
+    return loop_id
+
+
+def build_reuse_provision_actions(
     *,
     ui_window_slot: int,
     paste_line: str,
     loop_id: str,
+    tab_match: str,
+    need_new_chat: bool = False,
     rename_tab: bool = True,
 ) -> list[str]:
-    """AppleScript to focus window slot, open agent pane, paste bind line, optional rename."""
-    actions = [
-        'tell application "Cursor" to activate',
-        "delay 0.5",
-        'tell application "System Events"',
-        '  tell process "Cursor"',
-        "    set frontmost to true",
-        f"    set targetWindow to window {ui_window_slot}",
-        '    perform action "AXRaise" of targetWindow',
-        "  end tell",
-        "end tell",
-        "delay 0.4",
-        'tell application "System Events"',
-        '  tell process "Cursor"',
-        '    keystroke "i" using command down',
-        "  end tell",
-        "end tell",
-        "delay 0.6",
-        f'set the clipboard to "{_escape_applescript(paste_line)}"',
-        'tell application "System Events"',
-        '  tell process "Cursor"',
-        '    keystroke "v" using command down',
-        "    delay 0.2",
-        "    keystroke return",
-        "  end tell",
-        "end tell",
-    ]
+    actions = ui.build_raise_window_actions(ui_window_slot)
+    if need_new_chat:
+        actions.extend(ui.build_open_agent_pane_actions())
+        actions.extend(ui.build_new_agent_chat_actions())
+    else:
+        actions.extend(ui.build_focus_agent_tab_actions(ui_window_slot, tab_match))
+        actions.extend(ui.build_open_agent_pane_actions())
+    actions.extend(ui.build_paste_submit_actions(paste_line))
     if rename_tab:
-        actions.extend(
-            [
-                "delay 0.8",
-                'tell application "System Events"',
-                '  tell process "Cursor"',
-                f'    set renameTitle to "{_escape_applescript(loop_id)}"',
-                "    try",
-                '      keystroke "f2"',
-                "      delay 0.15",
-                '      keystroke "a" using command down',
-                "      keystroke renameTitle",
-                "      keystroke return",
-                "    end try",
-                "  end tell",
-                "end tell",
-            ]
-        )
+        actions.extend(ui.build_rename_tab_actions(loop_id))
     return actions
 
 
 def run_applescript_lines(lines: list[str], *, dry_run: bool = False) -> tuple[bool, str]:
     if dry_run:
         return True, "dry_run"
-    script = "\n".join(lines)
-    try:
-        r = subprocess.run(
-            ["osascript", "-e", script],
-            capture_output=True,
-            text=True,
-            timeout=45,
-        )
-    except (subprocess.SubprocessError, OSError) as exc:
-        return False, str(exc)
-    if r.returncode != 0:
-        return False, (r.stderr or r.stdout or "osascript error").strip()
-    return True, ""
+    return ui.run_applescript("\n".join(lines), timeout=45)
 
 
 def wait_for_binding(root: Path, loop_id: str, *, timeout_sec: float = 90.0) -> str | None:
-    """Poll until loop lock exists; return conversation_id."""
     deadline = time.time() + timeout_sec
     while time.time() < deadline:
         lock = lh.read_loop_lock(root, loop_id)
@@ -259,35 +189,43 @@ def provision_loop(
     root: Path,
     loop_id: str,
     *,
-    force: bool = False,
+    reset_locks: bool = False,
+    reuse_existing: bool = True,
+    create_window: bool = False,
     dry_run: bool = False,
     bind_timeout_sec: float = 90.0,
     rename_tab: bool = True,
 ) -> dict:
-    """Open dedicated Cursor window, paste bind line, poll lock, record ui_window_slot."""
+    """Reuse Habits window + Agent tab; paste bind when unbound."""
     root = root.resolve()
-    if force and not dry_run:
+    if reset_locks and not dry_run:
         scoped_force_reset(root, loop_id)
 
     paste_line = bind_paste_line(root, loop_id)
+    tab_match = resolve_tab_match(root, loop_id)
+    already_bound = lh.has_loop_binding(root, loop_id)
 
     if dry_run:
-        before = count_cursor_windows()
-        expected_slot = before + 1 if before > 0 else 1
-        actions = build_provision_actions(
-            ui_window_slot=expected_slot,
+        habits_slot = resolve_habits_slot(root, loop_id) or 1
+        need_new = not ui.tab_exists(habits_slot, tab_match) if habits_slot else True
+        actions = build_reuse_provision_actions(
+            ui_window_slot=habits_slot,
             paste_line=paste_line,
             loop_id=loop_id,
+            tab_match=tab_match,
+            need_new_chat=need_new and not already_bound,
             rename_tab=rename_tab,
         )
         return {
             "loop_id": loop_id,
             "ok": True,
             "dry_run": True,
-            "ui_window_slot": expected_slot,
+            "ui_window_slot": habits_slot,
             "paste": paste_line,
+            "tab_match": tab_match,
             "actions": actions,
-            "open_strategy": "cmd_shift_n_open_folder",
+            "open_strategy": "reuse_tab",
+            "skipped": already_bound and reuse_existing and not reset_locks,
         }
 
     if platform.system() != "Darwin":
@@ -298,29 +236,74 @@ def provision_loop(
             "method": "provision",
         }
 
-    opened, expected_slot, open_err = open_new_cursor_window(root)
-    if not opened:
+    if not ensure_cursor_running(root):
         return {
             "loop_id": loop_id,
             "ok": False,
-            "error": open_err or "open_new_cursor_window failed",
+            "error": "cursor not running or not accessible",
             "method": "provision",
         }
 
-    actions = build_provision_actions(
-        ui_window_slot=expected_slot,
+    if already_bound and reuse_existing and not reset_locks:
+        habits_slot = resolve_habits_slot(root, loop_id)
+        if habits_slot:
+            lock = lh.read_loop_lock(root, loop_id) or {}
+            lh.write_provision_metadata(
+                root,
+                loop_id,
+                ui_window_slot=habits_slot,
+                conversation_id=str(lock.get("conversation_id") or "") or None,
+                provision_strategy="reuse_tab",
+            )
+        return {
+            "loop_id": loop_id,
+            "ok": True,
+            "method": "provision",
+            "skipped": True,
+            "provision_strategy": "reuse_tab",
+            "ui_window_slot": habits_slot,
+            "tab_match": tab_match,
+        }
+
+    habits_slot = resolve_habits_slot(root, loop_id)
+    provision_strategy = "reuse_tab"
+
+    if habits_slot is None:
+        if not create_window:
+            return {
+                "loop_id": loop_id,
+                "ok": False,
+                "error": "Habits window not found — open Habits in Cursor or use --create-window",
+                "method": "provision",
+            }
+        opened, habits_slot, open_err = open_new_cursor_window(root)
+        if not opened or habits_slot is None:
+            return {
+                "loop_id": loop_id,
+                "ok": False,
+                "error": open_err or "failed to create Habits window",
+                "method": "provision",
+            }
+        provision_strategy = "created_window"
+
+    need_new_chat = not ui.tab_exists(habits_slot, tab_match)
+    actions = build_reuse_provision_actions(
+        ui_window_slot=habits_slot,
         paste_line=paste_line,
         loop_id=loop_id,
+        tab_match=tab_match,
+        need_new_chat=need_new_chat,
         rename_tab=rename_tab,
     )
-    ok, err = run_applescript_lines(actions, dry_run=False)
+    ok, err = run_applescript_lines(actions)
     if not ok:
         return {
             "loop_id": loop_id,
             "ok": False,
             "error": err or "provision applescript failed",
             "method": "provision",
-            "ui_window_slot": expected_slot,
+            "ui_window_slot": habits_slot,
+            "provision_strategy": provision_strategy,
         }
 
     conversation_id = wait_for_binding(root, loop_id, timeout_sec=bind_timeout_sec)
@@ -330,24 +313,29 @@ def provision_loop(
             "ok": False,
             "error": "bind timeout — lock not created",
             "method": "provision",
-            "ui_window_slot": expected_slot,
+            "ui_window_slot": habits_slot,
             "paste": paste_line,
+            "provision_strategy": provision_strategy,
         }
 
     lh.write_provision_metadata(
         root,
         loop_id,
-        ui_window_slot=expected_slot,
+        ui_window_slot=habits_slot,
         conversation_id=conversation_id,
+        provision_strategy=provision_strategy,
     )
 
     return {
         "loop_id": loop_id,
         "ok": True,
         "method": "provision",
-        "ui_window_slot": expected_slot,
+        "ui_window_slot": habits_slot,
         "conversation_id": conversation_id,
         "paste": paste_line,
+        "tab_match": tab_match,
+        "provision_strategy": provision_strategy,
+        "need_new_chat": need_new_chat,
     }
 
 
@@ -355,9 +343,11 @@ def provision_all(
     root: Path,
     *,
     loop_id: str | None = None,
-    force: bool = False,
+    reset_locks: bool = False,
+    reuse_existing: bool = True,
+    create_window: bool = False,
     dry_run: bool = False,
-    stagger_sec: float = 2.5,
+    stagger_sec: float = 1.5,
 ) -> dict:
     manifest = lh.load_manifest(root)
     instances = lh.load_instances_manifest(root, manifest).get("instances") or []
@@ -369,9 +359,16 @@ def provision_all(
     results: list[dict] = []
     for entry in instances:
         lid = entry["loop_id"]
-        if force and not dry_run:
+        if reset_locks and not dry_run:
             scoped_force_reset(root, lid)
-        result = provision_loop(root, lid, force=False, dry_run=dry_run)
+        result = provision_loop(
+            root,
+            lid,
+            reset_locks=False,
+            reuse_existing=reuse_existing,
+            create_window=create_window,
+            dry_run=dry_run,
+        )
         results.append(result)
         if not dry_run and stagger_sec > 0:
             time.sleep(stagger_sec)
@@ -389,21 +386,46 @@ def main() -> int:
     parser.add_argument("project", nargs="?", default=".")
     parser.add_argument("--loop-id", default="")
     parser.add_argument("--all", action="store_true")
-    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--reset-locks", action="store_true", help="Force-reset locks before provision")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Alias for --reset-locks (legacy)",
+    )
+    parser.add_argument(
+        "--no-reuse",
+        action="store_true",
+        help="Disable skip-when-bound reuse path",
+    )
+    parser.add_argument(
+        "--create-window",
+        action="store_true",
+        help="Create Habits window if missing (single window, not four)",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
     root = Path(args.project).resolve()
     loop_id = args.loop_id or None
+    reset_locks = args.reset_locks or args.force
+    reuse_existing = not args.no_reuse
+
     if not loop_id and not args.all:
         parser.error("Specify --loop-id or --all")
 
+    kwargs = {
+        "reset_locks": reset_locks,
+        "reuse_existing": reuse_existing,
+        "create_window": args.create_window,
+        "dry_run": args.dry_run,
+    }
+
     if loop_id and not args.all:
-        report = provision_loop(root, loop_id, force=args.force, dry_run=args.dry_run)
+        report = provision_loop(root, loop_id, **kwargs)
         payload = {"project": str(root), "results": [report], "ok_count": 1 if report.get("ok") else 0}
     else:
-        payload = provision_all(root, force=args.force, dry_run=args.dry_run)
+        payload = provision_all(root, loop_id=loop_id, **kwargs)
 
     print(json.dumps(payload, indent=2 if args.json else None))
     return 0 if payload["ok_count"] else 1

@@ -133,13 +133,13 @@ def cmd_status(project: Path, as_json: bool) -> int:
         )
     if any(r["stale"] for r in rows):
         print(
-            "\nSTALE = last_wake much older than interval — run: cwin migrate-autonomous --force"
+            "\nSTALE = last_wake much older than interval — run: cwin migrate-autonomous"
         )
     print(
-        "\nAutonomous ops: cwin migrate-autonomous  |  cwin trigger-all  (inject → ui_push by SLOT)"
+        "\nAutonomous ops: cwin migrate-autonomous  |  cwin trigger-all  (inject → ui_push by SLOT+tab)"
     )
     if any(r.get("operator_wake") == "needs_bind" for r in rows):
-        print("Unbound: cwin migrate-autonomous --force")
+        print("Unbound: cwin migrate-autonomous  (reuse Habits window + Agent tabs)")
     if any(r["wake"] == "DOWN" for r in rows):
         print("\nTip: cwin trigger-all --force")
     return 0
@@ -314,21 +314,33 @@ def cmd_bind_hint(project: Path, loop_id: str) -> int:
     return 0
 
 
-def cmd_provision_all(project: Path, force: bool, dry_run: bool) -> int:
+def cmd_provision_all(
+    project: Path,
+    reset_locks: bool,
+    create_window: bool,
+    dry_run: bool,
+) -> int:
     cmd = [
         "python3",
         str(scripts_dir(project) / "provision_instances.py"),
         str(project),
         "--all",
     ]
-    if force:
-        cmd.append("--force")
+    if reset_locks:
+        cmd.append("--reset-locks")
+    if create_window:
+        cmd.append("--create-window")
     if dry_run:
         cmd.append("--dry-run")
     return subprocess.call(cmd, cwd=project, env={**os.environ, "PYTHONPATH": str(scripts_dir(project))})
 
 
-def cmd_migrate_autonomous(project: Path, force: bool, skip_daemon: bool) -> int:
+def cmd_migrate_autonomous(
+    project: Path,
+    reset_locks: bool,
+    create_window: bool,
+    skip_daemon: bool,
+) -> int:
     """One-shot migration: refresh → provision all → trigger → prove-wake → daemon."""
     scripts = scripts_dir(project)
     env = {**os.environ, "PYTHONPATH": str(scripts)}
@@ -338,10 +350,12 @@ def cmd_migrate_autonomous(project: Path, force: bool, skip_daemon: bool) -> int
     if rc:
         return rc
 
-    print("==> provision all instances")
+    print("==> provision all instances (reuse-first)")
     prov_cmd = ["python3", str(scripts / "provision_instances.py"), str(project), "--all"]
-    if force:
-        prov_cmd.append("--force")
+    if reset_locks:
+        prov_cmd.append("--reset-locks")
+    if create_window:
+        prov_cmd.append("--create-window")
     rc = subprocess.call(prov_cmd, cwd=project, env=env)
     if rc:
         print("provision failed", file=sys.stderr)
@@ -451,7 +465,13 @@ def main() -> int:
     p.add_argument("--preset", required=True)
     p.add_argument("--mode", choices=("symlink", "copy"), default="symlink")
     p.add_argument("--refresh", action="store_true")
-    p = sub.add_parser("stop")
+    p = sub.add_parser("pause", help="Pause loop(s): keep STATE/bindings, disarm wake")
+    p.add_argument("--loop-id", default="")
+    p.add_argument("--all", action="store_true")
+    p = sub.add_parser("resume", help="Resume paused loop(s) and re-arm wake")
+    p.add_argument("--loop-id", default="")
+    p.add_argument("--all", action="store_true")
+    p = sub.add_parser("stop", help="Stop loop(s): clear infra, release locks, keep STATE")
     p.add_argument("--loop-id", default="")
     p.add_argument("--all", action="store_true")
     p = sub.add_parser("install")
@@ -481,11 +501,23 @@ def main() -> int:
     )
     p = sub.add_parser("bind-hint", help="Show provision metadata (slot, conversation_id)")
     p.add_argument("loop_id")
-    p = sub.add_parser("provision-all", help="Autonomous provision: open window + bind each loop")
-    p.add_argument("--force", action="store_true")
+    p = sub.add_parser("provision-all", help="Autonomous provision: reuse Habits window + Agent tabs")
+    p.add_argument("--reset-locks", action="store_true", help="Force-reset locks before provision")
+    p.add_argument("--force", action="store_true", help="Alias for --reset-locks (legacy)")
+    p.add_argument(
+        "--create-window",
+        action="store_true",
+        help="Create Habits window if missing (single window, not four)",
+    )
     p.add_argument("--dry-run", action="store_true")
     p = sub.add_parser("migrate-autonomous", help="One-shot: refresh → provision → trigger → prove-wake → daemon")
-    p.add_argument("--force", action="store_true", help="Force-reset locks before re-provision")
+    p.add_argument("--reset-locks", action="store_true", help="Force-reset locks before re-provision")
+    p.add_argument("--force", action="store_true", help="Alias for --reset-locks (legacy)")
+    p.add_argument(
+        "--create-window",
+        action="store_true",
+        help="Create Habits window if missing (single window, not four)",
+    )
     p.add_argument("--skip-daemon", action="store_true")
     p = sub.add_parser("bootstrap-wake", help="Bootstrap unbound instances (auto-provision)")
     p.add_argument("--loop-id", default="")
@@ -509,6 +541,12 @@ def main() -> int:
         "template-check": lambda: cmd_template_check(project),
         "worktree-status": lambda: cmd_worktree(project, "status", args.loop_id, ""),
         "worktree-prune": lambda: cmd_worktree(project, "prune", "", ""),
+        "pause": lambda: cmd_pause(
+            project, None if args.all else (args.loop_id or None), args.all
+        ),
+        "resume": lambda: cmd_resume(
+            project, None if args.all else (args.loop_id or None), args.all
+        ),
         "stop": lambda: cmd_stop(
             project, None if args.all else (args.loop_id or None), args.all
         ),
@@ -528,12 +566,14 @@ def main() -> int:
         "bind-hint": lambda: cmd_bind_hint(project, args.loop_id),
         "provision-all": lambda: cmd_provision_all(
             project,
-            getattr(args, "force", False),
+            getattr(args, "reset_locks", False) or getattr(args, "force", False),
+            getattr(args, "create_window", False),
             getattr(args, "dry_run", False),
         ),
         "migrate-autonomous": lambda: cmd_migrate_autonomous(
             project,
-            getattr(args, "force", False),
+            getattr(args, "reset_locks", False) or getattr(args, "force", False),
+            getattr(args, "create_window", False),
             getattr(args, "skip_daemon", False),
         ),
         "bootstrap-wake": lambda: cmd_bootstrap_wake(

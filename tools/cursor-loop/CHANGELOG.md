@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.3
+
+- **Reuse-first provision** — default path reuses one Habits Cursor window + four Agent tabs; no new windows unless `--create-window`
+- **`cursor_ui_discover.py`** — window/tab discovery via Accessibility; `find_habits_window_slot`, `focus_agent_tab`, in-window new Agent chat
+- **`provision_instances.py`** — skip when bound; focus tab by `loop_id` / `conversation_id`; `open_strategy: reuse_tab`; `provision_strategy` on binding
+- **Tab-aware ui_push** — `push_composer_wake.py` raises window slot then focuses Agent tab before paste
+- **CLI flags** — `cwin migrate-autonomous` default reuse; `--reset-locks` (replaces `--force` wipe); `--create-window` for missing Habits window
+- **Bootstrap paths** — `wake_ladder` + `tick_daemon` use reuse-first provision (no lock wipe)
+
 ## 0.9.2
 
 - **Fix provision window flash-close** — `cursor -n` on an already-open workspace opens then immediately closes; provision now uses **Cmd+Shift+N + Open Folder** UI automation so windows persist and window-count detection works

@@ -22,7 +22,7 @@
 | current_item_id | `po-tick-012` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_skip_reason | `No diff in window scope (docs/window-instances/po-relay/ docs/window-instances/instances.manifest.json docs/maintenance/ docs/agents/ docs/RELAY.md) this tick` |
 | review_round | `16` |
 | last_reviewed_round | `16` |
 | review_diff_range | `none` |
