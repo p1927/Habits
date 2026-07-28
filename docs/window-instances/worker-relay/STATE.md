@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:20:00Z |
-| where_we_are | relay-205 shipped |
-| confirmed_next | relay-206 |
-| brainstorm_notes | Attach sheet refocuses composer; min-height stability next |
+| reviewed_at | 2026-07-28T12:25:00Z |
+| where_we_are | relay-206 shipped |
+| confirmed_next | relay-207 |
+| brainstorm_notes | Greeting layout reserved on attach; queue banner focus next |
 
 ---
 
@@ -19,33 +19,28 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:20:00Z` |
-| confirmed_next | `relay-206` |
-| next_action | `relay-206 Agent empty chat min-height stable when greeting toggles` |
-| phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `No uncommitted diff at Phase 5 — committed in worktree before prepare_review_tick` |
+| last_wake | `2026-07-28T12:25:00Z` |
+| next_action | `await PO backlog` |
+| phase | `8-close` |
+| review_status | `skipped` |
 | review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| review_round | `36` |
-| last_reviewed_round | `35` |
-| worktree_status | `active` |
-| current_item_id | `relay-206` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-206` |
-| worktree_item_id | `relay-206` |
+| code_changed | `no` |
+| review_round | `37` |
+| last_reviewed_round | `37` |
+| worktree_status | `none` |
 | review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
 | review_fingerprint | `76bc7ac4d2c88063` |
 | ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
+| execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `e2796ab` |
+| commit_hash | `487aed2` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
+| review_skip_reason | `Round 37 review completed; relay-207 shipped (487aed2)` |
 
 ## IN_PROGRESS
 
@@ -106,8 +101,8 @@
 - [x] relay-203 | Agent greeting hide when attach preview open | polish | Hide greeting grid when attachImage set to avoid layout clash above attach preview
 - [x] relay-204 | Agent composer disclaimer hide when attach preview open | polish | showDisclaimer excludes attachImage like greeting hide
 - [x] relay-205 | Agent attach sheet close returns focus to composer | polish | After pick/cancel attach sheet, focus textarea
-- [ ] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
-- [ ] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
+- [x] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
+- [x] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
 
 ## BRAINSTORM (unprioritized)
 
@@ -122,8 +117,18 @@
 
 ## REVIEW_FINDINGS
 
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r37-004 | low | Focused queue li lacks aria-label for screen readers | round-37 /code-review | backlog | — | closed |
+| rf-r37-003 | low | No unit tests for foodQueueFocus helpers | round-37 /code-review | backlog | — | closed |
+| rf-r37-002 | low | Queued row focus lacks :focus-visible styling | round-37 /code-review | backlog | — | closed |
+| rf-r37-001 | medium | useFoodQueuePendingFocus re-ran on pending changes while token stayed truthy | round-37 /code-review | fix-now | — | closed |
+| rf-r37-000 | low | Bugbot: no critical logic/security defects in relay-207 diff; AC wiring complete | round-37 bugbot | closed | relay-207 | closed |
 | rf-r0-000 | low | No issues in relay-171–173 diff | round-0 /code-review | closed | — | closed |
 | rf-r1-000 | low | No issues in relay-174 diff | round-1 /code-review | closed | — | closed |
 | rf-r2-000 | low | No issues in relay-175 diff | round-2 /code-review | closed | — | closed |
@@ -188,13 +193,19 @@
 | rf-r33-000 | low | relay-203 AC satisfied: showGreeting excludes attachImage via prop chain | round-33 /code-review | closed | relay-203 | closed |
 | rf-r33-001 | low | relay-204 AC satisfied: showDisclaimer excludes attachImage like showGreeting | round-33 /code-review | closed | relay-204 | closed |
 | rf-r35-000 | low | relay-205 AC satisfied: attach sheet dismiss/pick refocuses composer; camera path skips focus | round-35 /code-review | closed | relay-205 | closed |
+| rf-r36-000 | low | Bugbot: no critical issues in relay-206 attach-preview layout diff | round-36 bugbot | closed | relay-206 | closed |
+| rf-r36-001 | low | Typing with attachImage unmounted greeting; layout shrank when captioning | round-36 /code-review | fix-now | — | closed |
+| rf-r36-002 | low | No automated tests for attach-preview greeting stability | round-36 /code-review | backlog | — | closed |
+| rf-r36-003 | low | Duplicate .agent-chat min-height in agent-gemini.css and App.css | round-36 /code-review | backlog | — | closed |
 
 ---
-
-## HISTORY (newest first)
+## HISTORY
+ (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | relay-207 | done | build | 487aed2 |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | relay-206 | done | build | 2f7ef97 |
 | 2026-07-28 | relay-205 | done | build | e2796ab |
 | 2026-07-28 | relay-204 | done | build | a55de19 |
 | 2026-07-28 | relay-203 | done | build | 552a0e0 |
@@ -252,3 +263,8 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
+
+
