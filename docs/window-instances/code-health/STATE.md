@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:57:00Z |
-| where_we_are | ch-139 post-ch-138 line scan done; queue ch-140 DayScheduleGrid |
-| confirmed_next | ch-140 — DayScheduleGrid.tsx split (176 lines) |
+| reviewed_at | 2026-07-28T13:30:00Z |
+| where_we_are | ch-142 useSwipeStack split shipped (184→107); queue useLogSection 138 |
+| confirmed_next | ch-144 — useLogSection.ts split (138 lines) |
 
 ---
 
@@ -18,29 +18,29 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-140` |
-| phase | `9-arm` |
-| current_item_id | `ch-140` |
-| last_wake | `2026-07-28T12:57:00Z` |
+| confirmed_next | `ch-144` |
+| phase | `8-close` |
+| current_item_id | `—` |
+| last_wake | `2026-07-28T13:30:00Z` |
 | code_changed | `no` |
-| review_status | `skipped` |
-| review_round | `18` |
-| last_reviewed_round | `18` |
-| worktree_status | `active` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
-| worktree_branch | `loop/code-health/ch-140` |
-| worktree_item_id | `ch-140` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md tools/cursor-loop/scripts/state_api.py tools/cursor-loop/scripts/state_persist.py tools/cursor-loop/scripts/state_snapshot.py` |
-| review_fingerprint | `2b0e84c82d8f83bf` |
+| review_status | `complete` |
+| review_round | `20` |
+| last_reviewed_round | `20` |
+| worktree_status | `none` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md` |
+| review_fingerprint | `2b91e7074ac58d73` |
 | review_diff_range | `uncommitted` |
-| review_skip_reason | `docs-only scan tick ch-139 — no app/runtime diff` |
-| ritual_step | `9-arm` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
+| execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `a19a561` |
+| commit_hash | `0cbf0f8` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -193,7 +193,11 @@
 - [x] ch-137 | `Settings.tsx` (136) split | structure | chrome + cards + footer + effects; 136→55 | done tick #137
 - [x] ch-138 | `MealPlanQueuePanel.tsx` (133) split | structure | hook + types; 133→68; phase9 notify arm | done tick #138
 - [x] ch-139 | line scan — post ch-138 targets | structure | top: DayScheduleGrid 176, useSwipeStack 148, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #139
-- [ ] ch-140 | `DayScheduleGrid.tsx` (176) split | structure | queue grid body + now-line hook + all-day strip |
+- [x] ch-140 | `DayScheduleGrid.tsx` (176) split | structure | hook + all-day strip + grid body; 176→32 | done tick #140
+- [x] ch-141 | line scan — post ch-140 targets | structure | top: useSwipeStack 184, useLogSection 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #140
+- [x] ch-142 | `useSwipeStack.ts` (184) split | structure | gesture lib + exit hook; 184→107; r20 offset-reset fix | done tick #142
+- [x] ch-143 | line scan — post ch-142 targets | structure | top: useLogSection 138, SwipeStack 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #142
+- [ ] ch-144 | `useLogSection.ts` (138) split | structure | extract section data + tab wiring hook |
 
 ---
 
@@ -281,7 +285,7 @@
 | `pwa/src/components/DayTimelineCard.tsx` | 2026-07-28 tick #99 | ch-128: agenda + empty panels; 151→99 |
 | `pwa/src/components/MealPlanQueuePanel.tsx` | 2026-07-28 tick #138 | ch-138: hook + types; 133→68 |
 | `pwa/src/sections/Settings.tsx` | 2026-07-28 tick #137 | ch-137: chrome + cards + footer + effects; 136→55 |
-| `pwa/src/components/*` + hooks + lib | 2026-07-28 tick #139 | ch-139 scan: DayScheduleGrid 176, useSwipeStack 148, AgentChatComposer 136, logTabPanelsPropsBuilder 135, useLogSection 132 |
+| `pwa/src/components/*` + hooks + lib | 2026-07-28 tick #140 | ch-141 scan: useSwipeStack 184, useLogSection 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -312,8 +316,26 @@
 
 ## REVIEW_FINDINGS
 
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r20-007 | low | resetExit unused if timer cleared mid-animation | round-20 /code-review | pushback | — | closed |
+| ch-r20-006 | low | handleStart does not reset offset until first move | round-20 /code-review | pushback | — | closed |
+| ch-r20-005 | low | Double RAF inner frame not cancelled on teardown | round-20 /code-review | pushback | — | closed |
+| ch-r20-004 | medium | down swipe commits with no UI hint — pre-existing | round-20 /code-review | pushback | — | closed |
+| ch-r20-003 | medium | SwipeStack.tsx:96+99 — touch+mouse duplicate handleEnd pre-existing | round-20 /code-review | pushback | — | closed |
+| ch-r20-002 | medium | useSwipeStackExit.ts:30 — isExiting guard stale same turn; fixed committingRef | round-20 /code-review | fix-now | — | closed |
+| ch-r20-001 | high | useSwipeStackExit.ts:58-61 — exit timer omitted resetOffset (split regression vs ada97df) | round-20 /code-review | fix-now | — | closed |
+| ch-r20-000 | low | useSwipeStack.ts:107 — thin drag shell; gesture lib + exit hook | round-20 /code-review | closed | — | closed |
+| ch-r20-b000 | low | Bugbot: split preserves gesture physics, exit RAF, reduced-motion path | round-20 bugbot | closed | — | closed |
 | ch-r2-001 | low | `review_scope.py` — per-window paths include tools/cursor-loop for code-health; bundle dir appended | round-2 /code-review | closed | — | closed |
 | ch-r2-002 | low | `prepare_review_tick.sh` + `detect_code_changed.sh` delegate to review_scope; Phase 5 prints review_paths | round-2 /code-review | closed | — | closed |
 | ch-r2-003 | low | `audit_review.py` stale check fixed: round==last_reviewed with findings no longer false-fails on STATE-only diff | round-2 /code-review | closed | — | closed |
@@ -383,13 +405,27 @@
 | ch-r18-010 | low | test_hook_guard_arm.sh lacks phase9 coverage | round-18 /code-review | backlog | — | open |
 | ch-r18-011 | low | phase9-notify-arm.sh thin exec delegate — correct | round-18 /code-review | closed | — | closed |
 | ch-r18-012 | low | prepare_arm_wake ARM_COMMAND → phase9-notify-arm.sh — aligned | round-18 /code-review | closed | — | closed |
+| ch-r19-b000 | low | Bugbot parity: partition, scroll-to-now, IO visibility, all-day strip, event select preserved | round-19 bugbot | closed | — | closed |
+| ch-r19-000 | low | `DayScheduleGrid.tsx:8-31` — thin shell; hook + subcomponents | round-19 /code-review | closed | — | closed |
+| ch-r19-001 | low | `useDayScheduleGrid.ts:14-80` — scroll/now-line logic extracted | round-19 /code-review | closed | — | closed |
+| ch-r19-002 | low | Jump-to-now ignores prefers-reduced-motion — pre-existing on manual jump | round-19 /code-review | backlog | — | open |
+| ch-r19-003 | low | 13 props drilled to DayScheduleGridBody — Pick/spread optional | round-19 /code-review | backlog | — | open |
+| ch-r19-004 | low | slots array recreated each render — minor perf | round-19 /code-review | backlog | — | open |
+| ch-r19-005 | low | onJumpToNow lambda avoids passing click event as behavior | round-19 /code-review | closed | — | closed |
+| ch-r19-006 | medium | nowTopPct effect re-scrolls on minute boundary — pre-existing | round-19 /code-review | pushback | — | closed |
+| ch-r19-007 | low | now line updates on re-render only — pre-existing | round-19 /code-review | pushback | — | closed |
+| ch-r19-008 | low | overlapping timed events full-width — pre-existing crit-058 | round-19 /code-review | pushback | — | closed |
+| ch-r19-009 | low | useDayScheduleGrid untested — deferred per ch-129 | round-19 /code-review | pushback | — | closed |
 
 ---
-
 ## HISTORY
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-07-28 | ch-142 | useSwipeStack split | build | pwa/src/hooks/useSwipeStack.ts |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-140 | DayScheduleGrid split (hook + all-day + body); 176→32 | build | ada97df |
+| 2026-07-28 | ch-141 | Post-ch-140 line scan; queue ch-142 useSwipeStack | scan | — |
 | 2026-07-28 | ch-139 | Post-ch-138 line scan; queue ch-140 DayScheduleGrid | scan | — |
 | 2026-07-28 | infra | Orphan ARM recovery — refresh + notify re-arm (pid=24146) | verify-wake | — |
 | 2026-07-28 | ch-138 | MealPlanQueuePanel split + phase9 notify arm fix | build | a19a561 |
@@ -590,3 +626,12 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
+
+
+
+
+
+
