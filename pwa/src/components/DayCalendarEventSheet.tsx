@@ -63,6 +63,7 @@ export function DayCalendarEventSheet({ event, onClose }: DayCalendarEventSheetP
           Close
         </button>
       </div>
+      <p className="muted day-event-detail-sheet-hint">Press Escape to close</p>
     </BottomSheet>
   );
 }
