@@ -3,11 +3,37 @@
 **extends:** `engineer`  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
+## Phase 1 — Wake
+
+Read INSTANCE → IDENTITY → RITUAL. If `idle_mode=true` in the wake JSON `state_snapshot`: immediately run:
+
+```bash
+state_api.sh . --loop-id worker-relay set checkpoint idle_mode_triggered=yes idle_rescue_done=no
+```
+
+This arms the anti-idle gate in `validate_ritual_gate.py`. Arm is blocked until Phase 3 self-rescue sets `idle_rescue_done=yes`.
+
 ## Phase 2 — Orient
 
-STATE CHECKPOINT, IN_PROGRESS, BACKLOG; `git status`; `git log -3`; update `LAST_REVIEW`.
+Snapshot own state — **do not open STATE.md directly**:
+
+```bash
+bash tools/cursor-loop/scripts/prepare_orient_tick.sh . \
+  --state-file docs/window-instances/worker-relay/STATE.md \
+  --loop-id worker-relay
+```
+
+`git status`; `git log -3`; update `LAST_REVIEW` via `state_api set last-review`.
 
 ## Phase 3 — Select
+
+**ANTI-IDLE MANDATE** — If `idle_mode_triggered=yes` in CHECKPOINT (set during Phase 1 when wake JSON contained `idle_mode: true`), self-rescue is the FIRST action — before any item selection. Execute self-rescue steps 1–5 below immediately. After creating ≥3 new items:
+
+```bash
+state_api.sh . --loop-id worker-relay set checkpoint idle_rescue_done=yes idle_mode_triggered=no
+```
+
+`validate_ritual_gate.py` blocks arm until `idle_rescue_done=yes`. An idle-checkpoint-sync re-arm without this is FORBIDDEN.
 
 Resume `IN_PROGRESS` if set. Otherwise pick top unchecked `- [ ]` item from BACKLOG.
 
@@ -15,9 +41,30 @@ Resume `IN_PROGRESS` if set. Otherwise pick top unchecked `- [ ]` item from BACK
 
 1. Read `docs/window-instances/po-relay/STATE.md` → scan BRAINSTORM_LOG last 5 sessions + any `UI_PROPOSALS` rows with `status=refined` or `proposed` and no `relay-*` `backlog_ref`
 2. Read `docs/window-instances/NEXT_PHASE.md` for any cross-instance relay signals
-3. Derive next relay-N items (IDs continuing from last relay-* in HISTORY); append as `- [ ] relay-N | <title> | <type> | <AC one-liner>` rows directly into this file's BACKLOG
+3. Derive next relay-N items (IDs continuing from last relay-* in HISTORY); validate then append via `state_api` — **never edit STATE.md directly**:
+
+```bash
+# Validate each row first; items failing validation are held as drafts, not written
+python3 tools/cursor-loop/scripts/validate_handoff_item.py "- [ ] relay-N | <title> | <type> | Given X; When Y; Then Z"
+state_api.sh . --loop-id worker-relay append backlog-row \
+  --section BACKLOG \
+  --id relay-N \
+  --row "- [ ] relay-N | <title> | <type> | <AC one-liner>"
+```
+
 4. If po-relay has nothing actionable: scan `pwa/src/` + `server/` git log and open REVIEW_FINDINGS for accessibility gaps, polish issues, or quality items to convert to relay-* tasks
-5. Also promote any REVIEW_FINDINGS rows with `action=backlog` and `backlog_ref=—` to new backlog items and update their `backlog_ref`
+5. Also promote any REVIEW_FINDINGS rows with `action=backlog` and `backlog_ref=—` to new backlog items via `state_api` — **never edit STATE.md directly**:
+
+```bash
+state_api.sh . --loop-id worker-relay append backlog-row \
+  --section BACKLOG \
+  --id relay-N \
+  --row "- [ ] relay-N | <title> | <type> | <AC one-liner>"
+# Then update backlog_ref on the REVIEW_FINDINGS row:
+state_api.sh . --loop-id worker-relay set review-finding \
+  --id <rf-id> backlog_ref=relay-N status=backlog
+```
+
 6. **If BACKLOG is still empty after steps 1–5 — wake PO immediately:**
 
 ```bash
@@ -27,7 +74,7 @@ state_api.sh . --loop-id worker-relay set checkpoint next_action=needs_po_backlo
 cwin trigger-all --loop-id po-relay --force --reason spin
 ```
 
-Then write one self-derived placeholder item so this wake does not idle, and wait for PO to seed on its next tick.
+Then append one self-derived placeholder item via `state_api` (see step 3 pattern) so this wake does not idle, and wait for PO to seed on its next tick.
 
 **Never end Phase 3 with an empty or sub-3-item BACKLOG.** Every wake must exit this phase with ≥1 selected item to execute.
 

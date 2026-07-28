@@ -119,6 +119,8 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
 
 `validate_critique_tick.py` must exit 0 before arm. Update CHECKPOINT via `state_api` — never edit STATE.md directly:
 
+**Docs-only rule**: If the only changed files are under `docs/window-instances/` (STATE.md, RITUAL.md, IDENTITY.md, INSTANCE.md, STATE.hot.json, or any sibling window's files) — always set `code_changed=no` and `review_status=skipped`. Never bump `review_round` for docs-only changes. Only `pwa/src/` or `server/` modifications qualify as `code_changed=yes`.
+
 ```bash
 # typical docs-only tick:
 state_api.sh . --loop-id ux-critic set checkpoint code_changed=no tick_count=<N+1>

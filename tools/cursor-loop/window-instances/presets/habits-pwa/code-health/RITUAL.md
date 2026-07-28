@@ -3,9 +3,27 @@
 **extends:** `engineer` (refactor variant)  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
+## Phase 1 — Wake
+
+Read INSTANCE → IDENTITY → RITUAL. If `idle_mode=true` in the wake JSON `state_snapshot`: immediately run:
+
+```bash
+state_api.sh . --loop-id code-health set checkpoint idle_mode_triggered=yes idle_rescue_done=no
+```
+
+This arms the anti-idle gate in `validate_ritual_gate.py`. Arm is blocked until Phase 3 self-rescue sets `idle_rescue_done=yes`.
+
 ## Phase 2 — Orient
 
-`git status`; `git log -10 --oneline`; `git diff --stat`; patchwork clusters; update `LAST_REVIEW`.
+Snapshot own state — **do not open STATE.md directly**:
+
+```bash
+bash tools/cursor-loop/scripts/prepare_orient_tick.sh . \
+  --state-file docs/window-instances/code-health/STATE.md \
+  --loop-id code-health
+```
+
+`git status`; `git log -10 --oneline`; `git diff --stat`; patchwork clusters; update `LAST_REVIEW` via `state_api set last-review`.
 
 ```bash
 python3 tools/cursor-loop/scripts/check_module_sizes.py . --threshold 500
@@ -16,6 +34,21 @@ Files reported as oversized → add `ch-oversize-*` items to `REFACTOR_BACKLOG` 
 Patchwork signals → add `ch-patchwork-*` items to `REFACTOR_BACKLOG` if not already present.
 
 ## Phase 3 — Select
+
+**ANTI-IDLE MANDATE** — If `idle_mode_triggered=yes` in CHECKPOINT, self-rescue is the FIRST mandatory action before any item selection. Run module size scan and patchwork detection to generate ≥3 new items:
+
+```bash
+python3 tools/cursor-loop/scripts/check_module_sizes.py . --threshold 500
+python3 tools/cursor-loop/scripts/patchwork_detector.py . --commits 20 --threshold 3
+```
+
+Append new `ch-oversize-*` and `ch-patchwork-*` items via `state_api`. After creating ≥3 new items:
+
+```bash
+state_api.sh . --loop-id code-health set checkpoint idle_rescue_done=yes idle_mode_triggered=no
+```
+
+`validate_ritual_gate.py` blocks arm until `idle_rescue_done=yes`.
 
 Resume `IN_PROGRESS` OR top `REFACTOR_BACKLOG` / `BUG_BACKLOG` OR next `SCAN_COVERAGE` row.
 

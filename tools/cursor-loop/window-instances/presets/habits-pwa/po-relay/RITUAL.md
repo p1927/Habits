@@ -5,7 +5,15 @@
 
 ## Phase 2 — Orient
 
-Read CHECKPOINT, backlogs, `git log -5 --oneline`; update `LAST_REVIEW`.
+Snapshot own state — **do not open STATE.md directly**:
+
+```bash
+bash tools/cursor-loop/scripts/prepare_orient_tick.sh . \
+  --state-file docs/window-instances/po-relay/STATE.md \
+  --loop-id po-relay
+```
+
+`git log -5 --oneline`; update `LAST_REVIEW` via `state_api set last-review`.
 
 **Cross-instance check (mandatory):** Count open items in worker-relay BACKLOG via handoff:
 
@@ -15,9 +23,11 @@ state_api.sh . --loop-id po-relay get handoff --target worker-relay
 
 **Hard gate — if `open_backlog` is empty (0 items):** Worker is starved. This tick's **only obligation before any other lens** is to seed ≥3 `relay-N` rows in Phase 4 PO lens. Do not skip to arm without seeding.
 
-If the returned `open_backlog` has fewer than 3 items (but > 0), this tick **must** generate ≥1 new `relay-N` row in Phase 4 PO lens before arm.
+If the returned `open_backlog` has fewer than 5 items (but > 0), this tick **must** generate ≥3 new `relay-N` rows in Phase 4 PO lens before arm.
 
 Also check `next_action` in the handoff checkpoint: if `next_action=needs_po_backlog_seed`, treat as the 0-item hard gate regardless of counted open items.
+
+**Also check code-health backlog** — run `state_api.sh . --loop-id po-relay get handoff --target code-health`. If `open_backlog` < 5, seed ≥3 `ch-oversize-*` or `ch-patchwork-*` quality items into code-health's `REFACTOR_BACKLOG` in Phase 4. Do not wait for a `needs_po_backlog_seed` signal.
 
 ## Phase 4 — Execute (3-lens brainstorm)
 
@@ -38,7 +48,7 @@ Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
 - RICE top 5 candidates
 - Merge duplicates; drop vague items
 - Rewrite AC as Given/When/Then
-- **Mandatory when worker BACKLOG < 3 open items:** Append new `relay-N` rows via `state_api` (never edit worker STATE.md directly):
+- **Mandatory when worker BACKLOG < 5 open items:** Append new `relay-N` rows via `state_api` (never edit worker STATE.md directly):
 
 ```bash
 state_api.sh . --loop-id worker-relay append backlog-row \
@@ -47,7 +57,7 @@ state_api.sh . --loop-id worker-relay append backlog-row \
   --row "- [ ] relay-N | <title> | <type> | <AC one-liner>"
 ```
 
-At least 1 new row per PO tick when worker open count < 3.
+At least 3 new rows per PO tick when any downstream open count < 5.
 - **Handoff validation (mandatory):** Before appending any `relay-N` row, run `python3 tools/cursor-loop/scripts/validate_handoff_item.py "<row>"` against it. Items failing validation (missing Given/When/Then AC, missing or invalid type) are held in `BRAINSTORM_LOG` as `draft` status — not written to worker BACKLOG.
 
 ### Business owner lens
@@ -62,7 +72,7 @@ At least 1 new row per PO tick when worker open count < 3.
 
 Log all three lenses in `BRAINSTORM_LOG` with timestamp. At least one backlog mutation (not read-only).
 
-**Worker BACKLOG gate:** Confirm the `open_backlog` returned by `state_api get handoff --target worker-relay` has ≥3 items OR this tick appended ≥1 new `relay-N` row via `state_api`. If neither is true, return to Phase 4 PO lens before proceeding.
+**Worker BACKLOG gate:** Confirm the `open_backlog` returned by `state_api get handoff --target worker-relay` has ≥5 items OR this tick appended ≥3 new `relay-N` rows via `state_api`. If neither is true, return to Phase 4 PO lens before proceeding.
 
 ```bash
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \

@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T19:30:00Z |
-| where_we_are | Tick 74 complete — crit-074 HomeMealPhotoLogBridge proposed |
-| confirmed_next | crit-075 journey-capture-thought re-audit (tick 75, journey mode) |
+| reviewed_at | 2026-07-28T19:55:00Z |
+| where_we_are | Tick 77 complete — crit-077 SettingsGrantedScopesPanel proposed |
+| confirmed_next | crit-078 Day element audit (tick 78, element mode) |
 
 ---
 
@@ -18,35 +18,35 @@
 
 | Field | Value |
 |-------|-------|
-| phase | `4-execute` |
+| phase | `9-arm` |
 | ritual_step | `8-close` |
-| review_status | `pending` |
-| review_skip_reason | `docs-only critique tick — round-91 review complete on STATE.md crit-074` |
-| review_round | `92` |
-| last_reviewed_round | `91` |
-| last_wake | `2026-07-28T19:30:00Z` |
+| review_status | `triaged` |
+| review_skip_reason | `docs-only critique tick — crit-077 validate_critique_tick OK no pwa/server diff` |
+| review_round | `94` |
+| last_reviewed_round | `94` |
+| last_wake | `2026-07-28T19:55:00Z` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `crit-075 journey-capture-thought re-audit (tick 75, journey mode)` |
-| tick_count | `74` |
+| confirmed_next | `crit-078 Day element audit (tick 78, element mode)` |
+| tick_count | `77` |
 | tick_mode | `journey` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
+| review_changed_files | `docs/window-instances/ux-critic/RITUAL.md docs/window-instances/ux-critic/STATE.md` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `crit-075 — CardsBodyFirstCapture; rejected FAB long-press menu + voice memo` |
+| brainstorm_outcome | `crit-077 — SettingsGrantedScopesPanel; rejected one-time banner only + block until full grant` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `body-first capture auto-title from first body line + autofocus body` |
-| design_mitigations | `extend MealPhoto with loggedFoodRow; wire onOpenLogType through HomeMealPhotosPanel; fuzzy match food.items fallback` |
-| review_fingerprint | `cdade04091fcc370` |
-| current_item_id | `crit-075` |
+| design_chosen_approach | `persistent scope checklist + Manage on Google link + disconnect retention note` |
+| design_mitigations | `parse scopes from token_db; expose via health/settings API; human labels for calendar spreadsheets scopes` |
+| review_fingerprint | `02ae9284657f064d` |
+| current_item_id | `crit-077` |
 
 ## IN_PROGRESS
 
@@ -56,36 +56,40 @@
 
 ## JOURNEY_BACKLOG
 
+
+
 > Cross-tab user jobs. Journey ticks pick the row with oldest `last_audited`.
 
 | id | flow | persona | hook_step | touchpoints | last_audited | next_crit_id |
 |----|------|---------|-----------|-------------|--------------|--------------|
+| journey-settings-trust | Settings → OAuth connect → disconnect feedback | privacy-conscious | investment | Settings → Settings | 2026-07-28T19:55:00Z | crit-077 |
+| journey-capture-thought | Cards quick capture → label → find later | knowledge worker | investment | Cards → Cards | 2026-07-28T19:35:00Z | crit-075 |
 | journey-first-log | Open app → log first meal → Home rings update | first-week user | action | Home → Log → Home | 2026-07-28T17:52:00Z | crit-065 |
 | journey-daily-checkin | Morning open → rings → Day schedule → Agent nudge | returning user | trigger | Home → Day → Agent | 2026-07-28T18:12:00Z | crit-067 |
 | journey-scan-quick | Log scan → OCR confirm → undo within 5s | busy professional | action | Log → Log | 2026-07-28T18:32:00Z | crit-069 |
 | journey-weekly-review | Home trends → Day week → Cards strategy reflection | power user | investment | Home → Day → Cards | 2026-07-28T18:52:00Z | crit-071 |
 | journey-coach-trust | Agent empty → first reply → voice sheet | skeptical new user | variable_reward | Agent → Agent | 2026-07-28T19:18:00Z | crit-073 |
-| journey-capture-thought | Cards quick capture → label → find later | knowledge worker | investment | Cards → Cards | 2026-07-28T16:56:00Z | crit-057 |
-| journey-settings-trust | Settings → OAuth connect → disconnect feedback | privacy-conscious | investment | Settings → Settings | 2026-07-28T17:05:00Z | crit-059 |
 | journey-day-plan | Day empty → add block → see on Home | planner | action | Day → Home | 2026-07-28T17:32:00Z | crit-061 |
 
 ---
-
 ## AUDIT_ROTATION
+
 
 > Element ticks (even `tick_count`). One tab per even tick.
 
 | order | tab | reference | last_audited | next_crit_id |
 |-------|-----|-----------|--------------|--------------|
-| 1 | Agent | Gemini | 2026-07-28T18:02:00Z | crit-066 |
+| 1 | Agent | Gemini | 2026-07-28T19:45:00Z | crit-076 |
 | 2 | Day | Google Calendar | 2026-07-28T18:22:00Z | crit-068 |
 | 3 | Cards | Google Keep | 2026-07-28T18:42:00Z | crit-070 |
 | 4 | Log | Tinder | 2026-07-28T19:12:00Z | crit-072 |
 | 5 | Home | Apple Health | 2026-07-28T19:24:00Z | crit-074 |
 
 ---
-
 ## CRITIQUE_BACKLOG (local tracker — mirror to ux-relay)
+
+
+
 
 
 
@@ -94,9 +98,6 @@
 
 | id | status | journey_ref | persona | impact | touchpoints | ux_relay_status | notes |
 |----|--------|-------------|---------|--------|-------------|-----------------|-------|
-| crit-055 | handed-off | journey-coach-trust | skeptical new user | 4 | Agent (first send) → Agent (error recovery) | proposed | inline stream error recovery bubble |
-| crit-056 | handed-off | element-only | returning user | 4 | Agent (Activity feed) → Log / Day | proposed | tappable action feed rows + cross-tab CTAs |
-| crit-057 | handed-off | journey-capture-thought | knowledge worker | 4 | Cards (filter tab) → Cards (capture sheet) | proposed | filter-tab-aware capture type prefill |
 | crit-058 | handed-off | element-only | returning user | 4 | Day (schedule grid) → Day (event sheet) | proposed | overlapping event column layout |
 | crit-059 | handed-off | journey-settings-trust | privacy-conscious | 4 | Settings (connect) → Google OAuth → Settings (error) | proposed | OAuth failure redirect + recovery banner |
 | crit-060 | handed-off | element-only | knowledge worker | 4 | Cards (filter tab) → Cards (note grid) | proposed | loading skeleton suppress false empty state |
@@ -104,6 +105,9 @@
 | crit-072 | handed-off | element-only | returning user | 4 | Log (Type tab) → Log (today list) | proposed | daily kcal + protein totals strip above today list |
 | crit-073 | handed-off | journey-coach-trust | skeptical new user | 5 | Agent (send) → Agent (stream wait) → Agent (reply) | proposed | inline tool step list in streaming assistant bubble |
 | crit-074 | handed-off | element-only | returning user | 4 | Home (meal gallery) → Log (today list) | proposed | meal photo lightbox View in Log bridge |
+| crit-075 | handed-off | journey-capture-thought | knowledge worker | 4 | Cards (capture sheet) → Cards (grid search) | proposed | body-first capture auto-title from first body line |
+| crit-076 | handed-off | element-only | returning user | 4 | Agent (chat panel) → Agent (assistant bubble) | proposed | markdown render in assistant bubbles |
+| crit-077 | handed-off | journey-settings-trust | privacy-conscious | 5 | Settings (Google card) → Settings (scope audit) | proposed | persistent granted-scopes panel + Manage on Google link |
 
 **Local status:** `draft` → `handed-off` | **ux-relay status:** `proposed` → `agreed` → `shipped` | `rejected`
 
@@ -112,11 +116,17 @@
 
 
 
+
+
+
+
 > Mandatory brainstorm + research + debate + Evidence block per tick.
 
 | tick_at | crit_id | mode | journey_ref | brainstorm_summary | web_citations | habits_files_read | evidence_block | rubric_avg | chosen_direction |
 |---------|---------|------|-------------|-------------------|---------------|-------------------|----------------|------------|------------------|
-| 2026-07-28T19:30:00Z | crit-075 | journey | journey-capture-thought | A: body-first capture — remove title required on CardsCreateSheet; deriveCardTitle from first body line max 80 chars; autofocus body textarea on open; title field optional with Title optional placeholder; Save enabled when body.trim non-empty; B: FAB long-press type menu like Keep widget (rejected: crit-010 covers capture surface not type variety); C: voice memo capture row (rejected: no audio API scope). Chosen A. Outcome tree: outcome capture fleeting thought before context lost — opportunity reduce title friction at capture step before label and find. competitive-teardown delta vs Keep text notes by default: Habits 2.0/5 capture speed vs Keep 4.3/5 blank text note ready for body input. | chromeunboxed.com/a-new-google-keep-update-makes-quick-text-notes-an-absolute-breeze — text notes by default single tap blank note; support.google.com/keep/answer/2888263 — quick capture search find later | pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx. Quote: CardsCreateSheet L39-41 Title input has required attribute — blocks HTML5 submit with empty title. L43-45 body textarea optional rows=3. Cards.tsx L52-54 handleCreate returns early if !newTitle.trim — body-only thoughts discarded even when body filled. L105 FAB opens sheet with newTitle empty — no autofocus body. server/habits_api/cards/sheet_loaders.py L40 accepts title or Note fallback but client never sends body-only payload. crit-010 inline composer; crit-027 post-save find toast; crit-042 filter sync; crit-057 type prefill — distinct gap is capture-step friction: knowledge worker mid-meeting opens FAB wants dump thought in body first title later — must invent title before Save — breaks Keep body-first quick text pattern. Gap: user on Cards at 390px with body filled title blank — N for save in 1 tap within 2s. Desktop: same required title at wide sheet — Keep optional title missing. Rejected: B long-press menu; C voice memo. | 4.4 | A body-first capture with auto-title from first line |
+| 2026-07-28T19:55:00Z | crit-077 | journey | journey-settings-trust | A: SettingsGrantedScopesPanel — expose google_scopes from token_db via health or settings API; SettingsGoogleCard renders persistent Granted access checklist with human labels for Calendar and Sheets scopes; partial grant shows missing scope row + Re-connect pill; Manage on Google Account external link to myaccount.google.com/permissions; disconnect success banner adds data retention note per Google help; B: one-time post-OAuth banner only per crit-029 (rejected: no durable audit surface); C: block app until all scopes granted (rejected: crit-029 rejected hostile). Chosen A. Outcome tree: outcome verify what Habits can access after connect — opportunity persistent scope audit step in Settings investment phase. competitive-teardown delta vs Google linked apps See details: Habits 2.0/5 boolean Connected pill vs Google 4.5/5 granular scope review anytime. | support.google.com/accounts/answer/13533235 — remove access does not delete app data note; support.google.com/accounts/answer/3466521 — review permissions list before and after connect | pwa/src/components/SettingsGoogleCard.tsx, server/habits_api/db/token_db.py, server/habits_api/routes/api.py | Habits files: pwa/src/components/SettingsGoogleCard.tsx L12-26, server/habits_api/db/token_db.py L53-67, server/habits_api/google/oauth_service.py L61, server/habits_api/routes/api.py L47. Quote: SettingsGoogleCard shows Connected or Not connected pill only — zero scope rows or Manage on Google link. token_db save_google_token stores scopes string on OAuth finish L61 but health endpoint returns google_connected boolean only L47 — scopes never reach PWA. SettingsSectionChrome disconnect banner L24-30 says disconnected with no retention note. crit-011 pre-connect disclosure crit-029 post-OAuth one-time recap crit-043 in-context reconnect crit-059 OAuth error — distinct gap is durable Settings audit: privacy-conscious user returns to Settings weeks later cannot verify Calendar vs Sheets access without re-OAuth. Gap: connected user on Settings at 390px — N for see granted scopes in 1 glance within 2s. Desktop: same boolean pill — Google permissions page parity missing. Rejected: B one-time banner; C block until full grant. | 4.5 | A persistent granted-scopes panel + Manage on Google link |
+| 2026-07-28T19:45:00Z | crit-076 | element | element-only | A: AgentCoachMarkdownRender — new component with react-markdown + remark-gfm + rehype-sanitize; wrap assistant bubble content only; scoped .agent-coach-markdown styles in agent-gemini.css and App.css L4464-4534 bubble action chrome; user bubbles stay plain text; Copy keeps copyMessage(m.content) raw source; streaming tokens append via useAgentChatStream L43-50 with documented list-close flicker; composes with crit-073 tool steps hide on first token; B: bold-only regex pass (rejected: lists and numbered meal plans still broken); C: server returns HTML (rejected: streaming token chunks break HTML parse). Chosen A. competitive-teardown delta vs Gemini formatted replies: Habits 2.1/5 plain-text wall vs Gemini 4.4/5 lists bold code in bubble. | support.google.com/gemini/answer/13275745 — Gemini chats support Markdown file export and formatted responses; androidauthority.com/google-messages-text-formatting-hidden-3573107 — Gemini renders Markdown bold lists code in chat bubbles | pwa/src/components/AgentChatPanel.tsx, pwa/src/styles/agent-gemini.css, pwa/src/hooks/useAgentChatStream.ts, pwa/src/App.css | Habits files: pwa/src/components/AgentChatPanel.tsx L84-86 raw m.content text node; pwa/src/hooks/useAgentChatStream.ts L43-50 token append; pwa/src/styles/agent-gemini.css L653-674 bubble shell only; pwa/src/App.css L4464-4534 chat-bubble-actions. Quote: no react-markdown in pwa/package.json — net-new dep. Copy L31-34 L104 already writes raw content. crit-014 stop crit-024 edit crit-046 scroll crit-066 follow-up crit-073 tool steps — distinct gap is reply readability. Security AC: rehype-sanitize skip raw HTML. Gap: macro breakdown with bullets at 390px — N for formatted list in 1 glance. Desktop: same plain text — Gemini markdown missing. Rejected: B regex; C server HTML. | 4.4 | A safe markdown render in assistant bubbles |
+| 2026-07-28T19:30:00Z | crit-075 | journey | journey-capture-thought | A: body-first capture — remove title required on CardsCreateSheet; deriveCardTitle from first body line max 80 chars; autofocus body textarea on open; title field optional with Title optional placeholder; Save enabled when body.trim non-empty; server CreateCardRequest derive or min_length relax; B: FAB long-press type menu like Keep widget (rejected: crit-010 covers capture surface not type variety); C: voice memo capture row (rejected: no audio API scope). Chosen A. Outcome tree: outcome capture fleeting thought before context lost — opportunity reduce title friction at capture step before label and find. competitive-teardown delta vs Keep text notes by default: Habits 2.0/5 capture speed vs Keep 4.3/5 blank text note ready for body input. | chromeunboxed.com/a-new-google-keep-update-makes-quick-text-notes-an-absolute-breeze — text notes by default single tap blank note; support.google.com/keep/answer/2888263 — quick capture search find later | pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx, server/habits_api/routes/cards.py | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx, server/habits_api/routes/cards.py. Quote: CardsCreateSheet L39-41 Title input has required attribute — blocks HTML5 submit with empty title. L43-45 body textarea optional rows=3. Cards.tsx L52-54 handleCreate returns early if !newTitle.trim — body-only thoughts discarded even when body filled. L105 FAB opens sheet with newTitle empty — no autofocus body. routes/cards.py L18 CreateCardRequest title Field min_length=1 — API rejects empty title even if client fixed; sheet_loaders.py L40 title or Note is read-path display fallback only not create acceptance. crit-010 inline composer; crit-027 post-save find toast; crit-042 filter sync; crit-057 type prefill — distinct gap is capture-step friction: knowledge worker mid-meeting opens FAB wants dump thought in body first title later — must invent title before Save — breaks Keep body-first quick text pattern. Gap: user on Cards at 390px with body filled title blank — N for save in 1 tap within 2s. Desktop: same required title at wide sheet — Keep optional title missing. Rejected: B long-press menu; C voice memo. | 4.4 | A body-first capture with auto-title from first line |
 | 2026-07-28T17:38:00Z | crit-062 | element | element-only | A: LogSubTabs Type tab badge — pass queuedCount/failedCount from Log.tsx; show tab-badge on Type when (queued+failed)>0 and active tab !== type; failedCount priority with tab-badge--failed; tap badge switches to Type + scrollToFoodQueue; aria-label mirrors AppTabBar queue copy; B: inline chip row above sub-tabs (rejected: duplicates FoodQueueBanner); C: disable banner dismiss when queue non-empty (rejected: removes user control). Chosen A. | koder.ai/blog/offline-first-sync-rules-ux tab badge for pending items; coderlegion.com/12022 WhatsApp failed gray icon + retry pattern | pwa/src/components/LogSubTabs.tsx, pwa/src/sections/Log.tsx, pwa/src/components/AppTabBar.tsx | Habits files: pwa/src/components/LogSubTabs.tsx, pwa/src/sections/Log.tsx, pwa/src/components/AppTabBar.tsx. Quote: LogSubTabs L16-34 renders five sub-tabs with icon+label only — zero queuedCount or badge props. Log.tsx L77-84 FoodQueueBanner at section top L99-104 LogSubTabs called without queue counts — banner dismissible while queue persists in LogTypeTodayList pending array. AppTabBar L52-101 shows mealPlanQueueCount badge on main tabs when not active — food offline queue has no sub-tab mirror. useLogSection L125-126 exposes queuedCount/failedCount but only Log.tsx banners consume them. crit-030 history drill-down crit-052 meal chips crit-051 portion — distinct gap is sync visibility while on Scan: returning user logs offline dismisses banner stays on Scan — cannot see pending count on Type tab without manual switch. Gap: user on Log Scan at 390px with 2 queued saves — N for see pending on Type sub-tab in 1 glance. Desktop: same sub-tab row at wide layout — MFP Today pending indicator on tab missing. Rejected: B chip row duplicate; C force banner. | 4.4 | A Type sub-tab queue badge |
 | 2026-07-28T10:05:00Z | crit-001 | journey | journey-first-log | A: Home empty rings Revolut CTA→Log Scan; B: post-log ring celebration toast+aria-live; C: 3-step modal funnel (rejected: heavy). Chosen A+B. | 9to5mac.com/2026/01/11/apple-health-new-features — simplified daily logging + unified nutrition layout iOS 26.4 | pwa/src/components/HomeActivityRingsCard.tsx, pwa/src/hooks/useAppShellNavigation.ts, pwa/src/sections/Log.tsx | Habits files: pwa/src/components/HomeActivityRingsCard.tsx, pwa/src/hooks/useAppShellNavigation.ts. Quote: rings at 0, Share PNG only, no Log CTA. Gap: L43-51 no empty CTA. 390px: primary log action NOT visible on Home in 2s — N (2+ taps via tab bar). Desktop: same bottom tab bar, full-width rings card, no desktop first-log affordance. Rejected: C modal funnel; B-only toast without discovery. | 4.4 | A+B empty panel + ring fill feedback |
 | 2026-07-28T10:12:00Z | crit-002 | element | element-only | A: chip strip in composer-dock during loading/tool calls (Gemini); B: expand streaming bubble inline chips only; C: pin AgentActionFeed above composer (rejected: history not live status). Chosen A. | 9to5google.com/2025/09/15/gemini-tools-redesign — Tools prompt bar + live activity above composer during generation | pwa/src/components/AgentChatComposer.tsx, pwa/src/components/AgentSectionBody.tsx, pwa/src/lib/agentChatStream.ts | Habits files: pwa/src/components/AgentChatComposer.tsx, pwa/src/lib/agentChatStream.ts. Quote: composer-dock has attach preview + bar only — no chip row when loading. agentChatStream L75-78 emits token/done only — tool_results on done. AgentSectionBody L65-75 mounts AgentActionFeed below scroll fold after messages exist. Gap: no live tool-status above composer during stream. 390px: composer visible Y; tool activity requires scroll up — N for status in 2s. Desktop: dock full-width sticky bottom; same gap — chips absent at 768px+. Rejected: B bubble-only (hidden in scroll); C pinned feed (post-hoc not live). | 4.2 | A composer-dock chip strip during stream |
@@ -286,8 +296,59 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| uc-r94-002 | low | docs/window-instances/ux-critic/RITUAL.md L122 docs-only rule noted — gate requires review when git diff present | round-94 /code-review | closed | — | closed |
+| uc-r94-001 | low | docs/window-instances/ux-critic/STATE.md L127 distinct from crit-029 one-time banner — persistent Settings audit surface | round-94 /code-review | closed | crit-077 | closed |
+| uc-r94-000 | high | docs/window-instances/ux-critic/STATE.md L127 crit-077 gap confirmed SettingsGoogleCard L12-26 Connected pill only scopes in token_db not exposed to PWA | round-94 /code-review | closed | crit-077 | closed |
+| uc-r94-bugbot | low | docs/window-instances/ux-critic/STATE.md L127 BUGBOT_REQUIRED=no crit-077 gap verified token_db L53-67 stores scopes health L47 boolean only | round-94 bugbot | closed | — | closed |
+| uc-r93-000-skip | low | docs-only tick 77 crit-077 — review skipped per RITUAL.md L122 code_changed=no no Bugbot required | round-93 /code-review | closed | crit-077 | closed |
+| uc-r93-bugbot | low | docs/window-instances/ux-critic/STATE.md L123 BUGBOT_REQUIRED=yes plain m.content L86 no markdown CSS verified | round-93 bugbot | closed | — | closed |
+| uc-r93-012 | low | docs/window-instances/ux-critic/RITUAL.md L122 docs-only rule clarifies code_changed=no for STATE-only ticks | round-93 /code-review | closed | — | closed |
+| uc-r93-000 | high | docs/window-instances/ux-critic/STATE.md L123 gap confirmed AgentChatPanel L86 raw m.content literal markdown syntax | round-93 /code-review | closed | crit-076 | closed |
+| uc-r93-001 | low | docs/window-instances/ux-critic/STATE.md L123 agent-gemini.css L653-674 bubble shell only no list code styles | round-93 /code-review | closed | crit-076 | closed |
+| uc-r93-002 | medium | docs/window-instances/ux-critic/STATE.md L123 amended removed existing ui primitive net-new react-markdown dep | round-93 /code-review | fix-now | crit-076 | closed |
+| uc-r93-003 | medium | streaming layout flicker documented in CRITIQUE_LOG and ux-relay AC partial list mid-stream | round-93 /code-review | backlog | crit-076 | closed |
+| uc-r93-004 | medium | docs/window-instances/ux-critic/STATE.md L123 amended useAgentChatStream.ts L43-50 App.css added to evidence | round-93 /code-review | fix-now | crit-076 | closed |
+| uc-r93-005 | low | Copy already uses copyMessage m.content renderer must wrap display only | round-93 /code-review | closed | crit-076 | closed |
+| uc-r93-006 | medium | scoped agent-coach-markdown in agent-gemini.css and App.css L4464-4534 documented | round-93 /code-review | fix-now | crit-076 | closed |
+| uc-r93-007 | high | rehype-sanitize security AC added to ux-relay crit-076 row | round-93 /code-review | fix-now | crit-076 | closed |
+| uc-r93-008 | medium | crit-073 composition note added tool steps hide on first token | round-93 /code-review | backlog | crit-073 | closed |
+| uc-r93-009 | low | AUDIT_ROTATION Agent row updated last_audited crit-076 | round-93 /code-review | fix-now | — | closed |
+| uc-r93-010 | low | checkpoint code_changed yes docs-only STATE tick review round 93 complete | round-93 /code-review | closed | — | closed |
+| uc-r93-011 | low | no white-space pre-wrap strengthens plain-text gap secondary to markdown | round-93 /code-review | closed | crit-076 | closed |
+| uc-r92-005 | low | CHECKPOINT design_mitigations reset to body-first capture scope crit-075 | round-92 /code-review | fix-now | crit-075 | closed |
+| uc-r92-004 | low | docs/window-instances/ux-critic/STATE.md L119 Save disabled only on offline proposed body-gated Save is target | round-92 /code-review | closed | crit-075 | closed |
+| uc-r92-003 | high | docs/window-instances/ux-critic/STATE.md L119 CreateCardRequest min_length=1 added to evidence ux-relay scope client+server derive | round-92 /code-review | fix-now | crit-075 | closed |
+| uc-r92-002 | medium | docs/window-instances/ux-critic/STATE.md L119 server evidence amended routes/cards.py L18 cited sheet_loaders L40 read-path only | round-92 /code-review | fix-now | crit-075 | closed |
+| uc-r92-001 | low | docs/window-instances/ux-critic/STATE.md L119 double client gate matches live code | round-92 /code-review | closed | crit-075 | closed |
+| uc-r92-000 | low | docs/window-instances/ux-critic/STATE.md L119 crit-075 gap confirmed CardsCreateSheet L41 required Cards.tsx L54 | round-92 /code-review | closed | crit-075 | closed |
+| uc-r92-bugbot | low | docs/window-instances/ux-critic/STATE.md L119 BUGBOT_REQUIRED=yes PWA gap verified title required handleCreate guard no body autofocus | round-92 bugbot | closed | — | closed |
 | uc-r91-005 | low | docs/window-instances/ux-critic/STATE.md L190 CRITIQUE_LOG evidence matches live code ux-relay mirror aligned | round-91 /code-review | closed | crit-074 | closed |
 | uc-r91-004 | medium | docs/window-instances/ux-critic/STATE.md L190 scrollToFoodRow token net-new mirror foodQueueFocus pattern | round-91 /code-review | closed | crit-074 | closed |
 | uc-r91-003 | medium | docs/window-instances/ux-critic/STATE.md L190 HomeDashboardFeedPanels L43 omits onOpenLogType vs MetricsPanels L60 | round-91 /code-review | closed | crit-074 | closed |
@@ -672,7 +733,13 @@
 
 
 
+
+
+
 | completed_at | item_id | phase | outcome | evidence |
+| 2026-07-28T19:55:00Z | crit-077 | 8-close | journey-settings-trust re-audit → SettingsGrantedScopesPanel proposed | validate_critique_tick OK |
+| 2026-07-28T19:50:00Z | crit-076 | 8-close | Agent element audit → AgentCoachMarkdownRender proposed | validate_critique_tick OK |
+| 2026-07-28T19:35:00Z | crit-075 | 8-close | journey-capture-thought re-audit → CardsBodyFirstCapture proposed | validate_critique_tick OK |
 | 2026-07-28T19:30:00Z | crit-074 | 8-close | Home element audit → meal photo log bridge proposed | validate_critique_tick OK |
 | 2026-07-28T19:25:00Z | crit-073 | 8-close | journey-coach-trust re-audit → inline tool steps proposed | validate_critique_tick OK |
 | 2026-07-28T19:20:00Z | crit-072 | 8-close | Log element audit → daily totals strip proposed | validate_critique_tick OK |
@@ -748,6 +815,41 @@
 | 2026-07-28T16:38:00Z | crit-054 | 8-close | Home element audit → dashboard freshness timestamp proposed | validate_critique_tick OK |
 | 2026-07-28T16:44:00Z | crit-055 | 8-close | journey-coach-trust re-audit → stream error recovery proposed | validate_critique_tick OK |
 | 2026-07-28T16:50:00Z | crit-056 | 8-close | Agent element audit → Activity feed drill-down proposed | validate_critique_tick OK |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

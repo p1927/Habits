@@ -12,7 +12,7 @@ All Window Instances run phases **1–9** with the same names. Phases **4–6** 
 
 | Phase | Name | All windows |
 |-------|------|-------------|
-| 1 | **Wake** | Read INSTANCE → IDENTITY → RITUAL; use wake JSON `state_snapshot` (or `state_api get snapshot`); confirm `loop_id` |
+| 1 | **Wake** | **Run `advance_ritual_step.sh --apply` first** (advances `9-arm → 1-wake`, resets flags); then read INSTANCE → IDENTITY → RITUAL; use wake JSON `state_snapshot` (or `state_api get snapshot`); confirm `loop_id` |
 | 2 | **Orient** | `prepare_orient_tick.sh`; update LAST_REVIEW via `state_api set last-review`; do **not** Read STATE.md |
 | 3 | **Select** | Resume `IN_PROGRESS` or pick top backlog item; **create worktree** when item touches code |
 | 4 | **Execute** | Archetype-specific (see table) |
@@ -21,6 +21,48 @@ All Window Instances run phases **1–9** with the same names. Phases **4–6** 
 | 7 | **Receive review** | `/receiving-code-review` Round N (see below) |
 | 8 | **Close** | Merge worktree to `main`, remove worktree, HISTORY row, clear IN_PROGRESS |
 | 9 | **Arm** | `checkpoint-loop.py --product` + `arm-wake.sh` per agent-loop-contract |
+
+## Phase 1 — Wake
+
+**First action on every wake — before reading any file:**
+
+```bash
+bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
+  --state-file <STATE.md path> \
+  --loop-id <loop_id> \
+  --apply
+```
+
+This advances `CHECKPOINT.phase` from `9-arm → 1-wake` and resets per-tick flags. It is the only supported way to begin a new tick. Once `phase=1-wake` is written, the arm gate (`validate_ritual_gate.py`) blocks any re-arm until phases 2–8 complete. **If this step is skipped, the gate sees stale `phase=9-arm` and passes immediately — the agent re-arms without doing any work.**
+
+After advancing:
+
+1. Read `INSTANCE.md` → `IDENTITY.md` → `RITUAL.md`
+2. Read wake JSON `state_snapshot` (or `state_api get snapshot`) — **never read `STATE.md` directly**
+3. Confirm `loop_id` matches INSTANCE
+
+---
+
+## Phase 1 — Wake
+
+**First action on every wake — before reading any file:**
+
+```bash
+bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
+  --state-file <STATE.md path> \
+  --loop-id <loop_id> \
+  --apply
+```
+
+This advances `CHECKPOINT.phase` from `9-arm → 1-wake` and resets per-tick flags. It is the only supported way to begin a new tick. Once `phase=1-wake` is written, the arm gate (`validate_ritual_gate.py`) blocks any re-arm until phases 2–8 complete. **If this step is skipped, the gate sees stale `phase=9-arm` and passes immediately — the agent re-arms without doing any work.**
+
+After advancing:
+
+1. Read `INSTANCE.md` → `IDENTITY.md` → `RITUAL.md`
+2. Read wake JSON `state_snapshot` (or `state_api get snapshot`) — **never read `STATE.md` directly**
+3. Confirm `loop_id` matches INSTANCE
+
+---
 
 ## Phases 4–6 by archetype
 
@@ -95,6 +137,13 @@ bash tools/cursor-loop/scripts/instance_worktree.sh create . \
 `create --state-file` auto-patches CHECKPOINT: `worktree_status=active`, `worktree_path`, `worktree_branch`, `worktree_item_id`, `current_item_id`.
 
 **PO default:** docs-only ticks skip worktree (`worktree_status=none`).
+
+**Anti-idle detection (all archetypes):** If `idle_mode=true` appears in the wake JSON `state_snapshot`:
+
+1. **Phase 1** — immediately run: `state_api.sh . --loop-id <loop_id> set checkpoint idle_mode_triggered=yes idle_rescue_done=no`
+2. **Phase 3** — archetype-specific self-rescue is the FIRST mandatory action before item selection; create ≥3 new backlog items
+3. **Phase 3** — after creating ≥3 items: `state_api.sh . --loop-id <loop_id> set checkpoint idle_rescue_done=yes idle_mode_triggered=no`
+4. `validate_ritual_gate.py` blocks arm when `idle_mode_triggered=yes` AND `idle_rescue_done != yes`
 
 **Phases 4–7:** `cd` to `WORKTREE_PATH` (or set git cwd there). Run builds, commits, and `prepare_review_tick.sh --apply` inside the worktree. Never commit app code on `main` while `worktree_status=active`.
 
@@ -246,7 +295,13 @@ bash tools/cursor-loop/scripts/tick_daemon.sh .   # auto-inject on cooldown
 
 `arm-wake.sh` polls `$TMPDIR/cursor-loop-{loop_id}.inject.json` every 5s and fires the wake sentinel early. Requires `NOTIFY=yes` (notify attached at arm). Orphan rearm (`cwin rearm`) does **not** enable inject.
 
-4. Set `CHECKPOINT.phase=9-arm` **only after** step 7 passes
+4. Advance to `9-arm` — **never set phase directly** — only after step 7 passes:
+
+```bash
+bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
+  --state-file <STATE.md path> --loop-id <loop_id> --apply
+```
+
 5. If verify fails or shell aborted: re-run step 4 once; record in STATE if still DOWN — stop hook will recovery-wake
 
 Full arming rules: [`.cursor/rules/agent-loop-contract.mdc`](../../../.cursor/rules/agent-loop-contract.mdc).

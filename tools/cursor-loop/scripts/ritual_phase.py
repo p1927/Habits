@@ -734,6 +734,18 @@ def required_phase_before_arm(
     if wt_issue is not None:
         return wt_issue
 
+    # Anti-idle gate: if agent detected idle_mode at wake start, rescue must complete before arm.
+    idle_mode_triggered = _yes(checkpoint.get("idle_mode_triggered", "no"))
+    idle_rescue_done = _yes(checkpoint.get("idle_rescue_done", "no"))
+    if idle_mode_triggered and not idle_rescue_done:
+        return GateResult(
+            False,
+            "3-select",
+            "idle_mode_triggered=yes but idle_rescue_done != yes — self-rescue required before arm",
+            "Run Phase 3 self-rescue (seed ≥3 new backlog items), then: "
+            "state_api.sh . --loop-id <loop_id> set checkpoint idle_rescue_done=yes idle_mode_triggered=no",
+        )
+
     eval_mode = mode
     eval_phase = phase
     if mode == "arm" and phase == "9-arm":
