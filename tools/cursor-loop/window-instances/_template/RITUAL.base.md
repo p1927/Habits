@@ -209,17 +209,27 @@ One arm = one sleep cycle. DOWN after sentinel is **not** "job done" unless a **
 ### Phase 9 checklist
 
 1. `checkpoint-loop.py --product --evidence <item-id>` (or `--blocker`)
-2. Prep arm (prints `EXEC_COMMAND`, `SHELL_BLOCK_UNTIL_MS`):
+2. **Commit gate** — run before any `git add / commit` for STATE.md:
+
+```bash
+bash tools/cursor-loop/scripts/check_commit_gate.sh . \
+  --state-file <STATE.md path> --loop-id <loop_id>
+```
+
+- `COMMIT_GATE=commit` → `git add -A && git commit -m "worker-relay: <summary>"` as normal.
+- `COMMIT_GATE=skip` → only bookkeeping fields changed (`last_wake`, `phase`, `ritual_step`, etc.); **do not commit** — those fields will ride in the next real commit. Proceed directly to arm.
+
+3. Prep arm (prints `EXEC_COMMAND`, `SHELL_BLOCK_UNTIL_MS`):
 
 ```bash
 bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
   --state-file <STATE.md> --loop-id <loop_id>
 ```
 
-3. **Preferred:** run `ARM_COMMAND` with **`block_until_ms=0`** and **`notify_on_output`** on `SHELL_NOTIFY_ON_OUTPUT`. End turn while `verify-wake` shows ARMED. Process wake when sentinel fires in a later turn.
-4. **Recovery only:** `prepare_arm_wake.sh --exec --recovery-foreground` with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`** — same turn only (stop hook / SPIN).
-5. **Alternate:** background `ARM_COMMAND` + **`Await`** on shell `task_id` with `pattern=monitor_regex` before ending the turn.
-5. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
+4. **Preferred:** run `ARM_COMMAND` with **`block_until_ms=0`** and **`notify_on_output`** on `SHELL_NOTIFY_ON_OUTPUT`. End turn while `verify-wake` shows ARMED. Process wake when sentinel fires in a later turn.
+5. **Recovery only:** `prepare_arm_wake.sh --exec --recovery-foreground` with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`** — same turn only (stop hook / SPIN).
+6. **Alternate:** background `ARM_COMMAND` + **`Await`** on shell `task_id` with `pattern=monitor_regex` before ending the turn.
+7. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
 
 ```bash
 bash tools/cursor-loop/scripts/verify-wake.sh <loop_id>   # must exit 0
@@ -236,7 +246,7 @@ bash tools/cursor-loop/scripts/tick_daemon.sh .   # auto-inject on cooldown
 
 `arm-wake.sh` polls `$TMPDIR/cursor-loop-{loop_id}.inject.json` every 5s and fires the wake sentinel early. Requires `NOTIFY=yes` (notify attached at arm). Orphan rearm (`cwin rearm`) does **not** enable inject.
 
-4. Set `CHECKPOINT.phase=9-arm` **only after** step 4 passes
-5. If verify fails or shell aborted: re-run step 3 once; record in STATE if still DOWN — stop hook will recovery-wake
+4. Set `CHECKPOINT.phase=9-arm` **only after** step 7 passes
+5. If verify fails or shell aborted: re-run step 4 once; record in STATE if still DOWN — stop hook will recovery-wake
 
 Full arming rules: [`.cursor/rules/agent-loop-contract.mdc`](../../../.cursor/rules/agent-loop-contract.mdc).

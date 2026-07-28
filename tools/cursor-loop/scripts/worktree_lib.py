@@ -189,6 +189,9 @@ def status_worktree(project_root: Path, loop_id: str) -> dict[str, str]:
     }
 
 
+_MAX_MERGE_RETRIES = 3
+
+
 def merge_worktree(
     project_root: Path,
     loop_id: str,
@@ -215,22 +218,50 @@ def merge_worktree(
             cwd=wt_path,
         )
 
-    run_git(["fetch", "origin", base_branch], cwd=project_root, check=False)
-    rebase = run_git(["rebase", base_branch], cwd=wt_path, check=False)
-    if rebase.returncode != 0:
-        raise RuntimeError(
-            f"rebase onto {base_branch} failed — fix conflicts in {wt_path}, "
-            f"run git rebase --continue, then retry merge"
+    # Retry loop: concurrent window instances may advance origin/main between our
+    # fetch and our ff-only merge.  Re-fetch and re-rebase on each collision.
+    last_error = ""
+    for attempt in range(_MAX_MERGE_RETRIES):
+        run_git(["fetch", "origin", base_branch], cwd=project_root, check=False)
+
+        # Always abort any in-progress rebase before starting (safety for retries)
+        run_git(["rebase", "--abort"], cwd=wt_path, check=False)
+
+        # Rebase onto the fetched remote ref so the branch is always current,
+        # regardless of whether the local base_branch pointer has been updated.
+        remote_ref = f"origin/{base_branch}"
+        rebase = run_git(["rebase", remote_ref], cwd=wt_path, check=False)
+        if rebase.returncode != 0:
+            run_git(["rebase", "--abort"], cwd=wt_path, check=False)
+            raise RuntimeError(
+                f"rebase onto {remote_ref} failed — fix conflicts in {wt_path}, "
+                f"run git rebase --continue, then retry merge"
+            )
+
+        # Bring local base_branch up to the fetched tip before the ff-only merge.
+        run_git(["checkout", base_branch], cwd=project_root)
+        run_git(
+            ["merge", "--ff-only", f"origin/{base_branch}"],
+            cwd=project_root,
+            check=False,
         )
 
-    run_git(["checkout", base_branch], cwd=project_root)
-    merge = run_git(["merge", "--ff-only", branch], cwd=project_root, check=False)
-    if merge.returncode != 0:
-        raise RuntimeError(
-            f"ff-only merge of {branch} into {base_branch} failed — rebase may be required"
-        )
+        merge = run_git(["merge", "--ff-only", branch], cwd=project_root, check=False)
+        if merge.returncode == 0:
+            return {"path": str(wt_path), "branch": branch, "merged": "yes"}
 
-    return {"path": str(wt_path), "branch": branch, "merged": "yes"}
+        last_error = (merge.stderr or merge.stdout or "").strip()
+        if attempt < _MAX_MERGE_RETRIES - 1:
+            print(
+                f"WORKTREE_WARN ff-only merge failed (attempt {attempt + 1}/{_MAX_MERGE_RETRIES}), "
+                f"re-fetching and re-rebasing: {last_error}",
+                file=sys.stderr,
+            )
+
+    raise RuntimeError(
+        f"ff-only merge of {branch} into {base_branch} failed after "
+        f"{_MAX_MERGE_RETRIES} attempts — {last_error}"
+    )
 
 
 def remove_worktree(project_root: Path, loop_id: str) -> None:

@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:26:29Z |
-| where_we_are | relay-214 shipped (57b8c2d); relay-215 next |
-| confirmed_next | relay-215 |
-| brainstorm_notes | AgentToolsSheet already auto-sends on row tap |
+| reviewed_at | 2026-07-28T13:37:19Z |
+| where_we_are | relay-215 shipped (612e3cd); relay-216 next |
+| confirmed_next | relay-216 |
+| brainstorm_notes | Tool status chips via SSE tool_start/tool_end |
 
 ---
 
@@ -19,16 +19,16 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:26:22Z` |
+| last_wake | `2026-07-28T13:37:19Z` |
 | next_action | `relay-216 next` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_diff_range | `293f020..612e3cd` |
+| review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `74` |
 | last_reviewed_round | `74` |
 | worktree_status | `none` |
-| review_fingerprint | `relay215tools` |
+| review_fingerprint | `—` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -39,8 +39,8 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-215 shipped 612e3cd; round 74 triaged` |
-| review_changed_files | `pwa/src/components/AgentChatComposer.tsx pwa/src/hooks/useAgentChatStream.ts pwa/src/lib/agentToolStatus.ts server/habits_api/agent/service.py` |
+| review_skip_reason | `Recovery nested wake; relay-216 deferred to next tick` |
+| review_changed_files | `—` |
 
 ## IN_PROGRESS
 
@@ -175,8 +175,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r75-000 | low | Recovery wake idle; relay-216 next tick | round-75 /code-review | closed | — | closed |
 | rf-r74-003 | medium | tool_end not emitted when execute_tool throws | round-74 /code-review | fix-now | — | closed |
 | rf-r74-001 | high | Shared status labels dropped when multiple tools share label | round-74 /code-review | fix-now | — | closed |
 | rf-r74-000 | low | Bugbot+review: relay-215 tool status chips; wr-r74-001/003 fixed in follow-up commit | round-74 bugbot | closed | — | closed |
@@ -371,6 +373,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
