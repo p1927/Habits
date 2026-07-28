@@ -105,6 +105,11 @@
   outline: none;
 }
 
+.agent-greeting--visually-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .agent-greeting-card {
     transition: border-color var(--duration-fast), background var(--duration-fast);
