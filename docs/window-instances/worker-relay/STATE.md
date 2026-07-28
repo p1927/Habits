@@ -21,7 +21,7 @@
 |-------|-------|
 | last_wake | `2026-07-28T12:17:31Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `uncommitted` |
 | code_changed | `no` |
@@ -30,13 +30,13 @@
 | worktree_status | `none` |
 | review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
 | review_fingerprint | `76bc7ac4d2c88063` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `f44c381` |
+| commit_hash | `e3bdd2c` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
