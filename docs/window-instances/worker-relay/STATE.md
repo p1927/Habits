@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:34:04Z |
-| where_we_are | relay-207 shipped (487aed2); idle |
-| confirmed_next |  |
-| brainstorm_notes | Backlog empty; awaiting PO relay-208+ |
+| reviewed_at | 2026-07-28T12:36:47Z |
+| where_we_are | relay-208 shipped (17c55ab); relay-209 next |
+| confirmed_next | relay-209 |
+| brainstorm_notes | relay-208/209/210 derived from rf-r37-002/004/003 deferred backlog findings |
 
 ---
 
@@ -19,27 +19,28 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:34:04Z` |
-| next_action | `await PO backlog proposals` |
+| last_wake | `2026-07-28T12:36:47Z` |
+| next_action | `relay-209` |
 | phase | `9-arm` |
-| review_status | `skipped` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `37` |
-| last_reviewed_round | `49` |
+| review_status | `done` |
+| review_diff_range | `main...HEAD` |
+| code_changed | `yes` |
+| review_round | `50` |
+| last_reviewed_round | `50` |
 | worktree_status | `none` |
-| review_fingerprint | `76bc7ac4d2c88063` |
+| review_fingerprint | `relay208css` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
+| execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `5e12139` |
+| commit_hash | `17c55ab` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle SPIN tick 2026-07-28T12:34:04Z; no diff` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
+| review_changed_files | `pwa/src/App.css` |
 
 ## IN_PROGRESS
 
@@ -102,6 +103,9 @@
 - [x] relay-205 | Agent attach sheet close returns focus to composer | polish | After pick/cancel attach sheet, focus textarea
 - [x] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
 - [x] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
+- [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style
+- [ ] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
+- [ ] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
 
 ## BRAINSTORM (unprioritized)
 
@@ -133,8 +137,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r50-000 | low | relay-208: :focus-visible uses --focus-ring tokens on .food-row--queued; AC satisfied | round-50 /code-review | closed | relay-208 | closed |
 | rf-r49-000 | low | Idle SPIN tick 2026-07-28T12:34:04Z; checkpoint sync only — no product diff | round-49 /code-review | closed | — | closed |
 | rf-r48-000 | low | Recovery wake idle tick 2026-07-28T12:33:58Z; no diff — checkpoint sync only | round-48 /code-review | closed | — | closed |
 | rf-r47-000 | low | Idle SPIN tick 2026-07-28T12:30:21Z; STATE checkpoint only — no product diff | round-47 /code-review | closed | — | closed |
@@ -147,9 +153,9 @@
 | rf-r40-000 | low | Idle SPIN tick 12:11:45Z; STATE checkpoint only — no product diff | round-40 /code-review | closed | — | closed |
 | rf-r39-000 | low | Idle SPIN tick; STATE checkpoint sync only — no product code to review | round-39 /code-review | closed | — | closed |
 | rf-r38-000 | low | Idle spin tick; STATE checkpoint sync only — no product code diff to review | round-38 /code-review | closed | — | closed |
-| rf-r37-004 | low | Focused queue li lacks aria-label for screen readers | round-37 /code-review | backlog | — | closed |
-| rf-r37-003 | low | No unit tests for foodQueueFocus helpers | round-37 /code-review | backlog | — | closed |
-| rf-r37-002 | low | Queued row focus lacks :focus-visible styling | round-37 /code-review | backlog | — | closed |
+| rf-r37-004 | low | Focused queue li lacks aria-label for screen readers | round-37 /code-review | backlog | relay-209 | closed |
+| rf-r37-003 | low | No unit tests for foodQueueFocus helpers | round-37 /code-review | backlog | relay-210 | closed |
+| rf-r37-002 | low | Queued row focus lacks :focus-visible styling | round-37 /code-review | backlog | relay-208 | closed |
 | rf-r37-001 | medium | useFoodQueuePendingFocus re-ran on pending changes while token stayed truthy | round-37 /code-review | fix-now | — | closed |
 | rf-r37-000 | low | Bugbot: no critical logic/security defects in relay-207 diff; AC wiring complete | round-37 bugbot | closed | relay-207 | closed |
 | rf-r0-000 | low | No issues in relay-171–173 diff | round-0 /code-review | closed | — | closed |
@@ -223,9 +229,11 @@
 
 ---
 ## HISTORY
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-07-28 | relay-208 | done | build | 17c55ab |
 | — | relay-207 | done | build | 487aed2 |
 |-----------|------|---------|----------|--------|
 | 2026-07-28 | relay-206 | done | build | 2f7ef97 |
@@ -286,6 +294,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
