@@ -18,6 +18,16 @@ Resume `IN_PROGRESS` if set. Otherwise pick top unchecked `- [ ]` item from BACK
 3. Derive next relay-N items (IDs continuing from last relay-* in HISTORY); append as `- [ ] relay-N | <title> | <type> | <AC one-liner>` rows directly into this file's BACKLOG
 4. If po-relay has nothing actionable: scan `pwa/src/` + `server/` git log and open REVIEW_FINDINGS for accessibility gaps, polish issues, or quality items to convert to relay-* tasks
 5. Also promote any REVIEW_FINDINGS rows with `action=backlog` and `backlog_ref=—` to new backlog items and update their `backlog_ref`
+6. **If BACKLOG is still empty after steps 1–5 — wake PO immediately:**
+
+```bash
+# Signal worker is starved; PO Phase 2 will seed ≥3 items on its next tick
+state_api.sh . --loop-id worker-relay set checkpoint next_action=needs_po_backlog_seed
+# Trigger PO loop if it is NOTIFY-armed
+cwin trigger-all --loop-id po-relay --force --reason spin
+```
+
+Then write one self-derived placeholder item so this wake does not idle, and wait for PO to seed on its next tick.
 
 **Never end Phase 3 with an empty or sub-3-item BACKLOG.** Every wake must exit this phase with ≥1 selected item to execute.
 

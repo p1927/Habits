@@ -300,6 +300,7 @@ def build_handoff_snapshot(
     checkpoint = rp.parse_checkpoint_table(state_text)
     payload["next_item_id"] = rp.parse_top_backlog_item(state_text) or ""
     payload["confirmed_next"] = (checkpoint.get("confirmed_next") or "").strip().strip("`")
+    payload["next_action"] = (checkpoint.get("next_action") or "").strip()
     return payload
 
 

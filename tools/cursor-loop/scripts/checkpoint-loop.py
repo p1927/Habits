@@ -116,8 +116,14 @@ def main() -> int:
     elif args.blocker.strip():
         binding["last_blocker"] = args.blocker.strip()
         binding["last_blocker_at"] = now
-        binding["recovery_turns"] = 0
-        print(f"CHECKPOINT_BLOCKER loop_id={binding.get('loop_id')}")
+        turns = int(binding.get("recovery_turns") or 0) + 1
+        binding["recovery_turns"] = turns
+        print(f"CHECKPOINT_BLOCKER loop_id={binding.get('loop_id')} recovery_turns={turns}")
+        if turns >= RECOVERY_ESCALATE:
+            print(
+                "CHECKPOINT_WARN blocker streak — self-rescue: run Phase 3 per RITUAL.md; do not re-arm without work",
+                file=sys.stderr,
+            )
     elif args.infra_only:
         turns = int(binding.get("recovery_turns") or 0) + 1
         binding["recovery_turns"] = turns

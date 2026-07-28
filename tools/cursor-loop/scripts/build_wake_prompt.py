@@ -245,10 +245,37 @@ def build_prompt(
     next_item_id = state_snapshot.get("next_item_id") or (
         rp.parse_top_backlog_item(state_text) if state_text else ""
     )
+    _idle_action = ""
     if idle_mode:
-        parts.append(
-            "idle_mode=true — use checkpoint-loop --blocker 'awaiting backlog'; no pwa/server edits"
-        )
+        if archetype == "product":
+            _idle_msg = (
+                "idle_mode=true — product archetype does NOT idle: "
+                "Phase 4 3-lens brainstorm MANDATORY this tick; generate new backlog items now. "
+                "Do NOT use checkpoint-loop --blocker."
+            )
+            _idle_action = "Phase 4 3-lens brainstorm — generate new backlog items NOW; no --blocker"
+        elif archetype == "engineer":
+            _idle_msg = (
+                "idle_mode=true — BACKLOG empty: Phase 3 self-rescue MANDATORY: "
+                "read docs/window-instances/po-relay/STATE.md BRAINSTORM_LOG (last 5 sessions) + open UI_PROPOSALS, "
+                "derive next relay-N items, append to BACKLOG, then execute Phase 4 immediately. "
+                "Do NOT use checkpoint-loop --blocker. Ship work this tick."
+            )
+            _idle_action = "Phase 3 self-rescue: read po-relay BRAINSTORM_LOG, derive relay-N items, execute Phase 4 immediately"
+        elif archetype == "designer":
+            _idle_msg = (
+                "idle_mode=true — read docs/window-instances/po-relay/STATE.md UI_PROPOSALS in Phase 2 (mandatory); "
+                "if no agreed items, promote proposed/refined rows or generate ui-* from ux-critic CRITIQUE_BACKLOG. "
+                "Do NOT use checkpoint-loop --blocker."
+            )
+            _idle_action = "Phase 2: read po-relay UI_PROPOSALS; promote or generate ui-* items; execute Phase 4"
+        else:
+            _idle_msg = (
+                "idle_mode=true — BACKLOG empty: run Phase 3 self-rescue per RITUAL.md; "
+                "generate work items before Phase 4. Do NOT use checkpoint-loop --blocker."
+            )
+            _idle_action = "Phase 3 self-rescue: generate work items per RITUAL.md, execute Phase 4"
+        parts.append(_idle_msg)
     elif next_item_id:
         parts.append(f"next_item_id={next_item_id}")
 
@@ -366,11 +393,7 @@ def build_prompt(
         "review_diff_range": review_diff_range,
         "idle_mode": idle_mode,
         "next_item_id": next_item_id,
-        "mandatory_action": (
-            "checkpoint-loop --blocker 'awaiting backlog proposals'"
-            if idle_mode
-            else ""
-        ),
+        "mandatory_action": _idle_action,
         "phase_6": phase_6_block,
         "arm_shell": arm_shell,
         "state_snapshot": state_snapshot,

@@ -68,7 +68,7 @@ python3 <package_root>/scripts/checkpoint-loop.py . \
   --product --evidence <item-id-or-path>
 ```
 
-Or `--blocker "reason"` if truly blocked. Use `--infra-only` only when arming failed after product work.
+Or `--blocker "reason"` only for genuine external blockers (missing API key, waiting for third-party, etc.) — **NOT for an empty BACKLOG**. Empty BACKLOG requires Phase 3 self-rescue (see RITUAL.md). Use `--infra-only` only when arming failed after product work.
 
 If you cannot pass `--conversation-id`, still complete Ritual and record in `state_file` HISTORY.
 
@@ -166,7 +166,7 @@ Rules:
 **Dynamic mode:**
 
 - [ ] Phases advanced sequentially this turn (`1-wake` through `8-close` before arm)
-- [ ] Ritual deliverable done (or `--blocker` checkpoint)
+- [ ] Ritual deliverable done (or `--blocker` checkpoint for genuine external blocker — **not for empty BACKLOG**)
 - [ ] `validate_ritual_gate.py --mode=arm` exit 0 before `arm-wake.sh`
 - [ ] `checkpoint-loop.py --product` exit 0 (when product work shipped)
 - [ ] `verify-wake.sh <loop_id>` exit 0 **OR** `WAKE_ALREADY_ARMED` this turn (DOWN means re-arm, not success)

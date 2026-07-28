@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T09:54:00Z |
-| where_we_are | ch-138 MealPlanQueuePanel split + phase9 notify arm fix shipped |
-| confirmed_next | ch-139 — line scan for next post-ch-138 target |
+| reviewed_at | 2026-07-28T12:57:00Z |
+| where_we_are | ch-139 post-ch-138 line scan done; queue ch-140 DayScheduleGrid |
+| confirmed_next | ch-140 — DayScheduleGrid.tsx split (176 lines) |
 
 ---
 
@@ -18,22 +18,22 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-139` |
+| confirmed_next | `ch-140` |
 | phase | `9-arm` |
-| current_item_id | `—` |
-| last_wake | `2026-07-28T10:03:44Z` |
+| current_item_id | `ch-140` |
+| last_wake | `2026-07-28T12:57:00Z` |
 | code_changed | `no` |
 | review_status | `skipped` |
 | review_round | `18` |
 | last_reviewed_round | `18` |
-| worktree_status | `none` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
-| review_diff_range | `none` |
-| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| worktree_status | `active` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
+| worktree_branch | `loop/code-health/ch-140` |
+| worktree_item_id | `ch-140` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md tools/cursor-loop/scripts/state_api.py tools/cursor-loop/scripts/state_persist.py tools/cursor-loop/scripts/state_snapshot.py` |
+| review_fingerprint | `2b0e84c82d8f83bf` |
+| review_diff_range | `uncommitted` |
+| review_skip_reason | `docs-only scan tick ch-139 — no app/runtime diff` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -192,7 +192,8 @@
 - [x] ch-136 | line scan — post ch-135 targets | structure | top: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 | done tick #136
 - [x] ch-137 | `Settings.tsx` (136) split | structure | chrome + cards + footer + effects; 136→55 | done tick #137
 - [x] ch-138 | `MealPlanQueuePanel.tsx` (133) split | structure | hook + types; 133→68; phase9 notify arm | done tick #138
-- [ ] ch-139 | line scan — post ch-138 targets | structure | queued |
+- [x] ch-139 | line scan — post ch-138 targets | structure | top: DayScheduleGrid 176, useSwipeStack 148, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #139
+- [ ] ch-140 | `DayScheduleGrid.tsx` (176) split | structure | queue grid body + now-line hook + all-day strip |
 
 ---
 
@@ -280,6 +281,7 @@
 | `pwa/src/components/DayTimelineCard.tsx` | 2026-07-28 tick #99 | ch-128: agenda + empty panels; 151→99 |
 | `pwa/src/components/MealPlanQueuePanel.tsx` | 2026-07-28 tick #138 | ch-138: hook + types; 133→68 |
 | `pwa/src/sections/Settings.tsx` | 2026-07-28 tick #137 | ch-137: chrome + cards + footer + effects; 136→55 |
+| `pwa/src/components/*` + hooks + lib | 2026-07-28 tick #139 | ch-139 scan: DayScheduleGrid 176, useSwipeStack 148, AgentChatComposer 136, logTabPanelsPropsBuilder 135, useLogSection 132 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -388,6 +390,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-139 | Post-ch-138 line scan; queue ch-140 DayScheduleGrid | scan | — |
 | 2026-07-28 | infra | Orphan ARM recovery — refresh + notify re-arm (pid=24146) | verify-wake | — |
 | 2026-07-28 | ch-138 | MealPlanQueuePanel split + phase9 notify arm fix | build | a19a561 |
 | 2026-07-28 | ch-137 | Settings split (chrome + cards + footer + effects); 136→55 | build | d3448c4 |

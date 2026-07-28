@@ -13,7 +13,11 @@ Read CHECKPOINT, backlogs, `git log -5 --oneline`; update `LAST_REVIEW`.
 state_api.sh . --loop-id po-relay get handoff --target worker-relay
 ```
 
-If the returned `open_backlog` has fewer than 3 items, this tick **must** generate ≥1 new `relay-N` row in Phase 4 PO lens before arm.
+**Hard gate — if `open_backlog` is empty (0 items):** Worker is starved. This tick's **only obligation before any other lens** is to seed ≥3 `relay-N` rows in Phase 4 PO lens. Do not skip to arm without seeding.
+
+If the returned `open_backlog` has fewer than 3 items (but > 0), this tick **must** generate ≥1 new `relay-N` row in Phase 4 PO lens before arm.
+
+Also check `next_action` in the handoff checkpoint: if `next_action=needs_po_backlog_seed`, treat as the 0-item hard gate regardless of counted open items.
 
 ## Phase 4 — Execute (3-lens brainstorm)
 
