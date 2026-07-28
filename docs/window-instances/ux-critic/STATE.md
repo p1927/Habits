@@ -22,9 +22,9 @@
 | current_item_id | `crit-051` |
 | phase | `9-arm` |
 | ritual_step | `9-arm` |
-| review_status | `done` |
+| review_status | `pending` |
 | review_skip_reason | `docs-only critique tick — round-66 review complete on STATE+RITUAL+IDENTITY` |
-| review_round | `66` |
+| review_round | `67` |
 | last_reviewed_round | `66` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
@@ -35,8 +35,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/ux-critic/IDENTITY.md docs/window-instances/ux-critic/RITUAL.md docs/window-instances/ux-critic/STATE.md` |
-| review_fingerprint | `ae7c3d7125c72956` |
+| review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
+| review_fingerprint | `cdade04091fcc370` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `crit-051 — ScanPortionStepper on overlay; rejected presets-only + force edit sheet` |
 | execute_started | `yes` |
@@ -410,7 +410,7 @@
 | uc-r65-010 | low | crit-051 composes with crit-037 confidence gate — ship order coordinated in depends_on | round-65 /code-review | backlog | crit-037 | closed |
 | uc-r66-bugbot | low | BUGBOT_REQUIRED=no — round-66 fingerprint sync after triage edits docs/window-instances/ux-critic/STATE.md L23-32 | round-66 bugbot | closed | — | closed |
 | uc-r66-000 | low | round-66 triage complete — crit-051 tick 51 validated at docs/window-instances/ux-critic/STATE.md L144+L207; docs/window-instances/ux-critic/RITUAL.md L87-94 state_api mirror | round-66 /code-review | closed | crit-051 | closed |
-| uc-r66-001 | low | round-66 checkpoint hygiene tick_count=51 at docs/window-instances/ux-critic/IDENTITY.md L9 state_api handoff + docs/window-instances/ux-critic/STATE.md L31-32 | round-66 /code-review | closed | — | closed |
+| uc-r66-001 | low | round-66 checkpoint hygiene tick_count=51 at docs/window-instances/ux-critic/IDENTITY.md L9 + docs/window-instances/ux-critic/RITUAL.md L87-94 + docs/window-instances/ux-critic/STATE.md L31-32 | round-66 /code-review | closed | — | closed |
 
 ---
 
