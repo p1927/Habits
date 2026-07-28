@@ -5,7 +5,7 @@ export function SettingsSectionChrome({
   onDismissOauth,
   disconnectSuccess,
   dismissDisconnectSuccess,
-}: Omit<SettingsSectionChromeProps, 'error'>) {
+}: SettingsSectionChromeProps) {
   return (
     <>
       <p className="section-eyebrow">Account</p>
