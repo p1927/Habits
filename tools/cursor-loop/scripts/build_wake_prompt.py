@@ -31,7 +31,8 @@ FALLBACK_BANNERS: dict[str, str] = {
     ),
 }
 
-READ_ORDER = ["INSTANCE.md", "IDENTITY.md", "STATE.md", "RITUAL.md"]
+READ_ORDER = ["INSTANCE.md", "IDENTITY.md", "RITUAL.md"]
+STATE_API_CMD = "bash tools/cursor-loop/scripts/state_api.sh"
 
 
 def load_instances_manifest(root: Path) -> dict:
@@ -167,23 +168,47 @@ def build_prompt(
     parts = [banner]
     if bundle_hint:
         parts.append(f"Read {bundle_hint} in order: {', '.join(READ_ORDER)}")
+        parts.append(
+            f"Use wake JSON state_snapshot for orient; mutate state via {STATE_API_CMD} . "
+            f"--loop-id {loop_id}; do NOT Read STATE.md in Phases 1-3"
+        )
     else:
         parts.append(f"Read {contract_doc}")
-        if state_file:
-            parts.append(f"and {state_file}")
+        parts.append(f"Use {STATE_API_CMD} . --loop-id {loop_id} get snapshot for state")
 
     checkpoint: dict[str, str] = {}
     allowed_phase = "1-wake"
     stored_phase = "1-wake"
     state_text = ""
+    state_snapshot: dict = {}
+    state_fingerprint = ""
+
     if root and state_file:
         state_path = root / state_file
         if state_path.is_file():
-            from state_checkpoint import load_state_text
+            import state_persist as stp
+            import state_snapshot as sts
 
-            state_text = load_state_text(state_path)
-            checkpoint = rp.parse_checkpoint_table(state_text)
-            stored_phase = checkpoint.get("phase", "1-wake")
+            sections = tuple((entry or {}).get("backlog_sections") or ())
+            state_text = state_path.read_text(encoding="utf-8")
+            try:
+                state_snapshot = stp.read_hot_or_build(
+                    state_path,
+                    loop_id=loop_id,
+                    backlog_sections=sections or None,
+                )
+                if sts.is_sidecar_stale(state_path, sts.hot_path_for(state_path)):
+                    state_snapshot["stale"] = True
+            except Exception:
+                state_snapshot = sts.build_local_snapshot(
+                    state_text,
+                    loop_id=loop_id,
+                    state_path=state_path,
+                    backlog_sections=sections or None,
+                )
+            state_fingerprint = state_snapshot.get("fingerprint", "")
+            checkpoint = state_snapshot.get("checkpoint") or rp.parse_checkpoint_table(state_text)
+            stored_phase = checkpoint.get("phase", "1-wake") or "1-wake"
         allowed_phase = rp.allowed_phase_on_wake(stored_phase)
 
     parts.append(
@@ -216,8 +241,10 @@ def build_prompt(
     if cmds:
         parts.append(f"MANDATORY commands this turn (invoke in chat): {', '.join(cmds)}")
 
-    idle_mode = bool(state_text) and not rp.has_open_backlog_item(state_text)
-    next_item_id = rp.parse_top_backlog_item(state_text) if state_text else ""
+    idle_mode = bool(state_snapshot) and state_snapshot.get("idle_mode", False)
+    next_item_id = state_snapshot.get("next_item_id") or (
+        rp.parse_top_backlog_item(state_text) if state_text else ""
+    )
     if idle_mode:
         parts.append(
             "idle_mode=true — use checkpoint-loop --blocker 'awaiting backlog'; no pwa/server edits"
@@ -346,6 +373,9 @@ def build_prompt(
         ),
         "phase_6": phase_6_block,
         "arm_shell": arm_shell,
+        "state_snapshot": state_snapshot,
+        "state_fingerprint": state_fingerprint,
+        "state_api": f"{STATE_API_CMD} . --loop-id {loop_id}",
         "prompt": "; ".join(parts) + ".",
     }
     return json.dumps(payload)

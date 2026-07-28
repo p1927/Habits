@@ -31,13 +31,15 @@
       "interval_sec": 300,
       "backlog_sections": [
         "UI_POLISH_BACKLOG",
-        "UX_GAPS"
+        "UX_GAPS",
+        "CRITIQUE_BACKLOG"
       ],
       "handoffs_out": [
         "po-relay"
       ],
       "handoffs_in": [
-        "po-relay"
+        "po-relay",
+        "ux-critic"
       ]
     },
     {
@@ -79,6 +81,29 @@
         "BUG_BACKLOG"
       ],
       "handoffs_out": [],
+      "handoffs_in": [
+        "po-relay"
+      ]
+    },
+    {
+      "loop_id": "ux-critic",
+      "archetype": "product",
+      "bundle": "docs/window-instances/ux-critic",
+      "contract_doc": "docs/window-instances/ux-critic/INSTANCE.md",
+      "state_file": "docs/window-instances/ux-critic/STATE.md",
+      "sentinel": "AGENT_LOOP_TICK_UX_CRITIC",
+      "wake_sentinel": "AGENT_LOOP_WAKE_UX_CRITIC",
+      "interval_sec": 300,
+      "backlog_sections": [
+        "CRITIQUE_BACKLOG",
+        "CRITIQUE_LOG",
+        "AUDIT_ROTATION",
+        "JOURNEY_BACKLOG",
+        "CRITIQUE_OUTCOMES"
+      ],
+      "handoffs_out": [
+        "ux-relay"
+      ],
       "handoffs_in": [
         "po-relay"
       ]

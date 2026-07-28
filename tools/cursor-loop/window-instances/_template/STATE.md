@@ -1,6 +1,8 @@
 # STATE — {{loop_id}}
 
 > Machine-checked by `validate_instance.py`. Required sections must not be removed.
+> **Mutate via** `bash tools/cursor-loop/scripts/state_api.sh . --loop-id {{loop_id}}` — do not hand-edit tables.
+> **Hot read cache:** `STATE.hot.json` (gitignored, auto-generated).
 
 ## LAST_REVIEW
 

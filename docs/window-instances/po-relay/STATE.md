@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T08:58:00Z |
-| where_we_are | Session #34 recovery — prop-ui-046 refined status; handoffs unchanged; re-arm |
-| confirmed_next | Worker relay-204–207; Code ch-137; maint-004 P1; UX prop-ui-046 triage |
+| reviewed_at | 2026-07-28T09:52:00Z |
+| where_we_are | Session #36 stale-tick recovery — ch-137 shipped (1012e75); ui-060 on main (32ebc63); Worker relay-205 next |
+| confirmed_next | Worker relay-205–207; Code ch-138; maint-004 P1; UX ui-060 verify-close |
 
 ---
 
@@ -18,26 +18,26 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T08:58:00Z` |
-| current_item_id | `po-tick-016` |
+| last_wake | `2026-07-28T09:52:00Z` |
+| current_item_id | `po-tick-018` |
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | `—` |
-| review_round | `21` |
-| last_reviewed_round | `21` |
+| review_round | `24` |
+| last_reviewed_round | `24` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `Worker relay-204–207; Code ch-137; maint-004 P1; UX prop-ui-046 triage` |
-| loops | `ARMED pid=40106` |
+| confirmed_next | `Worker relay-205–207; Code ch-138; maint-004 P1; UX ui-060 verify-close` |
+| loops | `ARMED pid=6961 notify=yes` |
 | ritual_step | `9-arm` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/po-relay/STATE.md` |
-| review_fingerprint | `e2e702f4e8ee2fa3` |
+| review_changed_files | `docs/window-instances/instances.manifest.json docs/window-instances/po-relay/STATE.md` |
+| review_fingerprint | `248d0c71170c2079` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `Session #34 — prop-ui-046 status refined; SCAN_COVERAGE sync; Round 21 triaged` |
+| brainstorm_outcome | `Session #36 — stale tick recovery; ch-137/ch-138 + ui-060 sync; Round 23 review` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
@@ -46,7 +46,7 @@
 | design_deliberation_done | `no` |
 | design_chosen_approach | `—` |
 | design_mitigations | `—` |
-| review_tick_applied_at | `2026-07-28T08:58:00+00:00` |
+| review_tick_applied_at | `2026-07-28T09:52:00+00:00` |
 
 ### Loop status (verify with `loop-status.sh`)
 
@@ -76,7 +76,7 @@
 - [x] maint-001 | Confirm before dismiss food queue | from RELAY BRAINSTORM | `Log.tsx` — done tick #7
 - [x] maint-002 | Accessibility audit ARIA/focus/contrast | ROADMAP | ui-008/009/011 done — Settings aria-live shipped
 - [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run Lighthouse after ch-123 api split |
-- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **P1 Code window:** `.card` L188 + `.card-placeholder`/`.btn-decline` L201/L838 — delete dead rules; UX ux-gap-040 marked shipped prematurely |
+- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **P1 Code window:** `.card` L188 + `.card-placeholder`/`.btn-decline` L201/L838 — ui-060 removed agent-greeting dupes from App.css but legacy `.card*` rules remain |
 
 ---
 
@@ -115,7 +115,7 @@
 | prop-ui-043 | refined | po | Home → Day | Pull-refresh ring + Day empty Revolut panel | ui-056 shipped — Apple Health ring + Revolut empty schedule panel | Shipped ui-056 2026-07-27 |
 | prop-ui-044 | refined | po | Settings | OAuth disconnect success + error aria-live | ui-058 shipped — disconnect success banner + role=alert error path | Shipped ui-058 2026-07-27 |
 | prop-ui-045 | refined | po | Agent | Empty-state starter chip UX | ui-059 shipped — Gemini wrap pills + dedupe grid; relay-200 owns single-surface polish | Shipped ui-059 2026-07-28 — terminal |
-| prop-ui-046 | refined | ux-gap-046 | Agent | Greeting grid Gemini density post-relay-200 | Given empty Agent chat at 390px, When greeting grid visible, Then 2×2 cards use compact Gemini density with visible hover/focus rings and disabled state when offline/scanning; subline matches Gemini Nov2025 | pending UX triage |
+| prop-ui-046 | refined | ux-gap-046 | Agent | Greeting grid Gemini density post-relay-200 | Given empty Agent chat at 390px, When greeting grid visible, Then 2×2 cards use compact Gemini density with visible hover/focus rings and disabled state when offline/scanning; subline matches Gemini Nov2025 | UX ui-060 shipped on main (32ebc63) — await UX verify-close |
 
 **Status values:** `proposed` → UX reviews | `agreed` → copied to UX_STATE `UI_POLISH_BACKLOG` | `refined` → UX sent AC changes, PO updates row | `rejected` → dropped with reason in `ux_response`
 
@@ -126,6 +126,26 @@
 ---
 
 ## BRAINSTORM_LOG (newest first)
+
+### 2026-07-28 — Session #36 stale-tick recovery (PO tick po-tick-018)
+
+**UX lens (ux-heuristics):** **ui-060 shipped on main** (32ebc63/ac224c4) — agent-gemini.css consolidated; App.css greeting dupes removed; disabled/hover/focus at 390px. **prop-ui-046** ux_response → await UX verify-close. **maint-004 partial** — ui-060 did not remove legacy `.card`/`.btn-decline`.
+
+**PO lens (define-prioritization-framework):** Stale tick — sleeper ARMED but chat missed wake. Handoffs synced: **ch-137 done** → **ch-138** (MealPlanQueuePanel split). RICE Worker unchanged: **relay-205** > **relay-206** > **relay-207**.
+
+**Business lens (jobs-to-be-done):** Greeting grid density closes Coach first-impression loop (ui-060). Attach focus return (relay-205) = next multimodal friction cut. Food queue tap (relay-207) = offline investment anxiety.
+
+---
+
+### 2026-07-28 — Session #35 (PO tick po-tick-017)
+
+**UX lens (ux-heuristics):** **relay-204 closed** (a55de19) — disclaimer hides with attach preview (`Agent.tsx:57`). **UX agreed ui-060** for prop-ui-046 / ux-gap-046 — greeting grid Gemini density polish in UX worktree. **maint-004 still open**.
+
+**PO lens (define-prioritization-framework):** Session #34 handoffs updated — relay-204 **shipped**. RICE open Worker: **relay-205** (attach focus return) > **relay-206** (min-height) > **relay-207** (food queue tap). Code **ch-137** queued. prop-ui-046 ux_response synced to ui-060.
+
+**Business lens (jobs-to-be-done):** Attach-flow batch progressing — disclaimer hide closes multimodal layout friction. ui-060 = Coach tab first-impression polish (Hook trigger).
+
+---
 
 ### 2026-07-28 — Session #34 recovery (PO tick po-tick-016)
 
@@ -452,7 +472,7 @@
 | pr-r20-005 | low | docs/window-instances/po-relay/STATE.md:240 — orphan BRAINSTORM blocks lack session headers | round-20 /code-review | closed | — | closed |
 | pr-r20-006 | low | docs/window-instances/po-relay/STATE.md:130 — Session #32 relay-203/ch-137/prop-ui-046 aligned | round-20 /code-review | closed | — | closed |
 | pr-r20-007 | low | docs/window-instances/po-relay/STATE.md:118 — prop-ui-046 AC matches ux-gap-046 | round-20 /code-review | closed | prop-ui-046 | closed |
-| pr-r20-008 | low | pwa/src/sections/Agent.tsx:57 — showDisclaimer omits attachImage; relay-204 AC unmet | round-20 /code-review | backlog | relay-204 | open |
+| pr-r20-008 | low | pwa/src/sections/Agent.tsx:57 — showDisclaimer omits attachImage; relay-204 AC unmet | round-20 /code-review | closed | relay-204 | closed |
 | pr-r20-009 | low | pwa/src/components/FoodQueueBanner.tsx:22 — no tap-to-focus; relay-207 AC unmet | round-20 /code-review | backlog | relay-207 | open |
 | pr-r20-010 | low | pwa/src/App.css:188 — maint-004 dead CSS still present | round-20 /code-review | backlog | maint-004 | open |
 | pr-r20-011 | low | pwa/src/components/AgentChatPanel.tsx:26 — relay-203 showGreeting attach guard shipped | round-20 /code-review | closed | relay-203 | closed |
@@ -466,8 +486,25 @@
 | pr-r21-004 | low | docs/window-instances/po-relay/STATE.md:40 — brainstorm_outcome cited Round 20; review_round=21 | round-21 /code-review | closed | — | closed |
 | pr-r21-005 | low | docs/window-instances/po-relay/STATE.md:12 — relay-204 queued matches Worker BACKLOG | round-21 /code-review | closed | relay-204 | closed |
 | pr-r21-006 | low | docs/window-instances/po-relay/STATE.md:13 — ch-137 handoff matches Code STATE | round-21 /code-review | closed | ch-137 | closed |
-| pr-r21-007 | low | pwa/src/sections/Agent.tsx:57 — relay-204 disclaimer AC still unmet | round-21 /code-review | backlog | relay-204 | open |
+| pr-r21-007 | low | pwa/src/sections/Agent.tsx:57 — relay-204 disclaimer AC still unmet | round-21 /code-review | closed | relay-204 | closed |
 | pr-r21-008 | low | pwa/src/App.css:188 — maint-004 dead CSS still present | round-21 /code-review | backlog | maint-004 | open |
+| pr-r22-000 | low | Bugbot skipped — no PO-scope diff at Phase 5; product review only | round-22 bugbot | closed | — | closed |
+| pr-r22-001 | low | pwa/src/sections/Agent.tsx:57 — relay-204 shipped; showDisclaimer excludes attachImage | round-22 /code-review | closed | relay-204 | closed |
+| pr-r22-002 | low | docs/window-instances/ux-relay/STATE.md:150 — UX agreed ui-060 for prop-ui-046; in progress | round-22 /code-review | closed | ui-060 | closed |
+| pr-r22-003 | low | docs/window-instances/worker-relay/STATE.md:107 — relay-205 next; relay-204 closing pending Worker merge | round-22 /code-review | closed | relay-205 | closed |
+| pr-r22-004 | low | pwa/src/components/FoodQueueBanner.tsx:22 — relay-207 tap-to-focus AC still unmet | round-22 /code-review | backlog | relay-207 | open |
+| pr-r22-005 | low | pwa/src/App.css:188 — maint-004 dead CSS still present | round-22 /code-review | backlog | maint-004 | open |
+| pr-r22-006 | low | docs/window-instances/po-relay/STATE.md:118 — prop-ui-046 ux_response synced to ui-060 | round-22 /code-review | closed | prop-ui-046 | closed |
+| pr-r23-000 | low | Bugbot skipped — PO doc diff only; no executable logic | round-23 bugbot | closed | — | closed |
+| pr-r23-001 | medium | docs/window-instances/po-relay/STATE.md:13 — Code handoff stale ch-137; ch-137 shipped 1012e75 → ch-138 queued | round-23 /code-review | closed | ch-138 | closed |
+| pr-r23-002 | low | pwa/src/styles/agent-gemini.css — ui-060 shipped greeting density; prop-ui-046 AC met on main pending UX close | round-23 /code-review | closed | ui-060 | closed |
+| pr-r23-003 | low | docs/window-instances/worker-relay/STATE.md:108 — relay-205 attach focus return next; not yet shipped | round-23 /code-review | closed | relay-205 | closed |
+| pr-r23-004 | low | pwa/src/components/FoodQueueBanner.tsx:22 — relay-207 tap-to-focus AC still unmet (dismiss-only) | round-23 /code-review | backlog | relay-207 | open |
+| pr-r23-005 | low | pwa/src/App.css:188 — maint-004 dead `.card`/`.btn-decline` still present after ui-060 | round-23 /code-review | backlog | maint-004 | open |
+| pr-r23-006 | low | docs/window-instances/po-relay/STATE.md:31 — stale tick recovery; sleeper ARMED without chat tick | round-23 /code-review | closed | — | closed |
+| pr-r24-000 | low | Bugbot skipped — loops field doc diff only | round-24 bugbot | closed | — | closed |
+| pr-r24-001 | low | docs/window-instances/po-relay/STATE.md:31 — loops pid sync after re-arm follow-up | round-24 /code-review | closed | — | closed |
+| pr-r24-002 | low | docs/window-instances/instances.manifest.json — unchanged in diff scope | round-24 /code-review | closed | — | closed |
 
 ---
 
@@ -475,6 +512,8 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-28 | PO | po-tick-018 | Session #36 stale-tick recovery + ch-138/ui-060 sync + Round 23 review | brainstorm | — |
+| 2026-07-28 | PO | po-tick-017 | Session #35 + relay-204 sync + ui-060 + Round 22 review | brainstorm | — |
 | 2026-07-28 | PO | po-tick-016 | Session #34 recovery + prop-ui-046 status + Round 21 review | brainstorm | — |
 | 2026-07-28 | PO | po-tick-015 | Session #33 recovery + prop-ui-046 refine + Round 20 review | brainstorm | — |
 | 2026-07-28 | PO | po-tick-014 | Session #32 SPIN + prop-ui-046 + ch-137 sync + Round 19 review | brainstorm | — |

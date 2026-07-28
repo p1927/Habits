@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 import state_checkpoint as sc
+import state_persist as sp
 import worktree_lib as wt
 
 
@@ -33,19 +34,14 @@ def patch_state_after_create(
             "current_item_id": item_id,
         }
         new_text = sc.update_checkpoint_fields(text, updates)
-        tmp = state_path.with_suffix(".tmp")
-        try:
-            tmp.write_text(new_text, encoding="utf-8")
-            tmp.replace(state_path)
-        except Exception:
-            tmp.unlink(missing_ok=True)
-            raise
+        sp.write_state(state_path, new_text, loop_id=loop_id)
 
 
 def patch_state_after_remove(project_root: Path, state_file: str) -> None:
     state_path = project_root / state_file
     if not state_path.is_file():
         return
+    loop_id = state_path.parent.name
     coord = state_path.with_suffix(".coord")
     with open(coord, "a") as _cf:
         fcntl.flock(_cf.fileno(), fcntl.LOCK_EX)
@@ -57,13 +53,7 @@ def patch_state_after_remove(project_root: Path, state_file: str) -> None:
             "worktree_item_id": "—",
         }
         new_text = sc.update_checkpoint_fields(text, updates)
-        tmp = state_path.with_suffix(".tmp")
-        try:
-            tmp.write_text(new_text, encoding="utf-8")
-            tmp.replace(state_path)
-        except Exception:
-            tmp.unlink(missing_ok=True)
-            raise
+        sp.write_state(state_path, new_text, loop_id=loop_id)
 
 
 def cmd_create(args: argparse.Namespace) -> int:

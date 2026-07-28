@@ -205,6 +205,22 @@ def control_state(project: Path, loop_id: str) -> str:
     import loop_control
 
     return loop_control.loop_control_state(project, loop_id)
+def cmd_state_snapshot(project: Path, loop_id: str, refresh: bool) -> int:
+    script = scripts_dir(project) / "state_api.sh"
+    if refresh:
+        return subprocess.call(["bash", str(script), str(project), "--loop-id", loop_id, "refresh"])
+    return subprocess.call(
+        ["bash", str(script), str(project), "--loop-id", loop_id, "get", "snapshot"]
+    )
+
+
+def cmd_handoff_snapshot(project: Path, caller: str, target: str) -> int:
+    script = scripts_dir(project) / "state_api.sh"
+    return subprocess.call(
+        ["bash", str(script), str(project), "--loop-id", caller, "get", "handoff", "--target", target]
+    )
+
+
 def cmd_refresh(project: Path, loop_id: str | None) -> int:
     cmd = ["bash", str(scripts_dir(project) / "refresh-loops.sh"), str(project)]
     if loop_id:
@@ -227,6 +243,9 @@ def cmd_sync(project: Path) -> int:
     repair = scripts_dir(project) / "repair_v060_state.py"
     if repair.is_file():
         subprocess.call(["python3", str(repair), str(project)], cwd=project)
+    sidecar = scripts_dir(project) / "migrate_state_sidecar.sh"
+    if sidecar.is_file():
+        subprocess.call(["bash", str(sidecar), str(project)], cwd=project)
     return cmd_refresh(project, None)
 
 
@@ -456,6 +475,12 @@ def main() -> int:
     p.add_argument("--json", action="store_true")
     sub.add_parser("sync", help="Re-link rules/instances from package + kill stale loops")
     sub.add_parser("template-check", help="Fail if live STATE missing template CHECKPOINT fields")
+    p = sub.add_parser("state", help="Print hot state snapshot (STATE.hot.json)")
+    p.add_argument("loop_id")
+    p.add_argument("--refresh", action="store_true", help="Rebuild sidecar from STATE.md")
+    p = sub.add_parser("handoff", help="Print handoff snapshot between window instances")
+    p.add_argument("caller_loop_id")
+    p.add_argument("target_loop_id")
     p = sub.add_parser("worktree-status", help="Show worktree status for one loop")
     p.add_argument("loop_id")
     sub.add_parser("worktree-prune", help="Remove merged loop worktrees")
@@ -539,6 +564,12 @@ def main() -> int:
         "refresh": lambda: cmd_refresh(project, None),
         "sync": lambda: cmd_sync(project),
         "template-check": lambda: cmd_template_check(project),
+        "state": lambda: cmd_state_snapshot(
+            project, args.loop_id, getattr(args, "refresh", False)
+        ),
+        "handoff": lambda: cmd_handoff_snapshot(
+            project, args.caller_loop_id, args.target_loop_id
+        ),
         "worktree-status": lambda: cmd_worktree(project, "status", args.loop_id, ""),
         "worktree-prune": lambda: cmd_worktree(project, "prune", "", ""),
         "pause": lambda: cmd_pause(

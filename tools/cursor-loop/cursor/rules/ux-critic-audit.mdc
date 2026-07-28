@@ -1,0 +1,41 @@
+---
+description: UX critic audit gates — evidence block, app grounding, journey mode
+globs:
+  - docs/window-instances/ux-critic/**
+  - pwa/src/**
+---
+
+# UX Critic Audit Mandate
+
+When executing ux-critic Phase 4 (critique pipeline):
+
+## Mandatory before handoff
+
+1. Read ≥2 files under `pwa/src/` for the target surface or journey touchpoints
+2. Log Evidence block in `CRITIQUE_LOG` (see STATE template)
+3. Name rejected brainstorm alternatives (not just the winner)
+4. Score rubric 1–5 on all five dimensions; avg ≥3.0; impact ≥3 on `crit-*` row
+5. Journey ticks: ≥2 tabs in ordered `touchpoints`; read JTBD + hooked-ux skills
+
+## Phase 5 gate
+
+Run before arm:
+
+```bash
+python3 tools/cursor-loop/scripts/validate_critique_tick.py . \
+  --state-file docs/window-instances/ux-critic/STATE.md
+```
+
+Exit non-zero blocks Phase 9 arm.
+
+## Tick modes
+
+| Mode | When | Focus |
+|------|------|-------|
+| `journey` | Odd ticks | Cross-tab flow from `JOURNEY_BACKLOG` |
+| `element` | Even ticks | Single tab from `AUDIT_ROTATION` |
+| `validation` | Every 5th tick or shipped crit without outcome | Post-ship critique accuracy |
+
+## Do not duplicate PO
+
+Grep `UI_PROPOSALS`, `CRITIQUE_BACKLOG`, and shipped `ui-*` before writing new `crit-*`.

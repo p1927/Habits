@@ -193,6 +193,8 @@ for entry in instances:
             code_paths = ["pwa/", "server/", "tools/cursor-loop/"]
         elif loop_id == "po-relay":
             code_paths = []
+        elif loop_id == "ux-critic":
+            code_paths = []
         if archetype in ("engineer", "designer", "qa") and worktree == "none" and code_paths:
             try:
                 import subprocess

@@ -178,7 +178,9 @@ def main() -> int:
 
     if args.apply:
         new_text = update_checkpoint_fields(state_text, updates)
-        state_path.write_text(new_text, encoding="utf-8")
+        import state_persist as sp
+
+        sp.write_state(state_path, new_text, loop_id=args.loop_id or state_path.parent.name)
         print("APPLIED=yes")
 
     print("PREPARE_REVIEW_END")

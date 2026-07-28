@@ -47,7 +47,7 @@ def _review_followup(
         f"Invoke /code-review, then read receiving-code-review skill + /receiving-code-review, "
         f"then Phase 7b backlog reflect. "
         f"allowed_phase={gate.allowed_phase}; {gate.reason}; FIX: {gate.fix}. "
-        f"Read {contract_doc} and {state_file}."
+        f"Read {contract_doc}; use state_api get snapshot for {loop_id}."
     )
 
 
@@ -113,7 +113,7 @@ def main() -> int:
                 mod.write_binding(root, conversation_id, binding)
                 msg = (
                     f"OPERATOR WAKE for {loop_id}: external trigger requested tick NOW. "
-                    f"Read {contract_doc} and {state_file}; run Ritual 1→8, then re-arm with notify. "
+                    f"Read {contract_doc}; use wake payload state_snapshot; run Ritual 1→8, then re-arm with notify. "
                     f"Wake payload: {prompt_json}"
                 )
                 print(json.dumps({"followup_message": msg}))
@@ -125,7 +125,7 @@ def main() -> int:
                 msg = (
                     f"SPIN for {loop_id}: sentinel fired at "
                     f"{fired.get('fired_at', '?') if fired else '?'} without completing Ritual 1→8. "
-                    f"Read {contract_doc} and {state_file}; run full tick NOW (start Phase 1-wake). "
+                    f"Read {contract_doc}; use wake payload state_snapshot; run full tick NOW (start Phase 1-wake). "
                     f"Then re-arm: prepare_arm_wake.sh + ARM_COMMAND with block_until_ms=0 and "
                     f"notify_on_output on ^{wake_sentinel or 'AGENT_LOOP_WAKE_*'}."
                 )
@@ -171,7 +171,6 @@ def main() -> int:
         meta = mod.read_wake_meta(loop_id)
         if not mod.is_notify_attached(meta):
             arm_src = (meta.get("arm_source") or "orphan") if meta else "orphan"
-            sf_note = f" and {state_file}" if state_file else ""
             msg = (
                 f"ORPHAN ARM for {loop_id}: wake process is ARMED but "
                 f"notify_on_output is NOT attached (arm_source={arm_src}). "
@@ -181,7 +180,7 @@ def main() -> int:
                 f"{state_file or 'docs/window-instances/' + loop_id + '/STATE.md'} "
                 f"--loop-id {loop_id}, then run ARM_COMMAND with "
                 "block_until_ms=0 AND notify_on_output=SHELL_NOTIFY_ON_OUTPUT. "
-                f"Read {contract_doc}{sf_note}."
+                f"Read {contract_doc}; {mod.state_orient_hint(loop_id)}."
             )
             if wake_sentinel:
                 msg += f" Monitor: ^{wake_sentinel}"
@@ -279,7 +278,7 @@ def main() -> int:
             )
             mod.clear_wake_fired(loop_id)
         if state_file:
-            msg += f" and {state_file}"
+            msg += f"; {mod.state_orient_hint(loop_id)}"
         msg += (
             "; run Ritual deliverable THIS turn (strict phases 1→9, one at a time). "
             "Then re-arm: prepare_arm_wake.sh (no --exec), ARM_COMMAND with block_until_ms=0 "

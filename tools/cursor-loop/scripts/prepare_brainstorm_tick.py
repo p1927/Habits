@@ -80,9 +80,12 @@ def main() -> int:
             "brainstorm_outcome": outcome_text,
         }
         try:
-            state_path.write_text(
-                sc.update_checkpoint_fields(state_text, updates),
-                encoding="utf-8",
+            import state_persist as sp
+
+            sp.patch_checkpoint(
+                state_path,
+                updates,
+                loop_id=loop_id or state_path.parent.name,
             )
         except OSError as exc:
             print(f"PREPARE_BRAINSTORM_ERROR state write failed: {exc}", file=sys.stderr)

@@ -113,7 +113,9 @@ def main() -> int:
 
     if updates and args.apply:
         state_text = sc.update_checkpoint_fields(state_text, updates)
-        state_path.write_text(state_text, encoding="utf-8")
+        import state_persist as sp
+
+        sp.write_state(state_path, state_text, loop_id=loop_id)
         checkpoint = {**checkpoint, **updates}
         print("APPLIED=yes")
 

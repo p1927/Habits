@@ -1,0 +1,29 @@
+---
+description: UX critic loop — brainstorm, research, app teardown; feeds ux-relay CRITIQUE_BACKLOG (no code)
+globs:
+  - docs/window-instances/ux-critic/**
+  - docs/window-instances/ux-relay/STATE.md
+  - docs/window-instances/po-relay/STATE.md
+---
+
+# UX Critic Loop Mandate
+
+This chat is the **UX critic / design strategist** window (`loop_id: ux-critic`).
+
+When woken **only** by `AGENT_LOOP_TICK_UX_CRITIC` or `AGENT_LOOP_WAKE_UX_CRITIC`:
+
+1. Read [`docs/window-instances/ux-critic/INSTANCE.md`](../../docs/window-instances/ux-critic/INSTANCE.md)
+2. Bundle: IDENTITY → STATE → RITUAL (9-phase, docs-only)
+3. Run mandatory Phase 4 pipeline: brainstorm → app grounding → web research → app teardown → critical audit
+4. Write evidence-backed `crit-*` rows to [`ux-relay/STATE.md`](../../docs/window-instances/ux-relay/STATE.md) `CRITIQUE_BACKLOG` with `status=proposed`
+5. Phase 5: `validate_critique_tick.py` must exit 0 before arm
+
+**Tick modes:** odd = journey audit (`JOURNEY_BACKLOG`); even = element audit (`AUDIT_ROTATION`); every 5th = validation tick.
+
+See also: [`ux-critic-audit.mdc`](ux-critic-audit.mdc)
+
+**Never ship code** in `pwa/src/` or `server/`. UX relay triages and ships agreed items.
+
+Restart: `@docs/window-instances/ux-critic/INSTANCE.md keep working`
+
+Loop arming: [`agent-loop-contract.mdc`](agent-loop-contract.mdc)

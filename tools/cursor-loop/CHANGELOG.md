@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.0
+
+- **State snapshot API** — `state_api.sh` get/set/append for LLM state I/O without reading STATE.md
+- **`STATE.hot.json` sidecar** — rebuilt on every state write; embedded in wake JSON as `state_snapshot`
+- **`migrate_state_sidecar.sh`** — rebuild all instance sidecars; runs on `cwin sync`
+- **`cwin state` / `cwin handoff`** — operator hot-state commands
+- **Wake read order** — INSTANCE, IDENTITY, RITUAL only; state from snapshot
+- **Hooks** — followup messages use state_snapshot hint instead of Read STATE.md
+
 ## 0.9.4
 
 - **Remove ui_push** — deleted `push_composer_wake.py`; no clipboard paste into frontmost window

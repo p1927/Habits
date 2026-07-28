@@ -54,9 +54,25 @@ python3 .cursor/skills/21st-cache/scripts/run.py search "<component query>" --li
 ## Agreement ritual (every tick)
 
 1. Read `../po-relay/STATE.md` → `UI_PROPOSALS`; triage `proposed` / `refined`
-2. Read own `UX_GAPS`; update rows awaiting PO
-3. Ship **only** agreed `UI_POLISH_BACKLOG` items
-4. Log triage in HISTORY (`agreed prop-ui-*`, `rejected`, etc.)
+2. Read `CRITIQUE_BACKLOG` from `ux-critic`; triage `proposed` → `agreed` / `rejected` (same rigor as PO proposals)
+3. Read own `UX_GAPS`; update rows awaiting PO
+4. Ship **only** agreed `UI_POLISH_BACKLOG` items (from PO `UI_PROPOSALS` or `CRITIQUE_BACKLOG` `agreed`)
+5. Log triage in HISTORY (`agreed prop-ui-*`, `agreed crit-*`, `rejected`, etc.)
+
+### CRITIQUE_BACKLOG triage (ux-critic → UX)
+
+**SLA:** Triage **≥1** `proposed` row every UX tick (Phase 2), even when shipping a PO `ui-*`.
+
+| status | Action |
+|--------|--------|
+| `proposed` | Review full schema (journey_ref, impact, evidence, touchpoints); refine or reject |
+| `agreed` | Copy to `UI_POLISH_BACKLOG` as new `ui-*` with AC from critique; preserve `crit-*` link in notes |
+| `rejected` | **Mandatory** `ux_response` rationale — no silent drops |
+| `shipped` | Mark when corresponding `ui-*` merged; ux-critic validates on next validation tick |
+
+**Auto-reject:** `impact` ≤2 or rubric avg <3 — set `rejected` with reason unless PO elevates via `UX_GAPS`.
+
+**Never** copy `proposed` critique rows directly to `UI_POLISH_BACKLOG`.
 
 ## Forbidden
 

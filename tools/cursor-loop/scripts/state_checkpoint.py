@@ -130,12 +130,30 @@ def repair_checkpoint_section(state_text: str) -> str:
     return before + "\n".join(rebuilt) + ("\n" if state_text.endswith("\n") else "")
 
 
-def load_state_text(state_path: Path, *, repair: bool = True) -> str:
-    """Read STATE.md; optionally repair and persist CHECKPOINT layout."""
+def load_state_text(
+    state_path: Path,
+    *,
+    repair: bool = True,
+    loop_id: str = "",
+    backlog_sections: tuple[str, ...] | None = None,
+) -> str:
+    """Read STATE.md; optionally repair and persist CHECKPOINT layout + sidecar."""
     text = state_path.read_text(encoding="utf-8")
     if not repair:
         return text
     repaired = repair_checkpoint_section(text)
     if repaired != text:
-        state_path.write_text(repaired, encoding="utf-8")
-    return repaired
+        lid = loop_id or state_path.parent.name
+        try:
+            import state_persist as sp
+
+            sp.write_state(
+                state_path,
+                repaired,
+                loop_id=lid,
+                backlog_sections=backlog_sections,
+            )
+        except ImportError:
+            state_path.write_text(repaired, encoding="utf-8")
+        return repaired
+    return text

@@ -90,10 +90,9 @@ def main() -> int:
             "review_status": "done",
             "last_reviewed_round": review_round,
         }
-        state_path.write_text(
-            sc.update_checkpoint_fields(state_text, updates),
-            encoding="utf-8",
-        )
+        import state_persist as sp
+
+        sp.patch_checkpoint(state_path, updates, loop_id=loop_id)
         print("APPLIED=yes")
 
     directive = AgentDirective(

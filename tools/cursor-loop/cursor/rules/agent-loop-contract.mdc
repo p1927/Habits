@@ -207,6 +207,7 @@ Each loop owns **one sentinel pair** and **one state file**. Never mix them acro
 | `ux-relay` | `AGENT_LOOP_WAKE_UX_RELAY`, `AGENT_LOOP_TICK_UX_RELAY` | `docs/window-instances/ux-relay/STATE.md` | Relay features, PO brainstorm, refactors |
 | `code-health` | `AGENT_LOOP_WAKE_CODE_HEALTH`, `AGENT_LOOP_TICK_CODE_HEALTH` | `docs/window-instances/code-health/STATE.md` | UI polish, relay features, PO brainstorm |
 | `po-relay` | `AGENT_LOOP_WAKE_PO_RELAY`, `AGENT_LOOP_TICK_PO_RELAY` | `docs/window-instances/po-relay/STATE.md` | Any code/UI shipping; read worker STATE only to feed BACKLOG |
+| `ux-critic` | `AGENT_LOOP_WAKE_UX_CRITIC`, `AGENT_LOOP_TICK_UX_CRITIC` | `docs/window-instances/ux-critic/STATE.md` | Code/UI shipping, PO backlog mutation, worker/code work |
 
 Rules:
 

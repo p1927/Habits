@@ -31,7 +31,7 @@
 
 ## Summary
 
-UI/UX polish — web research, triage PO proposals, ship modern UI matching reference apps.
+UI/UX polish — web research, triage PO proposals + ux-critic CRITIQUE_BACKLOG, ship modern UI matching reference apps.
 
 Arming: [`.cursor/rules/agent-loop-contract.mdc`](../../../.cursor/rules/agent-loop-contract.mdc)
 

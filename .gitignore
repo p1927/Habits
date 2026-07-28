@@ -13,6 +13,7 @@ dist/
 pwa/dev-dist/
 .server-data/
 .agents
+docs/window-instances/*/STATE.hot.json
 .cursor/loop-bindings/
 .worktrees/
 deploy/cloudflare/.env

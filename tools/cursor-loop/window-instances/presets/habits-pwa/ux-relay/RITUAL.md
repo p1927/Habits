@@ -5,7 +5,7 @@
 
 ## Phase 2 — Orient
 
-Read `../po-relay/STATE.md` `UI_PROPOSALS`; update `LAST_REVIEW`; `git status`.
+Read `../po-relay/STATE.md` `UI_PROPOSALS`; triage **≥1** `CRITIQUE_BACKLOG` row with `status=proposed` from `ux-critic` (mandatory SLA); update `LAST_REVIEW`; `git status`.
 
 ## Phase 3 — Select
 
@@ -88,11 +88,13 @@ Read Superpowers **receiving-code-review** skill, then invoke [`/receiving-code-
 
 1. Triage every round-N row: `fix-now` | `backlog` | `closed` | `pushback`
 2. Implement fix-now in worktree / `pwa/`; re-verify build + 390px if needed
-3. Also triage `UI_PROPOSALS`; log `UX_GAPS` for PO if new gaps found
+3. Also triage `UI_PROPOSALS` and `CRITIQUE_BACKLOG`; log `UX_GAPS` for PO if new gaps found
 
 ### Phase 7b — Backlog reflect (mandatory)
 
 Every deferred finding → backlog row with id, priority, AC. Set `backlog_ref` on the REVIEW_FINDINGS row. Create `ui-*` items in UI_POLISH_BACKLOG for deferred findings. Cannot close until complete.
+
+**CRITIQUE_BACKLOG:** every `rejected` row must have non-empty `ux_response` before Phase 8 close. Mark `shipped` when linked `ui-*` merges.
 
 ## Phase 8 — Close
 

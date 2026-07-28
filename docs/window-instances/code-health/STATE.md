@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T08:50:00Z |
-| where_we_are | ch-136 post-ch-135 line scan complete |
-| confirmed_next | ch-137 — Settings.tsx (136) split |
+| reviewed_at | 2026-07-28T09:54:00Z |
+| where_we_are | ch-138 MealPlanQueuePanel split + phase9 notify arm fix shipped |
+| confirmed_next | ch-139 — line scan for next post-ch-138 target |
 
 ---
 
@@ -18,14 +18,14 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-137` |
+| confirmed_next | `ch-139` |
 | phase | `9-arm` |
 | current_item_id | `—` |
-| last_wake | `2026-07-28T08:50:00Z` |
+| last_wake | `2026-07-28T10:03:44Z` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `16` |
-| last_reviewed_round | `16` |
+| review_round | `18` |
+| last_reviewed_round | `18` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
@@ -37,10 +37,10 @@
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
+| execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `—` |
+| commit_hash | `a19a561` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -190,7 +190,9 @@
 - [x] ch-134 | Line scan — post api split targets | structure | api 39; top: AgentActionFeed 138, Settings 133 | done tick #134
 - [x] ch-135 | `AgentActionFeed.tsx` (138) split | structure | hook + poll lib + types; main 138→28 | done tick #135
 - [x] ch-136 | line scan — post ch-135 targets | structure | top: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 | done tick #136
-- [ ] ch-137 | `Settings.tsx` (136) split | structure | queued — top post-scan target |
+- [x] ch-137 | `Settings.tsx` (136) split | structure | chrome + cards + footer + effects; 136→55 | done tick #137
+- [x] ch-138 | `MealPlanQueuePanel.tsx` (133) split | structure | hook + types; 133→68; phase9 notify arm | done tick #138
+- [ ] ch-139 | line scan — post ch-138 targets | structure | queued |
 
 ---
 
@@ -276,7 +278,8 @@
 | `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
 | `pwa/src/hooks/useMealPlanShell.ts` | 2026-07-28 tick #98 | ch-127: useMealPlanShellSyncContext; 155→128 |
 | `pwa/src/components/DayTimelineCard.tsx` | 2026-07-28 tick #99 | ch-128: agenda + empty panels; 151→99 |
-| `pwa/src/sections/*` + hooks + components + lib | 2026-07-28 tick #136 | post-ch-135 scan: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132, useHomeDashboardActions 131, AppTabBar 130; api 39 |
+| `pwa/src/components/MealPlanQueuePanel.tsx` | 2026-07-28 tick #138 | ch-138: hook + types; 133→68 |
+| `pwa/src/sections/Settings.tsx` | 2026-07-28 tick #137 | ch-137: chrome + cards + footer + effects; 136→55 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -355,6 +358,29 @@
 | ch-r15-010 | low | update_habit uses kind food in toolFeed — pre-existing | round-15 /code-review | pushback | — | closed |
 | ch-r15-011 | low | no unit tests for detectNewActionsFromPoll — deferred per ch-129 policy | round-15 /code-review | pushback | — | closed |
 | ch-r16-000 | low | Docs-only tick: STATE.md sync for ch-135 closure + ch-136 scan; backlog/scan coverage/checkpoint aligned; no runtime code in diff | round-16 /code-review | closed | — | closed |
+| ch-r17-b000 | low | Bugbot parity: OAuth/disconnect timers, banners, cards gate, error footer match main monolith | round-17 bugbot | closed | — | closed |
+| ch-r17-000 | low | `Settings.tsx:8-54` — thin composition shell; chrome/cards/footer/effects split matches ch-137 | round-17 /code-review | closed | — | closed |
+| ch-r17-001 | low | `settingsSectionTypes.ts:18-37` — hand-listed CardsProps vs Pick pattern used elsewhere | round-17 /code-review | backlog | — | open |
+| ch-r17-002 | low | `useSettingsSection.ts` — no exported UseSettingsSectionResult for Pick-based props | round-17 /code-review | backlog | — | open |
+| ch-r17-003 | low | `SettingsSectionChrome.tsx:8` — misleading Omit error (no error on type) | round-17 /code-review | fix-now | — | closed |
+| ch-r17-004 | low | `useSettingsSectionEffects.ts:3-8` — inline args type acceptable for small hook | round-17 /code-review | closed | — | closed |
+| ch-r17-005 | low | `Settings.tsx:32-51` — explicit prop pass vs spread; maintenance not runtime | round-17 /code-review | pushback | — | closed |
+| ch-r17-006 | low | optional onDismissOauth with oauthSuccess banner — pre-existing from main | round-17 /code-review | pushback | — | closed |
+| ch-r17-007 | low | AppTabContent inline onDismissOauth timer reset — pre-existing | round-17 /code-review | pushback | — | closed |
+| ch-r18-b000 | low | Bugbot parity: MealPlanQueuePanel hook extraction preserves banner/focus/shortcuts | round-18 bugbot | closed | — | closed |
+| ch-r18-000 | low | `MealPlanQueuePanel.tsx:8-67` — thin shell; useMealPlanQueuePanel owns derived state | round-18 /code-review | closed | — | closed |
+| ch-r18-001 | medium | `useMealPlanQueuePanelFocus.ts:48-50` — focus skipped during sync then never retried — pre-existing | round-18 /code-review | pushback | — | closed |
+| ch-r18-002 | medium | `MealPlanQueuePanel.tsx:34` — role=status wraps interactive banner — pre-existing a11y | round-18 /code-review | backlog | — | open |
+| ch-r18-003 | low | useMealPlanQueuePanel untested — deferred per ch-129 | round-18 /code-review | pushback | — | closed |
+| ch-r18-004 | low | mealPlanQueuePanelTypes props bundle — Pick split optional | round-18 /code-review | backlog | — | open |
+| ch-r18-005 | low | partial destructure + props pass — acceptable | round-18 /code-review | closed | — | closed |
+| ch-r18-006 | low | duplicate aria-live during sync — pre-existing | round-18 /code-review | pushback | — | closed |
+| ch-r18-007 | high | `hook_guard_arm.py:102-104` — block_until_ms>0 bypassed notify enforcement | round-18 /code-review | fix-now | — | closed |
+| ch-r18-008 | medium | write_wake_pending preToolUse only — document/mirror if needed | round-18 /code-review | backlog | — | open |
+| ch-r18-009 | low | error text said arm-wake.sh — updated to phase9-notify-arm.sh | round-18 /code-review | fix-now | — | closed |
+| ch-r18-010 | low | test_hook_guard_arm.sh lacks phase9 coverage | round-18 /code-review | backlog | — | open |
+| ch-r18-011 | low | phase9-notify-arm.sh thin exec delegate — correct | round-18 /code-review | closed | — | closed |
+| ch-r18-012 | low | prepare_arm_wake ARM_COMMAND → phase9-notify-arm.sh — aligned | round-18 /code-review | closed | — | closed |
 
 ---
 
@@ -362,6 +388,9 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | infra | Orphan ARM recovery — refresh + notify re-arm (pid=24146) | verify-wake | — |
+| 2026-07-28 | ch-138 | MealPlanQueuePanel split + phase9 notify arm fix | build | a19a561 |
+| 2026-07-28 | ch-137 | Settings split (chrome + cards + footer + effects); 136→55 | build | d3448c4 |
 | 2026-07-28 | ch-136 | Post-ch-135 line scan; queue ch-137 Settings | scan | — |
 | 2026-07-28 | ch-135 | AgentActionFeed split (hook + poll lib + types); 138→28 | build | f47ac8a |
 | 2026-07-28 | ch-134 | Post-split line scan; queue ch-135 AgentActionFeed | scan | — |

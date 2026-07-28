@@ -12,8 +12,8 @@ All Window Instances run phases **1–9** with the same names. Phases **4–6** 
 
 | Phase | Name | All windows |
 |-------|------|-------------|
-| 1 | **Wake** | Read INSTANCE → IDENTITY → STATE → RITUAL; confirm `loop_id` from wake JSON |
-| 2 | **Orient** | Update `LAST_REVIEW`; read CHECKPOINT + git status |
+| 1 | **Wake** | Read INSTANCE → IDENTITY → RITUAL; use wake JSON `state_snapshot` (or `state_api get snapshot`); confirm `loop_id` |
+| 2 | **Orient** | `prepare_orient_tick.sh`; update LAST_REVIEW via `state_api set last-review`; do **not** Read STATE.md |
 | 3 | **Select** | Resume `IN_PROGRESS` or pick top backlog item; **create worktree** when item touches code |
 | 4 | **Execute** | Archetype-specific (see table) |
 | 5 | **Verify** | Archetype-specific (see table) + change detection (below) |

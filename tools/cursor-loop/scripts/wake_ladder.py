@@ -182,6 +182,12 @@ def run_wake_ladder(
         )
         payload_line = f"{wake_sentinel} {payload_json}"
 
+        # When SPIN + dead arm the arm-wake.sh sleep is gone; consume_inject_arm.py
+        # is never polled so the inject will never be consumed via the arm path.
+        # Still write inject.json so hook_survival / consume_inject_on_hook can use
+        # the pre-built payload when the operator touches the window.
+        spin_dead_arm = detail["wake"] == "SPIN" and not lh.is_wake_process_alive(lid)
+
         attempted.append("inject")
         lh.write_inject_request(
             lid,
@@ -192,6 +198,22 @@ def run_wake_ladder(
         _set_operator_wake_pending(root, lid)
         if cooldown_sec > 0:
             lh.write_inject_cooldown(lid)
+
+        if spin_dead_arm:
+            # Arm is dead; inject is queued for hook delivery, not arm consumption.
+            results.append(
+                {
+                    "loop_id": lid,
+                    "reason": inject_reason,
+                    "wake": detail["wake"],
+                    "notify": detail["notify"],
+                    "attempted": attempted,
+                    "succeeded": None,
+                    "method": "operator_pending",
+                    "error": "spin_arm_dead_hook_pending",
+                }
+            )
+            continue
 
         succeeded: str | None = None
         error: str | None = None

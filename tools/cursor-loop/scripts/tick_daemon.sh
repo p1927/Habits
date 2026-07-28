@@ -52,6 +52,8 @@ for row in report.get("results") or []:
     method = row.get("succeeded") or row.get("method")
     if row.get("succeeded"):
         print(json.dumps({"kind": "WAKE_OK", "loop_id": lid, "method": method}))
+    elif method == "operator_pending":
+        print(json.dumps({"kind": "SPIN_PENDING", "loop_id": lid, "reason": row.get("reason", "daemon"), "error": row.get("error", "")}))
     elif method == "inject_pending":
         print(json.dumps({"kind": "INJECT", "loop_id": lid, "reason": row.get("reason", "daemon")}))
     elif method == "needs_notify":
@@ -120,6 +122,11 @@ PY
         ;;
       COOLDOWN)
         echo "TICK_DAEMON_COOLDOWN loop_id=${LOOP_ID}"
+        ;;
+      SPIN_PENDING)
+        REASON="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('reason','spin'))" "$line")"
+        notify_macos "Habits ${LOOP_ID} SPIN" "Arm dead; operator_wake queued — focus the ${LOOP_ID} chat to recover."
+        echo "TICK_DAEMON_SPIN_PENDING loop_id=${LOOP_ID} reason=${REASON}"
         ;;
       SPIN)
         AGE="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('age_sec',0))" "$line")"

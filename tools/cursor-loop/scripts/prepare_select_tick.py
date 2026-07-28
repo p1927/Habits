@@ -123,11 +123,12 @@ def main() -> int:
                     "worktree_item_id": item_id,
                     "current_item_id": item_id,
                 }
-                state_path.write_text(
-                    sc.update_checkpoint_fields(
-                        state_path.read_text(encoding="utf-8"), updates
-                    ),
-                    encoding="utf-8",
+                import state_persist as sp
+
+                sp.patch_checkpoint(
+                    state_path,
+                    updates,
+                    loop_id=loop_id,
                 )
                 print(f"WORKTREE_PATH={info['path']}")
                 print(f"WORKTREE_BRANCH={info['branch']}")

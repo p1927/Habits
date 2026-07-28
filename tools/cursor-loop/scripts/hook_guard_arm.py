@@ -133,6 +133,19 @@ def main() -> int:
     notify_pattern, block_ms = _shell_meta(payload) if event == "preToolUse" else (None, None)
     enforce_notify = event == "preToolUse"
 
+    if enforce_notify and (not notify_pattern or "AGENT_LOOP_WAKE" not in (notify_pattern or "")):
+        loop_id, _ = _loop_context_from_command(command)
+        if loop_id:
+            pending = mod.read_wake_pending(loop_id)
+            if pending:
+                pending_pattern = str(pending.get("notify_pattern") or "")
+                if pending_pattern and "AGENT_LOOP_WAKE" in pending_pattern:
+                    notify_pattern = pending_pattern
+                    try:
+                        block_ms = int(pending.get("block_until_ms"))
+                    except (TypeError, ValueError):
+                        block_ms = 0
+
     deny, msg = should_deny_arm(
         command,
         notify_pattern=notify_pattern,

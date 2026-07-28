@@ -189,6 +189,13 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/prepare_bugbot_review.sh" \
   "${INSTALL_PACKAGE}/scripts/prepare_bugbot_review.py" \
   "${INSTALL_PACKAGE}/scripts/state_checkpoint.py" \
+  "${INSTALL_PACKAGE}/scripts/state_snapshot.py" \
+  "${INSTALL_PACKAGE}/scripts/state_persist.py" \
+  "${INSTALL_PACKAGE}/scripts/state_api.py" \
+  "${INSTALL_PACKAGE}/scripts/state_api.sh" \
+  "${INSTALL_PACKAGE}/scripts/get_state_snapshot.sh" \
+  "${INSTALL_PACKAGE}/scripts/prepare_orient_tick.sh" \
+  "${INSTALL_PACKAGE}/scripts/migrate_state_sidecar.sh" \
   "${INSTALL_PACKAGE}/scripts/review_scope.py" \
   "${INSTALL_PACKAGE}/scripts/audit_review.py" \
   "${INSTALL_PACKAGE}/scripts/validate_product_evidence.py" \
@@ -229,6 +236,11 @@ mkdir -p "${TARGET}/${CONTRACTS_DIR}"
 if [[ ! -f "${TARGET}/docs/START_LOOPS.md" ]]; then
   cp "${INSTALL_PACKAGE}/template/START_LOOPS.template.md" "${TARGET}/docs/START_LOOPS.md"
   echo "created: ${TARGET}/docs/START_LOOPS.md"
+fi
+
+if [[ -f "${TARGET}/.gitignore" ]] && ! grep -q 'STATE.hot.json' "${TARGET}/.gitignore" 2>/dev/null; then
+  printf '\ndocs/window-instances/*/STATE.hot.json\n' >> "${TARGET}/.gitignore"
+  echo "appended: docs/window-instances/*/STATE.hot.json to .gitignore"
 fi
 
 if [[ -f "${TARGET}/.gitignore" ]] && ! grep -q 'loop-bindings' "${TARGET}/.gitignore" 2>/dev/null; then

@@ -463,6 +463,14 @@ def has_loop_binding(root: Path, loop_id: str) -> bool:
     return read_loop_lock(root, loop_id) is not None
 
 
+def state_orient_hint(loop_id: str) -> str:
+    return (
+        f"Use wake JSON state_snapshot or "
+        f"bash tools/cursor-loop/scripts/state_api.sh . --loop-id {loop_id} get snapshot "
+        f"(do NOT Read STATE.md in Phases 1-3)"
+    )
+
+
 def inject_followup_message(inject: dict, *, contract_doc: str, state_file: str) -> str:
     loop_id = inject.get("loop_id") or ""
     line = (inject.get("payload_line") or "").strip()
@@ -470,10 +478,8 @@ def inject_followup_message(inject: dict, *, contract_doc: str, state_file: str)
     msg = (
         f"INJECT WAKE for {loop_id} (reason={reason}): external trigger requested tick NOW. "
         f"Run Ritual phases 1→8 from wake payload below, then re-arm with notify. "
-        f"Read {contract_doc}"
+        f"Read {contract_doc}; {state_orient_hint(loop_id)}"
     )
-    if state_file:
-        msg += f" and {state_file}"
     msg += f". Wake payload: {line}"
     return msg
 
@@ -690,10 +696,8 @@ def stale_tick_followup(
     )
     msg = (
         f"STALE TICK for {loop_id}: last_wake is {age} old (interval {interval_sec}s).{armed_note} "
-        f"Read {contract_doc}"
+        f"Read {contract_doc}; {state_orient_hint(loop_id)}"
     )
-    if state_file:
-        msg += f" and {state_file}"
     msg += (
         "; run full Ritual phases 1→8 THIS turn, then re-arm: prepare_arm_wake.sh (no --exec), "
         "ARM_COMMAND with block_until_ms=0 and notify_on_output on monitor_regex."
