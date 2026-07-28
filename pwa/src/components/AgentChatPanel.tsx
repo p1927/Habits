@@ -24,7 +24,8 @@ export function AgentChatPanel({
   onRegenerateLastReply,
 }: AgentChatPanelProps) {
   const isEmptyChat = messages.length === 0 && !composerDraft.trim();
-  const hideGreetingForAttach = Boolean(attachImage);
+  const reserveGreetingLayout = isEmptyChat || Boolean(attachImage);
+  const showGreetingVisible = isEmptyChat && !attachImage;
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const copyMessage = useCallback(async (content: string, index: number) => {
@@ -42,10 +43,10 @@ export function AgentChatPanel({
 
   return (
     <div className="agent-chat" ref={listRef} role="log" aria-live="polite" aria-label="Chat messages">
-      {isEmptyChat && (
+      {reserveGreetingLayout && (
         <div
-          className={`agent-greeting${hideGreetingForAttach ? ' agent-greeting--visually-hidden' : ''}`}
-          aria-hidden={hideGreetingForAttach || undefined}
+          className={`agent-greeting${showGreetingVisible ? '' : ' agent-greeting--visually-hidden'}`}
+          aria-hidden={showGreetingVisible ? undefined : true}
         >
           <h2 className="agent-greeting__title">Hello</h2>
           <p className="agent-greeting__sub">Where should we start?</p>
