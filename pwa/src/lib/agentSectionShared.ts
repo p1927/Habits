@@ -7,8 +7,6 @@ export const AGENT_GREETING_CATEGORIES = [
   { label: 'Schedule', icon: '▦', description: 'See what is already on your calendar', text: 'What is on my calendar today?' },
 ] as const;
 
-export const AGENT_QUICK_PROMPTS = AGENT_GREETING_CATEGORIES.map(({ label, text }) => ({ label, text }));
-
 /** Prefill when Day schedule is empty — opens Agent with this message. */
 export const AGENT_SCHEDULE_TODAY_PROMPT = 'Add a calendar event for today';
 

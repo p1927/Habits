@@ -12,6 +12,7 @@ interface AgentSectionBodyProps {
   messages: AgentChatMessage[];
   loading: boolean;
   listRef: RefObject<HTMLDivElement | null>;
+  composerDraft?: string;
   onSelectPrompt: (prompt: string) => void;
   onRegenerateLastReply?: () => void;
   context: AgentSectionContext;
@@ -25,6 +26,7 @@ export function AgentSectionBody({
   messages,
   loading,
   listRef,
+  composerDraft,
   onSelectPrompt,
   onRegenerateLastReply,
   context,
@@ -44,6 +46,7 @@ export function AgentSectionBody({
         messages={messages}
         loading={loading}
         listRef={listRef}
+        composerDraft={composerDraft}
         onSelectPrompt={onSelectPrompt}
         onRegenerateLastReply={onRegenerateLastReply}
       />

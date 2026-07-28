@@ -37,6 +37,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         messages={s.messages}
         loading={s.loading}
         listRef={s.listRef}
+        composerDraft={s.input}
         onSelectPrompt={s.setInput}
         onRegenerateLastReply={() => void s.regenerateLastReply()}
         context={s.context}
@@ -51,7 +52,6 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         scanning={s.scanning}
         input={s.input}
         attachImage={s.attachImage}
-        showQuickChips={s.messages.length === 0 && !s.input.trim()}
         showDisclaimer={s.messages.length === 0 && !s.input.trim()}
         onInputChange={s.setInput}
         onSubmit={() => void s.send()}
