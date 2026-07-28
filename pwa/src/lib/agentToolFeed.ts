@@ -1,5 +1,5 @@
 import type { ChatResponse } from './api';
-import type { AgentAction } from '../components/AgentActionFeed';
+import type { AgentAction } from './agentActionFeedTypes';
 import { emitAgentDataRefresh } from './agentDataRefresh';
 function msg(r: unknown): string { return r && typeof r === 'object' && r !== null && 'message' in r ? String((r as {message?:string}).message ?? '') : ''; }
 export function toolResultsToActions(results: ChatResponse['tool_results']): AgentAction[] {
