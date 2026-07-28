@@ -111,9 +111,11 @@ def main() -> int:
                 )
                 binding.pop("operator_wake_pending", None)
                 mod.write_binding(root, conversation_id, binding)
+                rearm_note = mod._recovery_arm_note(f"SENTINEL {prompt_json}")
                 msg = (
                     f"OPERATOR WAKE for {loop_id}: external trigger requested tick NOW. "
-                    f"Read {contract_doc}; use wake payload state_snapshot; run Ritual 1→8, then re-arm with notify. "
+                    f"Read {contract_doc}; use wake payload state_snapshot; run Ritual 1\u21928. "
+                    f"{rearm_note} "
                     f"Wake payload: {prompt_json}"
                 )
                 print(json.dumps({"followup_message": msg}))
@@ -122,12 +124,17 @@ def main() -> int:
             if mod.is_wake_spin(loop_id, phase):
                 fired = mod.read_wake_fired(loop_id)
                 line = (fired.get("payload_line") or "").strip() if fired else ""
+                rearm_note = mod._recovery_arm_note(line) if line else (
+                    f"Re-arm with recovery foreground: prepare_arm_wake.sh . "
+                    f"--state-file {state_file} --loop-id {loop_id} --exec --recovery-foreground "
+                    f"with block_until_ms >= interval; wait for sentinel in output."
+                )
                 msg = (
                     f"SPIN for {loop_id}: sentinel fired at "
-                    f"{fired.get('fired_at', '?') if fired else '?'} without completing Ritual 1→8. "
+                    f"{fired.get('fired_at', '?') if fired else '?'} without completing Ritual 1→8 "
+                    f"(background notify dropped). "
                     f"Read {contract_doc}; use wake payload state_snapshot; run full tick NOW (start Phase 1-wake). "
-                    f"Then re-arm: prepare_arm_wake.sh + ARM_COMMAND with block_until_ms=0 and "
-                    f"notify_on_output on ^{wake_sentinel or 'AGENT_LOOP_WAKE_*'}."
+                    f"{rearm_note}"
                 )
                 if line:
                     msg += f" Wake payload: {line}"

@@ -192,6 +192,12 @@
       "sourceType": "github",
       "skillPath": "skills/web-design-guidelines/SKILL.md",
       "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+    },
+    "improve-code-quality": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/improve-code-quality/SKILL.md",
+      "computedHash": "c1a5cadbecc36f792eb9c6b6f3a9a0cac8ff2524e943869c6bfdd5e588ed0e15"
     }
   }
 }

@@ -16,6 +16,16 @@ from ritual_directive import AgentDirective
 
 APP_SCOPE_PREFIXES = ("pwa/", "server/")
 
+# Infrastructure paths that NO worker loop may ever write.
+# Agents are consumers of these files, not authors.
+INFRA_READONLY_PREFIXES = ("tools/cursor-loop/",)
+
+# Inside docs/window-instances/, only STATE files are runtime data.
+# Everything else (IDENTITY, INSTANCE, RITUAL, manifest, templates) is
+# definition code that only the human operator should change.
+INSTANCE_DIR_PREFIX = "docs/window-instances/"
+INSTANCE_STATE_SUFFIXES = ("/STATE.md", "/STATE.hot.json", "/STATE.coord")
+
 LOOP_ARCHETYPE_FALLBACK: dict[str, str] = {
     "worker-relay": "engineer",
     "ux-relay": "designer",
@@ -28,6 +38,19 @@ def resolve_archetype(archetype: str, loop_id: str) -> str:
     if (archetype or "").strip():
         return archetype.strip()
     return LOOP_ARCHETYPE_FALLBACK.get(loop_id, "")
+
+
+def is_infra_readonly_path(path: str) -> bool:
+    """Return True when the path belongs to immutable orchestration infrastructure."""
+    normalized = path.replace("\\", "/").lstrip("./")
+    if any(normalized.startswith(p) for p in INFRA_READONLY_PREFIXES):
+        return True
+    if normalized.startswith(INSTANCE_DIR_PREFIX):
+        # STATE files are runtime working memory — agents may write them.
+        if any(normalized.endswith(s) for s in INSTANCE_STATE_SUFFIXES):
+            return False
+        return True
+    return False
 
 
 def is_app_scope_path(path: str) -> bool:
@@ -61,6 +84,17 @@ def check_edit(
     state_file: str,
     archetype: str,
 ) -> tuple[bool, str]:
+    # Infrastructure files are unconditionally read-only for all worker loops.
+    # Only the human operator (you) may change orchestration tooling or
+    # window-instance definition files.
+    if is_infra_readonly_path(file_path):
+        return False, (
+            f"Blocked: {file_path} is orchestration infrastructure. "
+            "Worker loops may not modify cursor-loop tooling or window-instance "
+            "definition files (IDENTITY, INSTANCE, RITUAL, manifest). "
+            "Only STATE files may be written by the agent."
+        )
+
     if not is_app_scope_path(file_path):
         return True, ""
 

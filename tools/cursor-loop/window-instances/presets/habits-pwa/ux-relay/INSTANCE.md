@@ -10,7 +10,7 @@
 | loop_mode | `dynamic` |
 | sentinel | `AGENT_LOOP_TICK_UX_RELAY` |
 | wake_sentinel | `AGENT_LOOP_WAKE_UX_RELAY` |
-| interval_sec | `300` |
+| interval_sec | `120` |
 | monitor_regex | `^AGENT_LOOP_WAKE_UX_RELAY` |
 | pidfile | `$TMPDIR/cursor-loop-ux-relay.pid` |
 | loop_script | `tools/cursor-loop/scripts/agent-loop.sh` |

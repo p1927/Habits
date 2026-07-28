@@ -9,8 +9,8 @@
 | Field | Value |
 |-------|-------|
 | reviewed_at | 2026-07-28T09:52:00Z |
-| where_we_are | Session #36 stale-tick recovery — ch-137 shipped (1012e75); ui-060 on main (32ebc63); Worker relay-205 next |
-| confirmed_next | Worker relay-205–207; Code ch-138; maint-004 P1; UX ui-060 verify-close |
+| where_we_are | relay-208/209/210 seeded in worker BACKLOG; ch-138 shipped; maint-004 P1 open; UX ui-060 await verify-close |
+| confirmed_next | Worker relay-208+; Code maint-004/ch-139; UX ui-060 verify-close |
 
 ---
 
@@ -23,12 +23,12 @@
 | phase | `9-arm` |
 | review_status | `done` |
 | review_skip_reason | `—` |
-| review_round | `24` |
-| last_reviewed_round | `24` |
+| review_round | `26` |
+| last_reviewed_round | `26` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `Worker relay-205–207; Code ch-138; maint-004 P1; UX ui-060 verify-close` |
-| loops | `ARMED pid=6961 notify=yes` |
+| confirmed_next | `Worker relay-208+; Code maint-004/ch-139; UX ui-060 verify-close` |
+| loops | `ARMED pid=pending notify=yes` |
 | ritual_step | `9-arm` |
 | worktree_status | `none` |
 | worktree_path | `—` |
@@ -355,8 +355,18 @@
 
 ## REVIEW_FINDINGS
 
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| pr-r26-002 | low | docs/window-instances/instances.manifest.json:32 — ux-relay interval_sec 300→120 | round-26 /code-review | closed | — | closed |
+| pr-r26-001 | low | docs/window-instances/po-relay/STATE.md — Round 25/26 review + fingerprint sync | round-26 /code-review | closed | — | closed |
+| pr-r26-000 | low | Bugbot skipped — manifest + STATE doc diff only | round-26 bugbot | closed | — | closed |
+| pr-r25-001 | low | docs/window-instances/instances.manifest.json:32 — ux-relay interval_sec 300→120 aligns with po-relay cadence | round-25 /code-review | closed | — | closed |
+| pr-r25-000 | low | Bugbot skipped — manifest interval sync only | round-25 bugbot | closed | — | closed |
 | pr-001 | low | relay-165/168 shipped SSE streaming + cancel; ui-038 backend done | round-0 /code-review | closed | ui-038 | closed |
 | pr-002 | low | relay-149/150 brainstormed in #18 but missing from Worker BACKLOG | round-0 /code-review | closed | worker BACKLOG | closed |
 | pr-003 | low | Code window ch-006–120 structural refactors uncommitted | round-0 /code-review | backlog | ch-121+ | open |
@@ -507,7 +517,6 @@
 | pr-r24-002 | low | docs/window-instances/instances.manifest.json — unchanged in diff scope | round-24 /code-review | closed | — | closed |
 
 ---
-
 ## HISTORY (PO / brainstorm)
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
@@ -545,3 +554,8 @@
 - UX-originated gaps → UX writes [`ux-relay/STATE.md`](../ux-relay/STATE.md) `UX_GAPS`; PO promotes to `UI_PROPOSALS` on next PO tick
 - Quality/refactor items → tag **Code window** in QUALITY_BACKLOG
 - Open conflicts → `DESIGN_DECISIONS` (both windows must check before shipping)
+
+
+
+
+

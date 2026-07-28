@@ -48,6 +48,24 @@ def last_commit_files(project_root: Path) -> list[str]:
         return []
 
 
+def commit_ref_files(project_root: Path, ref: str) -> list[str]:
+    ref = (ref or "").strip().strip("`")
+    if not ref:
+        return []
+    try:
+        r = subprocess.run(
+            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", ref],
+            cwd=project_root,
+            capture_output=True,
+            text=True,
+        )
+        if r.returncode != 0:
+            return []
+        return [line.strip() for line in r.stdout.splitlines() if line.strip()]
+    except OSError:
+        return []
+
+
 def touches_scope(files: list[str], scope_paths: list[str]) -> bool:
     app_paths = [p for p in scope_paths if not p.endswith("/STATE.md")]
     for f in files:
@@ -108,7 +126,12 @@ def validate_evidence(
                 issues.append("uncommitted changes are STATE-only — not product code evidence")
         elif commit_files:
             if not touches_scope(commit_files, scope):
-                issues.append("last commit does not touch window app scope paths")
+                checkpoint_ref = (checkpoint.get("commit_hash") or "").strip().strip("`")
+                ref_files = commit_ref_files(project_root, checkpoint_ref) if checkpoint_ref else []
+                if ref_files and touches_scope(ref_files, scope) and not state_only_files(ref_files, state_file):
+                    pass
+                else:
+                    issues.append("last commit does not touch window app scope paths")
             elif state_only_files(commit_files, state_file):
                 issues.append("last commit is STATE-only — not product code evidence")
     elif arch == "product":

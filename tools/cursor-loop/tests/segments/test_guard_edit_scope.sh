@@ -48,4 +48,58 @@ else
   exit 1
 fi
 
+# Infrastructure: tools/cursor-loop/ is always blocked
+if python3 "${SCRIPTS}/guard_edit_scope.py" \
+  --project "$GIT_TMP" \
+  --file "tools/cursor-loop/scripts/guard_edit_scope.py" \
+  --loop-id worker-relay \
+  --state-file docs/window-instances/worker-relay/STATE.md 2>/dev/null; then
+  echo "FAIL: guard should block tools/cursor-loop edits"
+  exit 1
+fi
+echo "OK guard blocks tools/cursor-loop edit"
+
+# Infrastructure: window-instance definition files are always blocked
+if python3 "${SCRIPTS}/guard_edit_scope.py" \
+  --project "$GIT_TMP" \
+  --file "docs/window-instances/worker-relay/IDENTITY.md" \
+  --loop-id worker-relay \
+  --state-file docs/window-instances/worker-relay/STATE.md 2>/dev/null; then
+  echo "FAIL: guard should block IDENTITY.md edit"
+  exit 1
+fi
+echo "OK guard blocks IDENTITY.md edit"
+
+if python3 "${SCRIPTS}/guard_edit_scope.py" \
+  --project "$GIT_TMP" \
+  --file "docs/window-instances/worker-relay/INSTANCE.md" \
+  --loop-id worker-relay \
+  --state-file docs/window-instances/worker-relay/STATE.md 2>/dev/null; then
+  echo "FAIL: guard should block INSTANCE.md edit"
+  exit 1
+fi
+echo "OK guard blocks INSTANCE.md edit"
+
+if python3 "${SCRIPTS}/guard_edit_scope.py" \
+  --project "$GIT_TMP" \
+  --file "docs/window-instances/instances.manifest.json" \
+  --loop-id worker-relay \
+  --state-file docs/window-instances/worker-relay/STATE.md 2>/dev/null; then
+  echo "FAIL: guard should block instances.manifest.json edit"
+  exit 1
+fi
+echo "OK guard blocks instances.manifest.json edit"
+
+# STATE.hot.json and STATE.coord are runtime data — must remain writable
+if python3 "${SCRIPTS}/guard_edit_scope.py" \
+  --project "$GIT_TMP" \
+  --file docs/window-instances/worker-relay/STATE.hot.json \
+  --loop-id worker-relay \
+  --state-file docs/window-instances/worker-relay/STATE.md; then
+  echo "OK guard allows STATE.hot.json edit"
+else
+  echo "FAIL: guard should allow STATE.hot.json edit"
+  exit 1
+fi
+
 echo "OK guard edit scope segment"

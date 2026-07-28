@@ -19,6 +19,7 @@ HANDOFF_RULES: dict[tuple[str, str], list[str]] = {
     ("po-relay", "code-health"): ["REFACTOR_BACKLOG_OPEN", "BUG_BACKLOG_OPEN", "LAST_REVIEW"],
     ("ux-relay", "po-relay"): ["UI_PROPOSALS_ACTIVE"],
     ("ux-critic", "ux-relay"): ["CRITIQUE_BACKLOG_PROPOSED"],
+    ("ux-critic", "po-relay"): ["UI_PROPOSALS_ACTIVE"],
     ("po-relay", "ux-relay"): ["UI_POLISH_BACKLOG_OPEN", "UX_GAPS"],
 }
 

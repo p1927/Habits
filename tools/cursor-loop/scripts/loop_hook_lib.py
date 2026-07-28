@@ -471,13 +471,36 @@ def state_orient_hint(loop_id: str) -> str:
     )
 
 
+def _recovery_arm_note(payload_line: str) -> str:
+    """Extract recovery exec arm instruction from a wake payload line."""
+    try:
+        _, json_str = payload_line.split(" ", 1)
+        data = json.loads(json_str)
+        arm = data.get("arm_shell") or {}
+        rec_cmd = arm.get("recovery_exec_command") or ""
+        rec_ms = arm.get("recovery_block_until_ms") or 210000
+        if rec_cmd:
+            return (
+                f"Re-arm using recovery foreground (background notify is unreliable): "
+                f"run `{rec_cmd}` with block_until_ms={rec_ms}; "
+                f"wait for sentinel in output; process phases 1-8 from that output."
+            )
+    except (ValueError, json.JSONDecodeError, AttributeError):
+        pass
+    return "Re-arm: prepare_arm_wake.sh then ARM_COMMAND recovery-foreground with block_until_ms >= interval."
+
+
 def inject_followup_message(inject: dict, *, contract_doc: str, state_file: str) -> str:
     loop_id = inject.get("loop_id") or ""
     line = (inject.get("payload_line") or "").strip()
     reason = inject.get("reason") or "manual"
+    if reason == "spin":
+        rearm_note = _recovery_arm_note(line)
+    else:
+        rearm_note = "re-arm with notify"
     msg = (
         f"INJECT WAKE for {loop_id} (reason={reason}): external trigger requested tick NOW. "
-        f"Run Ritual phases 1→8 from wake payload below, then re-arm with notify. "
+        f"Run Ritual phases 1→8 from wake payload below, then {rearm_note}. "
         f"Read {contract_doc}; {state_orient_hint(loop_id)}"
     )
     msg += f". Wake payload: {line}"

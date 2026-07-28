@@ -7,6 +7,12 @@
 
 `git status`; `git log -10 --oneline`; `git diff --stat`; patchwork clusters; update `LAST_REVIEW`.
 
+```bash
+python3 tools/cursor-loop/scripts/check_module_sizes.py . --threshold 500
+```
+
+Files reported as oversized → add `ch-oversize-*` items to `REFACTOR_BACKLOG` if not already present.
+
 ## Phase 3 — Select
 
 Resume `IN_PROGRESS` OR top `REFACTOR_BACKLOG` / `BUG_BACKLOG` OR next `SCAN_COVERAGE` row.
@@ -31,7 +37,7 @@ Set `CHECKPOINT.refactor_subphase` and advance **plan → smell → execute** in
 
 | Subphase | Skill | Action |
 |----------|-------|--------|
-| `plan` | `request-refactor-plan` + `HABITS.md` | Write `REFACTOR_PLAN` rows via `state_api append refactor-plan`; set `refactor_plan_id`, `refactor_step_n=1` |
+| `plan` | `improve-code-quality` → `request-refactor-plan` + `HABITS.md` | Run `improve-code-quality` checklist first; write `REFACTOR_PLAN` rows via `state_api append refactor-plan`; set `refactor_plan_id`, `refactor_step_n=1` |
 | `smell` | `refactoring-expert` | Name smell + technique on current step row; **no app edits** |
 | `execute` | `refactoring-specialist` | **One plan step only**; allowlisted files only |
 
@@ -62,6 +68,7 @@ python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
   --loop-id code-health \
   --state-file docs/window-instances/code-health/STATE.md
 cd pwa && npm run build
+cd pwa && npm run lint        # oxlint — zero errors required
 cd server && python -m compileall habits_api   # when Python touched
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --state-file docs/window-instances/code-health/STATE.md \
@@ -105,6 +112,8 @@ Read Superpowers **receiving-code-review** skill, then invoke [`/receiving-code-
 ### Phase 7b — Backlog reflect (mandatory)
 
 Every deferred finding → backlog row with id, priority, AC. Set `backlog_ref` on the REVIEW_FINDINGS row. Create `ch-*` / BUG_BACKLOG / REFACTOR_BACKLOG items for deferred findings. Cannot close until complete.
+
+**Fresh-eye pass (mandatory before Phase 8):** Re-read the changed files as if reviewing a colleague’s PR — not as the author. Check for patchwork signals, missed DRY opportunities, and new code smells introduced. Log new finds as `ch-r{N}-fresh-{seq}` and triage before close.
 
 ## Phase 8 — Close
 

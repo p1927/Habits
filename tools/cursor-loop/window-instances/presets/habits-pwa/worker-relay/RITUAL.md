@@ -9,7 +9,17 @@ STATE CHECKPOINT, IN_PROGRESS, BACKLOG; `git status`; `git log -3`; update `LAST
 
 ## Phase 3 — Select
 
-Top BACKLOG item or resume IN_PROGRESS. If BACKLOG < 3, refill from BRAINSTORM first.
+Resume `IN_PROGRESS` if set. Otherwise pick top unchecked `- [ ]` item from BACKLOG.
+
+**If BACKLOG has < 3 open items — mandatory self-rescue before Phase 4:**
+
+1. Read `docs/window-instances/po-relay/STATE.md` → scan BRAINSTORM_LOG last 5 sessions + any `UI_PROPOSALS` rows with `status=refined` or `proposed` and no `relay-*` `backlog_ref`
+2. Read `docs/window-instances/NEXT_PHASE.md` for any cross-instance relay signals
+3. Derive next relay-N items (IDs continuing from last relay-* in HISTORY); append as `- [ ] relay-N | <title> | <type> | <AC one-liner>` rows directly into this file's BACKLOG
+4. If po-relay has nothing actionable: scan `pwa/src/` + `server/` git log and open REVIEW_FINDINGS for accessibility gaps, polish issues, or quality items to convert to relay-* tasks
+5. Also promote any REVIEW_FINDINGS rows with `action=backlog` and `backlog_ref=—` to new backlog items and update their `backlog_ref`
+
+**Never end Phase 3 with an empty or sub-3-item BACKLOG.** Every wake must exit this phase with ≥1 selected item to execute.
 
 **Worktree (code items):** mandatory prep then create before Phase 4:
 
@@ -44,6 +54,7 @@ python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
   --loop-id worker-relay \
   --state-file docs/window-instances/worker-relay/STATE.md
 cd pwa && npm run build
+cd pwa && npm run lint        # oxlint — zero errors required
 python3 -c "import habits_api.main"   # if server/ changed
 curl -s http://127.0.0.1:8787/healthz   # optional, server running
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
@@ -55,6 +66,8 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
 Apply script output: set `code_changed`, increment `review_round` if yes, set `review_status=pending`, record `review_diff_range`. Cannot carry `review_status=done` from a prior tick when git diff is non-empty.
 
 Area-specific checks when touching: Home rings, Log swipe/scan, Day timeline, Cards CRUD, Agent chat.
+
+**React component changes:** Invoke `vercel-react-best-practices` skill — verify memo usage, bundle impact, and client/server boundary correctness.
 
 ## Phase 6 — Code review (Round N)
 
@@ -81,6 +94,8 @@ Read Superpowers **receiving-code-review** skill, then invoke [`/receiving-code-
 
 Every deferred finding → backlog row with id, priority, AC. Set `backlog_ref` on the REVIEW_FINDINGS row. Create `relay-*` items in BACKLOG for deferred findings. Cannot close until complete.
 
+**Fresh-eye pass (mandatory before Phase 8):** Re-read the full diff as if encountering it for the first time — not as the author. Check for stray `any`, dead variables, missing null guards, and regressions that implementation focus obscured. Log new finds as `rf-r{N}-fresh-{seq}` and triage before close.
+
 ## Phase 8 — Close
 
 When `worktree_status=active`:
@@ -93,6 +108,8 @@ bash tools/cursor-loop/scripts/instance_worktree.sh remove . --loop-id worker-re
 ```
 
 Then set `worktree_status=none` and clear worktree path/branch/item fields.
+
+**AC completion check (mandatory):** For the closed item, verify each Given/When/Then AC clause was exercised. Items with unmet ACs → set `partial-close` flag and create a follow-up `relay-*` item before marking `done`.
 
 HISTORY, CHECKPOINT (`phase=8-close`, `review_status`), clear IN_PROGRESS, commit.
 

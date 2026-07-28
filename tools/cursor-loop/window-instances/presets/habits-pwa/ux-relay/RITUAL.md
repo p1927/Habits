@@ -31,6 +31,7 @@ Phases 4–7 run inside `WORKTREE_PATH` (create auto-patches CHECKPOINT).
 2. ui-ux-pro-max design-system search
 3. 21st-cache / 21st-cli before hand-writing components
 4. Ship UI diff for selected `ui-*`
+5. **Component state coverage:** Invoke `interaction-design` skill — confirm component covers all 5 states: hover, focus, error, loading, empty. Missing states must be added before Phase 5.
 
 **Refactor subcheckpoints** when item touches hooks/lib (CSS-only: set `refactor_subphase=none`):
 
@@ -47,6 +48,7 @@ python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
   --loop-id ux-relay \
   --state-file docs/window-instances/ux-relay/STATE.md
 cd pwa && npm run build
+cd pwa && npm run lint        # oxlint — zero errors required
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --state-file docs/window-instances/ux-relay/STATE.md \
   --loop-id ux-relay \
@@ -78,6 +80,7 @@ python3 -c "import habits_api.main"
 - [ ] 21st search logged
 - [ ] Visual check at **390px**
 - [ ] `prefers-reduced-motion` not broken
+- [ ] `harden` skill invoked — error/loading/empty states, text overflow, and edge cases verified
 
 ## Phase 6 — Code review (Round N)
 
@@ -104,6 +107,8 @@ Read Superpowers **receiving-code-review** skill, then invoke [`/receiving-code-
 ### Phase 7b — Backlog reflect (mandatory)
 
 Every deferred finding → backlog row with id, priority, AC. Set `backlog_ref` on the REVIEW_FINDINGS row. Create `ui-*` items in UI_POLISH_BACKLOG for deferred findings. Cannot close until complete.
+
+**Fresh-eye pass (mandatory before Phase 8):** Re-read the full diff as if encountering it for the first time. Check visual consistency, token usage, missing states, and regressions not visible in implementation mode. Log new finds as `ux-r{N}-fresh-{seq}` and triage before close.
 
 **CRITIQUE_BACKLOG:** every `rejected` row must have non-empty `ux_response` before Phase 8 close. Mark `shipped` when linked `ui-*` merges.
 

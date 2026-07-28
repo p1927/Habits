@@ -29,7 +29,7 @@
       "state_file": "docs/window-instances/ux-relay/STATE.md",
       "sentinel": "AGENT_LOOP_TICK_UX_RELAY",
       "wake_sentinel": "AGENT_LOOP_WAKE_UX_RELAY",
-      "interval_sec": 300,
+      "interval_sec": 120,
       "backlog_sections": [
         "UI_POLISH_BACKLOG",
         "UX_GAPS",

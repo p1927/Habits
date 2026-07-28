@@ -7,6 +7,8 @@
 
 Read CHECKPOINT, backlogs, `git log -5 --oneline`; update `LAST_REVIEW`.
 
+**Cross-instance check (mandatory):** Count unchecked `- [ ]` items in `docs/window-instances/worker-relay/STATE.md` BACKLOG. If < 3 open items exist, this tick **must** generate ≥1 new `relay-N` row in Phase 4 PO lens before arm.
+
 ## Phase 4 — Execute (3-lens brainstorm)
 
 Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
@@ -25,7 +27,7 @@ Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
 - RICE top 5 candidates
 - Merge duplicates; drop vague items
 - Rewrite AC as Given/When/Then
-- Feed `relay-*` to `worker-relay/STATE.md` BACKLOG
+- **Mandatory when worker BACKLOG < 3 open items:** Append new `relay-N` rows **directly** into `docs/window-instances/worker-relay/STATE.md` BACKLOG (not just noted in BRAINSTORM_LOG). Use format: `- [ ] relay-N | <title> | <type> | <AC one-liner>`. At least 1 new row per PO tick when worker open count < 3.
 
 ### Business owner lens
 
@@ -37,6 +39,8 @@ Run **three separate lens sessions**; append each to `BRAINSTORM_LOG` with tag.
 ## Phase 5 — Verify
 
 Log all three lenses in `BRAINSTORM_LOG` with timestamp. At least one backlog mutation (not read-only).
+
+**Worker BACKLOG gate:** Confirm `docs/window-instances/worker-relay/STATE.md` BACKLOG has ≥3 unchecked `- [ ]` rows OR this tick appended ≥1 new `relay-N` row. If neither is true, return to Phase 4 PO lens before proceeding.
 
 ```bash
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \

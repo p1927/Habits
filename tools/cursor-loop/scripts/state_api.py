@@ -197,6 +197,8 @@ def cmd_append(args: argparse.Namespace) -> int:
         text = _append_review_finding(text, args)
     elif args.part == "refactor-plan":
         text = _append_refactor_plan(text, args)
+    elif args.part == "backlog-row":
+        text = _append_backlog_row(text, args)
     else:
         _emit_error("unknown_part", f"unknown append part: {args.part}")
 
@@ -204,6 +206,35 @@ def cmd_append(args: argparse.Namespace) -> int:
     _emit_ok("append", args.part, loop_id, snap.get("fingerprint", ""))
     _emit_json({"fingerprint": snap.get("fingerprint", "")})
     return 0
+
+
+def _append_backlog_row(state_text: str, args: argparse.Namespace) -> str:
+    section = getattr(args, "section", "") or ""
+    if not section:
+        _emit_error("missing_section_arg", "--section required for append backlog-row")
+    if not args.row:
+        _emit_error("missing_row", "--row required for append backlog-row")
+    if not args.id:
+        _emit_error("missing_id", "--id required for append backlog-row")
+    marker = f"## {section}"
+    if marker not in state_text:
+        _emit_error("missing_section", f"section '{section}' not found in STATE")
+    before, rest = state_text.split(marker, 1)
+    if "\n## " in rest:
+        section_body, suffix = rest.split("\n## ", 1)
+        suffix = "\n## " + suffix
+    else:
+        section_body, suffix = rest, ""
+    lines = section_body.splitlines()
+    if args.replace:
+        lines = [ln for ln in lines if args.id not in ln]
+    insert_at = len(lines)
+    for i, line in enumerate(lines):
+        if line.strip().startswith("|") and "----" in line:
+            insert_at = i + 1
+            break
+    lines.insert(insert_at, args.row)
+    return before + marker + "\n" + "\n".join(lines) + suffix + ("\n" if state_text.endswith("\n") else "")
 
 
 def _parse_refactor_plan(state_text: str, plan_id: str) -> list[dict[str, str]]:
@@ -361,7 +392,9 @@ def main() -> int:
     set_p.add_argument("pairs", nargs="+", metavar="key=value")
 
     append_p = sub.add_parser("append")
-    append_p.add_argument("part", choices=("history", "review-finding", "refactor-plan"))
+    append_p.add_argument("part", choices=("history", "review-finding", "refactor-plan", "backlog-row"))
+    append_p.add_argument("--section", default="", help="Target table section name (for backlog-row)")
+    append_p.add_argument("--row", default="", help="Raw pipe-delimited row string (for backlog-row)")
     append_p.add_argument("--item-id", default="")
     append_p.add_argument("--outcome", default="")
     append_p.add_argument("--evidence", default="")
