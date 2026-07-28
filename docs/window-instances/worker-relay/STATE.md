@@ -19,29 +19,28 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:17:12Z` |
+| last_wake | `2026-07-28T13:20:41Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `9-arm` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `70` |
-| last_reviewed_round | `70` |
+| last_reviewed_round | `71` |
 | worktree_status | `none` |
 | review_fingerprint | `relay212macros` |
-| ritual_step | `9-arm` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
+| execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `879c838` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-213 verify-only; AgentToolsSheet onSelect+onClose+sendPrompt satisfies AC` |
+| review_skip_reason | `Recovery idle wake 2026-07-28T13:20:41Z; backlog empty post relay-213` |
 | review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
-| current_item_id | `` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
@@ -167,8 +166,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r71-000 | low | Recovery idle wake; backlog empty after relay-213 verify — awaiting PO relay-214+ | round-71 /code-review | closed | — | closed |
 | rf-r70-000 | low | relay-213 verify: AgentToolsSheet row tap calls sendPrompt(text) then onClose — AC satisfied in main (cfec619+) | round-70 /code-review | closed | — | closed |
 | rf-r69-000 | low | Recovery wake STATE sync; relay-212 shipped in same turn primary SPIN | round-69 /code-review | closed | — | closed |
 | rf-r68-000 | low | relay-212: navigateLogType drill-down matches relay-162 history pattern; HomeMacrosCard tappable with aria-label | round-68 /code-review | closed | — | closed |
@@ -353,6 +354,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
