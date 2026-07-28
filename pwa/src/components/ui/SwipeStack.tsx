@@ -1,6 +1,8 @@
+import { useCallback, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useSwipeStack } from '../../hooks/useSwipeStack';
 import type { SwipeStackProps } from '../../lib/swipeStackTypes';
+import type { SwipeDirection } from '../../lib/swipeStackTypes';
 import './ui.css';
 
 export type { SwipeDirection } from '../../lib/swipeStackTypes';
@@ -15,6 +17,18 @@ export function SwipeStack({
   label = 'Swipe card',
   showKeyboardActions = true,
 }: SwipeStackProps) {
+  const [liveMessage, setLiveMessage] = useState('');
+
+  const labelForDirection = useCallback(
+    (direction: SwipeDirection) => {
+      if (direction === 'right') return hintRight;
+      if (direction === 'left') return hintLeft;
+      if (direction === 'up') return hintUp;
+      return 'Skipped';
+    },
+    [hintLeft, hintRight, hintUp],
+  );
+
   const {
     dragging,
     fire,
@@ -28,13 +42,19 @@ export function SwipeStack({
     isExiting,
     exitAnimating,
     cardTransform,
-  } = useSwipeStack({ onSwipe });
+  } = useSwipeStack({
+    onSwipe,
+    onCommit: (direction) => setLiveMessage(labelForDirection(direction)),
+  });
 
   return (
     <div
       className={`ui-swipe-stack ${className}${isExiting ? ' ui-swipe-stack--exiting' : ''}`.trim()}
       style={{ '--swipe-next-scale': nextCardScale } as CSSProperties}
     >
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {liveMessage}
+      </div>
       <div className="ui-swipe-hints" aria-hidden="true">
         <span className="ui-swipe-hint ui-swipe-hint--left">{hintLeft}</span>
         <span className="ui-swipe-hint ui-swipe-hint--up">{hintUp}</span>

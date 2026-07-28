@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { SWIPE_STACK_MAX_ROTATION, SWIPE_STACK_THRESHOLD } from '../lib/swipeStackConstants';
+import {
+  SWIPE_STACK_MAX_ROTATION,
+  SWIPE_STACK_THRESHOLD,
+  SWIPE_VELOCITY_COMMIT,
+} from '../lib/swipeStackConstants';
 import type { SwipeDirection } from '../lib/swipeStackTypes';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
 interface UseSwipeStackOptions {
   onSwipe?: (direction: SwipeDirection) => void;
+  onCommit?: (direction: SwipeDirection) => void;
 }
 
 const EXIT_MS = 250;
@@ -22,16 +27,41 @@ function vibrateForSwipe(direction: SwipeDirection) {
   navigator.vibrate(direction === 'right' ? 12 : direction === 'left' ? [8, 40, 8] : 6);
 }
 
-export function useSwipeStack({ onSwipe }: UseSwipeStackOptions) {
+function resolveSwipeDirection(
+  x: number,
+  y: number,
+  velocityX: number,
+  velocityY: number,
+): SwipeDirection | null {
+  if (Math.abs(y) > SWIPE_STACK_THRESHOLD && Math.abs(y) > Math.abs(x)) {
+    return y < 0 ? 'up' : 'down';
+  }
+  if (Math.abs(x) > SWIPE_STACK_THRESHOLD) {
+    return x > 0 ? 'right' : 'left';
+  }
+  if (Math.abs(velocityX) >= SWIPE_VELOCITY_COMMIT && Math.abs(velocityX) > Math.abs(velocityY)) {
+    return velocityX > 0 ? 'right' : 'left';
+  }
+  if (Math.abs(velocityY) >= SWIPE_VELOCITY_COMMIT) {
+    return velocityY < 0 ? 'up' : 'down';
+  }
+  return null;
+}
+
+export function useSwipeStack({ onSwipe, onCommit }: UseSwipeStackOptions) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
   const [exitAnimating, setExitAnimating] = useState(false);
   const start = useRef({ x: 0, y: 0 });
+  const lastMove = useRef({ x: 0, y: 0, t: 0 });
+  const releaseVelocity = useRef({ x: 0, y: 0 });
   const exitFromTransform = useRef('translate(0px, 0px) rotate(0deg)');
   const onSwipeRef = useRef(onSwipe);
+  const onCommitRef = useRef(onCommit);
   onSwipeRef.current = onSwipe;
+  onCommitRef.current = onCommit;
 
   const rotation = Math.max(-SWIPE_STACK_MAX_ROTATION, Math.min(SWIPE_STACK_MAX_ROTATION, offset.x * 0.08));
   const dampedY = offset.y * 0.3;
@@ -45,6 +75,7 @@ export function useSwipeStack({ onSwipe }: UseSwipeStackOptions) {
   const commit = useCallback(
     (direction: SwipeDirection) => {
       if (isExiting) return;
+      onCommitRef.current?.(direction);
       vibrateForSwipe(direction);
 
       if (prefersReducedMotion) {
@@ -90,7 +121,9 @@ export function useSwipeStack({ onSwipe }: UseSwipeStackOptions) {
   const handleStart = useCallback(
     (clientX: number, clientY: number) => {
       if (isExiting) return;
+      const t = performance.now();
       start.current = { x: clientX, y: clientY };
+      lastMove.current = { x: clientX, y: clientY, t };
       setDragging(true);
     },
     [isExiting],
@@ -99,6 +132,13 @@ export function useSwipeStack({ onSwipe }: UseSwipeStackOptions) {
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
       if (!dragging || isExiting) return;
+      const t = performance.now();
+      const dt = Math.max(t - lastMove.current.t, 1);
+      releaseVelocity.current = {
+        x: (clientX - lastMove.current.x) / dt,
+        y: (clientY - lastMove.current.y) / dt,
+      };
+      lastMove.current = { x: clientX, y: clientY, t };
       setOffset({ x: clientX - start.current.x, y: clientY - start.current.y });
     },
     [dragging, isExiting],
@@ -108,12 +148,8 @@ export function useSwipeStack({ onSwipe }: UseSwipeStackOptions) {
     if (isExiting) return;
     setDragging(false);
     const { x, y } = offset;
-    let direction: SwipeDirection | null = null;
-    if (Math.abs(y) > SWIPE_STACK_THRESHOLD && Math.abs(y) > Math.abs(x)) {
-      direction = y < 0 ? 'up' : 'down';
-    } else if (Math.abs(x) > SWIPE_STACK_THRESHOLD) {
-      direction = x > 0 ? 'right' : 'left';
-    }
+    const { x: velocityX, y: velocityY } = releaseVelocity.current;
+    const direction = resolveSwipeDirection(x, y, velocityX, velocityY);
     if (direction) {
       commit(direction);
       return;
