@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { emitAgentDataRefresh } from '../lib/agentDataRefresh';
 import { api, type FoodLogItem } from '../lib/api';
 import type { CalendarEvent } from '../hooks/useAgentContext';
 
@@ -81,6 +82,8 @@ export function AgentActionFeed({ serverOnline, active, onDataChange, seedAction
         if (newActions.length > 0) {
           setActions((prev) => [...newActions, ...prev].slice(0, 12));
           onDataChangeRef.current?.();
+          if (newActions.some((a) => a.kind === 'food')) emitAgentDataRefresh('food');
+          if (newActions.some((a) => a.kind === 'calendar')) emitAgentDataRefresh('calendar');
         }
       }
 

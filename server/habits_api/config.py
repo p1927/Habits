@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     minimax_base_url: str = "https://api.minimax.io/v1"
     minimax_model: str = "MiniMax-M2.7"
 
+    livekit_url: str = "ws://localhost:7880"
+    livekit_api_key: str = "devkey"
+    livekit_api_secret: str = "secret"
+
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.habits_cors_origins.split(",") if o.strip()]

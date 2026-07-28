@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from 'react';
-import { getConfig } from '../lib/config';
 import { toOrbVisual, type VoiceIframeStatus } from '../lib/voiceStatus';
 import { type ChatResponse } from '../lib/api';
 import { useAgentContext } from './useAgentContext';
@@ -14,7 +13,6 @@ interface UseAgentSectionOptions {
 }
 
 export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
-  const { voiceUiUrl } = getConfig();
   const context = useAgentContext(serverOnline, true);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [voiceIframeStatus, setVoiceIframeStatus] = useState<VoiceIframeStatus | null>(null);
@@ -65,7 +63,6 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
   const composerVoiceOrbState = voiceOpen ? (orbState !== 'idle' ? orbState : 'active') : undefined;
 
   return {
-    voiceUiUrl,
     context,
     voiceOpen,
     setVoiceOpen,

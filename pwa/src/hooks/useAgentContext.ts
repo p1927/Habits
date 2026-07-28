@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { onAgentDataRefresh } from '../lib/agentDataRefresh';
 import { primeFoodTodaySnapshot } from '../lib/foodTodaySnapshot';
 import {
   api,
@@ -90,6 +91,8 @@ export function useAgentContext(serverOnline: boolean, active: boolean) {
     const id = window.setInterval(() => void refresh(), 60_000);
     return () => window.clearInterval(id);
   }, [active, refresh]);
+
+  useEffect(() => { if (!active) return undefined; return onAgentDataRefresh(() => { void refresh(); }); }, [active, refresh]);
 
   return { ...state, refresh };
 }

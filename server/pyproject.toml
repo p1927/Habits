@@ -15,6 +15,7 @@ dependencies = [
   "pydantic>=2.9.0",
   "pydantic-settings>=2.5.0",
   "python-multipart>=0.0.9",
+  "livekit-api>=0.8.0",
 ]
 
 [project.scripts]

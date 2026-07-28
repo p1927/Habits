@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { onAgentDataRefresh } from '../lib/agentDataRefresh';
 import { api, ApiError, type HabitsStreaksResponse, type HabitsTodayResponse } from '../lib/api';
 import { cacheHabitStreak } from '../lib/habitQueue';
 import { cacheMealPlan, getCachedMealPlan, type MealPlanEntry } from '../lib/mealPlanQueue';
@@ -40,6 +41,8 @@ export function useDaySectionData(serverOnline: boolean) {
     const id = window.setInterval(() => void refresh(), 60_000);
     return () => window.clearInterval(id);
   }, [refresh]);
+
+  useEffect(() => onAgentDataRefresh(() => { void refresh(); }), [refresh]);
 
   return {
     habits,

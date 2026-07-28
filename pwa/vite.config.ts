@@ -80,6 +80,7 @@ export default defineConfig({
           '**/weekReportPdf-*.js',
           '**/index.es-*.js',
           '**/purify.es-*.js',
+          '**/VoiceLiveKitRoom-*.js',
         ],
         maximumFileSizeToCacheInBytes: 400 * 1024,
         navigateFallback: `${base}index.html`,

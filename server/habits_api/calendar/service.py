@@ -21,6 +21,7 @@ async def create_event(
     start_iso: str,
     duration_minutes: int = 60,
     description: str = "",
+    location: str = "",
 ) -> dict[str, Any]:
     if not await db.google_connected():
         raise RuntimeError("Google not connected")
@@ -31,5 +32,6 @@ async def create_event(
         start_iso,
         duration_minutes,
         description,
+        location,
     )
     return {"event": event}

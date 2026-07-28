@@ -18,6 +18,7 @@ class CreateEventRequest(BaseModel):
     start: str = Field(min_length=1, description="ISO datetime")
     duration_minutes: int = Field(default=60, ge=5, le=480)
     description: str = ""
+    location: str = ""
 
 
 @router.get("/api/calendar/today", dependencies=[Depends(require_bearer)])
@@ -42,6 +43,7 @@ async def calendar_create_event(
             body.start,
             body.duration_minutes,
             body.description,
+            body.location,
         ),
         map_value_error=True,
     )

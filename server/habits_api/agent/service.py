@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 
 from habits_api.agent.context import build_agent_context
+from habits_api.agent.prompts import build_system_message
 from habits_api.agent.tools import AGENT_TOOLS, execute_tool
 from habits_api.config import Settings
 from habits_api.db import TokenDB
@@ -35,11 +36,7 @@ async def chat(
         raise ValueError("MINIMAX_API_KEY not configured")
 
     context = await build_agent_context(settings, db)
-    system = (
-        "You are the Habits coach assistant. Help with food logging, habits, calendar, and health notes. "
-        "Use tools when the user wants to log data or take action. Be concise and motivating.\n\n"
-        f"Today's context:\n{json.dumps(context, indent=2)}"
-    )
+    system = build_system_message(context)
 
     messages: list[dict[str, Any]] = [{"role": "system", "content": system}]
     if history:
@@ -55,7 +52,7 @@ async def chat(
     tool_results: list[dict] = []
     reply = ""
 
-    for _ in range(3):
+    for _ in range(5):
         payload = {
             "model": settings.minimax_model,
             "messages": messages,
@@ -184,11 +181,7 @@ async def chat_stream(
         return
 
     context = await build_agent_context(settings, db)
-    system = (
-        "You are the Habits coach assistant. Help with food logging, habits, calendar, and health notes. "
-        "Use tools when the user wants to log data or take action. Be concise and motivating.\n\n"
-        f"Today's context:\n{json.dumps(context, indent=2)}"
-    )
+    system = build_system_message(context)
 
     messages: list[dict[str, Any]] = [{"role": "system", "content": system}]
     if history:
@@ -198,7 +191,7 @@ async def chat_stream(
     tool_results: list[dict] = []
     reply = ""
 
-    for _ in range(3):
+    for _ in range(5):
         assistant_msg: dict[str, Any] | None = None
         async for chunk in _stream_minimax_round(settings, messages):
             if isinstance(chunk, str):

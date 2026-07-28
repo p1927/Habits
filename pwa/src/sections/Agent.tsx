@@ -62,7 +62,6 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
       />
 
       <AgentSectionOverlays
-        voiceUiUrl={s.voiceUiUrl}
         voiceOpen={s.voiceOpen}
         onVoiceOpenChange={s.setVoiceOpen}
         onVoiceStatusChange={s.setVoiceIframeStatus}

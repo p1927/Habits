@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from habits_api.config import Settings, load_settings
 from habits_api.db import TokenDB
 from habits_api.routes import agent as agent_router
+from habits_api.routes import agent_tools as agent_tools_router
+from habits_api.routes import voice as voice_router
 from habits_api.routes import api as api_router
 from habits_api.routes import calendar as calendar_router
 from habits_api.routes import cards as cards_router
@@ -47,6 +49,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(day_router.router)
     app.include_router(cards_router.router)
     app.include_router(agent_router.router)
+    app.include_router(agent_tools_router.router)
+    app.include_router(voice_router.router)
     return app
 
 
