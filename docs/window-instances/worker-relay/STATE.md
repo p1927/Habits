@@ -21,7 +21,7 @@
 |-------|-------|
 | last_wake | `2026-07-28T13:17:12Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
@@ -29,23 +29,23 @@
 | last_reviewed_round | `70` |
 | worktree_status | `none` |
 | review_fingerprint | `relay212macros` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `17f37c1` |
+| commit_hash | `879c838` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `relay-213 verify-only; AgentToolsSheet onSelect+onClose+sendPrompt satisfies AC` |
 | review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
-| current_item_id | `relay-213` |
-
+| current_item_id | `` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
+
 ## IN_PROGRESS
 
 *(empty)*
