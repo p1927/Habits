@@ -69,7 +69,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         attachImage={s.attachImage}
         showDisclaimer={s.messages.length === 0 && !s.input.trim() && !s.attachImage}
         showVoiceNudge={showVoiceNudge}
-        toolStatusLabels={s.toolStatusLabels}
+        activeTools={s.activeTools}
         onDismissVoiceNudge={() => setVoiceNudgeDismissed(true)}
         onInputChange={s.setInput}
         onSubmit={() => void s.send()}

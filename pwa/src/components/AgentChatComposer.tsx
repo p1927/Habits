@@ -1,6 +1,7 @@
 import type { VoiceOrbVisualState } from '../lib/voiceStatus';
 
 import { shortcutModifierLabel } from '../lib/logSectionShared';
+import { toolStatusLabel } from '../lib/agentToolStatus';
 
 export interface AgentChatComposerProps {
   serverOnline: boolean;
@@ -11,6 +12,7 @@ export interface AgentChatComposerProps {
   showDisclaimer?: boolean;
   showVoiceNudge?: boolean;
   toolStatusLabels?: string[];
+  activeTools?: string[];
   onDismissVoiceNudge?: () => void;
   voiceOrbState?: VoiceOrbVisualState;
   onInputChange: (value: string) => void;
@@ -30,6 +32,7 @@ export function AgentChatComposer({
   showDisclaimer = false,
   showVoiceNudge = false,
   toolStatusLabels = [],
+  activeTools = [],
   onDismissVoiceNudge,
   voiceOrbState,
   onInputChange,
@@ -40,14 +43,26 @@ export function AgentChatComposer({
   onOpenTools,
 }: AgentChatComposerProps) {
   const canSend = serverOnline && !scanning && (input.trim() || attachImage);
-  const statusChips = toolStatusLabels.length > 0 ? toolStatusLabels : loading ? ['Working…'] : [];
+  const toolLabels = (() => {
+    if (activeTools.length > 0) {
+      const seen = new Set<string>();
+      return activeTools.reduce<string[]>((labels, tool) => {
+        const label = toolStatusLabel(tool);
+        if (seen.has(label)) return labels;
+        seen.add(label);
+        return [...labels, label];
+      }, []);
+    }
+    return toolStatusLabels;
+  })();
+  const statusChips = toolLabels.length > 0 ? toolLabels : loading ? ['Working…'] : [];
 
   return (
     <div className="agent-composer-dock" aria-label="Message composer">
       {loading && statusChips.length > 0 && (
         <div className="agent-tool-status" role="status" aria-live="polite" aria-label="Coach activity">
-          {statusChips.map((label) => (
-            <span key={label} className="agent-tool-status__chip">
+          {statusChips.map((label, i) => (
+            <span key={`${label}-${i}`} className="agent-tool-status__chip">
               {label}
             </span>
           ))}

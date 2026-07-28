@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { agentChatStream } from '../lib/agentChatStream';
 import type { AgentChatMessage } from '../lib/agentSectionShared';
 import type { ChatResponse } from '../lib/api';
-import { toolStatusLabel } from '../lib/agentToolStatus';
 
 function isAbortError(e: unknown): boolean {
   return e instanceof DOMException && e.name === 'AbortError';
@@ -24,7 +23,7 @@ export function useAgentChatStream({
   const listRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const streamGenRef = useRef(0);
-  const [toolStatusLabels, setToolStatusLabels] = useState<string[]>([]);
+  const [activeTools, setActiveTools] = useState<string[]>([]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
@@ -56,17 +55,19 @@ export function useAgentChatStream({
             },
             onToolStart: (tool) => {
               if (gen !== streamGenRef.current) return;
-              const label = toolStatusLabel(tool);
-              setToolStatusLabels((prev) => (prev.includes(label) ? prev : [...prev, label]));
+              setActiveTools((prev) => [...prev, tool]);
             },
             onToolEnd: (tool) => {
               if (gen !== streamGenRef.current) return;
-              const label = toolStatusLabel(tool);
-              setToolStatusLabels((prev) => prev.filter((l) => l !== label));
+              setActiveTools((prev) => {
+                const idx = prev.indexOf(tool);
+                if (idx === -1) return prev;
+                return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+              });
             },
             onDone: (res) => {
               if (gen !== streamGenRef.current) return;
-              setToolStatusLabels([]);
+              setActiveTools([]);
               setMessages((m) => {
                 const copy = [...m];
                 const last = copy[copy.length - 1];
@@ -79,7 +80,7 @@ export function useAgentChatStream({
             },
             onError: (msg) => {
               if (gen !== streamGenRef.current) return;
-              setToolStatusLabels([]);
+              setActiveTools([]);
               setError(msg);
             },
           },
@@ -93,7 +94,7 @@ export function useAgentChatStream({
         setError(e instanceof Error ? e.message : 'Chat failed');
       } finally {
         if (gen === streamGenRef.current) {
-          setToolStatusLabels([]);
+          setActiveTools([]);
           setLoading(false);
           listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
         }
@@ -106,9 +107,9 @@ export function useAgentChatStream({
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
-    setToolStatusLabels([]);
+    setActiveTools([]);
     return ++streamGenRef.current;
   }, []);
 
-  return { listRef, runStream, beginStream, toolStatusLabels };
+  return { listRef, runStream, beginStream, activeTools };
 }
