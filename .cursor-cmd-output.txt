@@ -1,0 +1,26 @@
+f47ac8a refactor(ch-135): split AgentActionFeed into hook + poll lib
+6e49459 chore(worker-relay): checkpoint relay-203 shipped, refill backlog
+c428148 chore(worker-relay): close tick before merge
+usage: validate_ritual_gate.py [-h] [--project PROJECT] --loop-id LOOP_ID
+                               --state-file STATE_FILE
+                               [--mode {arm,checkpoint,wake,steady,transition}]
+                               [--from-phase FROM_PHASE] [--to-phase TO_PHASE]
+                               [--force]
+validate_ritual_gate.py: error: unrecognized arguments: .
+usage: checkpoint-loop.py [-h] --conversation-id CONVERSATION_ID [--product]
+                          [--evidence EVIDENCE] [--blocker BLOCKER]
+                          [--infra-only] [--reset-recovery]
+                          [project]
+checkpoint-loop.py: error: the following arguments are required: --conversation-id
+PREPARE_ARM_WAKE_BEGIN
+loop_id=code-health
+wake_sentinel=AGENT_LOOP_WAKE_CODE_HEALTH
+interval_sec=120
+monitor_regex=^AGENT_LOOP_WAKE_CODE_HEALTH
+SHELL_BLOCK_UNTIL_MS=210000
+SHELL_NOTIFY_ON_OUTPUT=^AGENT_LOOP_WAKE_CODE_HEALTH
+PHASE_9_MODE=background_notify_primary
+ARM_COMMAND=LOOP_ID=code-health WAKE_SENTINEL=AGENT_LOOP_WAKE_CODE_HEALTH INTERVAL=120 CONTRACT_DOC=docs/window-instances/code-health/INSTANCE.md STATE_FILE=docs/window-instances/code-health/STATE.md PROJECT_ROOT=/Users/pratyushmishra/Documents/GitHub/Habits bash tools/cursor-loop/scripts/arm-wake.sh
+CRITICAL=Run ARM_COMMAND with block_until_ms=0 (background) AND notify_on_output=SHELL_NOTIFY_ON_OUTPUT; end turn while verify-wake shows ARMED
+PREPARE_ARM_WAKE_END
+WAKE_DOWN loop_id=code-health pidfile=/var/folders/yv/jqnlkzt13ls5hbj572nsbmf80000gn/T//cursor-loop-code-health.wake.pid
