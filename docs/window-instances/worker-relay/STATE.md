@@ -21,15 +21,15 @@
 |-------|-------|
 | last_wake | `2026-07-28T13:26:22Z` |
 | next_action | `relay-216 next` |
-| phase | `8-close` |
-| review_status | `done` |
+| phase | `9-arm` |
+| review_status | `skipped` |
 | review_diff_range | `293f020..612e3cd` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `74` |
 | last_reviewed_round | `74` |
 | worktree_status | `none` |
 | review_fingerprint | `relay215tools` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
@@ -39,9 +39,8 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Recovery wake 2026-07-28T13:26:29Z; relay-214 shipped in primary SPIN` |
+| review_skip_reason | `relay-215 shipped 612e3cd; round 74 triaged` |
 | review_changed_files | `pwa/src/components/AgentChatComposer.tsx pwa/src/hooks/useAgentChatStream.ts pwa/src/lib/agentToolStatus.ts server/habits_api/agent/service.py` |
-| current_item_id | `relay-215` |
 
 ## IN_PROGRESS
 
@@ -300,9 +299,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-07-28 | relay-215 | done | build | 612e3cd |
 | — | relay-214 | done | build | 57b8c2d |
 | — | relay-213 | done | verify | cfec619 |
 | — | relay-212 | done | build | 17f37c1 |
