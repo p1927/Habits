@@ -8,7 +8,7 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:01:47Z |
+| reviewed_at | 2026-07-28T13:05:22Z |
 | where_we_are | relay-210 shipped (d96e0f3); backlog empty |
 | confirmed_next |  |
 | brainstorm_notes | awaiting PO relay-211+ |
@@ -19,27 +19,27 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:01:47Z` |
+| last_wake | `2026-07-28T13:05:22Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `9-arm` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `63` |
-| last_reviewed_round | `64` |
+| last_reviewed_round | `65` |
 | worktree_status | `none` |
 | review_fingerprint | `76bc7ac4d2c88063` |
-| ritual_step | `9-arm` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `9fa8b40` |
+| commit_hash | `bf019cc` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle SPIN tick 2026-07-28T13:01:47Z; backlog empty` |
+| review_skip_reason | `Recovery wake idle tick 2026-07-28T13:05:22Z; backlog empty` |
 | review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
 
 ## IN_PROGRESS
@@ -48,7 +48,10 @@
 
 ---
 
-## BACKLOG (priority ordered)
+## BACKLOG
+
+
+ (priority ordered)
 
 - [x] relay-162 | Tap Home calorie trend → open Log History tab | feature | `navigateLogHistory` in App; tappable `HomeCalorieTrendCard` with hint
 - [x] relay-163 | Agent chat image attach in first message (no history required) | feature | `image_base64` on `/api/agent/chat`; multimodal user message in agent service
@@ -106,7 +109,9 @@
 - [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style
 - [x] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
 - [x] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
-
+- [ ] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
+- [ ] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
+- [ ] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -152,8 +157,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r65-000 | low | Recovery wake idle tick 2026-07-28T13:05:22Z; STATE sync only — no product diff | round-65 /code-review | closed | — | closed |
 | rf-r64-000 | low | Idle SPIN tick 2026-07-28T13:01:47Z; backlog empty — no product diff | round-64 /code-review | closed | — | closed |
 | rf-r63-000 | low | Recovery wake idle tick 2026-07-28T13:02:06Z; STATE sync only — no product diff | round-63 /code-review | closed | — | closed |
 | rf-r62-000 | low | Idle SPIN tick 2026-07-28T12:58:53Z; backlog empty — checkpoint sync only | round-62 /code-review | closed | — | closed |
@@ -326,6 +333,10 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
+
 
 
 
