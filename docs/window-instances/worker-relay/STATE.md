@@ -21,7 +21,7 @@
 |-------|-------|
 | last_wake | `2026-07-28T13:08:21Z` |
 | next_action | `relay-212 next` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `done` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
@@ -29,7 +29,7 @@
 | last_reviewed_round | `67` |
 | worktree_status | `none` |
 | review_fingerprint | `relay211list` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
