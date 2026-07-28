@@ -9,6 +9,8 @@ export interface AgentChatComposerProps {
   input: string;
   attachImage: string | null;
   showDisclaimer?: boolean;
+  showVoiceNudge?: boolean;
+  onDismissVoiceNudge?: () => void;
   voiceOrbState?: VoiceOrbVisualState;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
@@ -25,6 +27,8 @@ export function AgentChatComposer({
   input,
   attachImage,
   showDisclaimer = false,
+  showVoiceNudge = false,
+  onDismissVoiceNudge,
   voiceOrbState,
   onInputChange,
   onSubmit,
@@ -37,6 +41,22 @@ export function AgentChatComposer({
 
   return (
     <div className="agent-composer-dock" aria-label="Message composer">
+      {showVoiceNudge && (
+        <div className="agent-voice-nudge" role="region" aria-label="Voice coach suggestion">
+          <button type="button" className="agent-voice-nudge__chip" onClick={onOpenVoice}>
+            Try voice coach
+          </button>
+          <button
+            type="button"
+            className="agent-voice-nudge__dismiss"
+            aria-label="Dismiss voice coach suggestion"
+            onClick={onDismissVoiceNudge}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {attachImage && (
         <div className="agent-attach-preview">
           <img src={attachImage} alt="Attached food photo" className="agent-attach-thumb" />

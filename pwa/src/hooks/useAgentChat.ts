@@ -24,30 +24,49 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
     setError,
   });
 
+  const dispatchMessage = useCallback(
+    async (rawText: string, imageUrl?: string) => {
+      const message = rawText.trim() || (imageUrl ? 'What is in this photo?' : '');
+      if (!message || !serverOnline) return;
+
+      const gen = beginStream();
+      setLoading(true);
+      setError('');
+
+      const userMsg: AgentChatMessage = { role: 'user', content: message, imageUrl };
+
+      setMessages((m) => {
+        const base = m[m.length - 1]?.role === 'assistant' ? m.slice(0, -1) : m;
+        return [...base, userMsg, { role: 'assistant', content: '' }];
+      });
+
+      const history = messagesRef.current
+        .filter((m, i, arr) => !(i === arr.length - 1 && m.role === 'assistant'))
+        .map((m) => ({ role: m.role, content: m.content }));
+
+      await runStream(gen, message, imageUrl, history);
+    },
+    [serverOnline, runStream, beginStream],
+  );
+
   const send = useCallback(async () => {
     const text = input.trim();
     if ((!text && !attachImage) || !serverOnline) return;
 
-    const gen = beginStream();
-    const message = text || 'What is in this photo?';
-    setInput('');
-    setLoading(true);
-    setError('');
     const imageUrl = attachImage ?? undefined;
+    setInput('');
     setAttachImage(null);
-    const userMsg: AgentChatMessage = { role: 'user', content: message, imageUrl };
+    await dispatchMessage(text || 'What is in this photo?', imageUrl);
+  }, [input, attachImage, serverOnline, dispatchMessage]);
 
-    setMessages((m) => {
-      const base = m[m.length - 1]?.role === 'assistant' ? m.slice(0, -1) : m;
-      return [...base, userMsg, { role: 'assistant', content: '' }];
-    });
-
-    const history = messages
-      .filter((m, i, arr) => !(i === arr.length - 1 && m.role === 'assistant'))
-      .map((m) => ({ role: m.role, content: m.content }));
-
-    await runStream(gen, message, imageUrl, history);
-  }, [input, attachImage, serverOnline, messages, runStream, beginStream]);
+  const sendPrompt = useCallback(
+    async (text: string) => {
+      if (loading || !serverOnline || !text.trim()) return;
+      setInput('');
+      await dispatchMessage(text.trim());
+    },
+    [loading, serverOnline, dispatchMessage],
+  );
 
   const regenerateLastReply = useCallback(async () => {
     if (loading || !serverOnline) return;
@@ -93,6 +112,7 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
     setError,
     listRef,
     send,
+    sendPrompt,
     regenerateLastReply,
     clearAttach,
   };

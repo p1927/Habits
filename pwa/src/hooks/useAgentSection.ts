@@ -43,6 +43,7 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
     setError,
     listRef,
     send,
+    sendPrompt,
     regenerateLastReply,
     clearAttach,
   } = useAgentChat({
@@ -78,6 +79,7 @@ export function useAgentSection({ serverOnline }: UseAgentSectionOptions) {
     error,
     listRef,
     send,
+    sendPrompt,
     regenerateLastReply,
     clearAttach,
     cameraOpen,

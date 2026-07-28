@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AgentChatComposer } from '../components/AgentChatComposer';
 import { AgentSectionBody } from '../components/AgentSectionBody';
 import { AgentSectionHeader } from '../components/AgentSectionHeader';
@@ -14,6 +14,7 @@ interface AgentProps {
 
 export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt }: AgentProps) {
   const s = useAgentSection({ serverOnline });
+  const [voiceNudgeDismissed, setVoiceNudgeDismissed] = useState(false);
 
   useEffect(() => {
     if (!agentPrompt?.token) return;
@@ -23,6 +24,18 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
   useAgentComposerFocusShortcut(
     s.voiceOpen || s.toolsOpen || s.cameraOpen || s.attachOpen,
   );
+
+  const showVoiceNudge = useMemo(() => {
+    if (!serverOnline || voiceNudgeDismissed || s.loading || s.voiceOpen) return false;
+    const firstUser = s.messages.find((m) => m.role === 'user');
+    const firstAssistant = s.messages.find((m) => m.role === 'assistant' && m.content.trim());
+    return Boolean(firstUser && firstAssistant);
+  }, [serverOnline, voiceNudgeDismissed, s.loading, s.voiceOpen, s.messages]);
+
+  const openVoiceCoach = () => {
+    setVoiceNudgeDismissed(true);
+    s.setVoiceOpen(true);
+  };
 
   return (
     <section className="section agent-section agent-section--gemini" aria-labelledby="agent-heading">
@@ -40,7 +53,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         composerDraft={s.input}
         attachImage={s.attachImage}
         scanning={s.scanning}
-        onSelectPrompt={s.setInput}
+        onSelectPrompt={(text) => void s.sendPrompt(text)}
         onRegenerateLastReply={() => void s.regenerateLastReply()}
         context={s.context}
         onNavigateMealPlanSyncSource={onNavigateMealPlanSyncSource}
@@ -55,11 +68,13 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         input={s.input}
         attachImage={s.attachImage}
         showDisclaimer={s.messages.length === 0 && !s.input.trim() && !s.attachImage}
+        showVoiceNudge={showVoiceNudge}
+        onDismissVoiceNudge={() => setVoiceNudgeDismissed(true)}
         onInputChange={s.setInput}
         onSubmit={() => void s.send()}
         onClearAttach={s.clearAttach}
         onOpenCamera={() => s.setAttachOpen(true)}
-        onOpenVoice={() => s.setVoiceOpen(true)}
+        onOpenVoice={openVoiceCoach}
         onOpenTools={() => s.setToolsOpen(true)}
         voiceOrbState={s.composerVoiceOrbState}
       />

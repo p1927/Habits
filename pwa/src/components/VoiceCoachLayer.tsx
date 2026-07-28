@@ -50,7 +50,10 @@ export function VoiceCoachLayer({
             <div className="ui-sheet__handle" />
             <h2 className="ui-sheet__title">Voice coach</h2>
             <p className="muted voice-coach-lede">
-              Full voice UI from local-voice-ai — start call, transcript, mic controls, and stack settings.
+              Talk hands-free about food, habits, and your schedule. Coach uses today&apos;s context from your rings and calendar.
+            </p>
+            <p className="voice-coach-legend muted">
+              Tap the mic to start — you can interrupt anytime. Your voice stays on this device until you send a message.
             </p>
           </>
         )}
