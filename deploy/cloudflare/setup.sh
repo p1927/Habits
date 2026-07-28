@@ -44,7 +44,6 @@ echo "==> Building PWA"
   npm ci
   VITE_BASE_PATH="/" \
   VITE_HABITS_API_URL="https://${HABITS_CF_API_HOST}" \
-  VITE_VOICE_UI_URL="${VITE_VOICE_UI_URL:-}" \
   npm run build
 )
 

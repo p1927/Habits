@@ -61,9 +61,22 @@ def _clear_pidfiles(loop_id: str | None) -> list[str]:
         [
             f"cursor-loop-{loop_id}.last_exit",
             f"cursor-loop-{loop_id}.wake.armed",
+            f"cursor-loop-{loop_id}.wake.meta.json",
+            f"cursor-loop-{loop_id}.wake.fired.json",
+            f"cursor-loop-{loop_id}.wake.pending.json",
+            f"cursor-loop-{loop_id}.inject.json",
+            f"cursor-loop-{loop_id}.inject.cooldown",
         ]
         if loop_id
-        else ["cursor-loop-*.last_exit", "cursor-loop-*.wake.armed"]
+        else [
+            "cursor-loop-*.last_exit",
+            "cursor-loop-*.wake.armed",
+            "cursor-loop-*.wake.meta.json",
+            "cursor-loop-*.wake.fired.json",
+            "cursor-loop-*.wake.pending.json",
+            "cursor-loop-*.inject.json",
+            "cursor-loop-*.inject.cooldown",
+        ]
     )
     for pattern in aux_patterns:
         for path in tmp.glob(pattern):

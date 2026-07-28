@@ -52,7 +52,8 @@ def touches_scope(files: list[str], scope_paths: list[str]) -> bool:
     app_paths = [p for p in scope_paths if not p.endswith("/STATE.md")]
     for f in files:
         for spec in app_paths:
-            if f == spec.rstrip("/") or f.startswith(spec):
+            spec_stripped = spec.rstrip("/")
+            if f == spec_stripped or f.startswith(spec_stripped + "/"):
                 return True
     return False
 

@@ -67,7 +67,15 @@ def main() -> int:
     wt_status = wt.status_worktree(root, loop_id)
     checkpoint_status = (checkpoint.get("worktree_status") or "none").strip().strip("`").lower()
 
-    if disk:
+    if disk and checkpoint_status == "none":
+        # Divergence: worktree exists on disk but CHECKPOINT says none
+        worktree_state = "active"
+        print(
+            "PREPARE_SELECT_WARN worktree_divergence: disk=active checkpoint=none —"
+            " CHECKPOINT will be updated on next state write",
+            file=sys.stderr,
+        )
+    elif disk:
         worktree_state = "active"
     elif checkpoint_status == "active":
         worktree_state = "missing"

@@ -87,10 +87,20 @@ def main() -> int:
     updates: dict[str, str] = {}
     if args.apply and args.mark_commit:
         entry = wt.worktree_entry(root, loop_id)
-        if entry:
+        if entry and entry.get("path"):
             head = git_head(Path(entry["path"]))
             if head:
                 updates["commit_hash"] = head[:12]
+            else:
+                print(
+                    "PREPARE_CLOSE_WARN git HEAD not resolved — commit_hash not recorded",
+                    file=sys.stderr,
+                )
+        else:
+            print(
+                "PREPARE_CLOSE_WARN no worktree entry found — commit_hash not recorded",
+                file=sys.stderr,
+            )
         updates["commit_done"] = "yes"
     if args.apply and args.mark_reflect:
         updates["reflect_done"] = "yes"

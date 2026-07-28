@@ -32,6 +32,13 @@ if [[ -z "$CMD" ]]; then
   exit 1
 fi
 
+if [[ ! -d "$ROOT" ]]; then
+  echo "instance_worktree ERROR: directory not found: $ROOT" >&2
+  exit 1
+fi
+
+trap 'echo "instance_worktree: interrupted (cmd=${CMD} loop=${LOOP_ID})" >&2' INT TERM
+
 ROOT="$(cd "$ROOT" && pwd)"
 
 run_py() {

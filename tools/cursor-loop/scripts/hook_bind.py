@@ -7,7 +7,17 @@ import os
 import sys
 
 import loop_control
+import consume_inject_on_hook as inject_hook
 import loop_hook_lib as mod
+
+
+def _mark_operator_wake_pending(root, conversation_id: str, binding: dict) -> None:
+    loop_id = binding.get("loop_id") or ""
+    if not loop_id:
+        return
+    if mod.read_inject_request(loop_id) or mod.read_wake_fired(loop_id):
+        binding["operator_wake_pending"] = True
+        mod.write_binding(root, conversation_id, binding)
 
 
 def _resume_binding(root, conversation_id: str, binding: dict) -> None:
@@ -25,6 +35,7 @@ def _resume_binding(root, conversation_id: str, binding: dict) -> None:
             binding["bind_error"] = err
             binding["stopped"] = True
     if loop_id:
+        binding["chat_title"] = loop_id
         mod.set_lock_paused(root, loop_id, False)
     mod.write_binding(root, conversation_id, binding)
 
@@ -57,24 +68,38 @@ def main() -> int:
     binding = mod.read_binding(root, conversation_id)
     if binding and not binding.get("stopped") and not binding.get("paused"):
         loop_id = binding.get("loop_id") or ""
+        contract_doc = binding.get("contract_doc") or ""
+        state_file = binding.get("state_file") or ""
+
+        if inject_hook.pending_inject_followup(
+            root,
+            loop_id,
+            contract_doc=contract_doc,
+            state_file=state_file,
+            consume=False,
+        ):
+            _mark_operator_wake_pending(root, conversation_id, binding)
+
         fired = mod.read_wake_fired(loop_id) if loop_id else None
         if fired:
-            line = (fired.get("payload_line") or "").strip()
-            contract_doc = binding.get("contract_doc") or ""
-            state_file = binding.get("state_file") or ""
-            msg = (
-                f"MISSED TICK for {loop_id}: sentinel fired at {fired.get('fired_at', '?')} "
-                f"without waking this chat. Treat the wake payload below as your tick NOW — "
-                f"run Ritual phases 1→8, then re-arm with prepare_arm_wake.sh + ARM_COMMAND "
-                f"(block_until_ms=0, notify_on_output on monitor_regex). "
-                f"Read {contract_doc}"
-            )
-            if state_file:
-                msg += f" and {state_file}"
-            msg += f". Wake payload: {line}"
+            _mark_operator_wake_pending(root, conversation_id, binding)
             mod.clear_wake_fired(loop_id)
-            print(json.dumps({"followup_message": msg}))
-            return 0
+
+        if (
+            state_file
+            and loop_id
+            and not mod.is_stop_request(prompt)
+            and not (
+                mod.is_keep_working_request(prompt)
+                and mod.find_contract_paths(prompt, root, manifest)
+            )
+        ):
+            state_path = root / state_file
+            if state_path.is_file():
+                last_wake = mod.parse_last_wake(state_path.read_text(encoding="utf-8"))
+                interval = mod.binding_interval_sec(binding)
+                if mod.is_tick_stale(last_wake, interval):
+                    _mark_operator_wake_pending(root, conversation_id, binding)
 
     if mod.is_stop_request(prompt):
         binding = mod.read_binding(root, conversation_id)
@@ -138,6 +163,7 @@ def main() -> int:
         binding.pop("bind_blocked", None)
         binding.pop("bind_error", None)
         binding["paused"] = False
+        binding["chat_title"] = loop_id
         mod.write_binding(root, conversation_id, binding)
         mod.set_lock_paused(root, loop_id, False)
         break
@@ -146,4 +172,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

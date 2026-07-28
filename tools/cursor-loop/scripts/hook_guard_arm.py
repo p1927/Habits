@@ -8,6 +8,8 @@ import re
 import sys
 from pathlib import Path
 
+import loop_hook_lib as mod
+
 _RECOVERY_FOREGROUND = re.compile(r"--recovery-foreground")
 _PREPARE_EXEC = re.compile(r"prepare_arm_wake\.sh[^\n;|&]*--exec")
 _ARM_WAKE = re.compile(r"(?:^|[;&|\s(])(?:bash\s+)?(?:[^\s'\"]*[/])?arm-wake\.sh\b")
@@ -57,8 +59,7 @@ def _loop_context_from_command(command: str) -> tuple[str, str]:
         loop_id = m.group(1)
     if not loop_id and state_file != "<STATE.md>":
         loop_id = Path(state_file).parent.name
-    if not loop_id:
-        loop_id = "<loop_id>"
+    # Return empty string if loop_id cannot be determined; callers must guard
     return loop_id, state_file
 
 
@@ -129,18 +130,34 @@ def main() -> int:
         block_until_ms=block_ms,
         enforce_notify=enforce_notify,
     )
-    if not deny or not msg:
+    if deny and msg:
+        print(
+            json.dumps(
+                {
+                    "permission": "deny",
+                    "user_message": "Phase 9 arm must use background notify (see prepare_arm_wake.sh)",
+                    "agent_message": msg,
+                }
+            )
+        )
         return 0
 
-    print(
-        json.dumps(
-            {
-                "permission": "deny",
-                "user_message": "Phase 9 arm must use background notify (see prepare_arm_wake.sh)",
-                "agent_message": msg,
-            }
-        )
-    )
+    if (
+        event == "preToolUse"
+        and _ARM_WAKE.search(command)
+        and notify_pattern
+        and block_ms == 0
+        and "AGENT_LOOP_WAKE" in notify_pattern
+    ):
+        loop_id, _ = _loop_context_from_command(command)
+        if loop_id:
+            mod.write_wake_pending(
+                loop_id,
+                notify_pattern=notify_pattern,
+                block_until_ms=0,
+                arm_source="agent_notify",
+            )
+
     return 0
 
 

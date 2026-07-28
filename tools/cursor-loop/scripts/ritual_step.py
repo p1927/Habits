@@ -2,6 +2,7 @@
 """Micro-step ritual line — linear step machine under macro phases."""
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -60,8 +61,17 @@ STEP_TO_PHASE: dict[str, str] = {
 FINAL_STEPS_BEFORE_ARM = frozenset({"8-merge", "8-reflect", "9-arm"})
 
 
+VALID_ARCHETYPES: frozenset[str] = frozenset({"engineer", "designer", "qa", "product", ""})
+
+
 def step_line_for(archetype: str) -> tuple[str, ...]:
-    if (archetype or "").strip().lower() == "product":
+    normalized = (archetype or "").strip().lower()
+    if normalized not in VALID_ARCHETYPES:
+        print(
+            f"RITUAL_STEP_WARN unknown archetype '{archetype}' — falling back to CODE_STEP_LINE",
+            file=sys.stderr,
+        )
+    if normalized == "product":
         return PRODUCT_STEP_LINE
     return CODE_STEP_LINE
 
@@ -263,7 +273,12 @@ def validate_step_exit(
                 f"--state-file {sf} --loop-id {loop_id}",
             )
         if review_status == "pending":
-            pass
+            return StepGateResult(
+                False,
+                step,
+                f"review_status=pending after round-{review_round} findings logged",
+                "Run prepare_receive_review.sh --apply to mark review received",
+            )
         if project_root is not None and cite:
             issues = rp.findings_cite_changed_files(state_text, review_round, cite)
             if issues:

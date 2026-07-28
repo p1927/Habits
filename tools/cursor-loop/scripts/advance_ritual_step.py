@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import sys
 from pathlib import Path
@@ -39,11 +40,12 @@ def resolve_next_step(
 ) -> str | None:
     """Find next non-skippable step."""
     candidate = rs.next_step(current, archetype)
+    visited: set[str] = {current}
     while candidate and rs.steps_skippable(candidate, checkpoint, archetype):
-        nxt = rs.next_step(candidate, archetype)
-        if nxt == candidate:
+        if candidate in visited:
             break
-        candidate = nxt
+        visited.add(candidate)
+        candidate = rs.next_step(candidate, archetype)
     return candidate
 
 
@@ -139,14 +141,25 @@ def main() -> int:
     }
     if next_step == "4-execute":
         updates["execute_started"] = "yes"
-    if next_step == "1-wake":
+    # Only reset per-tick flags when re-entering 1-wake from the arm step,
+    # not during recovery paths that land on 1-wake from other steps.
+    if next_step == "1-wake" and current == "9-arm":
         updates["brainstorm_done"] = "no"
         updates["fix_verify_done"] = "no"
         updates["reflect_done"] = "no"
 
     if args.apply:
-        new_text = sc.update_checkpoint_fields(state_text, updates)
-        state_path.write_text(new_text, encoding="utf-8")
+        coord = state_path.with_suffix(".coord")
+        with open(coord, "a") as _cf:
+            fcntl.flock(_cf.fileno(), fcntl.LOCK_EX)
+            new_text = sc.update_checkpoint_fields(state_text, updates)
+            tmp = state_path.with_suffix(".tmp")
+            try:
+                tmp.write_text(new_text, encoding="utf-8")
+                tmp.replace(state_path)
+            except Exception:
+                tmp.unlink(missing_ok=True)
+                raise
         checkpoint = {**checkpoint, **updates}
         state_text = new_text
 

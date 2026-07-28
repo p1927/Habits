@@ -21,6 +21,8 @@ function App() {
       <a href="#main-content" className="skip-link">Skip to content</a>
       <AppHeader
         status={shell.status}
+        settingsActive={shell.tab === 'settings'}
+        onLeaveSettings={() => shell.handleTabChange('home')}
         onOpenSettings={openSettings}
         onPreloadSettings={() => shell.preloadTab('settings')}
         showShortcutHint={showShortcutHint}

@@ -98,7 +98,14 @@ def main() -> int:
             continue
         print(f"MIGRATE {loop_id}: add {', '.join(missing.keys())}")
         if args.apply:
-            state_file.write_text(insert_checkpoint_rows(text, missing), encoding="utf-8")
+            new_text = insert_checkpoint_rows(text, missing)
+            tmp = state_file.with_suffix(".tmp")
+            try:
+                tmp.write_text(new_text, encoding="utf-8")
+                tmp.replace(state_file)
+            except Exception:
+                tmp.unlink(missing_ok=True)
+                raise
             changed += 1
 
     if args.apply:

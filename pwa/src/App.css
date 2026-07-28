@@ -1437,6 +1437,42 @@ button:disabled {
   animation: ui-slide-up var(--duration-normal) var(--ease-spring);
 }
 
+.voice-coach-lede {
+  margin: 0 0 var(--space-md);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.voice-coach-root--open .voice-embed {
+  height: min(62vh, 520px);
+  min-height: 400px;
+}
+
+.header-back-btn {
+  margin-right: 0.35rem;
+  font-size: 0.8125rem;
+}
+
+.header-gear--active {
+  color: var(--gemini-accent);
+  background: color-mix(in srgb, var(--gemini-accent) 12%, transparent);
+}
+
+.tab-bar--settings {
+  justify-content: center;
+}
+
+.settings-voice-stack-card {
+  margin-top: var(--space-md);
+}
+
+.settings-voice-stack-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
 .recipes-tab {
   display: flex;
   flex-direction: column;

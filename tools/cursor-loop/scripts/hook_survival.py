@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 import build_wake_prompt
+import consume_inject_on_hook as inject_hook
 import loop_hook_lib as mod
 import review_scope as rs
 import ritual_phase as rp
@@ -88,6 +89,35 @@ def main() -> int:
             checkpoint = rp.parse_checkpoint_table(state_text)
             phase = rp.normalize_phase(checkpoint.get("phase", "1-wake"))
 
+            if binding.get("operator_wake_pending"):
+                inject_msg = inject_hook.pending_inject_followup(
+                    root,
+                    loop_id,
+                    contract_doc=contract_doc,
+                    state_file=state_file,
+                )
+                if inject_msg:
+                    binding.pop("operator_wake_pending", None)
+                    mod.write_binding(root, conversation_id, binding)
+                    print(json.dumps({"followup_message": inject_msg}))
+                    return 0
+                prompt_json = build_wake_prompt.build_prompt(
+                    root=root,
+                    loop_id=loop_id,
+                    contract_doc=contract_doc,
+                    state_file=state_file,
+                    recovery=True,
+                )
+                binding.pop("operator_wake_pending", None)
+                mod.write_binding(root, conversation_id, binding)
+                msg = (
+                    f"OPERATOR WAKE for {loop_id}: external trigger requested tick NOW. "
+                    f"Read {contract_doc} and {state_file}; run Ritual 1→8, then re-arm with notify. "
+                    f"Wake payload: {prompt_json}"
+                )
+                print(json.dumps({"followup_message": msg}))
+                return 0
+
             if mod.is_wake_spin(loop_id, phase):
                 fired = mod.read_wake_fired(loop_id)
                 line = (fired.get("payload_line") or "").strip() if fired else ""
@@ -122,9 +152,31 @@ def main() -> int:
                 print(json.dumps({"followup_message": msg}))
                 return 0
 
-    fired = mod.read_wake_fired(loop_id)
-    if _is_loop_up(binding) and not fired:
+    inject_msg = inject_hook.pending_inject_followup(
+        root,
+        loop_id,
+        contract_doc=contract_doc,
+        state_file=state_file,
+    )
+    if inject_msg:
+        print(json.dumps({"followup_message": inject_msg}))
         return 0
+
+    fired = mod.read_wake_fired(loop_id)
+    interval = mod.binding_interval_sec(binding)
+    stale_while_armed = False
+    if _is_loop_up(binding) and not fired:
+        if state_file:
+            state_path = root / state_file
+            if state_path.is_file():
+                last_wake = mod.parse_last_wake(state_path.read_text(encoding="utf-8"))
+                if not mod.is_tick_stale(last_wake, interval):
+                    return 0
+                stale_while_armed = True
+            else:
+                return 0
+        else:
+            return 0
 
     turns = int(binding.get("survival_turns") or 0) + 1
     binding["survival_turns"] = turns
@@ -137,13 +189,18 @@ def main() -> int:
     if last_exit.is_file():
         last_exit_note = f" Last exit: {last_exit.read_text(encoding='utf-8').strip()}."
 
-    prompt_json = build_wake_prompt.build_prompt(
-        root=root,
-        loop_id=loop_id,
-        contract_doc=contract_doc,
-        state_file=state_file,
-        recovery=True,
-    )
+    try:
+        prompt_json = build_wake_prompt.build_prompt(
+            root=root,
+            loop_id=loop_id,
+            contract_doc=contract_doc,
+            state_file=state_file,
+            recovery=True,
+        )
+    except Exception as exc:
+        print(f"HOOK_SURVIVAL_WARN build_prompt failed: {exc}", file=sys.stderr)
+        import json as _json
+        prompt_json = _json.dumps({"loop_id": loop_id, "contract_doc": contract_doc, "recovery": True})
 
     ritual_note = ""
     if state_file:
@@ -169,21 +226,38 @@ def main() -> int:
         f"Loop {loop_id} wake is DOWN (mode={binding.get('loop_mode', 'dynamic')}). "
         f"Read {contract_doc}"
     )
-    fired = mod.read_wake_fired(loop_id)
-    if fired:
-        msg += (
-            f" Sentinel ALREADY FIRED at {fired.get('fired_at', '?')} without waking this chat — "
-            "arm-wake Shell likely missing notify_on_output on monitor_regex."
+    if stale_while_armed:
+        last_wake = None
+        if state_file:
+            state_path = root / state_file
+            if state_path.is_file():
+                last_wake = mod.parse_last_wake(state_path.read_text(encoding="utf-8"))
+        msg = mod.stale_tick_followup(
+            loop_id=loop_id,
+            contract_doc=contract_doc,
+            state_file=state_file,
+            interval_sec=interval,
+            last_wake_iso=last_wake,
+            wake_sentinel=wake_sentinel,
+            armed=True,
         )
-        mod.clear_wake_fired(loop_id)
-    if state_file:
-        msg += f" and {state_file}"
-    msg += (
-        "; run Ritual deliverable THIS turn (strict phases 1→9, one at a time). "
-        "Then re-arm: prepare_arm_wake.sh (no --exec), ARM_COMMAND with block_until_ms=0 "
-        "and notify_on_output on monitor_regex. Do not defer work to next tick. "
-        f"Wake payload: {prompt_json}.{ritual_note}{last_exit_note}"
-    )
+        msg += f" Wake payload: {prompt_json}.{ritual_note}{last_exit_note}"
+    else:
+        fired = mod.read_wake_fired(loop_id)
+        if fired:
+            msg += (
+                f" Sentinel ALREADY FIRED at {fired.get('fired_at', '?')} without waking this chat — "
+                "arm-wake Shell likely missing notify_on_output on monitor_regex."
+            )
+            mod.clear_wake_fired(loop_id)
+        if state_file:
+            msg += f" and {state_file}"
+        msg += (
+            "; run Ritual deliverable THIS turn (strict phases 1→9, one at a time). "
+            "Then re-arm: prepare_arm_wake.sh (no --exec), ARM_COMMAND with block_until_ms=0 "
+            "and notify_on_output on monitor_regex. Do not defer work to next tick. "
+            f"Wake payload: {prompt_json}.{ritual_note}{last_exit_note}"
+        )
     if recovery_turns >= 3:
         msg += (
             f" WARNING: {recovery_turns} recovery wakes without product checkpoint — "

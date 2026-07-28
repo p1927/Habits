@@ -24,10 +24,21 @@ bash "${SCRIPTS}/rearm_all_instances.sh" "$ROOT" --force || true
 while true; do
   sleep "$CHECK_SEC"
 
-  REPORT="$("${SCRIPTS}/watch_window_instances.py" "$ROOT" --idle-sec "$IDLE_SEC" --json)"
-  SHOULD="$(python3 -c "import json,sys; print('yes' if json.loads(sys.stdin.read())['should_rearm'] else 'no')" <<<"$REPORT")"
-  UNHEALTHY="$(python3 -c "import json,sys; d=json.loads(sys.stdin.read()); print(d['unhealthy_count'])" <<<"$REPORT")"
-  IDLE="$(python3 -c "import json,sys; d=json.loads(sys.stdin.read()); print(d['idle_seconds'])" <<<"$REPORT")"
+  REPORT="$("${SCRIPTS}/watch_window_instances.py" "$ROOT" --idle-sec "$IDLE_SEC" --json 2>/dev/null || true)"
+  if ! SHOULD="$(python3 -c "
+import json, sys
+try:
+    d = json.loads(sys.stdin.read() or '{}')
+except json.JSONDecodeError:
+    print('no')
+    sys.exit(0)
+print('yes' if d.get('should_rearm') else 'no')
+" <<<"$REPORT" 2>/dev/null)"; then
+    echo "AGENT_LOOP_WAKE_INSTANCE_WATCHDOG {\"prompt\":\"Watchdog tick: watch_window_instances.py failed; retry next cycle.\",\"action\":\"error\"}"
+    continue
+  fi
+  UNHEALTHY="$(python3 -c "import json,sys; d=json.loads(sys.stdin.read() or '{}'); print(d.get('unhealthy_count', '?'))" <<<"$REPORT" 2>/dev/null || echo '?')"
+  IDLE="$(python3 -c "import json,sys; d=json.loads(sys.stdin.read() or '{}'); print(d.get('idle_seconds', '?'))" <<<"$REPORT" 2>/dev/null || echo '?')"
 
   if [[ "$SHOULD" == "yes" ]]; then
     echo "AGENT_LOOP_WAKE_INSTANCE_WATCHDOG {\"prompt\":\"Code idle ${IDLE}s (>=${IDLE_SEC}s) with ${UNHEALTHY} unhealthy window instance(s). Run rearm_all_instances.sh --force and report cwin status.\",\"action\":\"rearm_all\"}"

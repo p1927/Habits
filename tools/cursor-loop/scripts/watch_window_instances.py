@@ -91,6 +91,7 @@ def instance_rows(root: Path) -> list[dict]:
         interval = int(entry.get("interval_sec") or 120)
         state_path = root / entry["state_file"]
         phase = "—"
+        last_wake_iso = None
         if state_path.is_file():
             text = state_path.read_text(encoding="utf-8")
             if "## CHECKPOINT" in text:
@@ -99,8 +100,10 @@ def instance_rows(root: Path) -> list[dict]:
                     parts = [p.strip().strip("`") for p in line.split("|")]
                     if len(parts) >= 3 and parts[1] == "phase":
                         phase = parts[2]
+            last_wake_iso = lh.parse_last_wake(text)
 
-        wake = lh.wake_display_status(loop_id, interval, phase)
+        detail = lh.wake_status_detail(loop_id, interval, phase, last_wake_iso)
+        wake = detail["wake"]
         fired = lh.read_wake_fired(loop_id)
         armed = False
         if verify.is_file():
@@ -115,14 +118,20 @@ def instance_rows(root: Path) -> list[dict]:
                 armed = r.returncode == 0
             except subprocess.SubprocessError:
                 pass
-
-        ready = wake == "ARMED" and fired is None
+        operator_wake = lh.operator_wake_label(root, loop_id, detail)
+        ready = detail["ready_for_autonomous_tick"]
         rows.append(
             {
                 "loop_id": loop_id,
                 "wake": wake,
                 "armed": armed,
                 "ready_for_autonomous_tick": ready,
+                "stale": detail["stale"],
+                "orphan_arm": detail["orphan_arm"],
+                "notify": detail["notify"],
+                "operator_wake": operator_wake,
+                "last_tick": detail["last_tick"],
+                "sleeper": detail["sleeper"],
                 "phase": phase,
                 "interval_sec": interval,
                 "wake_sentinel": entry.get("wake_sentinel", ""),
@@ -193,20 +202,23 @@ def main() -> int:
 
     if args.json:
         print(json.dumps(report, indent=2))
+        return 0
+
+    print(f"checked_at={report['checked_at']}")
+    print(f"last_code_activity={report['last_code_activity']} idle={report['idle_seconds']}s threshold={report['idle_threshold_sec']}s")
+    for row in report["instances"]:
+        flag = "OK" if row["ready_for_autonomous_tick"] else "NEEDS_ATTENTION"
+        stale = " stale" if row.get("stale") else ""
+        print(
+            f"  {row['loop_id']:16} {flag:16} wake={row['wake']:6} sleeper={row.get('sleeper', '—'):8} "
+            f"last_tick={row.get('last_tick', '—'):6}{stale} phase={row['phase']}"
+        )
+    if report["should_rearm"]:
+        print(f"ACTION=rearm_all targets={','.join(report['rearm_targets'])}")
+    elif report["all_ready"]:
+        print("ACTION=none all instances ready")
     else:
-        print(f"checked_at={report['checked_at']}")
-        print(f"last_code_activity={report['last_code_activity']} idle={report['idle_seconds']}s threshold={report['idle_threshold_sec']}s")
-        for row in report["instances"]:
-            flag = "OK" if row["ready_for_autonomous_tick"] else "NEEDS_ATTENTION"
-            print(
-                f"  {row['loop_id']:16} {flag:16} wake={row['wake']:6} phase={row['phase']}"
-            )
-        if report["should_rearm"]:
-            print(f"ACTION=rearm_all targets={','.join(report['rearm_targets'])}")
-        elif report["all_ready"]:
-            print("ACTION=none all instances ready")
-        else:
-            print(f"ACTION=wait code still active or idle<{args.idle_sec}s unhealthy={report['unhealthy_count']}")
+        print(f"ACTION=wait code still active or idle<{args.idle_sec}s unhealthy={report['unhealthy_count']}")
 
     return 1 if report["should_rearm"] else 0
 

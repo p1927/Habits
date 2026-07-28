@@ -122,6 +122,17 @@ Verify before ending turn:
 bash <package_root>/scripts/verify-wake.sh <loop_id>
 ```
 
+### External inject (v0.8.0+)
+
+Operators and `tick_daemon.sh` can write `$TMPDIR/cursor-loop-{loop_id}.inject.json`. The monitored `arm-wake.sh` sleeper polls every 5s and fires the wake sentinel early (requires notify-armed Phase 9).
+
+```bash
+cwin trigger-all
+bash <package_root>/scripts/tick_daemon.sh .
+```
+
+Hooks (`stop`, `beforeSubmitPrompt`) consume pending inject as fallback when notify missed.
+
 
 ---
 

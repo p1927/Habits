@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T01:45:00Z |
-| where_we_are | ch-131 useFutureSelfSection split shipped |
-| confirmed_next | ch-130 — line scan (api 307, useAppShell 137) |
+| reviewed_at | 2026-07-28T03:00:00Z |
+| where_we_are | ch-134 post-split line scan complete |
+| confirmed_next | ch-135 — AgentActionFeed.tsx (138) split |
 
 ---
 
@@ -18,26 +18,25 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T01:45:00Z` |
-| confirmed_next | `ch-130` |
-| phase | `3-select` |
+| last_wake | `2026-07-28T03:00:00Z` |
+| confirmed_next | `ch-135` |
+| phase | `9-arm` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `10` |
-| last_reviewed_round | `10` |
-| loops | `wake ARMED PID 49727 (120s)` |
-| worktree_status | `active` |
-| current_item_id | `ch-130` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
-| worktree_branch | `loop/code-health/ch-130` |
-| worktree_item_id | `ch-130` |
+| review_round | `14` |
+| last_reviewed_round | `13` |
+| worktree_status | `none` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| ritual_step | `3.3-worktree` |
-| brainstorm_done | `yes` |
-| brainstorm_outcome | `Line scan confirms api 307 + useAppShell 137; extract useAppShellNavigation (tab + navigate callbacks)` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `no` |
 | reflect_done | `no` |
@@ -45,6 +44,7 @@
 | receive_review_done | `no` |
 | commit_done | `yes` |
 | merge_done | `yes` |
+| review_tick_applied_at | `2026-07-28T00:57:26+00:00` |
 
 ## IN_PROGRESS
 
@@ -184,7 +184,11 @@
 - [x] ch-128 | `DayTimelineCard.tsx` (151) split | structure | DayTimelineAgendaPanel + DayScheduleEmptyPanel; 151→99 |
 - [x] ch-129 | Meal plan hook test coverage | robustness | deferred — no test ticks without user request |
 - [x] ch-131 | `useFutureSelfSection.ts` (150) split | structure | load + actions hooks; 150→61 | done tick #131
-- [ ] ch-130 | Line scan — top: api 307, useAppShell 137 | structure | queued |
+- [x] ch-130 | Line scan + `useAppShell.ts` (137) split | structure | useAppShellNavigation; 137→109 | done
+- [x] ch-132 | `api.ts` (319) domain split | structure | apiClient + apiTypes + 8 modules; 319→39 | done tick #132
+- [x] ch-133 | `useAppShellNavigation` onBeforeLogScroll stabilize | structure | useCallback; fixes ch-r11-001 | done tick #133
+- [x] ch-134 | Line scan — post api split targets | structure | api 39; top: AgentActionFeed 138, Settings 133 | done tick #134
+- [ ] ch-135 | `AgentActionFeed.tsx` (138) split | structure | queued — top post-split target |
 
 ---
 
@@ -270,7 +274,7 @@
 | `pwa/src/App.tsx` | 2026-07-27 tick #95 | ch-116: useAppShell + 4 shell components; 296→28 |
 | `pwa/src/hooks/useMealPlanShell.ts` | 2026-07-28 tick #98 | ch-127: useMealPlanShellSyncContext; 155→128 |
 | `pwa/src/components/DayTimelineCard.tsx` | 2026-07-28 tick #99 | ch-128: agenda + empty panels; 151→99 |
-| `pwa/src/sections/*` + hooks + lib | 2026-07-28 tick #99 | scan: api 308, useFutureSelfSection 150, useAppShell 137 |
+| `pwa/src/lib/api.ts` + hooks/components | 2026-07-28 tick #134 | post-split scan: api 39, AgentActionFeed 138, Settings 133, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -306,7 +310,7 @@
 | ch-r2-001 | low | `review_scope.py` — per-window paths include tools/cursor-loop for code-health; bundle dir appended | round-2 /code-review | closed | — | closed |
 | ch-r2-002 | low | `prepare_review_tick.sh` + `detect_code_changed.sh` delegate to review_scope; Phase 5 prints review_paths | round-2 /code-review | closed | — | closed |
 | ch-r2-003 | low | `audit_review.py` stale check fixed: round==last_reviewed with findings no longer false-fails on STATE-only diff | round-2 /code-review | closed | — | closed |
-| ch-r2-004 | medium | ch-123 api.ts domain split reverted pending — monolithic api.ts retained; re-open split as ch-124 follow-up | round-2 /code-review | backlog | ch-124 | open |
+| ch-r2-004 | medium | ch-123 api.ts domain split reverted pending — monolithic api.ts retained; re-open split as ch-124 follow-up | round-2 /code-review | closed | ch-132 | closed |
 | ch-r3-001 | low | `pwa/src/hooks/useHomeDashboard.ts:1` — refresh/state extracted to useHomeDashboardRefresh; derived metrics to homeDashboardDerived; composition hook stays thin | round-3 /code-review | closed | — | closed |
 | ch-r3-002 | low | `tools/cursor-loop/scripts/ritual_phase.py:1` — review gate manifest + worktree close checks; no behavior change in pwa runtime | round-3 /code-review | closed | — | closed |
 | ch-r4-001 | low | `pwa/src/hooks/homeDashboardDerived.ts:1` — duplicate misplaced during worktree cp; removed; canonical module stays at pwa/src/lib/homeDashboardDerived.ts | round-4 /code-review | closed | — | closed |
@@ -321,6 +325,21 @@
 | ch-r10-001 | low | `pwa/src/hooks/useFutureSelfSection.ts:8-60` — composition hook wires load state into actions; return API identical to pre-split | round-10 /code-review | closed | — | closed |
 | ch-r10-002 | low | `pwa/src/hooks/useFutureSelfSectionLoad.ts:56` — setCards exported but unused by composition; dead surface unless reserved for refresh | round-10 /code-review | backlog | ch-131 | open |
 | ch-r10-003 | low | `pwa/src/hooks/useFutureSelfSectionActions.ts:61-77` — generateProjections logic preserved; dependency arrays improved vs monolith | round-10 /code-review | closed | — | closed |
+| ch-r12-b001 | low | Bugbot: no functional regressions vs main monolith — all 36 api methods preserved; GET dedupe + ApiError paths intact | round-12 bugbot | closed | — | closed |
+| ch-r12-001 | low | `pwa/src/lib/api.ts:30-39` — thin barrel composes 8 domain modules; 319→39 lines; type re-exports unchanged for consumers | round-12 /code-review | closed | — | closed |
+| ch-r12-002 | low | `pwa/src/lib/apiClient.ts:13-34` — request/get extracted; public request export widens surface vs monolith private request | round-12 /code-review | backlog | ch-132 | open |
+| ch-r12-003 | low | `pwa/src/lib/apiTypes.ts:1-118` — all interfaces centralized; manual export list in api.ts must stay in sync | round-12 /code-review | closed | — | closed |
+| ch-r12-004 | low | `pwa/src/lib/apiSettings.ts:4-14` — health/settings/auth domain; 4 methods parity with monolith | round-12 /code-review | closed | — | closed |
+| ch-r12-005 | low | `pwa/src/lib/apiFood.ts:10-88` — 15 food/meal-plan methods; FormData scan preserved | round-12 /code-review | closed | — | closed |
+| ch-r12-006 | low | `pwa/src/lib/apiFutureSelf.ts:4-26` — 4 future-self methods parity | round-12 /code-review | closed | — | closed |
+| ch-r12-007 | low | `pwa/src/lib/apiHabits.ts:8-17` — 4 habit methods parity | round-12 /code-review | closed | — | closed |
+| ch-r12-008 | low | `pwa/src/lib/apiCalendar.ts:3-13` — calendar today + create event parity | round-12 /code-review | closed | — | closed |
+| ch-r12-009 | low | `pwa/src/lib/apiDay.ts:3-13` — manage day get/update parity | round-12 /code-review | closed | — | closed |
+| ch-r12-010 | low | `pwa/src/lib/apiCards.ts:5-20` — cards CRUD + sickness timeline; getCards type param unencoded (pre-existing) | round-12 /code-review | closed | — | closed |
+| ch-r12-011 | low | `pwa/src/lib/apiAgent.ts:4-18` — agentChat + getVoiceToken parity with main | round-12 /code-review | closed | — | closed |
+| ch-r12-012 | low | ch-r2-004 resolved — ch-132 re-implements reverted ch-123 api domain split | round-12 /code-review | closed | ch-r2-004 | closed |
+| ch-r13-b001 | low | Bugbot: no bugs in diff — useCallback stabilizes onBeforeLogScroll; scrollToMealPlanQueue identity fixed | round-13 bugbot | closed | — | closed |
+| ch-r13-001 | low | `pwa/src/hooks/useAppShellNavigation.ts:28-35` — onBeforeLogScroll memoized; behavior unchanged; fixes ch-r11-001 | round-13 /code-review | closed | ch-133 | closed |
 
 ---
 
@@ -328,6 +347,9 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | ch-134 | Post-split line scan; queue ch-135 AgentActionFeed | scan | — |
+| 2026-07-28 | ch-133 | useAppShellNavigation onBeforeLogScroll stabilize | build | 2fe55e3 |
+| 2026-07-28 | ch-132 | api.ts domain split (client + types + 8 modules) | build | 4b7e546 |
 | 2026-07-28 | ch-131 | useFutureSelfSection split (load + actions hooks) | build | 3e1a795 |
 | 2026-07-28 | ch-128 | DayTimelineCard split (agenda + empty panels) | build | d664e48 |
 | 2026-07-28 | ch-127 | useMealPlanShell split (syncContext hook) | build | 2795849 |

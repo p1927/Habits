@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T00:00:00Z |
-| where_we_are | Session #27 — relay-194 + ui-058 shipped; Worker relay-195 next; UX idle |
-| confirmed_next | Worker relay-195–197; Code ch-130; maint-004 |
+| reviewed_at | 2026-07-28T01:10:00Z |
+| where_we_are | Session #30 — relay-198/199 shipped; ui-059 closed prop-ui-045; Worker relay-200 active; Code ch-134 done |
+| confirmed_next | Worker relay-200–201; Code ch-135; maint-004 P1; UX idle — await PO proposals |
 
 ---
 
@@ -18,31 +18,35 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T21:05:00Z` |
-| current_item_id | `po-tick-009` |
-| phase | `5-verify` |
-| review_status | `pending` |
+| last_wake | `2026-07-28T01:05:00Z` |
+| current_item_id | `po-tick-012` |
+| phase | `9-arm` |
+| review_status | `skipped` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| review_round | `11` |
-| last_reviewed_round | `10` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| confirmed_next | `Worker relay-195; Code ch-130; maint-004; UX idle` |
+| review_round | `16` |
+| last_reviewed_round | `16` |
+| review_diff_range | `none` |
+| code_changed | `no` |
+| confirmed_next | `Worker relay-200–201; Code ch-135; maint-004 P1; UX idle — await PO proposals` |
 | loops | `arm at end of turn` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/po-relay/STATE.md` |
-| review_fingerprint | `e2e702f4e8ee2fa3` |
-| ritual_step | `5-verify` |
-| brainstorm_done | `yes` |
-| brainstorm_outcome | `Session #27: relay-194/ui-058 closed; relay-198 fed; maint-004 escalate` |
-| execute_started | `yes` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | `—` |
+| execute_started | `no` |
 | fix_verify_done | `no` |
 | reflect_done | `no` |
 | commit_hash | `—` |
 | receive_review_done | `no` |
+| design_deliberation_done | `no` |
+| design_chosen_approach | `—` |
+| design_mitigations | `—` |
+| review_tick_applied_at | `2026-07-28T01:05:00+00:00` |
 
 ### Loop status (verify with `loop-status.sh`)
 
@@ -52,6 +56,8 @@
 | UX | `ux-relay` | `AGENT_LOOP_WAKE_UX_RELAY` | dynamic — UX chat |
 | Code | `code-health` | `AGENT_LOOP_WAKE_CODE_HEALTH` | dynamic — Code chat |
 | PO | `po-relay` | `AGENT_LOOP_WAKE_PO_RELAY` | dynamic — **this chat** |
+
+---
 
 ## IN_PROGRESS
 
@@ -70,7 +76,7 @@
 - [x] maint-001 | Confirm before dismiss food queue | from RELAY BRAINSTORM | `Log.tsx` — done tick #7
 - [x] maint-002 | Accessibility audit ARIA/focus/contrast | ROADMAP | ui-008/009/011 done — Settings aria-live shipped
 - [ ] maint-003 | Lighthouse PWA score > 90 | ROADMAP | relay-160 hit **97/100/100**; **Code window:** re-run Lighthouse after ch-123 api split |
-- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **Code window:** `.card` L188 + `.card-placeholder`/`.btn-decline` L201/L838 — delete dead rules; UX ux-gap-040 marked shipped prematurely |
+- [ ] maint-004 | Remove unused legacy CSS (`.card`, `.card-placeholder`, `.btn-decline`) | ux-gap-040 | **P1 Code window:** `.card` L188 + `.card-placeholder`/`.btn-decline` L201/L838 — delete dead rules; UX ux-gap-040 marked shipped prematurely |
 
 ---
 
@@ -108,6 +114,7 @@
 | prop-ui-042 | refined | po | App shell | Tab bar keyboard shortcut discoverability | relay-187 + ui-057 shipped — dismissible hint + conditional aria-keyshortcuts | Shipped ui-057 2026-07-27 |
 | prop-ui-043 | refined | po | Home → Day | Pull-refresh ring + Day empty Revolut panel | ui-056 shipped — Apple Health ring + Revolut empty schedule panel | Shipped ui-056 2026-07-27 |
 | prop-ui-044 | refined | po | Settings | OAuth disconnect success + error aria-live | ui-058 shipped — disconnect success banner + role=alert error path | Shipped ui-058 2026-07-27 |
+| prop-ui-045 | refined | po | Agent | Empty-state starter chip UX | ui-059 shipped — Gemini wrap pills + dedupe grid; relay-200 owns single-surface polish | Shipped ui-059 2026-07-28 |
 
 **Status values:** `proposed` → UX reviews | `agreed` → copied to UX_STATE `UI_POLISH_BACKLOG` | `refined` → UX sent AC changes, PO updates row | `rejected` → dropped with reason in `ux_response`
 
@@ -119,9 +126,39 @@
 
 ## BRAINSTORM_LOG (newest first)
 
+### 2026-07-28 — Session #30 (PO tick po-tick-012)
+
+**UX lens (ux-heuristics):** relay-198 **closed** — MealPhotoGallery Escape hint (bbd648c). relay-199 **closed** — Agent starter chips (5aefaef). **prop-ui-045 closed** via ui-059 (55c3a86) — Gemini wrap pills at 390px. Worker **relay-200** dedupes greeting grid vs composer chips (rf-r30-002). **maint-004 still open** — `.card`/`.card-placeholder`/`.btn-decline` at App.css L188/L201/L838.
+
+**PO lens (define-prioritization-framework):** Session #29 handoffs **closed** (relay-197). Escape batch **complete** at relay-198. RICE open Worker: **relay-200** (duplicate prompt surfaces — UX debt from relay-199) > **relay-201** (tool-chips CSS scope). Code ch-134 done → **ch-135** AgentActionFeed split. UX backlog **idle** — no new prop-ui until relay-200 ships.
+
+**Business lens (jobs-to-be-done):** Agent starter chips = Coach tab trigger (Hook) — shipped. Duplicate greeting+chips = cognitive noise before first message — relay-200 closes engagement loop. maint-004 = Code debt blocking clean ship narrative — escalate P1.
+
+---
+
+### 2026-07-28 — Session #29 (PO tick po-tick-011)
+
+**UX lens (ux-heuristics):** relay-197 **closed** — Day event sheet Escape hint shipped (73c3806). UX backlog **idle**. **prop-ui-045 proposed** — Agent starter chips UX polish when relay-199 ships (Gemini chip density + 390px wrap). **maint-004 still open** — dead CSS at App.css L188/L201/L838.
+
+**PO lens (define-prioritization-framework):** Session #28 handoffs **closed** (relay-195/196). **relay-197 closed this session** (73c3806). RICE: **relay-198** (gallery Escape — last polish) > **relay-199** (Agent starter chips). Code ch-132 done → **ch-133**.
+
+**Business lens (jobs-to-be-done):** Escape batch closes at relay-198 — keyboard investment loop complete. relay-199 starter chips = Coach tab engagement trigger (Hook). maint-004 blocks clean maintainability — tag Code P1.
+
+---
+
+### 2026-07-28 — Session #28 (PO tick po-tick-010)
+
+**UX lens (ux-heuristics):** relay-195/196 **closed** — camera + voice Escape hints shipped. UX backlog **idle** (ui-001–058 done). **maint-004 still open** — `.card`/`.card-placeholder`/`.btn-decline` at App.css L188/L201/L838.
+
+**PO lens (define-prioritization-framework):** relay-195/196 **closed** since Session #27. RICE open Worker: **relay-197** (Day event Escape) > **relay-198** (gallery hint). Escape batch **ends at relay-198** — fed **relay-199** (Agent starter chips). Code ch-131 done → **ch-132** api.ts split in progress.
+
+**Business lens (jobs-to-be-done):** Escape batch completion = keyboard investment loop closed. Post-batch refill with Agent engagement feature (starter chips) sustains Coach tab habit. maint-004 = Code debt blocking clean ship narrative.
+
+---
+
 ### 2026-07-28 — Session #27 (PO tick po-tick-009)
 
-**UX lens (ux-heuristics):** prop-ui-044 **closed** — ui-058 Settings disconnect banner shipped (c501969). UX backlog **idle**; no new `ux-proposed` gaps. **maint-004 still open** — dead CSS persists despite ux-gap-040 “shipped” note.
+**UX lens (ux-heuristics):** prop-ui-044 **closed** — ui-058 Settings disconnect banner shipped (d97f0e0). UX backlog **idle**; no new `ux-proposed` gaps. **maint-004 still open** — dead CSS persists despite ux-gap-040 “shipped” note.
 
 **PO lens (define-prioritization-framework):** Session #26 handoffs **closed** (relay-194, ui-058). RICE open Worker: **relay-195** (camera Escape) > **relay-196** (voice) > **relay-197** (Day event). Fed **relay-198** (meal photo gallery Escape hint — key works, no visible hint). Code ch-131 done → **ch-130** line scan.
 
@@ -303,6 +340,32 @@
 | pr-r10-003 | low | docs/window-instances/code-health/STATE.md — Code next ch-131 (ch-129 deferred) | round-10 /code-review | closed | ch-131 | closed |
 | pr-r10-004 | low | docs/window-instances/po-relay/STATE.md — confirmed_next includes relay-194–197 | round-10 /code-review | closed | relay-197 | closed |
 | pr-r10-005 | low | pwa/src/App.css:201 — maint-004 dead `.card-placeholder`/`.btn-decline` still present | round-10 /code-review | backlog | maint-004 | open |
+| pr-r11-000 | low | Bugbot: no issues in PO STATE.md doc diff | round-11 bugbot | closed | — | closed |
+| pr-r11-001 | low | docs/window-instances/po-relay/STATE.md — Session #27 aligned; relay-194 + ui-058 closed; relay-198 fed | round-11 /code-review | closed | relay-198 | closed |
+| pr-r11-002 | low | docs/window-instances/po-relay/STATE.md — confirmed_next includes relay-195–198 | round-11 /code-review | closed | relay-198 | closed |
+| pr-r11-003 | low | pwa/src/App.css:188 — maint-004 dead `.card`/`.card-placeholder`/`.btn-decline` still present | round-11 /code-review | backlog | maint-004 | open |
+| pr-r12-000 | low | Bugbot: no issues in PO STATE.md doc diff | round-12 bugbot | closed | — | closed |
+| pr-r12-001 | low | docs/window-instances/po-relay/STATE.md — Session #28 aligned; relay-195/196 closed; relay-199 fed | round-12 /code-review | closed | relay-199 | closed |
+| pr-r12-002 | low | docs/window-instances/po-relay/STATE.md — confirmed_next unified relay-197–199 + ch-132 | round-12 /code-review | closed | — | closed |
+| pr-r12-003 | low | pwa/src/App.css:188 — maint-004 dead CSS still present | round-12 /code-review | backlog | maint-004 | open |
+| pr-r12-004 | low | docs/window-instances/instances.manifest.json:32 — ux-relay interval_sec 300→120 (out of PO tick scope; verify intent) | round-12 /code-review | closed | — | closed |
+| pr-r13-000 | low | Bugbot: no issues in PO STATE.md doc diff | round-13 bugbot | closed | — | closed |
+| pr-r13-001 | low | docs/window-instances/po-relay/STATE.md — Session #29 relay-197 closed; relay-198/199 queue synced | round-13 /code-review | closed | relay-198 | closed |
+| pr-r13-002 | low | docs/window-instances/po-relay/STATE.md — prop-ui-045 proposed for relay-199 Agent starter chips UX | round-13 /code-review | closed | prop-ui-045 | closed |
+| pr-r13-003 | low | pwa/src/App.css:188 — maint-004 dead CSS still present | round-13 /code-review | backlog | maint-004 | open |
+| pr-r14-000 | low | Bugbot: no issues in PO STATE.md doc diff | round-14 bugbot | closed | — | closed |
+| pr-r14-001 | low | docs/window-instances/po-relay/STATE.md — Session #29 relay-197 closed; prop-ui-045 proposed; handoffs synced | round-14 /code-review | closed | prop-ui-045 | closed |
+| pr-r14-002 | low | pwa/src/App.css:188 — maint-004 dead CSS still present | round-14 /code-review | backlog | maint-004 | open |
+| pr-r15-000 | low | Bugbot: no issues in PO STATE.md Session #30 doc diff | round-15 bugbot | closed | — | closed |
+| pr-r15-001 | medium | docs/window-instances/po-relay/STATE.md — Code handoff stale ch-134 vs ch-135 done | round-15 /code-review | closed | ch-135 | closed |
+| pr-r15-002 | low | docs/window-instances/po-relay/STATE.md — confirmed_next drift LAST_REVIEW vs CHECKPOINT | round-15 /code-review | closed | — | closed |
+| pr-r15-003 | low | docs/window-instances/po-relay/STATE.md — review_tick_applied_at orphan row broke CHECKPOINT structure | round-15 /code-review | closed | — | closed |
+| pr-r15-004 | low | docs/window-instances/po-relay/STATE.md — review_changed_files listed manifest not in diff | round-15 /code-review | closed | — | closed |
+| pr-r15-005 | low | docs/window-instances/po-relay/STATE.md — prop-ui-045 refined vs closed terminology | round-15 /code-review | closed | prop-ui-045 | closed |
+| pr-r15-006 | low | docs/window-instances/po-relay/STATE.md — maint-004 P1 escalation not in QUALITY_BACKLOG | round-15 /code-review | closed | maint-004 | closed |
+| pr-r15-007 | low | pwa/src/App.css:188 — maint-004 dead `.card`/`.card-placeholder`/`.btn-decline` still present | round-15 /code-review | backlog | maint-004 | open |
+| pr-r16-000 | low | Bugbot: no new issues in Round 16 post-triage STATE fixes | round-16 bugbot | closed | — | closed |
+| pr-r16-001 | low | docs/window-instances/po-relay/STATE.md — Round 15 fix-now applied (ch-135 sync, confirmed_next, CHECKPOINT structure, maint-004 P1) | round-16 /code-review | closed | — | closed |
 
 ---
 
@@ -310,6 +373,10 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-28 | PO | po-tick-012 | Session #30 + relay-198/199 sync + prop-ui-045 close + Round 15 review | brainstorm | — |
+| 2026-07-28 | PO | po-tick-011 | Session #29 + relay-197 sync + prop-ui-045 + Round 13 review | brainstorm | — |
+| 2026-07-28 | PO | po-tick-010 | Session #28 + relay-195/196 sync + relay-199 feed + Round 12 review | brainstorm | — |
+| 2026-07-28 | PO | po-tick-009 | Session #27 + relay-194/ui-058 sync + relay-198 feed + Round 11 review | brainstorm | — |
 | 2026-07-27 | PO | po-tick-008 | Session #26 + relay-193 sync + prop-ui-044 refine + relay-197 feed + Round 10 review | brainstorm | — |
 | 2026-07-27 | PO | po-tick-007 | Session #25 + prop-ui-042/043 close + relay-194–196 feed + Round 9 review | brainstorm | — |
 | 2026-07-27 | PO | po-tick-006 | Session #24 + relay-187–191 sync + prop-ui-043 + Round 8 review | brainstorm | — |

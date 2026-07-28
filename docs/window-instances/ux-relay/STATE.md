@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-27T23:55:00Z |
-| where_we_are | Backlog idle ui-001–058 done; all UI_PROPOSALS refined/shipped |
-| confirmed_next | await new PO UI_PROPOSALS; Log HISTORY notes prop-ui-044 shipped |
+| reviewed_at | 2026-07-28T00:58:00Z |
+| where_we_are | ui-059 shipped — Agent empty-state wrap chips (prop-ui-045); backlog idle again |
+| confirmed_next | await new PO UI_PROPOSALS |
 
 ---
 
@@ -18,14 +18,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-27T23:58:00Z` |
+| last_wake | `2026-07-28T00:58:00Z` |
 | next_mode | `C` |
 | current_item_id | `—` |
 | phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
-| review_round | `14` |
-| last_reviewed_round | `14` |
+| review_round | `15` |
+| last_reviewed_round | `15` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | confirmed_next | `backlog idle; await PO UI_PROPOSALS` |
@@ -35,20 +35,33 @@
 | worktree_item_id | `—` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
-| ritual_step | `9-arm` |
-| brainstorm_done | `yes` |
-| brainstorm_outcome | `Idle audit: backlog complete; no open ui-*; await PO proposals` |
-| execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | `—` |
+| execute_started | `no` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `—` |
-| receive_review_done | `yes` |
-| commit_done | `no` |
-| merge_done | `no` |
+| receive_review_done | `no` |
+| commit_done | `yes` |
+| merge_done | `yes` |
+| design_deliberation_done | `yes` |
+| design_chosen_approach | `Compact greeting + flex-wrap composer pills (dedupe grid)` |
+| design_mitigations | `Chip labels carry intent; Gemini Nov2025 subline matches reference` |
 
 ## IN_PROGRESS
 
 *(empty)*
+
+---
+
+## UX_DESIGN_LOG
+
+> **Mandatory before UI code.** Phase 3.2: brainstorm 2–3 approaches per element. Phase 3.4: pros/cons debate → pick winner.
+
+| item_id | ui_element | alternatives | pros_cons | chosen | mitigations | reference |
+|---------|------------|--------------|-----------|--------|-------------|-----------|
+| ui-059 | Agent empty state | A: wrap pills above composer; B: vertical Gemini list; C: keep 2x2 grid + scroll pills | A: dedupes prompts, 390px wrap, minimal diff; B: closer Nov2025 Gemini but bigger refactor; C: duplicate UX, horizontal scroll fails AC | A wrap pills + compact greeting | Labels on pills; subline "Where should we start?" | Gemini Android v16.45 + prop-ui-045 |
 
 ---
 
@@ -132,6 +145,7 @@
 - [x] ui-056 | **Home pull-refresh + Day empty:** UIRefreshControl ring indicator + Revolut empty schedule panel | P3 | done 2026-07-27 — Round 11 ring SVG + empty panel
 - [x] ui-057 | **App tab shortcuts:** ⌘1–5 nav + localStorage hint + conditional aria-keyshortcuts | P3 | done 2026-07-27 — prop-ui-042 logic verified
 - [x] ui-058 | **Settings OAuth UX:** disconnect success banner + aria-live error banner (prop-ui-044 / ux-gap-045) | P3 | done 2026-07-27
+- [x] ui-059 | **Agent starter chips:** Gemini wrap pills above composer, compact greeting (prop-ui-045) | P2 | done 2026-07-28
 
 ---
 
@@ -139,6 +153,7 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r15-000 | low | ui-059: wrap chips + compact greeting; build pass; no regressions | round-15 /code-review | closed | ui-059 | closed |
 | ux-r14-001 | low | docs/window-instances/ux-relay/STATE.md idle audit — backlog idle ui-001–058; build pass | round-14 bugbot | closed | — | closed |
 | ux-r13-005 | low | useSettingsSection.ts passthrough disconnectSuccess + dismissDisconnectSuccess | round-13 bugbot | closed | ui-058 | closed |
 | ux-r13-001 | medium | useSettingsSectionData.ts — disconnectSuccess not cleared when save/load paths set error | round-13 bugbot | fix-now | ui-058 | closed |
@@ -179,6 +194,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-07-28 | C | ui-059 | prop-ui-045 agreed; wrap starter chips + compact Agent greeting | build | 55c3a86 |
 | 2026-07-27 | C | audit | Backlog idle ui-001–058; prop-ui-044 shipped note for PO; build pass | build | — |
 | 2026-07-27 | C | ui-058 | Settings disconnect success banner + error role=alert (prop-ui-044) | build | d97f0e0 |
 | 2026-07-27 | C | ui-057 | Tab shortcuts Round 10 review + aria-keyshortcuts fix | build | pending |

@@ -17,7 +17,6 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 WAKE_PIDFILE="${WAKE_PIDFILE:-${TMPDIR:-/tmp}/cursor-loop-${LOOP_ID}.wake.pid}"
-LAST_ARMED="${TMPDIR:-/tmp}/cursor-loop-${LOOP_ID}.wake.armed"
 
 if [[ -n "$STATE_FILE" && -f "$PROJECT_ROOT/$STATE_FILE" ]]; then
   gate_args=(
@@ -50,7 +49,7 @@ PAYLOAD="$(python3 "${SCRIPT_DIR}/build_wake_prompt.py" \
   --project "$PROJECT_ROOT")"
 
 echo "$$" > "$WAKE_PIDFILE"
-date -u +"%Y-%m-%dT%H:%M:%SZ" > "$LAST_ARMED" 2>/dev/null || true
+python3 "${SCRIPT_DIR}/record_wake_meta.py" "$LOOP_ID" "$INTERVAL" "$WAKE_SENTINEL" "$$" 2>/dev/null || true
 
 cleanup() {
   rm -f "$WAKE_PIDFILE"
@@ -59,7 +58,24 @@ trap cleanup EXIT INT TERM
 
 echo "WAKE_ARMED loop_id=${LOOP_ID} interval=${INTERVAL}s sentinel=${WAKE_SENTINEL} pid=$$"
 
-sleep "$INTERVAL"
-FIRED_LINE="${WAKE_SENTINEL} ${PAYLOAD}"
+INJECT_POLL_SEC="${INJECT_POLL_SEC:-5}"
+remaining="$INTERVAL"
+FIRED_LINE=""
+while (( remaining > 0 )); do
+  if FIRED_LINE="$(python3 "${SCRIPT_DIR}/consume_inject_arm.py" "$LOOP_ID" 2>/dev/null)"; then
+    echo "WAKE_INJECT loop_id=${LOOP_ID} reason=inject_request"
+    break
+  fi
+  chunk="$INJECT_POLL_SEC"
+  if (( remaining < chunk )); then
+    chunk="$remaining"
+  fi
+  sleep "$chunk"
+  remaining=$(( remaining - chunk ))
+done
+
+if [[ -z "$FIRED_LINE" ]]; then
+  FIRED_LINE="${WAKE_SENTINEL} ${PAYLOAD}"
+fi
 echo "$FIRED_LINE"
 python3 "${SCRIPT_DIR}/record_wake_fired.py" "$LOOP_ID" "$FIRED_LINE" 2>/dev/null || true

@@ -4,6 +4,7 @@ import { SettingsConnectionCard } from '../components/SettingsConnectionCard';
 import { SettingsGoogleCard } from '../components/SettingsGoogleCard';
 import { SettingsMealNotificationsCard } from '../components/SettingsMealNotificationsCard';
 import { SettingsMealPlanCard } from '../components/SettingsMealPlanCard';
+import { SettingsVoiceStackCard } from '../components/SettingsVoiceStackCard';
 import { useSettingsSection } from '../hooks/useSettingsSection';
 import { getBuildLabel } from '../lib/config';
 
@@ -90,6 +91,8 @@ export function Settings({
         authUrl={authUrl}
         onDisconnect={() => void disconnectGoogle()}
       />
+
+      <SettingsVoiceStackCard />
 
       {settings && (
         <>

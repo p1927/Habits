@@ -43,7 +43,12 @@ if [[ -n "$LOOP_ID" ]]; then
   rm -f "${TMP}/cursor-loop-${LOOP_ID}.pid" \
         "${TMP}/cursor-loop-${LOOP_ID}.wake.pid" \
         "${TMP}/cursor-loop-${LOOP_ID}.last_exit" \
-        "${TMP}/cursor-loop-${LOOP_ID}.wake.armed"
+        "${TMP}/cursor-loop-${LOOP_ID}.wake.armed" \
+        "${TMP}/cursor-loop-${LOOP_ID}.wake.meta.json" \
+        "${TMP}/cursor-loop-${LOOP_ID}.wake.fired.json" \
+        "${TMP}/cursor-loop-${LOOP_ID}.wake.pending.json" \
+        "${TMP}/cursor-loop-${LOOP_ID}.inject.json" \
+        "${TMP}/cursor-loop-${LOOP_ID}.inject.cooldown"
   echo "refresh-loops: stopped processes and pidfiles for loop_id=${LOOP_ID}"
 else
   kill_pattern "tools/cursor-loop/scripts/agent-loop.sh"
@@ -53,7 +58,12 @@ else
   rm -f "${TMP}"/cursor-loop-*.pid \
         "${TMP}"/cursor-loop-*.wake.pid \
         "${TMP}"/cursor-loop-*.last_exit \
-        "${TMP}"/cursor-loop-*.wake.armed 2>/dev/null || true
+        "${TMP}"/cursor-loop-*.wake.armed \
+        "${TMP}"/cursor-loop-*.wake.meta.json \
+        "${TMP}"/cursor-loop-*.wake.fired.json \
+        "${TMP}"/cursor-loop-*.wake.pending.json \
+        "${TMP}"/cursor-loop-*.inject.json \
+        "${TMP}"/cursor-loop-*.inject.cooldown 2>/dev/null || true
   echo "refresh-loops: stopped all cursor-loop and legacy loop processes"
   echo "refresh-loops: persistent agent-loop.sh removed (window instances use dynamic arm-wake.sh only)"
 fi

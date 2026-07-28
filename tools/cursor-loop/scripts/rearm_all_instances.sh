@@ -42,11 +42,15 @@ if [[ -z "$TARGETS" ]]; then
 fi
 
 echo "REARM_ALL_BEGIN targets=${TARGETS}"
+echo "REARM_ALL_WARN orphan_sleepers_only — rearm starts bash sleepers without notify_on_output; focus each chat and keep working for autonomous wake"
 
-for LOOP_ID in $TARGETS; do
+# Use read -ra to safely handle loop_ids even if TARGETS has unusual whitespace
+IFS=' ' read -ra TARGET_ARRAY <<< "$TARGETS"
+for LOOP_ID in "${TARGET_ARRAY[@]}"; do
   export LOOP_ID
+  # Use shlex.quote in Python output so values with special chars don't break eval
   eval "$(python3 - <<'PY'
-import json, os
+import json, os, shlex
 from pathlib import Path
 import loop_hook_lib as lh
 
@@ -57,10 +61,10 @@ contract = row["contract_doc"]
 state = row["state_file"]
 text = (root / contract).read_text(encoding="utf-8")
 cfg = lh.parse_loop_config(text)
-print(f'export WAKE_SENTINEL="{cfg.get("wake_sentinel", "")}"')
-print(f'export INTERVAL="{cfg.get("interval_sec", "120")}"')
-print(f'export CONTRACT_DOC="{contract}"')
-print(f'export STATE_FILE="{state}"')
+print(f'export WAKE_SENTINEL={shlex.quote(str(cfg.get("wake_sentinel", "")))}')
+print(f'export INTERVAL={shlex.quote(str(cfg.get("interval_sec", "120")))}')
+print(f'export CONTRACT_DOC={shlex.quote(contract)}')
+print(f'export STATE_FILE={shlex.quote(state)}')
 PY
 )"
   export LOOP_ID CONTRACT_DOC STATE_FILE PROJECT_ROOT="${ROOT}"
@@ -78,18 +82,24 @@ PY
     continue
   fi
 
+  python3 "${SCRIPT_DIR}/record_wake_meta.py" --clear-pending "$LOOP_ID" 2>/dev/null || true
+
   if bash "${SCRIPT_DIR}/verify-wake.sh" "$LOOP_ID" 2>/dev/null; then
     echo "REARM_SKIP loop_id=${LOOP_ID} reason=already_armed"
     continue
   fi
 
-  bash "${SCRIPT_DIR}/arm-wake.sh" &
+  LOG="${TMPDIR:-/tmp}/cursor-loop-${LOOP_ID}-rearm.log"
+  nohup env LOOP_ID="$LOOP_ID" WAKE_SENTINEL="$WAKE_SENTINEL" INTERVAL="$INTERVAL" \
+    CONTRACT_DOC="$CONTRACT_DOC" STATE_FILE="$STATE_FILE" PROJECT_ROOT="$ROOT" \
+    ${RITUAL_GATE_FORCE:+RITUAL_GATE_FORCE=1} \
+    bash "${SCRIPT_DIR}/arm-wake.sh" >>"$LOG" 2>&1 &
   arm_pid=$!
   disown "$arm_pid" 2>/dev/null || true
   rearm_ok=0
   for _ in 1 2 3 4 5 6 7 8 9 10; do
     if bash "${SCRIPT_DIR}/verify-wake.sh" "$LOOP_ID" 2>/dev/null; then
-      echo "REARM_OK loop_id=${LOOP_ID} sentinel=${WAKE_SENTINEL}"
+      echo "REARM_OK loop_id=${LOOP_ID} sentinel=${WAKE_SENTINEL} orphan=true"
       rearm_ok=1
       break
     fi
@@ -104,5 +114,7 @@ PY
   fi
   unset RITUAL_GATE_FORCE 2>/dev/null || true
 done
+
+python3 "${SCRIPT_DIR}/trigger_instance_wake.py" "$ROOT" --reason down --source rearm --json 2>/dev/null || true
 
 echo "REARM_ALL_END"

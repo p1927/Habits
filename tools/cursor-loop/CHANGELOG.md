@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.9.0
+
+- **Operator wake ladder** — `cwin trigger-all` runs inject → macOS ui_push → open Cursor; no silent skip for orphan/unbound
+- **`push_composer_wake.py`** — focus Composer tab by `loop_id` title, paste + submit wake prompt (Accessibility)
+- **`OPERATOR_WAKE` column** — `cwin status` shows `ready` | `inject_ok` | `ui_push` | `queued` | `needs_bind`
+- **Hook cleanup** — remove dead `followup_message` from bind/afterShell; `operator_wake_pending` on stop hook
+- **`cwin bootstrap-wake`** / **`cwin bind-hint`** — unbound bootstrap + rename guidance
+- **`tick_daemon.sh`** — uses full ladder with structured notify
+
+## 0.8.0
+
+- **Inject wake protocol** — `$TMPDIR/cursor-loop-{loop_id}.inject.json`; `arm-wake.sh` polls every 5s and fires sentinel early
+- **`cwin trigger-all`** — operator inject for unhealthy bound notify-armed instances
+- **`tick_daemon.sh`** — auto-inject with `INJECT_COOLDOWN_SEC` (default 600s) + macOS notify
+- **Hook fallback** — bind + survival consume pending inject via `consume_inject_on_hook.py`
+- **`rearm_all_instances.sh`** — nohup sleepers survive; post-rearm inject attempt
+
+## 0.7.3
+
+- **Notify-at-arm truth** — preToolUse records pending notify; `.wake.meta.json` stores `notify_attached`, `notify_pattern`, `block_until_ms`, `arm_source`
+- **ready_for_autonomous_tick** — requires ARMED + fresh last_wake + notify_attached (orphan rearm shows `NOTIFY=orphan` in `cwin status`)
+- **rearm** — clears pending before orphan arm so meta is never falsely marked notify
+
+## 0.7.2
+
+- **STALE injection** — stop hook + bind hook deliver `followup_message` when ARMED but `last_wake` stale; tick_daemon notifies STALE + SPIN
+- **rearm disclaimer** — `rearm_all_instances.sh` marks orphan sleepers (`orphan=true`)
+
+## 0.7.1
+
+- **Wake timer truth** — persist `.wake.meta.json` on arm with actual `INTERVAL`; sleeper countdown uses meta, not manifest alone
+- **Dual status** — `cwin status` shows `SLEEPER` countdown + `LAST_TICK` age from STATE `last_wake`; `STALE=yes` when agent idle >> interval
+- **prove_wake / watch** — `ready_for_autonomous_tick` false when tick is stale (ARMED bash sleeper ≠ connected chat)
+
 ## 0.7.0
 
 - **Wake regression revert** — restore v0.6.0 background `arm-wake.sh` + `notify_on_output` as primary; undo v0.6.1 foreground `--exec` and v0.6.2 bare-arm block

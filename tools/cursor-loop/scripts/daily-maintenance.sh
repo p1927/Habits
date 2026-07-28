@@ -4,7 +4,15 @@ set -euo pipefail
 
 TARGET="${1:-.}"
 TARGET="$(cd "$TARGET" && pwd)"
-PKG="$(python3 -c "import json; from pathlib import Path; m=json.loads(Path('${TARGET}/.cursor/cursor-loop.json').read_text()); print(m['package_root'])")"
+MANIFEST="${TARGET}/.cursor/cursor-loop.json"
+if [[ ! -f "$MANIFEST" ]]; then
+  echo "daily-maintenance ERROR: manifest not found: $MANIFEST" >&2
+  exit 1
+fi
+PKG="$(python3 -c "import json; from pathlib import Path; m=json.loads(Path('${MANIFEST}').read_text(encoding='utf-8')); print(m['package_root'])" 2>&1)" || {
+  echo "daily-maintenance ERROR: failed to parse manifest: $PKG" >&2
+  exit 1
+}
 
 echo "=== cursor-loop daily maintenance — ${TARGET} ==="
 python3 "${TARGET}/${PKG}/scripts/cleanup_bindings.py" "${TARGET}"

@@ -17,7 +17,13 @@ def _refresh_loop(root: Path, loop_id: str | None) -> None:
     cmd = ["bash", str(script), str(root)]
     if loop_id:
         cmd.extend(["--loop-id", loop_id])
-    subprocess.run(cmd, check=False)
+    result = subprocess.run(cmd, check=False, capture_output=True)
+    if result.returncode != 0:
+        print(
+            f"LOOP_CONTROL_WARN refresh-loops.sh failed (rc={result.returncode}): "
+            f"{result.stderr.decode(errors='replace').strip()}",
+            file=sys.stderr,
+        )
 
 
 def list_loop_ids(root: Path) -> list[str]:
@@ -68,6 +74,7 @@ def pause_loop(root: Path, loop_id: str) -> dict:
 
 def resume_loop(root: Path, loop_id: str) -> dict:
     updated: list[str] = []
+    blocked: list[str] = []
     for cid, binding in mod.iter_bindings(root, loop_id):
         binding["paused"] = False
         binding.pop("bind_blocked", None)
@@ -82,10 +89,17 @@ def resume_loop(root: Path, loop_id: str) -> dict:
                 binding["bind_blocked"] = True
                 binding["bind_error"] = err
                 binding["stopped"] = True
+                blocked.append(cid)
         mod.write_binding(root, cid, binding)
         updated.append(cid)
     mod.set_lock_paused(root, loop_id, False)
-    return {"loop_id": loop_id, "action": "resume", "bindings": updated}
+    return {
+        "loop_id": loop_id,
+        "action": "resume",
+        "bindings": updated,
+        "blocked": blocked,
+        "ok": not blocked,
+    }
 
 
 def stop_loop(root: Path, loop_id: str) -> dict:

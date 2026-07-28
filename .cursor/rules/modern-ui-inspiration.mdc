@@ -11,6 +11,7 @@ Habits should look and feel like a **2025-era Google / consumer app**: Gemini (A
 
 ## Before any UI/UX work
 
+0. **Design ritual (ux-relay only)** — Phase 3.2 brainstorm 2–3 approaches per element; Phase 3.4 pros/cons debate → pick winner (log in `UX_DESIGN_LOG`). **No code until `design_deliberation_done=yes`.**
 1. **Web research** — search how the reference app implements the screen or component (layout, spacing, motion, empty states, loading).
 2. **Read skills** (in order):
    - `.cursor/skills/ui-ux-pro-max/SKILL.md` — run design-system search first

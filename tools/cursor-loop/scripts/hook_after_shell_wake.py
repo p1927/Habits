@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""afterShellExecution — auto-continue when background arm-wake sentinel fires."""
+"""afterShellExecution — record wake.fired when sentinel appears in shell output."""
 from __future__ import annotations
 
 import json
@@ -40,7 +40,6 @@ def main() -> int:
     if not wakes:
         return 0
 
-    # Foreground --exec: agent already has shell output in the same turn.
     if _PREPARE_EXEC.search(command):
         return 0
 
@@ -53,8 +52,6 @@ def main() -> int:
         return 0
 
     loop_id = binding.get("loop_id") or ""
-    contract_doc = binding.get("contract_doc") or ""
-    state_file = binding.get("state_file") or ""
     wake_sentinel = binding.get("wake_sentinel") or ""
 
     for sentinel, payload_json in wakes:
@@ -71,20 +68,6 @@ def main() -> int:
         fired = mod.read_wake_fired(loop_id)
         if not fired or (fired.get("payload_line") or "").strip() != line.strip():
             mod.write_wake_fired(loop_id, line)
-
-        msg = (
-            f"TICK for {loop_id}: dynamic wake sentinel fired "
-            f"(background arm — chat was not monitoring Shell). "
-            f"Run Ritual phases 1→8 NOW from the wake payload below, "
-            f"then re-arm with prepare_arm_wake.sh + ARM_COMMAND "
-            f"(block_until_ms=0, notify_on_output on monitor_regex). "
-            f"Read {contract_doc}"
-        )
-        if state_file:
-            msg += f" and {state_file}"
-        msg += f". Wake payload: {line}"
-        print(json.dumps({"followup_message": msg}))
-        return 0
 
     return 0
 

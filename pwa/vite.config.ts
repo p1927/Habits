@@ -53,6 +53,8 @@ export default defineConfig({
     spaGithubPages404(),
     VitePWA({
       registerType: 'autoUpdate',
+      /** SW in dev breaks HMR websockets and lazy chunk loads — production only. */
+      devOptions: { enabled: false },
       includeAssets: ['runtime-config.js'],
       manifest: {
         id: '/Habits/',
@@ -98,7 +100,13 @@ export default defineConfig({
     port: 5174,
     /** Fail fast so the URL matches Google Cloud "Authorized JavaScript origins". */
     strictPort: true,
-    host: '0.0.0.0',
+    host: 'localhost',
+    origin: 'http://localhost:5174',
+    hmr: {
+      host: 'localhost',
+      port: 5174,
+      path: '/Habits/',
+    },
     proxy: {
       '/api': { target: 'http://127.0.0.1:8787', changeOrigin: true },
       '/auth': { target: 'http://127.0.0.1:8787', changeOrigin: true },

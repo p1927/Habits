@@ -1,4 +1,4 @@
-"""Tests for after-shell wake delivery hook."""
+"""Tests for after-shell wake hook — records wake.fired only."""
 from __future__ import annotations
 
 import json
@@ -16,7 +16,7 @@ from helpers.hooks import invoke_hook  # noqa: E402
 pytestmark = pytest.mark.integration
 
 
-def test_after_shell_wake_followup(installed_project: Path):
+def test_after_shell_wake_records_fired(installed_project: Path):
     cid = "after-shell-1"
     loop_id = "test-loop"
     binding = {
@@ -30,7 +30,6 @@ def test_after_shell_wake_followup(installed_project: Path):
 
     wake_payload = json.dumps({"loop_id": loop_id, "kind": "tick"})
     output = f"WAKE_ARMED loop_id={loop_id}\nAGENT_LOOP_WAKE_TEST {wake_payload}\n"
-    mod.write_wake_fired(loop_id, f"AGENT_LOOP_WAKE_TEST {wake_payload}")
 
     _, out, _ = invoke_hook(
         installed_project,
@@ -43,10 +42,10 @@ def test_after_shell_wake_followup(installed_project: Path):
             "duration": 120000,
         },
     )
-    assert out
-    data = json.loads(out)
-    assert "followup_message" in data
-    assert loop_id in data["followup_message"]
+    assert out == ""
+    fired = mod.read_wake_fired(loop_id)
+    assert fired is not None
+    assert loop_id in (fired.get("payload_line") or "")
 
     mod.clear_wake_fired(loop_id)
     (installed_project / ".cursor" / "loop-bindings" / f"{cid}.json").unlink(missing_ok=True)

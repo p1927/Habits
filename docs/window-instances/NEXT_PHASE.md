@@ -1,35 +1,28 @@
-# Next phase — after v0.7.0 wake revert
+# Operator wake — v0.9.0 ladder
 
-## Done (v0.7.0)
-
-- Background notify primary; v0.6.2 regression reverted
-- preToolUse notify enforcement; SPIN stop-hook recovery
-- `cwin status` TIMER/SPIN; `cwin prove-wake|watch|rearm`
-- `tick_daemon.sh` for macOS SPIN alerts
-- All 4 loops **ARMED** per `prove_wake.sh` (2026-07-28)
-
-## Your verification (required)
-
-1. In each of the 4 Composer chats, confirm the **last Phase 9** used `notify_on_output` (re-paste `keep working` if unsure)
-2. Leave one chat **unfocused** for its full interval — confirm it wakes without manual paste
-3. If unfocused wake fails → run `bash tools/cursor-loop/scripts/tick_daemon.sh .` in a dedicated terminal tab
-
-## Operator commands
+## Commands
 
 ```bash
-cwin status          # TIMER / SPIN / INT
-cwin prove-wake      # exit 0 = all ready
-cwin watch --json    # idle + unhealthy instances
-cwin rearm --force   # rearm DOWN/SPIN sleepers (does not add notify — agents must)
-bash scripts/window-instance-watchdog.sh .   # optional persistent rearm when code idle
-bash tools/cursor-loop/scripts/tick_daemon.sh .   # SPIN macOS notifications
+cwin status                    # OP_WAKE column: ready | inject_ok | ui_push | queued | needs_bind
+cwin trigger-all --force       # ladder: inject (NOTIFY=yes) → macOS ui_push
+cwin trigger-all --mode inject-only
+cwin trigger-all --mode ui-push-only --loop-id worker-relay
+cwin bootstrap-wake --all      # unbound: clipboard + notify
+cwin bind-hint worker-relay    # rename tab to loop_id for ui_push
+bash tools/cursor-loop/scripts/tick_daemon.sh .
 ```
 
-## Deferred until unfocused wake proven
+## One-time setup
 
-- Ritual micro-step hard gates in arm hook
-- STATE edit lock expansion
+1. Bind each chat: `@docs/window-instances/<loop_id>/INSTANCE.md keep working`
+2. **Rename Composer tab to `loop_id`** (e.g. `worker-relay`) for ui_push focus
+3. Grant **Accessibility** to Terminal for ui_push (System Settings → Privacy)
+4. Phase 9 notify arm → `OP_WAKE=ready` / `NOTIFY=yes`
 
-## Commit
+## Recovery (SPIN / orphan / STALE)
 
-Ship `tools/cursor-loop/` v0.7.0 + `docs/window-instances/REGRESSION.md` + `NEXT_PHASE.md` on `main` so fixes do not evaporate again.
+```bash
+cwin trigger-all --force
+```
+
+Uses ui_push when NOTIFY is not attached — no manual paste if Accessibility + tab titles are set.

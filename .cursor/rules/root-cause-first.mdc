@@ -1,0 +1,35 @@
+---
+description: Diagnose root cause before fixing — no restart loops or superficial patches
+alwaysApply: true
+---
+
+# Root Cause First
+
+When something fails (server down, crash, flaky test, CI red), **investigate why before attempting a fix**.
+
+## Required workflow
+
+1. **Reproduce** — confirm the failure with evidence (logs, exit codes, stack traces, `curl`, failing command output).
+2. **Trace** — follow the failure to its origin (process lifecycle, config, code bug, race, missing dependency). Do not stop at the first symptom.
+3. **Fix the cause** — change the code, config, or documented run path that created the failure.
+4. **Verify** — prove the fix addresses the root cause, not just the momentary symptom.
+
+## Forbidden patterns
+
+- Restarting a service repeatedly without reading logs or explaining why it died.
+- `pkill` + restart loops when the real issue is an app crash, port conflict, or wrong startup context.
+- Declaring success because a health check passed once after a fragile background start.
+- Patching symptoms (e.g. catching an error) without understanding why the error occurs.
+
+## Examples
+
+| Symptom | Superficial (wrong) | Root cause (right) |
+|---------|---------------------|-------------------|
+| Dev server "not working" | `npm run dev` again | Read logs; find Vite down vs API crash vs React infinite loop |
+| Port in use | Kill and retry forever | Identify stale/orphan PID source; fix startup script or document one entry point |
+| 401 in browser | "paste a token" only | Trace auth path; confirm proxy, bearer storage, and API issue endpoint |
+| React white screen | Hard refresh | Find console error; fix unstable `getSnapshot` / hook order / uncaught exception |
+
+## When the cause is environmental
+
+If the root cause is **how** the process was started (e.g. agent shell exits → `trap cleanup EXIT` kills children), say so clearly and give the **correct durable command** (user's own terminal, `bash scripts/dev.sh`). Do not simulate success from a short-lived agent shell.

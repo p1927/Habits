@@ -31,12 +31,15 @@ def diff_mode_for_repo(repo_root: Path, base_branch: str = "main") -> str:
     ahead = wt.commits_ahead(repo_root, base_branch) if hasattr(wt, "commits_ahead") else 0
     if ahead > 0:
         return "branch changes"
-    proc_status = __import__("subprocess").run(
+    import subprocess
+    proc_status = subprocess.run(
         ["git", "status", "--porcelain"],
         cwd=repo_root,
         capture_output=True,
         text=True,
     )
+    if proc_status.returncode != 0:
+        return "branch changes"  # safe fallback when git fails
     if proc_status.stdout.strip():
         return "uncommitted changes"
     return "branch changes"
@@ -139,7 +142,7 @@ def main() -> int:
     )
     print("PREPARE_BUGBOT_END")
     directive.emit()
-    return 1
+    return 0
 
 
 if __name__ == "__main__":

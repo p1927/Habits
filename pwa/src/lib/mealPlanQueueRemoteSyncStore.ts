@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 import {
   getMealPlanQueueSyncStatus,
   type MealPlanQueueSyncStatus,
@@ -8,7 +8,8 @@ import { subscribeMealPlanQueueBus } from './mealPlanQueueEventBus';
 
 export type MealPlanSyncViewer = MealPlanSyncSource | 'external';
 
-let rawSyncStatus: MealPlanQueueSyncStatus | null = null;
+let rawSyncStatus: MealPlanQueueSyncStatus | null =
+  typeof window !== 'undefined' ? getMealPlanQueueSyncStatus() : null;
 const listeners = new Set<() => void>();
 let busUnsub: (() => void) | null = null;
 
@@ -36,11 +37,19 @@ function subscribe(listener: () => void) {
   };
 }
 
+function getRawSnapshot(): MealPlanQueueSyncStatus | null {
+  return rawSyncStatus;
+}
+
+function getServerSnapshot(): MealPlanQueueSyncStatus | null {
+  return null;
+}
+
 export function filterRemoteSyncForViewer(
   viewer: MealPlanSyncViewer,
   showOwnSource: boolean,
+  status: MealPlanQueueSyncStatus | null = rawSyncStatus,
 ): MealPlanQueueSyncStatus | null {
-  const status = rawSyncStatus ?? getMealPlanQueueSyncStatus();
   if (!status) return null;
   if (viewer === 'external') return status;
   if (status.source === viewer && !showOwnSource) return null;
@@ -52,9 +61,9 @@ export function useMealPlanQueueRemoteSync(
   opts?: { showOwnSource?: boolean },
 ): MealPlanQueueSyncStatus | null {
   const showOwnSource = opts?.showOwnSource ?? false;
-  return useSyncExternalStore(
-    subscribe,
-    () => filterRemoteSyncForViewer(viewer, showOwnSource),
-    () => null,
+  const raw = useSyncExternalStore(subscribe, getRawSnapshot, getServerSnapshot);
+  return useMemo(
+    () => filterRemoteSyncForViewer(viewer, showOwnSource, raw),
+    [viewer, showOwnSource, raw],
   );
 }

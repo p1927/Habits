@@ -80,7 +80,7 @@ Requires Tailscale (not VPN-blocked). See previous Tailscale/GitHub Pages flow b
 
 1. Push repo to `p1927/Habits`
 2. Settings → Pages → Source: **GitHub Actions**
-3. Repository secrets: `VITE_HABITS_API_URL`, `VITE_VOICE_UI_URL`
+3. Repository secrets: `VITE_HABITS_API_URL` (voice uses LiveKit token from API)
 
 Push to `main` triggers [deploy-pages.yml](.github/workflows/deploy-pages.yml).
 

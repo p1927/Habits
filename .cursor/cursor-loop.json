@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.9.0",
   "package_root": "tools/cursor-loop",
   "contracts_dir": "docs/window-instances",
   "state_dir": "docs/window-instances",

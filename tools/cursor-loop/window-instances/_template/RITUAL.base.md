@@ -209,6 +209,17 @@ bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
 bash tools/cursor-loop/scripts/verify-wake.sh <loop_id>   # must exit 0
 ```
 
+### External inject (v0.8.0+)
+
+When Phase 9 uses **notify-armed** sleepers, operators can wake bound instances without paste:
+
+```bash
+cwin trigger-all              # inject all unhealthy bound instances
+bash tools/cursor-loop/scripts/tick_daemon.sh .   # auto-inject on cooldown
+```
+
+`arm-wake.sh` polls `$TMPDIR/cursor-loop-{loop_id}.inject.json` every 5s and fires the wake sentinel early. Requires `NOTIFY=yes` (notify attached at arm). Orphan rearm (`cwin rearm`) does **not** enable inject.
+
 4. Set `CHECKPOINT.phase=9-arm` **only after** step 4 passes
 5. If verify fails or shell aborted: re-run step 3 once; record in STATE if still DOWN — stop hook will recovery-wake
 

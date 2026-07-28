@@ -32,7 +32,16 @@ export function AppTabBar({
   showShortcutHint = false,
   onDismissShortcutHint,
 }: AppTabBarProps) {
-  if (tab === 'settings') return null;
+  if (tab === 'settings') {
+    return (
+      <nav className="tab-bar tab-bar--settings" aria-label="Settings navigation">
+        <button type="button" className="tab tab-active" aria-current="page">
+          <span className="tab-icon" aria-hidden>⚙</span>
+          <span className="tab-label">Settings</span>
+        </button>
+      </nav>
+    );
+  }
 
   const mod = shortcutModifierLabel();
 

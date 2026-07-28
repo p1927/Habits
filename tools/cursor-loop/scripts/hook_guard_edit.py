@@ -40,14 +40,17 @@ def main() -> int:
     if not guard.is_file():
         return 0
 
-    proc = subprocess.run(
-        [sys.executable, str(guard), "--json"],
-        input=raw,
-        capture_output=True,
-        text=True,
-        cwd=str(root),
-        env={**os.environ, "PYTHONPATH": str(scripts)},
-    )
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(guard), "--json"],
+            input=raw,
+            capture_output=True,
+            text=True,
+            cwd=str(root),
+            env={**os.environ, "PYTHONPATH": str(scripts)},
+        )
+    except OSError:
+        return 0
     if proc.returncode == 2:
         msg = proc.stdout.strip() or proc.stderr.strip() or "Edit blocked by guard_edit_scope"
         out = {

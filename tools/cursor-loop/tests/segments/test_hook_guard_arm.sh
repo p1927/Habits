@@ -43,5 +43,14 @@ ok, msg = guard.should_deny_arm(
 )
 assert ok is False, "background arm with notify should be allowed"
 
+import loop_hook_lib as lh
+
+lh.clear_wake_pending("worker-relay")
+lh.write_wake_pending("worker-relay", notify_pattern="^AGENT_LOOP_WAKE_HABITS", block_until_ms=0)
+# simulate guard allow path (pending consumed on arm)
+pending = lh.read_wake_pending("worker-relay")
+assert pending is not None
+assert pending["notify_pattern"] == "^AGENT_LOOP_WAKE_HABITS"
+
 print("test_hook_guard_arm: ok")
 PY

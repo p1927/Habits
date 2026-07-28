@@ -119,7 +119,14 @@ def repair_instance(root: Path, loop_id: str, state_file: Path) -> list[str]:
     # update_checkpoint_fields may re-write orphan rows after ### — strip again
     text = insert_v060_before_subsection(text)
     text = sc.update_checkpoint_fields(text, updates)
-    state_file.write_text(text, encoding="utf-8")
+    # Atomic write via temp file to prevent truncation on crash
+    tmp = state_file.with_suffix(".tmp")
+    try:
+        tmp.write_text(text, encoding="utf-8")
+        tmp.replace(state_file)
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise
     notes.append("steady between-tick checkpoint (9-arm, ritual_step=1-wake)")
     return notes
 

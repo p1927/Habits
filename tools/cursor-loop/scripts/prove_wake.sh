@@ -56,14 +56,23 @@ for entry in instances:
                     if parts[1] == "last_wake":
                         last_wake = parts[2]
     fired = lh.read_wake_fired(lid)
-    wake = lh.wake_display_status(lid, interval, phase)
-    timer = lh.wake_timer_label(lid, interval)
-    ok = wake == "ARMED" and fired is None
+    last_wake_iso = None if last_wake == "—" else last_wake
+    detail = lh.wake_status_detail(lid, interval, phase, last_wake_iso)
+    wake = detail["wake"]
+    timer = detail["timer"]
+    stale = detail["stale"]
+    orphan = detail["orphan_arm"]
+    ok = detail["ready_for_autonomous_tick"]
     rows.append(
         {
             "loop_id": lid,
             "wake": wake,
             "timer": timer,
+            "sleeper": detail["sleeper"],
+            "last_tick": detail["last_tick"],
+            "stale": stale,
+            "notify": detail["notify"],
+            "orphan_arm": orphan,
             "phase": phase,
             "last_wake": last_wake,
             "fired_at": fired.get("fired_at") if fired else None,
@@ -71,9 +80,17 @@ for entry in instances:
             "fix": None
             if ok
             else (
-                "SPIN: focus chat + keep working; then background arm with notify"
-                if wake == "SPIN"
-                else "DOWN: re-arm with prepare_arm_wake + ARM_COMMAND + notify"
+                "ORPHAN: ARMED without notify_on_output — focus chat + re-arm with prepare_arm_wake + notify"
+                if orphan
+                else (
+                    "STALE: agent idle >> interval — focus chat + keep working; re-arm with notify"
+                    if stale
+                    else (
+                        "SPIN: focus chat + keep working; then background arm with notify"
+                        if wake == "SPIN"
+                        else "DOWN: re-arm with prepare_arm_wake + ARM_COMMAND + notify"
+                    )
+                )
             ),
         }
     )

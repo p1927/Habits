@@ -32,6 +32,8 @@ bash tools/cursor-loop/scripts/arm-wake.sh
 bash tools/cursor-loop/scripts/verify-wake.sh {{loop_id}}   # must exit 0 before ending turn
 ```
 
+After notify-armed sleepers are running, operators can inject wakes without paste: `cwin trigger-all` (see RITUAL Phase 9).
+
 See [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md) Phase 9 and agent-loop-contract.mdc.
 
 ---

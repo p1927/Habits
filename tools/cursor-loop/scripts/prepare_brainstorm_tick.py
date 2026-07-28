@@ -67,16 +67,28 @@ def main() -> int:
             )
             directive.emit()
             return 1
+        outcome_text = args.outcome.strip()
+        MAX_OUTCOME = 200
+        if len(outcome_text) > MAX_OUTCOME:
+            print(
+                f"PREPARE_BRAINSTORM_WARN outcome truncated from {len(outcome_text)} to {MAX_OUTCOME} chars",
+                file=sys.stderr,
+            )
+            outcome_text = outcome_text[:MAX_OUTCOME]
         updates = {
             "brainstorm_done": "yes",
-            "brainstorm_outcome": args.outcome.strip()[:200],
+            "brainstorm_outcome": outcome_text,
         }
-        state_path.write_text(
-            sc.update_checkpoint_fields(state_text, updates),
-            encoding="utf-8",
-        )
+        try:
+            state_path.write_text(
+                sc.update_checkpoint_fields(state_text, updates),
+                encoding="utf-8",
+            )
+        except OSError as exc:
+            print(f"PREPARE_BRAINSTORM_ERROR state write failed: {exc}", file=sys.stderr)
+            return 1
         done = True
-        print(f"brainstorm_outcome={args.outcome.strip()[:200]}")
+        print(f"brainstorm_outcome={outcome_text}")
         print("APPLIED=yes")
 
     if not done:

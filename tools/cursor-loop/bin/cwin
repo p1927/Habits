@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -55,18 +56,13 @@ def count_open_backlog(state_text: str) -> int:
     return sum(1 for line in state_text.splitlines() if re.match(r"^\s*- \[ \]", line))
 
 
-def wake_status(project: Path, loop_id: str, interval_sec: int, phase: str) -> tuple[str, str]:
+def wake_status(project: Path, loop_id: str, interval_sec: int, phase: str, state_text: str = "") -> tuple[str, str, str, bool, str]:
     sys.path.insert(0, str(scripts_dir(project)))
     import loop_hook_lib as lib
 
-    label = lib.wake_display_status(loop_id, interval_sec, phase)
-    if label == "ARMED":
-        timer = lib.wake_timer_label(loop_id, interval_sec)
-    elif label == "SPIN":
-        timer = "—"
-    else:
-        timer = "due"
-    return label, timer
+    last_wake = lib.parse_last_wake(state_text)
+    detail = lib.wake_status_detail(loop_id, interval_sec, phase, last_wake)
+    return detail["wake"], detail["timer"], detail["last_tick"], detail["stale"], detail["notify"]
 
 
 def load_instances(project: Path) -> tuple[dict, list[dict]]:
@@ -79,6 +75,9 @@ def load_instances(project: Path) -> tuple[dict, list[dict]]:
 
 
 def cmd_status(project: Path, as_json: bool) -> int:
+    sys.path.insert(0, str(scripts_dir(project)))
+    import loop_hook_lib as lib
+
     manifest, instances = load_instances(project)
     preset = manifest.get("instances_preset", "—")
     rows = []
@@ -88,12 +87,19 @@ def cmd_status(project: Path, as_json: bool) -> int:
         state_file = project / entry.get("state_file", "")
         state_text = state_file.read_text(encoding="utf-8") if state_file.is_file() else ""
         cp = parse_checkpoint(state_text)
-        wake, timer = wake_status(project, loop_id, interval, cp.get("phase", ""))
+        wake, timer, last_tick, stale, notify = wake_status(project, loop_id, interval, cp.get("phase", ""), state_text)
+        last_wake = lib.parse_last_wake(state_text)
+        detail = lib.wake_status_detail(loop_id, interval, cp.get("phase", ""), last_wake)
+        operator_wake = lib.operator_wake_label(project, loop_id, detail)
         rows.append(
             {
                 "loop_id": loop_id,
                 "wake": wake,
                 "timer": timer,
+                "last_tick": last_tick,
+                "stale": stale,
+                "notify": notify,
+                "operator_wake": operator_wake,
                 "interval_sec": interval,
                 "phase": cp.get("phase", "—"),
                 "review": cp.get("review_status", "—"),
@@ -108,21 +114,32 @@ def cmd_status(project: Path, as_json: bool) -> int:
     print(f"Preset: {preset}   Instances: {len(rows)}")
     print()
     print(
-        f"{'LOOP_ID':<14} {'WAKE':<7} {'TIMER':<9} {'INT':<6} {'PHASE':<8} "
-        f"{'REVIEW':<8} {'BACKLOG':<7} PASTE"
+        f"{'LOOP_ID':<14} {'WAKE':<7} {'SLEEPER':<9} {'LAST_TICK':<9} {'STALE':<6} {'NOTIFY':<7} "
+        f"{'OP_WAKE':<10} {'INT':<6} {'PHASE':<8} {'REVIEW':<8} {'BACKLOG':<7} PASTE"
     )
     for r in rows:
+        stale = "yes" if r["stale"] else "—"
         print(
-            f"{r['loop_id']:<14} {r['wake']:<7} {r['timer']:<9} {r['interval_sec']}s{'':<3} "
-            f"{r['phase']:<8} {r['review']:<8} {r['backlog_open']:<7} {r['paste']}"
+            f"{r['loop_id']:<14} {r['wake']:<7} {r['timer']:<9} {r['last_tick']:<9} {stale:<6} {r['notify']:<7} "
+            f"{r['operator_wake']:<10} {r['interval_sec']}s{'':<3} {r['phase']:<8} {r['review']:<8} "
+            f"{r['backlog_open']:<7} {r['paste']}"
         )
     if any(r["wake"] == "SPIN" for r in rows):
         print(
-            "\nSPIN = sentinel fired at phase=9-arm without a completed tick — "
-            "focus that chat and send keep working (hooks deliver on next prompt/stop, not autonomously)."
+            "\nSPIN = sentinel fired without completed tick — run: cwin trigger-all --force"
         )
+    if any(r["stale"] for r in rows):
+        print(
+            "\nSTALE = last_wake much older than interval — operator wake may be required."
+        )
+    print(
+        "\nOperator wake: cwin trigger-all  (ladder: inject if NOTIFY=yes, else macOS ui_push)"
+    )
+    print("Rename each chat tab to loop_id (e.g. worker-relay) for ui_push tab focus.")
+    if any(r.get("operator_wake") == "needs_bind" for r in rows):
+        print("Unbound: cwin bootstrap-wake --all")
     if any(r["wake"] == "DOWN" for r in rows):
-        print('\nTip: send "keep working" in DOWN chats to re-arm; or: cwin sync / cwin refresh')
+        print('\nTip: cwin trigger-all --force  or send "keep working" in DOWN chats')
     return 0
 
 
@@ -280,6 +297,50 @@ def cmd_rearm(project: Path, force: bool, all_loops: bool) -> int:
     return subprocess.call(cmd, cwd=project)
 
 
+def cmd_bind_hint(project: Path, loop_id: str) -> int:
+    print(f"Rename this Composer tab to: {loop_id}")
+    print("ui_push focuses windows/tabs whose title contains that name.")
+    print(f"Bind paste: cwin paste {loop_id}")
+    return 0
+
+
+def cmd_bootstrap_wake(project: Path, loop_id: str | None, all_loops: bool) -> int:
+    cmd = [
+        "python3",
+        str(scripts_dir(project) / "wake_ladder.py"),
+        str(project),
+        "--mode",
+        "bootstrap",
+    ]
+    if loop_id and not all_loops:
+        cmd.extend(["--loop-id", loop_id])
+    return subprocess.call(cmd, cwd=project, env={**os.environ, "PYTHONPATH": str(scripts_dir(project))})
+
+
+def cmd_trigger_all(
+    project: Path,
+    loop_id: str | None,
+    force: bool,
+    reason: str,
+    mode: str = "ladder",
+) -> int:
+    cmd = [
+        "python3",
+        str(scripts_dir(project) / "trigger_instance_wake.py"),
+        str(project),
+        "--reason",
+        reason,
+        "--mode",
+        mode,
+        "--json",
+    ]
+    if loop_id:
+        cmd.extend(["--loop-id", loop_id])
+    if force:
+        cmd.append("--force")
+    return subprocess.call(cmd, cwd=project, env={**os.environ, "PYTHONPATH": str(scripts_dir(project))})
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="cwin", description="Cursor Window Instances CLI")
     parser.add_argument("project", nargs="?", default=".", help="Project root")
@@ -321,6 +382,24 @@ def main() -> int:
     p = sub.add_parser("rearm", help="Rearm instances that are DOWN/SPIN")
     p.add_argument("--force", action="store_true", help="Pass RITUAL_GATE_FORCE=1")
     p.add_argument("--all", action="store_true", help="Rearm every instance")
+    p = sub.add_parser("trigger-all", help="Operator wake ladder (inject → ui_push)")
+    p.add_argument("--loop-id", default="")
+    p.add_argument("--force", action="store_true", help="Wake even if ready_for_autonomous_tick")
+    p.add_argument(
+        "--mode",
+        default="ladder",
+        choices=("ladder", "inject-only", "ui-push-only"),
+    )
+    p.add_argument(
+        "--reason",
+        default="manual",
+        choices=("manual", "stale", "spin", "down", "daemon"),
+    )
+    p = sub.add_parser("bind-hint", help="Show chat rename hint for ui_push tab focus")
+    p.add_argument("loop_id")
+    p = sub.add_parser("bootstrap-wake", help="Bootstrap unbound instances (clipboard + notify)")
+    p.add_argument("--loop-id", default="")
+    p.add_argument("--all", action="store_true")
 
     args = parser.parse_args()
     project = find_project_root(Path(args.project))
@@ -349,6 +428,19 @@ def main() -> int:
         "prove-wake": lambda: cmd_prove_wake(project),
         "watch": lambda: cmd_watch(project, args.idle_sec, getattr(args, "json", False)),
         "rearm": lambda: cmd_rearm(project, getattr(args, "force", False), getattr(args, "all", False)),
+        "trigger-all": lambda: cmd_trigger_all(
+            project,
+            args.loop_id or None,
+            getattr(args, "force", False),
+            getattr(args, "reason", "manual"),
+            getattr(args, "mode", "ladder"),
+        ),
+        "bind-hint": lambda: cmd_bind_hint(project, args.loop_id),
+        "bootstrap-wake": lambda: cmd_bootstrap_wake(
+            project,
+            args.loop_id or None,
+            getattr(args, "all", False),
+        ),
     }
     return cmds[args.command]()
 

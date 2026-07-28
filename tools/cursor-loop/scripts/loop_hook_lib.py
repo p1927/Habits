@@ -1,9 +1,11 @@
 """Shared helpers for cursor-loop Cursor hooks."""
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import re
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -157,8 +159,22 @@ def parse_loop_config(text: str) -> dict[str, str]:
     return cfg
 
 
+def _atomic_write_json(path: Path, data: dict) -> None:
+    """Write JSON atomically via a temp-file rename to avoid truncation on crash."""
+    content = json.dumps(data, indent=2) + "\n"
+    tmp = path.with_suffix(".tmp")
+    try:
+        tmp.write_text(content, encoding="utf-8")
+        tmp.replace(path)  # atomic on POSIX filesystems
+    except Exception:
+        tmp.unlink(missing_ok=True)
+        raise
+
+
 def binding_path(root: Path, conversation_id: str) -> Path:
-    return root / ".cursor" / "loop-bindings" / f"{conversation_id}.json"
+    # Sanitize to prevent path traversal via malicious conversation_id values
+    safe_id = re.sub(r"[/\\]", "_", conversation_id)
+    return root / ".cursor" / "loop-bindings" / f"{safe_id}.json"
 
 
 def read_binding(root: Path, conversation_id: str) -> dict | None:
@@ -176,7 +192,7 @@ def write_binding(root: Path, conversation_id: str, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data.setdefault("schema_version", 1)
     data["updated_at"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    _atomic_write_json(path, data)
 
 
 def binding_age_days(binding: dict) -> float | None:
@@ -307,6 +323,233 @@ def resolve_wake_fired_path(loop_id: str) -> Path:
     return tmp / f"cursor-loop-{loop_id}.wake.fired.json"
 
 
+def resolve_wake_meta_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.wake.meta.json"
+
+
+def resolve_wake_armed_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.wake.armed"
+
+
+def resolve_wake_pending_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.wake.pending.json"
+
+
+def write_wake_pending(
+    loop_id: str,
+    *,
+    notify_pattern: str,
+    block_until_ms: int,
+    arm_source: str = "agent_notify",
+) -> None:
+    data = {
+        "loop_id": loop_id,
+        "notify_pattern": notify_pattern,
+        "block_until_ms": int(block_until_ms),
+        "arm_source": arm_source,
+        "recorded_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+    }
+    resolve_wake_pending_path(loop_id).write_text(
+        json.dumps(data, separators=(",", ":")), encoding="utf-8"
+    )
+
+
+def read_wake_pending(loop_id: str) -> dict | None:
+    path = resolve_wake_pending_path(loop_id)
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def clear_wake_pending(loop_id: str) -> None:
+    resolve_wake_pending_path(loop_id).unlink(missing_ok=True)
+
+
+def consume_wake_pending(loop_id: str) -> dict | None:
+    pending = read_wake_pending(loop_id)
+    clear_wake_pending(loop_id)
+    return pending
+
+
+def resolve_inject_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.inject.json"
+
+
+def resolve_inject_cooldown_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.inject.cooldown"
+
+
+def write_inject_request(
+    loop_id: str,
+    *,
+    payload_line: str,
+    reason: str = "manual",
+    source: str = "trigger",
+) -> None:
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    data = {
+        "loop_id": loop_id,
+        "reason": reason,
+        "source": source,
+        "requested_at": now,
+        "payload_line": payload_line.strip(),
+    }
+    resolve_inject_path(loop_id).write_text(
+        json.dumps(data, separators=(",", ":")), encoding="utf-8"
+    )
+
+
+def read_inject_request(loop_id: str) -> dict | None:
+    path = resolve_inject_path(loop_id)
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def clear_inject_request(loop_id: str) -> None:
+    resolve_inject_path(loop_id).unlink(missing_ok=True)
+
+
+def consume_inject_request(loop_id: str) -> dict | None:
+    req = read_inject_request(loop_id)
+    if req:
+        clear_inject_request(loop_id)
+    return req
+
+
+def inject_cooldown_active(loop_id: str, cooldown_sec: int) -> bool:
+    path = resolve_inject_cooldown_path(loop_id)
+    if not path.is_file() or cooldown_sec <= 0:
+        return False
+    try:
+        ts = float(path.read_text(encoding="utf-8").strip().splitlines()[0])
+    except (ValueError, OSError, IndexError):
+        return False
+    return (datetime.now(timezone.utc).timestamp() - ts) < cooldown_sec
+
+
+def write_inject_cooldown(loop_id: str) -> None:
+    now = datetime.now(timezone.utc).timestamp()
+    iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    resolve_inject_cooldown_path(loop_id).write_text(f"{now}\n{iso}\n", encoding="utf-8")
+
+
+def has_loop_binding(root: Path, loop_id: str) -> bool:
+    return read_loop_lock(root, loop_id) is not None
+
+
+def inject_followup_message(inject: dict, *, contract_doc: str, state_file: str) -> str:
+    loop_id = inject.get("loop_id") or ""
+    line = (inject.get("payload_line") or "").strip()
+    reason = inject.get("reason") or "manual"
+    msg = (
+        f"INJECT WAKE for {loop_id} (reason={reason}): external trigger requested tick NOW. "
+        f"Run Ritual phases 1→8 from wake payload below, then re-arm with notify. "
+        f"Read {contract_doc}"
+    )
+    if state_file:
+        msg += f" and {state_file}"
+    msg += f". Wake payload: {line}"
+    return msg
+
+
+def is_notify_attached(meta: dict | None) -> bool:
+    """True when arm meta records background Shell with notify_on_output."""
+    if not meta:
+        return False
+    if not meta.get("notify_attached"):
+        return False
+    pattern = str(meta.get("notify_pattern") or "")
+    if "AGENT_LOOP_WAKE" not in pattern:
+        return False
+    try:
+        block_ms = int(meta.get("block_until_ms"))
+    except (TypeError, ValueError):
+        return False
+    return block_ms == 0
+
+
+def notify_label_from_meta(meta: dict | None, *, wake: str) -> str:
+    if wake != "ARMED":
+        return "—"
+    if is_notify_attached(meta):
+        return "yes"
+    source = (meta or {}).get("arm_source") or "orphan"
+    return "orphan" if source == "orphan" else "no"
+
+
+def write_wake_meta(
+    loop_id: str,
+    *,
+    interval_sec: int,
+    wake_sentinel: str,
+    pid: int,
+    pending: dict | None = None,
+) -> None:
+    pending = pending if pending is not None else consume_wake_pending(loop_id)
+    notify_pattern: str | None = None
+    block_until_ms: int | None = None
+    arm_source = "orphan"
+    notify_attached = False
+    if pending:
+        notify_pattern = str(pending.get("notify_pattern") or "") or None
+        try:
+            block_until_ms = int(pending.get("block_until_ms"))
+        except (TypeError, ValueError):
+            block_until_ms = None
+        arm_source = str(pending.get("arm_source") or "agent_notify")
+        notify_attached = bool(
+            notify_pattern
+            and block_until_ms == 0
+            and "AGENT_LOOP_WAKE" in notify_pattern
+            and arm_source == "agent_notify"
+        )
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    data = {
+        "loop_id": loop_id,
+        "armed_at": now,
+        "interval_sec": int(interval_sec),
+        "wake_sentinel": wake_sentinel,
+        "pid": pid,
+        "notify_attached": notify_attached,
+        "notify_pattern": notify_pattern,
+        "block_until_ms": block_until_ms,
+        "arm_source": arm_source,
+    }
+    resolve_wake_meta_path(loop_id).write_text(
+        json.dumps(data, separators=(",", ":")), encoding="utf-8"
+    )
+    resolve_wake_armed_path(loop_id).write_text(f"{now}\n", encoding="utf-8")
+
+
+def read_wake_meta(loop_id: str) -> dict | None:
+    path = resolve_wake_meta_path(loop_id)
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def clear_wake_meta(loop_id: str) -> None:
+    resolve_wake_meta_path(loop_id).unlink(missing_ok=True)
+    resolve_wake_armed_path(loop_id).unlink(missing_ok=True)
+    clear_wake_pending(loop_id)
+    clear_inject_request(loop_id)
+
+
 def write_wake_fired(loop_id: str, payload_line: str) -> None:
     """Record that dynamic wake sentinel fired (for recovery when notify misses)."""
     path = resolve_wake_fired_path(loop_id)
@@ -337,36 +580,195 @@ def is_wake_spin(loop_id: str, phase: str) -> bool:
     return read_wake_fired(loop_id) is not None
 
 
-def resolve_wake_armed_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
-    return tmp / f"cursor-loop-{loop_id}.wake.armed"
+def _parse_iso_utc(value: str) -> datetime | None:
+    text = (value or "").strip().strip("`")
+    if not text or text == "—":
+        return None
+    try:
+        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        # Ensure timezone-aware to avoid TypeError when comparing with aware datetimes
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except ValueError:
+        return None
+
+
+def format_age_short(iso_ts: str | None) -> str:
+    """Human age since ISO timestamp, e.g. 6h, 23m, now."""
+    dt = _parse_iso_utc(iso_ts) if iso_ts else None
+    if dt is None:
+        return "—"
+    secs = int((datetime.now(timezone.utc) - dt).total_seconds())
+    if secs < 60:
+        return "now" if secs < 15 else f"{secs}s"
+    if secs < 3600:
+        return f"{secs // 60}m"
+    if secs < 86400:
+        return f"{secs // 3600}h"
+    return f"{secs // 86400}d"
+
+
+def is_tick_stale(last_wake_iso: str | None, interval_sec: int, *, factor: float = 2.0) -> bool:
+    """Agent last_wake older than factor * interval — sleeper timer is misleading."""
+    dt = _parse_iso_utc(last_wake_iso) if last_wake_iso else None
+    if dt is None:
+        return True
+    threshold = max(int(interval_sec) * factor, int(interval_sec) + 120)
+    # Guard against negative age from NTP clock-skew corrections
+    age = max(0.0, (datetime.now(timezone.utc) - dt).total_seconds())
+    return age > threshold
+
+
+def wake_sleeper_remaining(loop_id: str, fallback_interval: int) -> tuple[str, int | None]:
+    """Return (label, interval_used). Label: countdown, due, or —."""
+    meta = read_wake_meta(loop_id)
+    interval = int(meta.get("interval_sec") if meta else fallback_interval)
+    if not is_wake_process_alive(loop_id):
+        if read_wake_fired(loop_id):
+            return "—", interval
+        return "due", interval
+    armed_at = (meta or {}).get("armed_at")
+    if not armed_at:
+        armed_path = resolve_wake_armed_path(loop_id)
+        if armed_path.is_file():
+            armed_at = armed_path.read_text(encoding="utf-8").strip()
+    if not armed_at:
+        return "—", interval
+    started = _parse_iso_utc(armed_at)
+    if started is None:
+        return "—", interval
+    elapsed = (datetime.now(timezone.utc) - started).total_seconds()
+    remaining = max(0, interval - int(elapsed))
+    if remaining <= 0:
+        return "due", interval
+    mins, secs = divmod(remaining, 60)
+    if mins:
+        return f"{mins}m{secs:02d}s", interval
+    return f"{secs}s", interval
+
+
+def binding_interval_sec(binding: dict, fallback: int = 120) -> int:
+    raw = binding.get("interval_sec")
+    try:
+        return int(str(raw).strip()) if raw not in (None, "", "—") else fallback
+    except (TypeError, ValueError):
+        return fallback
+
+
+def stale_tick_followup(
+    *,
+    loop_id: str,
+    contract_doc: str,
+    state_file: str,
+    interval_sec: int,
+    last_wake_iso: str | None,
+    wake_sentinel: str = "",
+    armed: bool = False,
+) -> str:
+    """followup_message when agent idle >> interval (sleeper may still be ARMED)."""
+    age = format_age_short(last_wake_iso)
+    armed_note = (
+        " Bash sleeper is still ARMED but this chat is not ticking — "
+        "the countdown is not connected to agent work."
+        if armed
+        else ""
+    )
+    msg = (
+        f"STALE TICK for {loop_id}: last_wake is {age} old (interval {interval_sec}s).{armed_note} "
+        f"Read {contract_doc}"
+    )
+    if state_file:
+        msg += f" and {state_file}"
+    msg += (
+        "; run full Ritual phases 1→8 THIS turn, then re-arm: prepare_arm_wake.sh (no --exec), "
+        "ARM_COMMAND with block_until_ms=0 and notify_on_output on monitor_regex."
+    )
+    if wake_sentinel:
+        msg += f" Monitor: ^{wake_sentinel}"
+    return msg
+
+
+def parse_last_wake(state_text: str) -> str | None:
+    """Extract CHECKPOINT last_wake ISO from STATE markdown."""
+    if "## CHECKPOINT" not in state_text:
+        return None
+    section = state_text.split("## CHECKPOINT", 1)[1].split("\n## ", 1)[0]
+    for line in section.splitlines():
+        parts = [p.strip().strip("`") for p in line.split("|")]
+        if len(parts) >= 3 and parts[1] == "last_wake" and parts[2] and parts[2] != "—":
+            return parts[2]
+    return None
+
+
+def wake_status_detail(
+    loop_id: str,
+    interval_sec: int,
+    phase: str,
+    last_wake_iso: str | None,
+) -> dict:
+    """Operator-facing wake truth: sleeper countdown vs agent last_wake."""
+    wake = wake_display_status(loop_id, interval_sec, phase)
+    sleeper, interval_used = wake_sleeper_remaining(loop_id, interval_sec)
+    last_tick = format_age_short(last_wake_iso)
+    stale = is_tick_stale(last_wake_iso, interval_used or interval_sec)
+    meta = read_wake_meta(loop_id)
+    notify = notify_label_from_meta(meta, wake=wake)
+    orphan_arm = wake == "ARMED" and not is_notify_attached(meta)
+    fired = read_wake_fired(loop_id) is not None
+    inject_pending = read_inject_request(loop_id) is not None
+    ready = (
+        wake == "ARMED"
+        and not fired
+        and not stale
+        and is_notify_attached(meta)
+    )
+    if wake == "ARMED":
+        timer = sleeper
+    elif wake == "SPIN":
+        timer = "—"
+    else:
+        timer = "due"
+    return {
+        "wake": wake,
+        "timer": timer,
+        "sleeper": sleeper,
+        "last_tick": last_tick,
+        "last_wake": last_wake_iso or "—",
+        "stale": stale,
+        "interval_sec": interval_used or interval_sec,
+        "notify": notify,
+        "notify_attached": is_notify_attached(meta),
+        "orphan_arm": orphan_arm,
+        "arm_source": (meta or {}).get("arm_source", "—"),
+        "inject_pending": inject_pending,
+        "ready_for_autonomous_tick": ready,
+    }
+
+
+def operator_wake_label(root: Path, loop_id: str, detail: dict | None = None) -> str:
+    """Operator-facing wake control surface label."""
+    if not has_loop_binding(root, loop_id):
+        return "needs_bind"
+    if detail is None:
+        detail = {"inject_pending": read_inject_request(loop_id) is not None}
+    if detail.get("inject_pending") or read_inject_request(loop_id):
+        return "queued"
+    if detail.get("ready_for_autonomous_tick"):
+        return "ready"
+    if detail.get("notify_attached") or is_notify_attached(read_wake_meta(loop_id)):
+        return "inject_ok"
+    return "ui_push"
 
 
 def wake_timer_label(loop_id: str, interval_sec: int) -> str:
-    """Human countdown for armed sleeper, or due/— when not armed."""
-    if is_wake_process_alive(loop_id):
-        armed_path = resolve_wake_armed_path(loop_id)
-        if armed_path.is_file():
-            try:
-                from datetime import datetime, timezone
-
-                started = datetime.fromisoformat(
-                    armed_path.read_text(encoding="utf-8").strip().replace("Z", "+00:00")
-                )
-                elapsed = (datetime.now(timezone.utc) - started).total_seconds()
-                remaining = max(0, int(interval_sec) - int(elapsed))
-                if remaining <= 0:
-                    return "due"
-                mins, secs = divmod(remaining, 60)
-                if mins:
-                    return f"{mins}m{secs:02d}s"
-                return f"{secs}s"
-            except (ValueError, OSError):
-                pass
-        return "—"
-    if read_wake_fired(loop_id):
-        return "—"
-    return "due"
+    """Human countdown for armed sleeper (uses arm-time interval from meta, not manifest)."""
+    if not is_wake_process_alive(loop_id):
+        if read_wake_fired(loop_id):
+            return "—"
+        return "due"
+    label, _ = wake_sleeper_remaining(loop_id, interval_sec)
+    return label
 
 
 def wake_display_status(loop_id: str, interval_sec: int, phase: str) -> str:
@@ -488,7 +890,20 @@ def iter_bindings(root: Path, loop_id: str | None = None) -> list[tuple[str, dic
             continue
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
+        except FileNotFoundError:
+            # File deleted between glob and read — normal under concurrent ops
+            continue
+        except json.JSONDecodeError as exc:
+            print(
+                f"LOOP_WARN iter_bindings: corrupted binding {path.name}: {exc}",
+                file=sys.stderr,
+            )
+            continue
+        except OSError as exc:
+            print(
+                f"LOOP_WARN iter_bindings: cannot read binding {path.name}: {exc}",
+                file=sys.stderr,
+            )
             continue
         if loop_id and data.get("loop_id") != loop_id:
             continue
@@ -503,10 +918,7 @@ def set_lock_paused(root: Path, loop_id: str, paused: bool) -> None:
         if not paused:
             return
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            json.dumps({"loop_id": loop_id, "paused": True, "updated_at": now}, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        _atomic_write_json(path, {"loop_id": loop_id, "paused": True, "updated_at": now})
         return
     lock = read_loop_lock(root, loop_id) or {}
     if paused:
@@ -514,7 +926,7 @@ def set_lock_paused(root: Path, loop_id: str, paused: bool) -> None:
     else:
         lock.pop("paused", None)
     lock["updated_at"] = now
-    path.write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8")
+    _atomic_write_json(path, lock)
 
 
 def is_loop_paused(root: Path, loop_id: str) -> bool:

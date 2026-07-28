@@ -1,0 +1,1 @@
+/Users/pratyushmishra/Documents/GitHub/Habits/tools/cursor-loop/cursor/hooks/loop-post-tool.sh

@@ -24,8 +24,8 @@
 | next_action | `relay-203 Agent greeting hide when attach preview open` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-202 reviewed round 33; committed 4fc6ec6` |
-| review_diff_range | `4fc6ec6` |
+| review_skip_reason | `v0.6.0 steady state — Phase 5 re-detects via prepare_review_tick.sh` |
+| review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `33` |
 | last_reviewed_round | `33` |
@@ -34,8 +34,8 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/AgentChatPanel.tsx pwa/src/components/AgentSectionBody.tsx pwa/src/sections/Agent.tsx` |
-| review_fingerprint | `relay-202` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 | ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |

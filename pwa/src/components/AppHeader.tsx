@@ -3,6 +3,8 @@ import { shortcutModifierLabel } from '../lib/logSectionShared';
 
 interface AppHeaderProps {
   status: string;
+  settingsActive?: boolean;
+  onLeaveSettings?: () => void;
   onOpenSettings: () => void;
   onPreloadSettings: () => void;
   showShortcutHint?: boolean;
@@ -11,6 +13,8 @@ interface AppHeaderProps {
 
 export function AppHeader({
   status,
+  settingsActive = false,
+  onLeaveSettings,
   onOpenSettings,
   onPreloadSettings,
   showShortcutHint = false,
@@ -22,6 +26,11 @@ export function AppHeader({
     <header className="header">
       <span className="logo">Habits</span>
       <div className="header-actions">
+        {settingsActive && onLeaveSettings && (
+          <button type="button" className="btn-pill btn-pill-outline header-back-btn" onClick={onLeaveSettings}>
+            ← Back
+          </button>
+        )}
         {showShortcutHint && (
           <p className="header-settings-shortcut-hint muted" role="note">
             <kbd>{mod},</kbd> Settings{' '}
@@ -34,7 +43,7 @@ export function AppHeader({
         )}
         <button
           type="button"
-          className="header-gear"
+          className={`header-gear${settingsActive ? ' header-gear--active' : ''}`}
           onClick={onOpenSettings}
           onPointerEnter={onPreloadSettings}
           onFocus={onPreloadSettings}
