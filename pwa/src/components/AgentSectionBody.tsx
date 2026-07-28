@@ -13,6 +13,7 @@ interface AgentSectionBodyProps {
   loading: boolean;
   listRef: RefObject<HTMLDivElement | null>;
   composerDraft?: string;
+  attachImage?: string | null;
   scanning?: boolean;
   onSelectPrompt: (prompt: string) => void;
   onRegenerateLastReply?: () => void;
@@ -28,6 +29,7 @@ export function AgentSectionBody({
   loading,
   listRef,
   composerDraft,
+  attachImage = null,
   scanning = false,
   onSelectPrompt,
   onRegenerateLastReply,
@@ -49,6 +51,7 @@ export function AgentSectionBody({
         loading={loading}
         listRef={listRef}
         composerDraft={composerDraft}
+        attachImage={attachImage}
         greetingActionsDisabled={!serverOnline || loading || scanning}
         onSelectPrompt={onSelectPrompt}
         onRegenerateLastReply={onRegenerateLastReply}

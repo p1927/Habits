@@ -7,6 +7,7 @@ export interface AgentChatPanelProps {
   loading: boolean;
   listRef: React.RefObject<HTMLDivElement | null>;
   composerDraft?: string;
+  attachImage?: string | null;
   greetingActionsDisabled?: boolean;
   onSelectPrompt?: (text: string) => void;
   onRegenerateLastReply?: () => void;
@@ -17,11 +18,12 @@ export function AgentChatPanel({
   loading,
   listRef,
   composerDraft = '',
+  attachImage = null,
   greetingActionsDisabled = false,
   onSelectPrompt,
   onRegenerateLastReply,
 }: AgentChatPanelProps) {
-  const showGreeting = messages.length === 0 && !composerDraft.trim();
+  const showGreeting = messages.length === 0 && !composerDraft.trim() && !attachImage;
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const copyMessage = useCallback(async (content: string, index: number) => {
