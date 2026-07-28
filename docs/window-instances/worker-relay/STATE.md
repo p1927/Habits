@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:41:06Z |
-| where_we_are | relay-209 shipped (a62bd3c); relay-210 next |
-| confirmed_next | relay-210 |
-| brainstorm_notes | relay-208/209/210 derived from rf-r37-002/004/003 deferred backlog findings |
+| reviewed_at | 2026-07-28T12:44:50Z |
+| where_we_are | relay-210 shipped (d96e0f3); backlog empty |
+| confirmed_next |  |
+| brainstorm_notes | rf-r37 backlog findings complete; awaiting PO relay-211+ |
 
 ---
 
@@ -19,20 +19,20 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:44:45Z` |
-| next_action | `relay-210` |
-| phase | `9-arm` |
-| review_status | `skipped` |
+| last_wake | `2026-07-28T12:44:50Z` |
+| next_action | `await PO backlog proposals` |
+| phase | `8-close` |
+| review_status | `done` |
 | review_diff_range | `main...HEAD` |
-| code_changed | `no` |
-| review_round | `52` |
-| last_reviewed_round | `52` |
+| code_changed | `yes` |
+| review_round | `54` |
+| last_reviewed_round | `54` |
 | worktree_status | `none` |
-| review_fingerprint | `relay209a11y` |
-| ritual_step | `9-arm` |
+| review_fingerprint | `relay210tests` |
+| ritual_step | `5-verify` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
+| execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `a62bd3c` |
@@ -40,7 +40,7 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `Recovery arm wake 2026-07-28T12:44:45Z; relay-210 deferred to next tick` |
-| review_changed_files | `pwa/src/lib/foodQueueFocus.ts pwa/src/components/LogTypeTodayList.tsx` |
+| review_changed_files | `pwa/package.json pwa/vitest.config.ts pwa/src/lib/foodQueueFocus.test.ts pwa/src/hooks/useFoodQueuePendingFocus.test.tsx` |
 
 ## IN_PROGRESS
 
@@ -105,7 +105,7 @@
 - [x] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
 - [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style
 - [x] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
-- [ ] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
+- [x] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
 
 ## BRAINSTORM (unprioritized)
 
@@ -141,8 +141,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r54-000 | low | relay-210: 10 vitest cases cover foodQueueFocus helpers and useFoodQueuePendingFocus token lifecycle/guard | round-54 /code-review | closed | relay-210 | closed |
 | rf-r53-000 | low | Recovery arm wake 2026-07-28T12:44:45Z; relay-210 queued for next tick | round-53 /code-review | closed | — | closed |
 | rf-r52-000 | low | relay-209: queued li exposes aria-label Pending:<food> via foodQueuePendingAriaLabel; AC satisfied | round-52 /code-review | closed | relay-209 | closed |
 | rf-r51-000 | low | Recovery arm wake 2026-07-28T12:40:51Z; no diff — relay-209 queued for next tick | round-51 /code-review | closed | — | closed |
@@ -237,9 +239,11 @@
 ## HISTORY
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-07-28 | relay-210 | done | build | d96e0f3 |
 | 2026-07-28 | relay-209 | done | build | a62bd3c |
 | 2026-07-28 | relay-208 | done | build | 17c55ab |
 | — | relay-207 | done | build | 487aed2 |
@@ -302,6 +306,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
