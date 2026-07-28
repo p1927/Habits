@@ -8,7 +8,7 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:08:49Z |
+| reviewed_at | 2026-07-28T12:11:45Z |
 | where_we_are | relay-207 shipped (487aed2); idle |
 | confirmed_next |  |
 | brainstorm_notes | Backlog empty; awaiting PO relay-208+ |
@@ -19,9 +19,9 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:08:49Z` |
+| last_wake | `2026-07-28T12:11:45Z` |
 | next_action | `await PO backlog proposals` |
-| phase | `9-arm` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `uncommitted` |
 | code_changed | `no` |
@@ -30,17 +30,17 @@
 | worktree_status | `none` |
 | review_changed_files | `docs/window-instances/worker-relay/STATE.md` |
 | review_fingerprint | `76bc7ac4d2c88063` |
-| ritual_step | `9-arm` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `43ae902` |
+| commit_hash | `45fd62d` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle SPIN tick 12:08:49Z; STATE sync only — no product diff` |
+| review_skip_reason | `Idle SPIN tick 12:11:45Z; STATE sync only — no product diff` |
 
 ## IN_PROGRESS
 
@@ -124,8 +124,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r40-000 | low | Idle SPIN tick 12:11:45Z; STATE checkpoint only — no product diff | round-40 /code-review | closed | — | closed |
 | rf-r39-000 | low | Idle SPIN tick; STATE checkpoint sync only — no product code to review | round-39 /code-review | closed | — | closed |
 | rf-r38-000 | low | Idle spin tick; STATE checkpoint sync only — no product code diff to review | round-38 /code-review | closed | — | closed |
 | rf-r37-004 | low | Focused queue li lacks aria-label for screen readers | round-37 /code-review | backlog | — | closed |
@@ -267,6 +269,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
