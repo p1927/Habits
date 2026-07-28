@@ -21,15 +21,15 @@
 |-------|-------|
 | last_wake | `2026-07-28T13:08:01Z` |
 | next_action | `relay-213 next` |
-| phase | `8-close` |
-| review_status | `done` |
+| phase | `9-arm` |
+| review_status | `skipped` |
 | review_diff_range | `none` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_round | `68` |
 | last_reviewed_round | `68` |
 | worktree_status | `none` |
 | review_fingerprint | `relay212macros` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
@@ -39,12 +39,12 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-211 shipped 5c2c524; review round 67 complete` |
+| review_skip_reason | `relay-212 shipped 17f37c1; review round 68 complete` |
 | review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-212` |
-| worktree_item_id | `relay-212` |
-| current_item_id | `relay-212` |
+| worktree_path | `` |
+| worktree_branch | `` |
+| worktree_item_id | `` |
+| current_item_id | `` |
 
 ## IN_PROGRESS
 
