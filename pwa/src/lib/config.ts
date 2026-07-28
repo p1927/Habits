@@ -43,3 +43,11 @@ export function getBearer(): string | null {
 export function setBearer(token: string): void {
   localStorage.setItem(BEARER_STORAGE_KEY, token);
 }
+
+/** Dev-only: prefill bearer from VITE_HABITS_DEV_BEARER when Settings has none saved. */
+export function ensureDevBearer(): void {
+  if (!import.meta.env.DEV) return;
+  const devBearer = import.meta.env.VITE_HABITS_DEV_BEARER?.trim();
+  if (!devBearer || getBearer()) return;
+  setBearer(devBearer);
+}

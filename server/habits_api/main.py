@@ -28,6 +28,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         await db.init()
+        if cfg.habits_dev_bearer:
+            await db.ensure_bearer("dev-local", cfg.habits_dev_bearer, "dev")
         app.state.db = db
         app.state.settings = cfg
         yield

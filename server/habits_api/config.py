@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     habits_port: int = 8787
     habits_db_path: str = ".habits/habits.db"
     habits_admin_secret: str = "change-me-admin-secret"
+    # Local dev only — omit in production. Seeded into bearers table on API startup.
+    habits_dev_bearer: str = ""
     habits_cors_origins: str = (
         "http://localhost:5173,http://localhost:5174,"
         "http://127.0.0.1:5173,http://127.0.0.1:5174,https://p1927.github.io"

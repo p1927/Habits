@@ -29,13 +29,16 @@ class TokenDB:
 
     async def issue_bearer(self, device_id: str, label: str = "") -> str:
         bearer = secrets.token_urlsafe(32)
+        await self.ensure_bearer(device_id, bearer, label)
+        return bearer
+
+    async def ensure_bearer(self, device_id: str, bearer: str, label: str = "") -> None:
         async with self._connect() as db:
             await db.execute(
                 "INSERT OR REPLACE INTO bearers (device_id, bearer_hash, label) VALUES (?, ?, ?)",
                 (device_id, bearer, label),
             )
             await db.commit()
-        return bearer
 
     async def verify_bearer(self, bearer: str) -> bool:
         if not bearer:

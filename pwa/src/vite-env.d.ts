@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_HABITS_API_URL: string;
+  readonly VITE_HABITS_DEV_BEARER?: string;
   readonly VITE_VOICE_UI_URL: string;
   readonly VITE_BASE_PATH: string;
 }
