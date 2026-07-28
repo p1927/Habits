@@ -100,18 +100,18 @@ def should_deny_arm(
         )
 
     if _is_notify_arm_command(cmd) and not _PREPARE_EXEC.search(cmd):
-        if block_until_ms is not None and block_until_ms > 0:
+        if recovery and block_until_ms is not None and block_until_ms > 0:
             return False, None
         if enforce_notify:
             if not notify_pattern or "AGENT_LOOP_WAKE" not in notify_pattern:
                 return True, (
-                    "BLOCKED: background arm-wake.sh requires Shell notify_on_output.pattern "
+                    "BLOCKED: background phase9-notify-arm.sh requires Shell notify_on_output.pattern "
                     "matching AGENT_LOOP_WAKE_* (use SHELL_NOTIFY_ON_OUTPUT from prepare_arm_wake.sh). "
                     "Also set block_until_ms=0 for background arm."
                 )
             if block_until_ms is not None and block_until_ms != 0:
                 return True, (
-                    "BLOCKED: background arm-wake.sh requires block_until_ms=0 plus "
+                    "BLOCKED: background phase9-notify-arm.sh requires block_until_ms=0 plus "
                     "notify_on_output on monitor_regex."
                 )
 
