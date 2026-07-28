@@ -19,14 +19,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:36:47Z` |
+| last_wake | `2026-07-28T12:40:51Z` |
 | next_action | `relay-209` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_diff_range | `main...HEAD` |
+| review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `50` |
-| last_reviewed_round | `50` |
+| last_reviewed_round | `51` |
 | worktree_status | `none` |
 | review_fingerprint | `relay208css` |
 | ritual_step | `9-arm` |
@@ -39,7 +39,7 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-208 shipped; arm steady state` |
+| review_skip_reason | `Recovery arm wake 2026-07-28T12:40:51Z; relay-209 deferred to next tick` |
 | review_changed_files | `pwa/src/App.css` |
 
 ## IN_PROGRESS
@@ -138,8 +138,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r51-000 | low | Recovery arm wake 2026-07-28T12:40:51Z; no diff — relay-209 queued for next tick | round-51 /code-review | closed | — | closed |
 | rf-r50-000 | low | relay-208: :focus-visible uses --focus-ring tokens on .food-row--queued; AC satisfied | round-50 /code-review | closed | relay-208 | closed |
 | rf-r49-000 | low | Idle SPIN tick 2026-07-28T12:34:04Z; checkpoint sync only — no product diff | round-49 /code-review | closed | — | closed |
 | rf-r48-000 | low | Recovery wake idle tick 2026-07-28T12:33:58Z; no diff — checkpoint sync only | round-48 /code-review | closed | — | closed |
@@ -294,6 +296,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
