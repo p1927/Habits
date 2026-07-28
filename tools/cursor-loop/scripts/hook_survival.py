@@ -2,6 +2,7 @@
 """stop hook backup — re-arm if bound, not stopped, and wake/loop process is dead."""
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import sys
@@ -178,11 +179,18 @@ def main() -> int:
         else:
             return 0
 
-    turns = int(binding.get("survival_turns") or 0) + 1
-    binding["survival_turns"] = turns
-    recovery_turns = int(binding.get("recovery_turns") or 0) + 1
-    binding["recovery_turns"] = recovery_turns
-    mod.write_binding(root, conversation_id, binding)
+    # Atomic read-modify-write: lock to prevent lost counter updates under concurrent hooks
+    _bpath = mod.binding_path(root, conversation_id)
+    _bcoord = _bpath.with_suffix(".coord")
+    with open(_bcoord, "a") as _cf:
+        fcntl.flock(_cf.fileno(), fcntl.LOCK_EX)
+        latest = mod.read_binding(root, conversation_id) or binding
+        turns = min(int(latest.get("survival_turns") or 0) + 1, mod.SURVIVAL_TURN_LIMIT + 10)
+        latest["survival_turns"] = turns
+        recovery_turns = int(latest.get("recovery_turns") or 0) + 1
+        latest["recovery_turns"] = recovery_turns
+        mod.write_binding(root, conversation_id, latest)
+    binding = latest
 
     last_exit = mod.resolve_last_exit_path(loop_id)
     last_exit_note = ""

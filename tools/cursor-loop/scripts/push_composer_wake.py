@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""macOS Composer Push — focus bound chat tab and submit wake prompt via UI automation."""
+"""macOS Composer Push — focus bound chat via window slot or title and submit wake prompt."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,6 @@ import sys
 import time
 from pathlib import Path
 
-import build_wake_prompt
 import loop_hook_lib as lh
 
 
@@ -19,11 +18,16 @@ def is_cursor_running() -> bool:
         return False
     try:
         r = subprocess.run(
-            ["pgrep", "-x", "Cursor"],
+            [
+                "osascript",
+                "-e",
+                'tell application "System Events" to return (exists process "Cursor")',
+            ],
             capture_output=True,
+            text=True,
             timeout=5,
         )
-        return r.returncode == 0
+        return r.returncode == 0 and r.stdout.strip().lower() == "true"
     except (subprocess.SubprocessError, OSError):
         return False
 
@@ -41,63 +45,91 @@ def open_cursor_workspace(root: Path, *, delay_sec: float = 0.0) -> bool:
 
 
 def chat_title_for_loop(root: Path, loop_id: str) -> str:
-    lock = lh.read_loop_lock(root, loop_id) or {}
-    cid = lock.get("conversation_id") or ""
-    if cid:
-        binding = lh.read_binding(root, cid) or {}
-        return str(binding.get("chat_title") or loop_id)
-    return loop_id
+    return str(lh.ui_target_for_loop(root, loop_id).get("chat_title") or loop_id)
 
 
 def _escape_applescript(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def push_prompt_macos(
-    prompt: str,
+def build_focus_actions(
     *,
-    chat_title: str,
-    dry_run: bool = False,
-) -> dict:
-    """Activate Cursor, focus window/tab matching chat_title, paste prompt, submit."""
-    if platform.system() != "Darwin":
-        return {"ok": False, "method": "ui_push", "error": "ui_push requires macOS"}
-
+    ui_window_slot: int | None = None,
+    chat_title: str = "",
+    conversation_id: str = "",
+) -> tuple[list[str], str]:
+    """Build AppleScript lines to focus the target Cursor window/chat."""
     actions = [
         'tell application "Cursor" to activate',
         "delay 0.4",
         'tell application "System Events"',
         '  tell process "Cursor"',
         "    set frontmost to true",
-        f'    set targetTitle to "{_escape_applescript(chat_title)}"',
-        "    set found to false",
-        "    repeat with w in windows",
-        "      if name of w contains targetTitle then",
-        '        perform action "AXRaise" of w',
-        "        set found to true",
-        "        exit repeat",
-        "      end if",
-        "    end repeat",
-        "    if not found then",
-        "      repeat with w in windows",
-        '        set uiElems to entire contents of w',
-        "        repeat with e in uiElems",
-        '          try',
-        "            if name of e contains targetTitle then",
-        "              perform action \"AXPress\" of e",
-        "              set found to true",
-        "              exit repeat",
-        "            end if",
-        "          end try",
-        "        end repeat",
-        "        if found then exit repeat",
-        "      end repeat",
-        "    end if",
-        "  end tell",
-        "end tell",
-        "delay 0.3",
     ]
-    paste_actions = [
+    method = "none"
+
+    if ui_window_slot is not None and ui_window_slot > 0:
+        actions.extend(
+            [
+                f"    set targetWindow to window {ui_window_slot}",
+                '    perform action "AXRaise" of targetWindow',
+                "    set found to true",
+            ]
+        )
+        method = "window_slot"
+    elif chat_title:
+        actions.extend(
+            [
+                f'    set targetTitle to "{_escape_applescript(chat_title)}"',
+                "    set found to false",
+                "    repeat with w in windows",
+                "      if name of w contains targetTitle then",
+                '        perform action "AXRaise" of w',
+                "        set found to true",
+                "        exit repeat",
+                "      end if",
+                "    end repeat",
+                "    if not found then",
+                "      repeat with w in windows",
+                '        set uiElems to entire contents of w',
+                "        repeat with e in uiElems",
+                "          try",
+                "            if name of e contains targetTitle then",
+                '              perform action "AXPress" of e',
+                "              set found to true",
+                "              exit repeat",
+                "            end if",
+                "          end try",
+                "        end repeat",
+                "        if found then exit repeat",
+                "      end repeat",
+                "    end if",
+            ]
+        )
+        method = "chat_title"
+    elif conversation_id:
+        prefix = conversation_id[:8]
+        actions.extend(
+            [
+                f'    set targetPrefix to "{_escape_applescript(prefix)}"',
+                "    set found to false",
+                "    repeat with w in windows",
+                "      if name of w contains targetPrefix then",
+                '        perform action "AXRaise" of w',
+                "        set found to true",
+                "        exit repeat",
+                "      end if",
+                "    end repeat",
+            ]
+        )
+        method = "conversation_id"
+
+    actions.extend(["  end tell", "end tell", "delay 0.3"])
+    return actions, method
+
+
+def build_paste_actions(prompt: str) -> list[str]:
+    return [
         f'set the clipboard to "{_escape_applescript(prompt)}"',
         'tell application "System Events"',
         '  tell process "Cursor"',
@@ -108,13 +140,36 @@ def push_prompt_macos(
         "end tell",
     ]
 
+
+def push_prompt_macos(
+    prompt: str,
+    *,
+    ui_window_slot: int | None = None,
+    chat_title: str = "",
+    conversation_id: str = "",
+    dry_run: bool = False,
+) -> dict:
+    """Activate Cursor, focus target window/chat, paste prompt, submit."""
+    if platform.system() != "Darwin":
+        return {"ok": False, "method": "ui_push", "error": "ui_push requires macOS"}
+
+    focus_actions, targeting = build_focus_actions(
+        ui_window_slot=ui_window_slot,
+        chat_title=chat_title,
+        conversation_id=conversation_id,
+    )
+    paste_actions = build_paste_actions(prompt)
+
     if dry_run:
         return {
             "ok": True,
             "method": "ui_push",
             "dry_run": True,
-            "chat_title": chat_title,
-            "actions": actions + paste_actions,
+            "targeting": targeting,
+            "ui_window_slot": ui_window_slot,
+            "chat_title": chat_title or None,
+            "conversation_id": conversation_id[:12] + "…" if conversation_id else None,
+            "actions": focus_actions + paste_actions,
             "prompt_len": len(prompt),
         }
 
@@ -128,7 +183,7 @@ def push_prompt_macos(
     except (subprocess.SubprocessError, OSError) as exc:
         return {"ok": False, "method": "ui_push", "error": f"pbcopy failed: {exc}"}
 
-    script = "\n".join(actions + paste_actions)
+    script = "\n".join(focus_actions + paste_actions)
     try:
         r = subprocess.run(
             ["osascript", "-e", script],
@@ -144,9 +199,15 @@ def push_prompt_macos(
         hint = (
             " Grant Accessibility to Terminal/Cursor in System Settings → Privacy → Accessibility."
         )
-        return {"ok": False, "method": "ui_push", "error": f"{err}{hint}"}
+        return {"ok": False, "method": "ui_push", "error": f"{err}{hint}", "targeting": targeting}
 
-    return {"ok": True, "method": "ui_push", "chat_title": chat_title}
+    return {
+        "ok": True,
+        "method": "ui_push",
+        "targeting": targeting,
+        "ui_window_slot": ui_window_slot,
+        "chat_title": chat_title or None,
+    }
 
 
 def push_loop_wake(
@@ -163,22 +224,13 @@ def push_loop_wake(
 
     lock = lh.read_loop_lock(root, loop_id) or {}
     contract = lock.get("contract_doc") or f"docs/window-instances/{loop_id}/INSTANCE.md"
-    state_file = f"docs/window-instances/{loop_id}/STATE.md"
 
     if not prompt:
         manifest = lh.load_manifest(root)
         for entry in lh.load_instances_manifest(root, manifest).get("instances") or []:
             if entry.get("loop_id") == loop_id:
                 contract = entry.get("contract_doc") or contract
-                state_file = entry.get("state_file") or state_file
                 break
-        prompt = build_wake_prompt.build_prompt(
-            root=root,
-            loop_id=loop_id,
-            contract_doc=contract,
-            state_file=state_file,
-            recovery=True,
-        )
         prompt = f"@{contract} keep working"
 
     if not is_cursor_running():
@@ -192,8 +244,14 @@ def push_loop_wake(
                 "error": "cursor_not_running",
             }
 
-    chat_title = chat_title_for_loop(root, loop_id)
-    result = push_prompt_macos(prompt, chat_title=chat_title, dry_run=dry_run)
+    target = lh.ui_target_for_loop(root, loop_id)
+    result = push_prompt_macos(
+        prompt,
+        ui_window_slot=target.get("ui_window_slot"),
+        chat_title=str(target.get("chat_title") or loop_id),
+        conversation_id=str(target.get("conversation_id") or ""),
+        dry_run=dry_run,
+    )
     result["loop_id"] = loop_id
     return result
 

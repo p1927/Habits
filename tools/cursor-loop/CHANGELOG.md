@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.9.2
+
+- **Fix provision window flash-close** — `cursor -n` on an already-open workspace opens then immediately closes; provision now uses **Cmd+Shift+N + Open Folder** UI automation so windows persist and window-count detection works
+- **`ensure_cursor_running`** — activate/launch Cursor before provision; fix `is_cursor_running` (pgrep -x missed the app bundle process name)
+
+## 0.9.1
+
+- **Autonomous provisioning** — `cwin migrate-autonomous` / `cwin provision-all` open dedicated Cursor windows, paste bind lines, record `ui_window_slot`; zero manual rename/paste
+- **`provision_instances.py`** — macOS UI automation: `cursor -n`, Cmd+I agent pane, bind poll, slot metadata on binding
+- **Window-slot ui_push** — `push_composer_wake.py` targets Cursor window by `ui_window_slot` (primary), title/conversation_id fallback
+- **`cwin status` SLOT column** — shows provisioned window index; removed "rename each tab" operator copy
+- **Auto-provision bootstrap** — `wake_ladder` + `tick_daemon` call provision instead of clipboard+notify for unbound loops
+
 ## 0.9.0
 
 - **Operator wake ladder** — `cwin trigger-all` runs inject → macOS ui_push → open Cursor; no silent skip for orphan/unbound

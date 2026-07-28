@@ -182,6 +182,7 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/wake_ladder.py" \
   "${INSTALL_PACKAGE}/scripts/push_composer_wake.py" \
   "${INSTALL_PACKAGE}/scripts/push_composer_wake.sh" \
+  "${INSTALL_PACKAGE}/scripts/provision_instances.py" \
   "${INSTALL_PACKAGE}/scripts/consume_inject_arm.py" \
   "${INSTALL_PACKAGE}/scripts/consume_inject_on_hook.py" \
   "${INSTALL_PACKAGE}/scripts/record_wake_meta.py" \

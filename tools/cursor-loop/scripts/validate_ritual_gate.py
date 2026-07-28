@@ -64,6 +64,11 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.force:
+        print(
+            f"RITUAL_GATE_FORCE_WARN loop_id={args.loop_id} mode={args.mode}: "
+            "operator --force override applied — all gate checks skipped",
+            file=sys.stderr,
+        )
         print(f"RITUAL_GATE_SKIP loop_id={args.loop_id} mode={args.mode} (forced)")
         return 0
 

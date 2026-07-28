@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import fcntl
+import functools
 import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -95,6 +97,18 @@ def scripts_dir(root: Path, manifest: dict) -> Path:
     return path
 
 
+def _get_tmpdir() -> Path:
+    """Return a validated temp directory, falling back to /tmp if TMPDIR is not a real directory."""
+    td = os.environ.get("TMPDIR") or ""
+    if td:
+        p = Path(td)
+        if p.is_dir():
+            return p
+        print(f"LOOP_WARN TMPDIR={td!r} is not a valid directory; using /tmp", file=sys.stderr)
+    return Path("/tmp")
+
+
+@functools.lru_cache(maxsize=32)
 def contract_pattern(contracts_dir: str) -> re.Pattern[str]:
     escaped = re.escape(contracts_dir.strip("/"))
     return re.compile(
@@ -302,7 +316,7 @@ def resolve_loop_script(root: Path, manifest: dict, cfg: dict) -> str:
 
 
 def resolve_pidfile_path(loop_id: str, cfg: dict | None = None) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     cfg = cfg or {}
     custom = (cfg.get("pidfile") or "").strip()
     if custom:
@@ -314,27 +328,27 @@ def resolve_pidfile_path(loop_id: str, cfg: dict | None = None) -> Path:
 
 
 def resolve_wake_pidfile_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.wake.pid"
 
 
 def resolve_wake_fired_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.wake.fired.json"
 
 
 def resolve_wake_meta_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.wake.meta.json"
 
 
 def resolve_wake_armed_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.wake.armed"
 
 
 def resolve_wake_pending_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.wake.pending.json"
 
 
@@ -378,12 +392,12 @@ def consume_wake_pending(loop_id: str) -> dict | None:
 
 
 def resolve_inject_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.inject.json"
 
 
 def resolve_inject_cooldown_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.inject.cooldown"
 
 
@@ -746,6 +760,59 @@ def wake_status_detail(
     }
 
 
+def ui_target_for_loop(root: Path, loop_id: str) -> dict:
+    """Return ui_window_slot, chat_title, conversation_id for ui_push targeting."""
+    lock = read_loop_lock(root, loop_id) or {}
+    cid = str(lock.get("conversation_id") or "")
+    out: dict = {
+        "loop_id": loop_id,
+        "ui_window_slot": None,
+        "chat_title": loop_id,
+        "conversation_id": cid,
+    }
+    if cid:
+        binding = read_binding(root, cid) or {}
+        slot = binding.get("ui_window_slot")
+        if slot is not None:
+            try:
+                out["ui_window_slot"] = int(slot)
+            except (TypeError, ValueError):
+                pass
+        out["chat_title"] = str(binding.get("chat_title") or loop_id)
+    return out
+
+
+def ui_window_slot_for_loop(root: Path, loop_id: str) -> int | None:
+    """1-based Cursor window index assigned at provision time, if any."""
+    slot = ui_target_for_loop(root, loop_id).get("ui_window_slot")
+    return slot if isinstance(slot, int) and slot > 0 else None
+
+
+def write_provision_metadata(
+    root: Path,
+    loop_id: str,
+    *,
+    ui_window_slot: int,
+    conversation_id: str | None = None,
+) -> bool:
+    """Persist window slot + provision timestamp on the active binding."""
+    cid = conversation_id
+    if not cid:
+        lock = read_loop_lock(root, loop_id) or {}
+        cid = lock.get("conversation_id")
+    if not cid:
+        return False
+    binding = read_binding(root, cid)
+    if not binding:
+        return False
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    binding["ui_window_slot"] = int(ui_window_slot)
+    binding["provisioned_at"] = now
+    binding["chat_title"] = loop_id
+    write_binding(root, cid, binding)
+    return True
+
+
 def operator_wake_label(root: Path, loop_id: str, detail: dict | None = None) -> str:
     """Operator-facing wake control surface label."""
     if not has_loop_binding(root, loop_id):
@@ -790,7 +857,7 @@ def arm_block_until_ms(interval_sec: str | int, *, buffer_sec: int = 90) -> int:
 
 
 def resolve_last_exit_path(loop_id: str) -> Path:
-    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    tmp = _get_tmpdir()
     return tmp / f"cursor-loop-{loop_id}.last_exit"
 
 
@@ -847,35 +914,34 @@ def acquire_loop_lock(
     """One loop_id per chat. Returns (ok, error_message)."""
     path = loop_lock_path(root, loop_id)
     path.parent.mkdir(parents=True, exist_ok=True)
+    coord = path.with_suffix(".coord")
     now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
-    if path.is_file():
-        try:
-            lock = json.loads(path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            lock = {}
-        owner = lock.get("conversation_id")
-        if owner and owner != conversation_id:
-            return (
-                False,
-                f"loop_id '{loop_id}' is already active in another chat "
-                f"(conversation {owner[:12]}…). "
-                f"Use one window per loop_id, or run force-reset.sh --all",
-            )
+    with open(coord, "a") as _cf:
+        fcntl.flock(_cf.fileno(), fcntl.LOCK_EX)
+        if path.is_file():
+            try:
+                lock = json.loads(path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                lock = {}
+            owner = lock.get("conversation_id")
+            if owner and owner != conversation_id:
+                return (
+                    False,
+                    f"loop_id '{loop_id}' is already active in another chat "
+                    f"(conversation {owner[:12]}…). "
+                    f"Use one window per loop_id, or run force-reset.sh --all",
+                )
 
-    path.write_text(
-        json.dumps(
+        _atomic_write_json(
+            path,
             {
                 "loop_id": loop_id,
                 "conversation_id": conversation_id,
                 "contract_doc": contract_doc,
                 "updated_at": now,
             },
-            indent=2,
         )
-        + "\n",
-        encoding="utf-8",
-    )
     return True, None
 
 
@@ -1029,6 +1095,27 @@ def is_loop_process_alive(pidfile: Path) -> bool:
     try:
         pid = int(pidfile.read_text(encoding="utf-8").strip())
         os.kill(pid, 0)
+        # PID reuse guard: use ps to confirm process is alive and check its comm.
+        # We treat an unrecognized comm as a warning rather than hard rejection,
+        # because binary names vary across Python versions and macOS releases.
+        chk = subprocess.run(
+            ["ps", "-p", str(pid), "-o", "comm="],
+            capture_output=True,
+            text=True,
+        )
+        if chk.returncode != 0:
+            return False  # process gone between kill(0) and ps
+        comm = (chk.stdout or "").strip().lower()
+        if not comm:
+            return False
+        known = ("bash", "sh", "zsh", "python", "pytest", "agent-loop", "arm-wake", "cursor")
+        if not any(comm.startswith(k) for k in known):
+            # Unknown comm — warn but treat as alive to avoid false negatives
+            print(
+                f"LOOP_WARN is_loop_process_alive: pid={pid} comm={comm!r} is not a "
+                "recognized loop process (possible PID reuse — verify manually)",
+                file=sys.stderr,
+            )
         return True
     except (ValueError, ProcessLookupError, PermissionError, OSError):
         return False

@@ -102,12 +102,13 @@ PY
         ;;
       WAKE_FAIL)
         ERR="$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('error',''))" "$line")"
-        notify_macos "Habits ${LOOP_ID} wake failed" "${ERR} — try cwin trigger-all --force"
+        notify_macos "Habits ${LOOP_ID} wake failed" "${ERR} — retrying via cwin trigger-all --force"
         echo "TICK_DAEMON_WAKE_FAIL loop_id=${LOOP_ID} error=${ERR}"
         ;;
       NEEDS_BIND)
-        notify_macos "Habits ${LOOP_ID} unbound" "Run cwin bootstrap-wake --all or paste @INSTANCE keep working."
-        echo "TICK_DAEMON_NEEDS_BIND loop_id=${LOOP_ID}"
+        python3 "${SCRIPT_DIR}/provision_instances.py" "$ROOT" --loop-id "$LOOP_ID" --force 2>/dev/null || true
+        notify_macos "Habits ${LOOP_ID} unbound" "Auto-provisioning dedicated window…"
+        echo "TICK_DAEMON_NEEDS_BIND loop_id=${LOOP_ID} action=provision"
         ;;
       COOLDOWN)
         echo "TICK_DAEMON_COOLDOWN loop_id=${LOOP_ID}"

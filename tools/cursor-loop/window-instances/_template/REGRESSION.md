@@ -18,7 +18,7 @@ Why autonomous wake broke (v0.6.1–v0.6.2) and how to prevent similar regressio
 | Steady-state `--exec` forbidden unless `--recovery-foreground` | Agents cannot hold Shell for full interval |
 | `prove_wake.sh` must pass per loop before merging cursor-loop wake changes | Prevents repeat regressions |
 | No new hook “auto-wake” without Cursor docs proving `followup_message` on that hook | afterShell/beforeSubmitPrompt are not followup channels |
-| Operator idle wake without NOTIFY | `cwin trigger-all` ladder: inject → macOS ui_push; rename chat tab to `loop_id` |
+| Operator idle wake without NOTIFY | `cwin trigger-all` ladder: inject → macOS ui_push by `ui_window_slot`; `cwin migrate-autonomous` for full reprovision |
 
 ## Proven wake delivery matrix (v0.9.0)
 

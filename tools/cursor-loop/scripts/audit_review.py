@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import re
 import sys
@@ -136,7 +137,10 @@ def main() -> int:
             continue
         from state_checkpoint import load_state_text
 
-        state_text = load_state_text(state_path)
+        # Shared lock so concurrent writes don't give us a torn read
+        with open(state_path, "r", encoding="utf-8") as _sf:
+            fcntl.flock(_sf.fileno(), fcntl.LOCK_SH)
+            state_text = _sf.read()
         issues = audit_state(
             loop_id=loop_id,
             state_file=state_file,

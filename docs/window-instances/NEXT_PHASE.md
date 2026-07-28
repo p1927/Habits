@@ -1,28 +1,34 @@
-# Operator wake — v0.9.0 ladder
+# Autonomous loop provisioning — v0.9.1
+
+## One command (agent-run, zero manual steps)
+
+```bash
+cwin migrate-autonomous --force
+```
+
+Opens four dedicated Cursor windows, binds each loop, records `SLOT` metadata, triggers first ticks, verifies `prove-wake`, starts `tick_daemon`.
 
 ## Commands
 
 ```bash
-cwin status                    # OP_WAKE column: ready | inject_ok | ui_push | queued | needs_bind
-cwin trigger-all --force       # ladder: inject (NOTIFY=yes) → macOS ui_push
-cwin trigger-all --mode inject-only
-cwin trigger-all --mode ui-push-only --loop-id worker-relay
-cwin bootstrap-wake --all      # unbound: clipboard + notify
-cwin bind-hint worker-relay    # rename tab to loop_id for ui_push
+cwin status                    # SLOT + OP_WAKE columns
+cwin migrate-autonomous --force
+cwin provision-all --force     # provision only (no prove-wake poll)
+cwin trigger-all --force       # ladder: inject (NOTIFY=yes) → ui_push by SLOT
+cwin bind-hint worker-relay     # slot, conversation_id metadata
 bash tools/cursor-loop/scripts/tick_daemon.sh .
 ```
 
-## One-time setup
+## Steady state
 
-1. Bind each chat: `@docs/window-instances/<loop_id>/INSTANCE.md keep working`
-2. **Rename Composer tab to `loop_id`** (e.g. `worker-relay`) for ui_push focus
-3. Grant **Accessibility** to Terminal for ui_push (System Settings → Privacy)
-4. Phase 9 notify arm → `OP_WAKE=ready` / `NOTIFY=yes`
+- Each loop has `ui_window_slot` in binding (1-based Cursor window index)
+- `ui_push` targets window slot — no manual tab rename required
+- Phase 9 notify arm → `OP_WAKE=ready` / `NOTIFY=yes`
 
 ## Recovery (SPIN / orphan / STALE)
 
 ```bash
+cwin migrate-autonomous --force
+# or
 cwin trigger-all --force
 ```
-
-Uses ui_push when NOTIFY is not attached — no manual paste if Accessibility + tab titles are set.

@@ -77,6 +77,6 @@ if [[ "$FULL" -eq 1 ]]; then
 else
   bash "${SCRIPT_DIR}/loop-status.sh" 2>/dev/null || true
   echo
-  echo "Bindings preserved. In each chat, paste: @docs/window-instances/<loop_id>/INSTANCE.md keep working"
+  echo "Bindings preserved. Re-provision autonomously: cwin migrate-autonomous --force"
   echo "Agent will arm dynamic wake via arm-wake.sh (see agent-loop-contract.mdc)."
 fi

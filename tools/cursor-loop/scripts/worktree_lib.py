@@ -2,6 +2,7 @@
 """Git worktree helpers for window instance isolation."""
 from __future__ import annotations
 
+import fcntl
 import re
 import subprocess
 import sys
@@ -70,6 +71,8 @@ def list_worktrees(project_root: Path) -> list[dict[str, str]]:
             current["branch"] = line.split(" ", 1)[1].strip().removeprefix("refs/heads/")
         elif line == "detached":
             current["branch"] = "detached"
+        elif line == "bare":
+            current["branch"] = "bare"
     if current:
         entries.append(current)
     return entries
@@ -95,6 +98,11 @@ def commits_ahead(path: Path, base: str = DEFAULT_BASE_BRANCH) -> int:
         check=False,
     )
     if proc.returncode != 0:
+        err = (proc.stderr or proc.stdout or "").strip()
+        print(
+            f"WORKTREE_WARN commits_ahead: git rev-list failed (returning 0): {err}",
+            file=sys.stderr,
+        )
         return 0
     try:
         return int((proc.stdout or "0").strip())
@@ -120,28 +128,34 @@ def create_worktree(
             f"{rel} is not gitignored — add .worktrees/ to .gitignore before creating worktrees"
         )
 
-    wt_path = worktree_abs_path(project_root, loop_id)
-    branch = branch_name(loop_id, item_id)
-    existing = worktree_entry(project_root, loop_id)
+    # Lock to prevent TOCTOU race when two processes create a worktree for the same loop_id
+    lock_path = project_root / ".cursor" / "loop-bindings" / f"wt-{loop_id}.lock"
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(lock_path, "a") as _lf:
+        fcntl.flock(_lf.fileno(), fcntl.LOCK_EX)
 
-    if existing:
-        existing_branch = existing.get("branch", "")
-        if existing_branch == branch:
-            return {
-                "path": str(wt_path),
-                "branch": branch,
-                "rel_path": rel,
-                "resumed": "yes",
-            }
-        raise RuntimeError(
-            f"worktree already active for {loop_id} on branch {existing_branch}; "
-            f"merge/remove before starting {branch}"
-        )
+        wt_path = worktree_abs_path(project_root, loop_id)
+        branch = branch_name(loop_id, item_id)
+        existing = worktree_entry(project_root, loop_id)
 
-    if branch_exists(project_root, branch):
-        run_git(["worktree", "add", str(wt_path), branch], cwd=project_root)
-    else:
-        run_git(["worktree", "add", "-b", branch, str(wt_path), base_branch], cwd=project_root)
+        if existing:
+            existing_branch = existing.get("branch", "")
+            if existing_branch == branch:
+                return {
+                    "path": str(wt_path),
+                    "branch": branch,
+                    "rel_path": rel,
+                    "resumed": "yes",
+                }
+            raise RuntimeError(
+                f"worktree already active for {loop_id} on branch {existing_branch}; "
+                f"merge/remove before starting {branch}"
+            )
+
+        if branch_exists(project_root, branch):
+            run_git(["worktree", "add", str(wt_path), branch], cwd=project_root)
+        else:
+            run_git(["worktree", "add", "-b", branch, str(wt_path), base_branch], cwd=project_root)
 
     return {
         "path": str(wt_path),
@@ -191,6 +205,10 @@ def merge_worktree(
         raise RuntimeError(f"worktree for {loop_id} has no branch")
 
     if is_dirty(wt_path):
+        print(
+            f"WORKTREE_WARN auto-committing dirty worktree for {loop_id} before merge",
+            file=sys.stderr,
+        )
         run_git(["add", "-A"], cwd=wt_path)
         run_git(
             ["commit", "-m", f"chore({loop_id}): close tick before merge"],
@@ -221,8 +239,14 @@ def remove_worktree(project_root: Path, loop_id: str) -> None:
         return
     wt_path = Path(entry["path"])
     branch = entry.get("branch", "")
-    run_git(["worktree", "remove", str(wt_path), "--force"], cwd=project_root, check=False)
-    if branch and branch != "detached" and branch_exists(project_root, branch):
+    result = run_git(["worktree", "remove", str(wt_path), "--force"], cwd=project_root, check=False)
+    if result.returncode != 0:
+        print(
+            f"WORKTREE_WARN git worktree remove failed for {loop_id}: "
+            f"{(result.stderr or result.stdout or '').strip()}",
+            file=sys.stderr,
+        )
+    if branch and branch not in ("detached", "bare") and branch_exists(project_root, branch):
         run_git(["branch", "-d", branch], cwd=project_root, check=False)
 
 

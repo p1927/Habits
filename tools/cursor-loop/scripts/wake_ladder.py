@@ -42,30 +42,25 @@ def _clear_operator_wake_pending(root: Path, loop_id: str) -> None:
 
 
 def _bootstrap_unbound(root: Path, loop_id: str, contract_doc: str) -> dict:
-    paste = f"@{contract_doc} keep working"
-    notified = False
-    if subprocess.run(["uname", "-s"], capture_output=True, text=True).stdout.strip() == "Darwin":
-        try:
-            subprocess.run(["pbcopy"], input=paste.encode("utf-8"), check=True, timeout=5)
-            msg = f"Paste into new {loop_id} chat: {paste}"
-            subprocess.run(
-                [
-                    "osascript",
-                    "-e",
-                    f'display notification {json.dumps(msg)} with title {json.dumps(f"Habits {loop_id} bind")}',
-                ],
-                check=False,
-                timeout=5,
-            )
-            notified = True
-        except (subprocess.SubprocessError, OSError):
-            pass
+    import provision_instances as prov
+
+    result = prov.provision_loop(root, loop_id, force=True)
+    if result.get("ok"):
+        return {
+            "loop_id": loop_id,
+            "method": "provision",
+            "ok": True,
+            "ui_window_slot": result.get("ui_window_slot"),
+            "conversation_id": result.get("conversation_id"),
+            "paste": result.get("paste") or f"@{contract_doc} keep working",
+            "error": None,
+        }
     return {
         "loop_id": loop_id,
-        "method": "bootstrap",
-        "ok": notified,
-        "paste": paste,
-        "error": None if notified else "clipboard_notify_failed",
+        "method": "provision",
+        "ok": False,
+        "paste": result.get("paste") or f"@{contract_doc} keep working",
+        "error": result.get("error") or "provision_failed",
     }
 
 
