@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0
+
+- **Wake regression revert** — restore v0.6.0 background `arm-wake.sh` + `notify_on_output` as primary; undo v0.6.1 foreground `--exec` and v0.6.2 bare-arm block
+- **preToolUse enforcement** — deny background arm without `notify_on_output` + `block_until_ms=0`; deny steady-state `--exec` without `--recovery-foreground`
+- **SPIN recovery** — stop hook delivers followup on `wake.fired` + `phase=9-arm`; survival no longer silent when fired marker exists
+- **Operator truth** — `cwin status` shows TIMER / SPIN; `prove_wake.sh` checklist; [REGRESSION.md](window-instances/_template/REGRESSION.md) guards
+- **Watch + rearm** — `watch_window_instances.py`, `rearm_all_instances.sh`, `cwin prove-wake|watch|rearm`
+- **tick_daemon.sh** — macOS notification when `wake.fired` unconsumed (Tier B mitigation)
+- **Preserved** — ritual gates, review cycle, worktree isolation, bind missed-tick, instance-doctor (unchanged behavior except wake messaging)
+
 ## 0.6.2
 
 - **Arm hook enforcement** — `loop-guard-arm` blocks bare `arm-wake.sh` (preToolUse Shell + beforeShellExecution)

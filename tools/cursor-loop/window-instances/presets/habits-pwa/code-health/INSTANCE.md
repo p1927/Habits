@@ -35,6 +35,12 @@ Bugs, structural refactor, DRY, naming — independent of relay and UX.
 
 Arming: [`.cursor/rules/agent-loop-contract.mdc`](../../../.cursor/rules/agent-loop-contract.mdc)
 
+## Regression guards
+
+- Phase 9: background `ARM_COMMAND` + `notify_on_output` — see [../REGRESSION.md](../REGRESSION.md)
+- `cwin status`: SPIN = sentinel fired without tick; ARMED only means sleeper alive
+- Do not use steady-state `--exec`; recovery only with `--recovery-foreground`
+
 ## Stop
 
 **stop loop** in this chat.

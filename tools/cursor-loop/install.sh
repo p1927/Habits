@@ -174,6 +174,10 @@ chmod +x \
   "${INSTALL_PACKAGE}/scripts/prepare_select_tick.sh" \
   "${INSTALL_PACKAGE}/scripts/prepare_select_tick.py" \
   "${INSTALL_PACKAGE}/scripts/prepare_arm_wake.sh" \
+  "${INSTALL_PACKAGE}/scripts/prove_wake.sh" \
+  "${INSTALL_PACKAGE}/scripts/tick_daemon.sh" \
+  "${INSTALL_PACKAGE}/scripts/watch_window_instances.py" \
+  "${INSTALL_PACKAGE}/scripts/rearm_all_instances.sh" \
   "${INSTALL_PACKAGE}/scripts/record_wake_fired.py" \
   "${INSTALL_PACKAGE}/scripts/prepare_bugbot_review.sh" \
   "${INSTALL_PACKAGE}/scripts/prepare_bugbot_review.py" \

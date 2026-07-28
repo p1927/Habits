@@ -65,8 +65,8 @@ def main() -> int:
             msg = (
                 f"MISSED TICK for {loop_id}: sentinel fired at {fired.get('fired_at', '?')} "
                 f"without waking this chat. Treat the wake payload below as your tick NOW — "
-                f"run Ritual phases 1→8, then re-arm with prepare_arm_wake.sh --exec "
-                f"(block_until_ms >= interval, same-turn wake processing). "
+                f"run Ritual phases 1→8, then re-arm with prepare_arm_wake.sh + ARM_COMMAND "
+                f"(block_until_ms=0, notify_on_output on monitor_regex). "
                 f"Read {contract_doc}"
             )
             if state_file:

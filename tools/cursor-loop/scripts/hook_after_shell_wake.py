@@ -76,8 +76,8 @@ def main() -> int:
             f"TICK for {loop_id}: dynamic wake sentinel fired "
             f"(background arm — chat was not monitoring Shell). "
             f"Run Ritual phases 1→8 NOW from the wake payload below, "
-            f"then re-arm with prepare_arm_wake.sh --exec "
-            f"(block_until_ms >= SHELL_BLOCK_UNTIL_MS, same-turn wake processing). "
+            f"then re-arm with prepare_arm_wake.sh + ARM_COMMAND "
+            f"(block_until_ms=0, notify_on_output on monitor_regex). "
             f"Read {contract_doc}"
         )
         if state_file:

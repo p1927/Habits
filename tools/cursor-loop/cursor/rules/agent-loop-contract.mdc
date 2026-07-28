@@ -85,24 +85,27 @@ bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
   --state-file <STATE.md> --loop-id <loop_id>
 ```
 
-**Preferred (reliable — wake JSON returns in Shell output):**
+Then run **`ARM_COMMAND`** from prep output with:
+
+- **`block_until_ms: 0`** (background)
+- **`notify_on_output`** on `^<wake_sentinel>` (from `SHELL_NOTIFY_ON_OUTPUT` / `monitor_regex`)
+
+End the turn while `verify-wake.sh <loop_id>` shows **ARMED**. When the sentinel fires in a later turn, process the wake JSON and run Ritual phases 1–8.
+
+**Recovery foreground (stop-hook / SPIN only — not steady state):**
 
 ```bash
 bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
-  --state-file <STATE.md> --loop-id <loop_id> --exec
+  --state-file <STATE.md> --loop-id <loop_id> --exec --recovery-foreground
 ```
 
-Run `EXEC_COMMAND` from prep with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`** (e.g. 210000 for 120s interval). **Do not use `block_until_ms: 0`.** When the shell prints `AGENT_LOOP_WAKE_*`, **run Ritual phases 1–8 from that line in the same turn** before ending.
+Run with **`block_until_ms` ≥ `SHELL_BLOCK_UNTIL_MS`**. Process `AGENT_LOOP_WAKE_*` in the **same turn** before ending.
 
-**Alternate (only if you also Await the background task before ending the turn):**
+**Alternate (if not using notify):** run `ARM_COMMAND` background, then **`Await`** that shell's `task_id` with `pattern=monitor_regex` and `block_until_ms=SHELL_BLOCK_UNTIL_MS` before ending the turn.
 
-1. Run `ARM_COMMAND` with `block_until_ms: 0` (background)
-2. **Mandatory:** `Await` that shell's `task_id` with `pattern=monitor_regex` and `block_until_ms=SHELL_BLOCK_UNTIL_MS`
-3. Process wake from Await output in the same turn
+**Forbidden:** background `ARM_COMMAND` without `notify_on_output` **and** without `Await` — sentinel will fire but this chat will not wake.
 
-**Forbidden:** background `ARM_COMMAND` without `notify_on_output` **and** without `Await` — sentinel will fire but this chat will not wake. **Hooks block bare `arm-wake.sh`** — use `--exec` only.
-
-**Hook enforcement (v0.6.2+):** `loop-guard-arm` denies direct `arm-wake.sh`. `loop-after-shell-wake` auto-submits a tick when a background arm (legacy) completes and prints `AGENT_LOOP_WAKE_*`.
+**Hook enforcement (v0.7.0+):** `loop-guard-arm` denies steady-state `--exec` without `--recovery-foreground`; on `preToolUse` Shell it denies background arm without `notify_on_output`.
 
 ```bash
 LOOP_ID=<loop_id> WAKE_SENTINEL=<wake_sentinel> INTERVAL=<interval_sec> \
@@ -110,8 +113,7 @@ CONTRACT_DOC=<contract_doc> STATE_FILE=<state_file> \
 bash <package_root>/scripts/arm-wake.sh
 ```
 
-- Shell **`block_until_ms` ≥ interval** (foreground `--exec`) **or** background + **`Await`** / **`notify_on_output`**
-- **`notify_on_output`** on `^<wake_sentinel>` when using background arm
+- Shell **`block_until_ms: 0`** + **`notify_on_output`** on `^<wake_sentinel>` (primary)
 - If output is `WAKE_ALREADY_ARMED` — do **not** start another
 
 Verify before ending turn:

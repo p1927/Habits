@@ -55,15 +55,18 @@ def count_open_backlog(state_text: str) -> int:
     return sum(1 for line in state_text.splitlines() if re.match(r"^\s*- \[ \]", line))
 
 
-def wake_status(project: Path, loop_id: str) -> str:
-    verify = scripts_dir(project) / "verify-wake.sh"
-    proc = subprocess.run(["bash", str(verify), loop_id], cwd=project, capture_output=True, text=True)
-    line = (proc.stdout or proc.stderr or "").strip()
-    if "WAKE_ARMED" in line:
-        return "ARMED"
-    if "WAKE_DOWN" in line:
-        return "DOWN"
-    return "?"
+def wake_status(project: Path, loop_id: str, interval_sec: int, phase: str) -> tuple[str, str]:
+    sys.path.insert(0, str(scripts_dir(project)))
+    import loop_hook_lib as lib
+
+    label = lib.wake_display_status(loop_id, interval_sec, phase)
+    if label == "ARMED":
+        timer = lib.wake_timer_label(loop_id, interval_sec)
+    elif label == "SPIN":
+        timer = "—"
+    else:
+        timer = "due"
+    return label, timer
 
 
 def load_instances(project: Path) -> tuple[dict, list[dict]]:
@@ -81,13 +84,17 @@ def cmd_status(project: Path, as_json: bool) -> int:
     rows = []
     for entry in instances:
         loop_id = entry.get("loop_id", "")
+        interval = int(entry.get("interval_sec") or 120)
         state_file = project / entry.get("state_file", "")
         state_text = state_file.read_text(encoding="utf-8") if state_file.is_file() else ""
         cp = parse_checkpoint(state_text)
+        wake, timer = wake_status(project, loop_id, interval, cp.get("phase", ""))
         rows.append(
             {
                 "loop_id": loop_id,
-                "wake": wake_status(project, loop_id),
+                "wake": wake,
+                "timer": timer,
+                "interval_sec": interval,
                 "phase": cp.get("phase", "—"),
                 "review": cp.get("review_status", "—"),
                 "backlog_open": count_open_backlog(state_text),
@@ -100,11 +107,19 @@ def cmd_status(project: Path, as_json: bool) -> int:
     print(f"Window Instances — {project}")
     print(f"Preset: {preset}   Instances: {len(rows)}")
     print()
-    print(f"{'LOOP_ID':<14} {'WAKE':<7} {'PHASE':<8} {'REVIEW':<8} {'BACKLOG':<7} PASTE")
+    print(
+        f"{'LOOP_ID':<14} {'WAKE':<7} {'TIMER':<9} {'INT':<6} {'PHASE':<8} "
+        f"{'REVIEW':<8} {'BACKLOG':<7} PASTE"
+    )
     for r in rows:
         print(
-            f"{r['loop_id']:<14} {r['wake']:<7} {r['phase']:<8} {r['review']:<8} "
-            f"{r['backlog_open']:<7} {r['paste']}"
+            f"{r['loop_id']:<14} {r['wake']:<7} {r['timer']:<9} {r['interval_sec']}s{'':<3} "
+            f"{r['phase']:<8} {r['review']:<8} {r['backlog_open']:<7} {r['paste']}"
+        )
+    if any(r["wake"] == "SPIN" for r in rows):
+        print(
+            "\nSPIN = sentinel fired at phase=9-arm without a completed tick — "
+            "focus that chat and send keep working (hooks deliver on next prompt/stop, not autonomously)."
         )
     if any(r["wake"] == "DOWN" for r in rows):
         print('\nTip: send "keep working" in DOWN chats to re-arm; or: cwin sync / cwin refresh')
@@ -243,6 +258,28 @@ def cmd_create(project: Path, loop_id: str, extra: list[str]) -> int:
     return subprocess.call(["bash", str(script), loop_id, *extra, "--yes"], cwd=project)
 
 
+def cmd_prove_wake(project: Path) -> int:
+    return subprocess.call(["bash", str(scripts_dir(project) / "prove_wake.sh"), str(project)], cwd=project)
+
+
+def cmd_watch(project: Path, idle_sec: int, as_json: bool) -> int:
+    cmd = ["python3", str(scripts_dir(project) / "watch_window_instances.py"), str(project)]
+    if idle_sec:
+        cmd.extend(["--idle-sec", str(idle_sec)])
+    if as_json:
+        cmd.append("--json")
+    return subprocess.call(cmd, cwd=project)
+
+
+def cmd_rearm(project: Path, force: bool, all_loops: bool) -> int:
+    cmd = ["bash", str(scripts_dir(project) / "rearm_all_instances.sh"), str(project)]
+    if force:
+        cmd.append("--force")
+    if all_loops:
+        cmd.append("--all")
+    return subprocess.call(cmd, cwd=project)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(prog="cwin", description="Cursor Window Instances CLI")
     parser.add_argument("project", nargs="?", default=".", help="Project root")
@@ -277,6 +314,13 @@ def main() -> int:
     p = sub.add_parser("create")
     p.add_argument("loop_id")
     p.add_argument("extra", nargs=argparse.REMAINDER)
+    sub.add_parser("prove-wake", help="Check all loops ready for autonomous tick (exit 1 if not)")
+    p = sub.add_parser("watch", help="Watch instance health + code idle")
+    p.add_argument("--idle-sec", type=int, default=300)
+    p.add_argument("--json", action="store_true")
+    p = sub.add_parser("rearm", help="Rearm instances that are DOWN/SPIN")
+    p.add_argument("--force", action="store_true", help="Pass RITUAL_GATE_FORCE=1")
+    p.add_argument("--all", action="store_true", help="Rearm every instance")
 
     args = parser.parse_args()
     project = find_project_root(Path(args.project))
@@ -302,6 +346,9 @@ def main() -> int:
         "bootstrap": lambda: cmd_bootstrap(project, args.preset, args.mode, args.refresh),
         "install": lambda: cmd_install(project, args.preset or None),
         "create": lambda: cmd_create(project, args.loop_id, args.extra),
+        "prove-wake": lambda: cmd_prove_wake(project),
+        "watch": lambda: cmd_watch(project, args.idle_sec, getattr(args, "json", False)),
+        "rearm": lambda: cmd_rearm(project, getattr(args, "force", False), getattr(args, "all", False)),
     }
     return cmds[args.command]()
 

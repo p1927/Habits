@@ -52,6 +52,12 @@ Every instance STATE must contain these sections in order:
 
 Optional sections declared in `instances.manifest.json` (e.g. `UI_PROPOSALS`, `UX_GAPS`, `REFACTOR_BACKLOG`).
 
+Optional sections declared in `instances.manifest.json` (e.g. `UI_PROPOSALS`, `UX_GAPS`, `REFACTOR_BACKLOG`).
+
+## Regression guards
+
+See [REGRESSION.md](REGRESSION.md). Any cursor-loop wake change requires `prove_wake.sh` pass before merge.
+
 ## CHECKPOINT fields
 
 | Field | Values | Purpose |

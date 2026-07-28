@@ -86,6 +86,24 @@ def main() -> int:
         if state_path.is_file():
             state_text = state_path.read_text(encoding="utf-8")
             checkpoint = rp.parse_checkpoint_table(state_text)
+            phase = rp.normalize_phase(checkpoint.get("phase", "1-wake"))
+
+            if mod.is_wake_spin(loop_id, phase):
+                fired = mod.read_wake_fired(loop_id)
+                line = (fired.get("payload_line") or "").strip() if fired else ""
+                msg = (
+                    f"SPIN for {loop_id}: sentinel fired at "
+                    f"{fired.get('fired_at', '?') if fired else '?'} without completing Ritual 1→8. "
+                    f"Read {contract_doc} and {state_file}; run full tick NOW (start Phase 1-wake). "
+                    f"Then re-arm: prepare_arm_wake.sh + ARM_COMMAND with block_until_ms=0 and "
+                    f"notify_on_output on ^{wake_sentinel or 'AGENT_LOOP_WAKE_*'}."
+                )
+                if line:
+                    msg += f" Wake payload: {line}"
+                mod.clear_wake_fired(loop_id)
+                print(json.dumps({"followup_message": msg}))
+                return 0
+
             review_gate = rp.review_stop_needed(
                 checkpoint,
                 state_text,
@@ -104,7 +122,8 @@ def main() -> int:
                 print(json.dumps({"followup_message": msg}))
                 return 0
 
-    if _is_loop_up(binding):
+    fired = mod.read_wake_fired(loop_id)
+    if _is_loop_up(binding) and not fired:
         return 0
 
     turns = int(binding.get("survival_turns") or 0) + 1
@@ -161,9 +180,8 @@ def main() -> int:
         msg += f" and {state_file}"
     msg += (
         "; run Ritual deliverable THIS turn (strict phases 1→9, one at a time). "
-        "Then arm next wake with prepare_arm_wake.sh --exec only "
-        "(block_until_ms >= SHELL_BLOCK_UNTIL_MS; bare arm-wake.sh is blocked by hook). "
-        "Do not defer work to next tick. "
+        "Then re-arm: prepare_arm_wake.sh (no --exec), ARM_COMMAND with block_until_ms=0 "
+        "and notify_on_output on monitor_regex. Do not defer work to next tick. "
         f"Wake payload: {prompt_json}.{ritual_note}{last_exit_note}"
     )
     if recovery_turns >= 3:

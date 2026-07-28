@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Block bare arm-wake.sh — it fires sentinels without waking the bound chat."""
+"""Enforce Phase 9 arm contract — background notify primary; foreground exec recovery only."""
 from __future__ import annotations
 
 import json
@@ -8,10 +8,10 @@ import re
 import sys
 from pathlib import Path
 
-import loop_hook_lib as mod
-
+_RECOVERY_FOREGROUND = re.compile(r"--recovery-foreground")
 _PREPARE_EXEC = re.compile(r"prepare_arm_wake\.sh[^\n;|&]*--exec")
 _ARM_WAKE = re.compile(r"(?:^|[;&|\s(])(?:bash\s+)?(?:[^\s'\"]*[/])?arm-wake\.sh\b")
+_PREPARE_ARM = re.compile(r"prepare_arm_wake\.sh")
 
 
 def _command_from_payload(payload: dict) -> str:
@@ -27,39 +27,85 @@ def _command_from_payload(payload: dict) -> str:
     return ""
 
 
-def _deny_message(state_file: str = "<STATE.md>", loop_id: str = "<loop_id>") -> str:
-    return (
-        "BLOCKED: bare arm-wake.sh cannot wake this chat when run in background. "
-        "Phase 9 MUST use foreground exec:\n"
-        f"  bash tools/cursor-loop/scripts/prepare_arm_wake.sh . "
-        f"--state-file {state_file} --loop-id {loop_id} --exec\n"
-        "Run with Shell block_until_ms >= SHELL_BLOCK_UNTIL_MS from prepare output. "
-        "When AGENT_LOOP_WAKE_* prints, run Ritual phases 1→8 in THIS turn before ending."
-    )
+def _shell_meta(payload: dict) -> tuple[str | None, int | None]:
+    """notify pattern and block_until_ms from preToolUse Shell tool_input."""
+    tool_input = payload.get("tool_input") or {}
+    if not isinstance(tool_input, dict):
+        return None, None
+    notify = tool_input.get("notify_on_output")
+    pattern: str | None = None
+    if isinstance(notify, dict):
+        pattern = notify.get("pattern")
+    elif isinstance(notify, str):
+        pattern = notify
+    block_ms = tool_input.get("block_until_ms")
+    try:
+        block_ms = int(block_ms) if block_ms is not None else None
+    except (TypeError, ValueError):
+        block_ms = None
+    return pattern, block_ms
 
 
-def should_deny_arm(command: str) -> tuple[bool, str | None]:
+def _loop_context_from_command(command: str) -> tuple[str, str]:
+    loop_id = ""
+    state_file = "<STATE.md>"
+    m = re.search(r"STATE_FILE=([^\s]+)", command)
+    if m:
+        state_file = m.group(1)
+    m = re.search(r"LOOP_ID=([^\s]+)", command)
+    if m:
+        loop_id = m.group(1)
+    if not loop_id and state_file != "<STATE.md>":
+        loop_id = Path(state_file).parent.name
+    if not loop_id:
+        loop_id = "<loop_id>"
+    return loop_id, state_file
+
+
+def _is_arm_command(command: str) -> bool:
     cmd = command.strip()
     if not cmd:
+        return False
+    return bool(_ARM_WAKE.search(cmd) or _PREPARE_ARM.search(cmd))
+
+
+def should_deny_arm(
+    command: str,
+    *,
+    notify_pattern: str | None = None,
+    block_until_ms: int | None = None,
+    enforce_notify: bool = False,
+) -> tuple[bool, str | None]:
+    cmd = command.strip()
+    if not _is_arm_command(cmd):
         return False, None
-    if "arm-wake.sh" not in cmd and "prepare_arm_wake.sh" not in cmd:
-        return False, None
-    if _PREPARE_EXEC.search(cmd):
-        return False, None
-    if _ARM_WAKE.search(cmd):
-        loop_id = ""
-        state_file = "<STATE.md>"
-        m = re.search(r"STATE_FILE=([^\s]+)", cmd)
-        if m:
-            state_file = m.group(1)
-        m = re.search(r"LOOP_ID=([^\s]+)", cmd)
-        if m:
-            loop_id = m.group(1)
-        if not loop_id and state_file != "<STATE.md>":
-            loop_id = Path(state_file).parent.name
-        if not loop_id:
-            loop_id = "<loop_id>"
-        return True, _deny_message(state_file, loop_id)
+
+    recovery = bool(_RECOVERY_FOREGROUND.search(cmd))
+
+    if _PREPARE_EXEC.search(cmd) and not recovery:
+        return True, (
+            "BLOCKED: prepare_arm_wake.sh --exec without --recovery-foreground is not allowed "
+            "in steady state. Primary path: prepare_arm_wake.sh (no --exec), then ARM_COMMAND "
+            "with block_until_ms=0 AND notify_on_output on monitor_regex from prep output. "
+            "Use --recovery-foreground only when stop hook sent a recovery wake."
+        )
+
+    if _ARM_WAKE.search(cmd) and not _PREPARE_EXEC.search(cmd):
+        if block_until_ms is not None and block_until_ms > 0:
+            return False, None
+        if enforce_notify:
+            if not notify_pattern or "AGENT_LOOP_WAKE" not in notify_pattern:
+                return True, (
+                    "BLOCKED: background arm-wake.sh requires Shell notify_on_output.pattern "
+                    "matching AGENT_LOOP_WAKE_* (use SHELL_NOTIFY_ON_OUTPUT from prepare_arm_wake.sh). "
+                    "Also set block_until_ms=0 for background arm."
+                )
+            if block_until_ms != 0:
+                return True, (
+                    "BLOCKED: background arm-wake.sh requires block_until_ms=0 plus "
+                    "notify_on_output on monitor_regex."
+                )
+
     return False, None
 
 
@@ -73,7 +119,16 @@ def main() -> int:
         return 0
 
     command = _command_from_payload(payload)
-    deny, msg = should_deny_arm(command)
+    event = payload.get("hook_event_name") or ""
+    notify_pattern, block_ms = _shell_meta(payload) if event == "preToolUse" else (None, None)
+    enforce_notify = event == "preToolUse"
+
+    deny, msg = should_deny_arm(
+        command,
+        notify_pattern=notify_pattern,
+        block_until_ms=block_ms,
+        enforce_notify=enforce_notify,
+    )
     if not deny or not msg:
         return 0
 
@@ -81,7 +136,7 @@ def main() -> int:
         json.dumps(
             {
                 "permission": "deny",
-                "user_message": "Use prepare_arm_wake.sh --exec (foreground) for Phase 9",
+                "user_message": "Phase 9 arm must use background notify (see prepare_arm_wake.sh)",
                 "agent_message": msg,
             }
         )

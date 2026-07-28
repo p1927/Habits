@@ -329,6 +329,54 @@ def clear_wake_fired(loop_id: str) -> None:
     resolve_wake_fired_path(loop_id).unlink(missing_ok=True)
 
 
+def is_wake_spin(loop_id: str, phase: str) -> bool:
+    """Sentinel fired at phase=9-arm without completing a tick."""
+    normalized = (phase or "").strip().strip("`")
+    if normalized != "9-arm":
+        return False
+    return read_wake_fired(loop_id) is not None
+
+
+def resolve_wake_armed_path(loop_id: str) -> Path:
+    tmp = Path(os.environ.get("TMPDIR") or "/tmp")
+    return tmp / f"cursor-loop-{loop_id}.wake.armed"
+
+
+def wake_timer_label(loop_id: str, interval_sec: int) -> str:
+    """Human countdown for armed sleeper, or due/— when not armed."""
+    if is_wake_process_alive(loop_id):
+        armed_path = resolve_wake_armed_path(loop_id)
+        if armed_path.is_file():
+            try:
+                from datetime import datetime, timezone
+
+                started = datetime.fromisoformat(
+                    armed_path.read_text(encoding="utf-8").strip().replace("Z", "+00:00")
+                )
+                elapsed = (datetime.now(timezone.utc) - started).total_seconds()
+                remaining = max(0, int(interval_sec) - int(elapsed))
+                if remaining <= 0:
+                    return "due"
+                mins, secs = divmod(remaining, 60)
+                if mins:
+                    return f"{mins}m{secs:02d}s"
+                return f"{secs}s"
+            except (ValueError, OSError):
+                pass
+        return "—"
+    if read_wake_fired(loop_id):
+        return "—"
+    return "due"
+
+
+def wake_display_status(loop_id: str, interval_sec: int, phase: str) -> str:
+    if is_wake_spin(loop_id, phase):
+        return "SPIN"
+    if is_wake_process_alive(loop_id):
+        return "ARMED"
+    return "DOWN"
+
+
 def arm_block_until_ms(interval_sec: str | int, *, buffer_sec: int = 90) -> int:
     """Shell block_until_ms so notify stays attached until sentinel fires."""
     try:

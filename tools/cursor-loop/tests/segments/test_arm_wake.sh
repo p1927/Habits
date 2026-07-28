@@ -24,15 +24,26 @@ EOF
 
   LOOP_ID="$loop_id" \
   WAKE_SENTINEL="AGENT_LOOP_WAKE_TEST" \
-  INTERVAL=1 \
+  INTERVAL=30 \
   CONTRACT_DOC="docs/agents/test.md" \
   STATE_FILE="docs/state.md" \
   PROJECT_ROOT="$tmp" \
   bash "${ROOT}/scripts/arm-wake.sh" &
   local pid=$!
 
-  sleep 0.3
-  if ! LOOP_ID="$loop_id" WAKE_SENTINEL="AGENT_LOOP_WAKE_TEST" INTERVAL=1 \
+  local pidfile="$tmp/cursor-loop-${loop_id}.wake.pid"
+  for _ in $(seq 1 40); do
+    [[ -f "$pidfile" ]] && break
+    sleep 0.05
+  done
+  if [[ ! -f "$pidfile" ]]; then
+    kill "$pid" 2>/dev/null || true
+    rm -rf "$tmp"
+    echo "FAIL pidfile never created"
+    exit 1
+  fi
+
+  if ! LOOP_ID="$loop_id" WAKE_SENTINEL="AGENT_LOOP_WAKE_TEST" INTERVAL=30 \
     CONTRACT_DOC="docs/agents/test.md" \
     STATE_FILE="docs/state.md" \
     PROJECT_ROOT="$tmp" \

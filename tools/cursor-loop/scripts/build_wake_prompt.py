@@ -272,8 +272,9 @@ def build_prompt(
     else:
         parts.append("(then arm next wake at end of turn)")
         parts.append(
-            f"Phase 9 CRITICAL: prepare_arm_wake.sh --exec with block_until_ms>={block_ms}; "
-            f"when {wake_sentinel} prints, run phases 1-8 from that output IN THE SAME TURN"
+            f"Phase 9 CRITICAL: prepare_arm_wake.sh then ARM_COMMAND with block_until_ms=0 "
+            f"and notify_on_output on {monitor_regex}; when {wake_sentinel} fires in a later turn, "
+            f"run phases 1-8 from that output"
         )
     parts.append("Do not ask user.")
 
@@ -288,22 +289,24 @@ def build_prompt(
         }
 
     arm_shell = {
-        "mode": "foreground_exec",
-        "exec_command": (
-            f"bash tools/cursor-loop/scripts/prepare_arm_wake.sh . "
-            f"--state-file {state_file} --loop-id {loop_id} --exec"
+        "mode": "background_notify",
+        "arm_command": (
+            f"LOOP_ID={loop_id} WAKE_SENTINEL={wake_sentinel} INTERVAL={interval_sec} "
+            f"CONTRACT_DOC={contract_doc} STATE_FILE={state_file} "
+            f"PROJECT_ROOT={str(root) if root else '.'} "
+            f"bash tools/cursor-loop/scripts/arm-wake.sh"
         ),
-        "block_until_ms": block_ms,
+        "block_until_ms": 0,
         "notify_on_output_pattern": monitor_regex,
-        "await_fallback": {
-            "required_if_background": True,
-            "pattern": monitor_regex,
-            "block_until_ms": block_ms,
-        },
+        "recovery_exec_command": (
+            f"bash tools/cursor-loop/scripts/prepare_arm_wake.sh . "
+            f"--state-file {state_file} --loop-id {loop_id} --exec --recovery-foreground"
+        ),
+        "recovery_block_until_ms": block_ms,
         "note": (
-            "Preferred: --exec foreground with block_until_ms >= interval; process "
-            "AGENT_LOOP_WAKE from Shell output in the same turn. Background arm without "
-            "notify AND without Await on task_id will miss ticks."
+            "Primary: background ARM_COMMAND with block_until_ms=0 and notify_on_output on "
+            "monitor_regex; end turn while verify-wake shows ARMED. Recovery only: --exec "
+            "--recovery-foreground with block_until_ms >= interval in same turn."
         ),
         "env": {
             "LOOP_ID": loop_id,

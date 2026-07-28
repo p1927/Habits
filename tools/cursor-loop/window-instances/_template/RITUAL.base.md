@@ -200,8 +200,9 @@ bash tools/cursor-loop/scripts/prepare_arm_wake.sh . \
   --state-file <STATE.md> --loop-id <loop_id>
 ```
 
-3. **Preferred:** run `EXEC_COMMAND` (`--exec`) with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`**. When `AGENT_LOOP_WAKE_*` prints, run phases 1–8 from that output **in the same turn**.
-4. **Alternate:** background `ARM_COMMAND` only with **`Await`** on the shell `task_id` or **`notify_on_output`** — never background-only.
+3. **Preferred:** run `ARM_COMMAND` with **`block_until_ms=0`** and **`notify_on_output`** on `SHELL_NOTIFY_ON_OUTPUT`. End turn while `verify-wake` shows ARMED. Process wake when sentinel fires in a later turn.
+4. **Recovery only:** `prepare_arm_wake.sh --exec --recovery-foreground` with **`block_until_ms` = `SHELL_BLOCK_UNTIL_MS`** — same turn only (stop hook / SPIN).
+5. **Alternate:** background `ARM_COMMAND` + **`Await`** on shell `task_id` with `pattern=monitor_regex` before ending the turn.
 5. Verify fresh — **never** trust old terminal `WAKE_ARMED` output:
 
 ```bash
