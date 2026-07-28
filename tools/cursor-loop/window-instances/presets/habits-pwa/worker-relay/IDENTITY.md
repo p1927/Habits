@@ -10,6 +10,14 @@ Ship top unchecked `relay-*` backlog item per tick — verify build, commit, upd
 
 ## Skills (read before work)
 
+Refactor pipeline when item touches app logic, hooks, or lib (see [`.cursor/rules/refactor-plan-skills.mdc`](../../../.cursor/rules/refactor-plan-skills.mdc)):
+
+1. `.agents/skills/request-refactor-plan/SKILL.md` + `HABITS.md`
+2. `.agents/skills/refactoring-expert/SKILL.md`
+3. `.agents/skills/refactoring-specialist/SKILL.md`
+
+Default (all ticks):
+
 1. `.agents/skills/vercel-react-best-practices/SKILL.md`
 2. `.cursor/skills/ui-ux-pro-max/SKILL.md` — when feature requires UI touch
 

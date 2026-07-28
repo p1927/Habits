@@ -12,7 +12,15 @@ dist/
 .habits/
 pwa/dev-dist/
 .server-data/
-.agents
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/request-refactor-plan/
+!.agents/skills/request-refactor-plan/**
+!.agents/skills/refactoring-expert/
+!.agents/skills/refactoring-expert/**
+!.agents/skills/refactoring-specialist/
+!.agents/skills/refactoring-specialist/**
 docs/window-instances/*/STATE.hot.json
 .cursor/loop-bindings/
 .worktrees/

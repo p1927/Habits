@@ -111,6 +111,8 @@ def cmd_get(args: argparse.Namespace) -> int:
             cp = rp.parse_checkpoint_table(text)
             rnd = (cp.get("review_round") or "0").strip().strip("`")
         data = ss.parse_review_findings(text, rnd if rnd else None)
+    elif part == "refactor-plan":
+        data = _parse_refactor_plan(text, args.plan_id or "")
     else:
         _emit_error("unknown_part", f"unknown get part: {part}")
 
@@ -193,6 +195,8 @@ def cmd_append(args: argparse.Namespace) -> int:
         text = _append_history(text, args)
     elif args.part == "review-finding":
         text = _append_review_finding(text, args)
+    elif args.part == "refactor-plan":
+        text = _append_refactor_plan(text, args)
     else:
         _emit_error("unknown_part", f"unknown append part: {args.part}")
 
@@ -200,6 +204,55 @@ def cmd_append(args: argparse.Namespace) -> int:
     _emit_ok("append", args.part, loop_id, snap.get("fingerprint", ""))
     _emit_json({"fingerprint": snap.get("fingerprint", "")})
     return 0
+
+
+def _parse_refactor_plan(state_text: str, plan_id: str) -> list[dict[str, str]]:
+    rows = ss.parse_table_section(state_text, "REFACTOR_PLAN")
+    out: list[dict[str, str]] = []
+    for row in rows:
+        pid = (row.get("plan_id") or "").strip()
+        if not pid or pid in ("—", "-", "plan_id"):
+            continue
+        if plan_id and pid != plan_id:
+            continue
+        out.append(row)
+    return out
+
+
+def _append_refactor_plan(state_text: str, args: argparse.Namespace) -> str:
+    if not args.plan_id:
+        _emit_error("missing_plan_id", "--plan-id required")
+    if not args.step_n:
+        _emit_error("missing_step_n", "--step-n required")
+    row = (
+        f"| {args.plan_id} | {args.step_n} | {args.smell or '—'} | {args.technique or '—'} | "
+        f"{args.files_in_scope or '—'} | {args.behavior_proof or '—'} | "
+        f"{args.out_of_scope or '—'} | {args.status or 'planned'} |"
+    )
+    marker = "## REFACTOR_PLAN"
+    if marker not in state_text:
+        _emit_error("missing_section", "REFACTOR_PLAN section missing")
+    before, rest = state_text.split(marker, 1)
+    if "\n## " in rest:
+        section, suffix = rest.split("\n## ", 1)
+        suffix = "\n## " + suffix
+    else:
+        section, suffix = rest, ""
+    lines = section.splitlines()
+    if args.replace:
+        sn = str(args.step_n).strip()
+        lines = [
+            ln
+            for ln in lines
+            if not (args.plan_id in ln and f"| {sn} |" in ln)
+        ]
+    insert_at = len(lines)
+    for i, line in enumerate(lines):
+        if line.strip().startswith("|") and "----" in line:
+            insert_at = i + 1
+            break
+    lines.insert(insert_at, row)
+    return before + marker + "\n" + "\n".join(lines) + suffix + ("\n" if state_text.endswith("\n") else "")
 
 
 def _append_history(state_text: str, args: argparse.Namespace) -> str:
@@ -301,13 +354,14 @@ def main() -> int:
     get_p.add_argument("--done", action="store_true")
     get_p.add_argument("--limit", type=int, default=10)
     get_p.add_argument("--round", default="")
+    get_p.add_argument("--plan-id", default="", help="Filter REFACTOR_PLAN rows")
 
     set_p = sub.add_parser("set")
     set_p.add_argument("part", choices=("checkpoint", "last-review"))
     set_p.add_argument("pairs", nargs="+", metavar="key=value")
 
     append_p = sub.add_parser("append")
-    append_p.add_argument("part", choices=("history", "review-finding"))
+    append_p.add_argument("part", choices=("history", "review-finding", "refactor-plan"))
     append_p.add_argument("--item-id", default="")
     append_p.add_argument("--outcome", default="")
     append_p.add_argument("--evidence", default="")
@@ -323,6 +377,13 @@ def main() -> int:
     append_p.add_argument("--backlog-ref", default="")
     append_p.add_argument("--status", default="open")
     append_p.add_argument("--replace", action="store_true")
+    append_p.add_argument("--plan-id", default="")
+    append_p.add_argument("--step-n", default="")
+    append_p.add_argument("--smell", default="")
+    append_p.add_argument("--technique", default="")
+    append_p.add_argument("--files-in-scope", default="")
+    append_p.add_argument("--behavior-proof", default="")
+    append_p.add_argument("--out-of-scope", default="")
 
     mark_p = sub.add_parser("mark")
     mark_p.add_argument("part", choices=("backlog-done",))

@@ -32,9 +32,20 @@ Phases 4–7 run inside `WORKTREE_PATH` (create auto-patches CHECKPOINT).
 3. 21st-cache / 21st-cli before hand-writing components
 4. Ship UI diff for selected `ui-*`
 
+**Refactor subcheckpoints** when item touches hooks/lib (CSS-only: set `refactor_subphase=none`):
+
+| Subphase | Skill | Action |
+|----------|-------|--------|
+| `plan` | `request-refactor-plan` + `HABITS.md` | `REFACTOR_PLAN` rows |
+| `smell` | `refactoring-expert` | Smell + technique; no edits |
+| `execute` | `refactoring-specialist` | One step; allowlisted files |
+
 ## Phase 5 — Verify
 
 ```bash
+python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
+  --loop-id ux-relay \
+  --state-file docs/window-instances/ux-relay/STATE.md
 cd pwa && npm run build
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --state-file docs/window-instances/ux-relay/STATE.md \

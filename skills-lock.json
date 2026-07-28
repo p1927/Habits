@@ -145,6 +145,24 @@
       "skillPath": "product-team/skills/product-strategist/SKILL.md",
       "computedHash": "9e372ea31555fc2d7075d2d51c74904ac8bb55719c92e9b3391c41436449a1b8"
     },
+    "refactoring-expert": {
+      "source": "cin12211/orca-q",
+      "sourceType": "github",
+      "skillPath": "refactoring-expert/SKILL.md",
+      "computedHash": "59de202e9700706a40b4397ae1ee220dc4b7b711bc78146615fed7fb9ebda688"
+    },
+    "refactoring-specialist": {
+      "source": "VoltAgent/awesome-claude-code-subagents",
+      "sourceType": "github",
+      "skillPath": "categories/06-developer-experience/refactoring-specialist.md",
+      "computedHash": "1fafc505b3a410133853cb8c826fa42b06afe5f80fd8504a8334c696968aebec"
+    },
+    "request-refactor-plan": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/deprecated/request-refactor-plan/SKILL.md",
+      "computedHash": "d59de4ba6cc1fe2dd267e8b9b5a1fd88e3e739e2130bc9dd78061d2a072830b8"
+    },
     "saas-metrics-coach": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",

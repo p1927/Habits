@@ -25,9 +25,19 @@ bash tools/cursor-loop/scripts/instance_worktree.sh create . \
 
 Phases 4–7 run inside `WORKTREE_PATH` (create auto-patches CHECKPOINT).
 
-## Phase 4 — Execute
+## Phase 4 — Execute (refactor subcheckpoints)
 
-Brainstorm 2 approaches; pick minimal structural fix. Evaluate touched code against checklist below (self-check before formal review).
+Set `CHECKPOINT.refactor_subphase` and advance **plan → smell → execute** inside this phase (do not skip ritual phase numbers).
+
+| Subphase | Skill | Action |
+|----------|-------|--------|
+| `plan` | `request-refactor-plan` + `HABITS.md` | Write `REFACTOR_PLAN` rows via `state_api append refactor-plan`; set `refactor_plan_id`, `refactor_step_n=1` |
+| `smell` | `refactoring-expert` | Name smell + technique on current step row; **no app edits** |
+| `execute` | `refactoring-specialist` | **One plan step only**; allowlisted files only |
+
+Resume: if `IN_PROGRESS` + incomplete plan → continue at last subphase.
+
+Brainstorm 2 approaches only when subphase=`plan`. Line-by-line checklist below = self-check after expert pass.
 
 ### Line-by-line checklist (score pass / warn / fail)
 
@@ -48,6 +58,9 @@ Brainstorm 2 approaches; pick minimal structural fix. Evaluate touched code agai
 ## Phase 5 — Verify
 
 ```bash
+python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
+  --loop-id code-health \
+  --state-file docs/window-instances/code-health/STATE.md
 cd pwa && npm run build
 cd server && python -m compileall habits_api   # when Python touched
 bash tools/cursor-loop/scripts/prepare_review_tick.sh . \

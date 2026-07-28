@@ -29,9 +29,20 @@ Phases 4–7 run inside `WORKTREE_PATH` (create auto-patches CHECKPOINT).
 
 Ship `relay-*` feature code. Chain items in same wake when possible.
 
+**Refactor subcheckpoints** (maintenance / `fix()` / shared hooks — set `refactor_subphase`; pure feature adds may use `none`):
+
+| Subphase | Skill | Action |
+|----------|-------|--------|
+| `plan` | `request-refactor-plan` + `HABITS.md` | `REFACTOR_PLAN` rows; one micro-step per later wake |
+| `smell` | `refactoring-expert` | Log smell + technique; no edits |
+| `execute` | `refactoring-specialist` | One step; allowlisted files only |
+
 ## Phase 5 — Verify
 
 ```bash
+python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
+  --loop-id worker-relay \
+  --state-file docs/window-instances/worker-relay/STATE.md
 cd pwa && npm run build
 python3 -c "import habits_api.main"   # if server/ changed
 curl -s http://127.0.0.1:8787/healthz   # optional, server running

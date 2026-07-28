@@ -10,9 +10,17 @@ Triage PO `UI_PROPOSALS`; ship agreed `ui-*` items; log `UX_GAPS` for PO; match 
 
 ## Skills (read before Phase 4)
 
+Design (always):
+
 1. `.cursor/skills/ui-ux-pro-max/SKILL.md` — design-system search first
 2. `.cursor/skills/21st-cache/SKILL.md` — cache-first 21st lookup
 3. `.agents/skills/21st-cli-use/SKILL.md` — catalog before custom components
+
+Refactor pipeline when touching logic/hooks/lib (not CSS-only — see [`.cursor/rules/refactor-plan-skills.mdc`](../../../.cursor/rules/refactor-plan-skills.mdc)):
+
+4. `.agents/skills/request-refactor-plan/SKILL.md` + `HABITS.md`
+5. `.agents/skills/refactoring-expert/SKILL.md`
+6. `.agents/skills/refactoring-specialist/SKILL.md`
 
 Quick commands:
 

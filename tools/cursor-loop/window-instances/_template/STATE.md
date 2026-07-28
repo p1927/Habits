@@ -38,6 +38,15 @@
 | reflect_done | `no` |
 | commit_hash | — |
 | receive_review_done | `no` |
+| refactor_subphase | `none` |
+| refactor_step_n | `—` |
+| refactor_plan_id | `—` |
+
+## REFACTOR_PLAN
+
+| plan_id | step_n | smell | technique | files_in_scope | behavior_proof | out_of_scope | status |
+|---------|--------|-------|-----------|----------------|----------------|--------------|--------|
+| — | — | — | — | — | — | — | — |
 
 ## IN_PROGRESS
 

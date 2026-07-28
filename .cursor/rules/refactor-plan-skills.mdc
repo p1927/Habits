@@ -1,0 +1,44 @@
+---
+description: Code windows — mandatory refactor skills before app edits (plan → smell → execute)
+globs: docs/window-instances/code-health/**,docs/window-instances/worker-relay/**,docs/window-instances/ux-relay/**
+alwaysApply: false
+---
+
+# Refactor Plan — Skills Mandate
+
+During Phase 4 on code-changing ticks, follow subcheckpoints in the window RITUAL. **Read each skill file before its subphase.** Announce: "Using `<skill-name>` to …"
+
+## Subphase → skill (strict order)
+
+| `refactor_subphase` | Read |
+|---------------------|------|
+| `plan` | `.agents/skills/request-refactor-plan/SKILL.md` then `.agents/skills/request-refactor-plan/HABITS.md` |
+| `smell` | `.agents/skills/refactoring-expert/SKILL.md` |
+| `execute` | `.agents/skills/refactoring-specialist/SKILL.md` |
+
+Phase 5 verify: read **refactoring-specialist** again; run `validate_refactor_step.py`.
+
+## Window intensity
+
+| Window | When pipeline applies |
+|--------|------------------------|
+| **code-health** | Every code tick — set `refactor_subphase=plan` if no `REFACTOR_PLAN` for item |
+| **worker-relay** | `fix()` / maintenance ticks; shared hooks/lib; skip (`none`) for CSS-only feature adds |
+| **ux-relay** | Logic/hooks/shared components; skip (`none`) for CSS-only polish |
+
+## Rules
+
+- **No app edits** during `plan` or `smell` subphases
+- **One plan step** per wake when `execute`
+- **No freestyle refactor** — never skip the three named skills
+- Bugs: Superpowers **systematic-debugging** first, then this pipeline
+- Output plans to `REFACTOR_PLAN` via `state_api.sh` — not GitHub issues
+
+## Phase 5 gate
+
+```bash
+python3 tools/cursor-loop/scripts/validate_refactor_step.py . \
+  --loop-id <loop_id> --state-file <STATE.md path>
+```
+
+Must pass before `prepare_review_tick.sh --apply` when `refactor_subphase` is not `none`.

@@ -12,9 +12,15 @@ Line-by-line scan; ship top `REFACTOR_BACKLOG` / `BUG_BACKLOG` item; update `SCA
 
 Dedicated loop for: bugs, patchwork detection, separation of concerns, DRY, modular structure, LLM-clear file names. Read commits + diffs every tick; backlog and implement immediately. No UI polish, no PO brainstorm.
 
-## Skills
+## Skills (read before Phase 4 — refactor subphases)
 
-`.agents/skills/vercel-react-best-practices/SKILL.md`
+Mandatory on every code tick (see [`.cursor/rules/refactor-plan-skills.mdc`](../../../.cursor/rules/refactor-plan-skills.mdc)):
+
+1. `.agents/skills/request-refactor-plan/SKILL.md` + `HABITS.md` — subphase `plan`
+2. `.agents/skills/refactoring-expert/SKILL.md` — subphase `smell`
+3. `.agents/skills/refactoring-specialist/SKILL.md` — subphase `execute` + Phase 5 verify
+
+Also: `.agents/skills/vercel-react-best-practices/SKILL.md`
 
 ## Code review cycle (mandatory on code-changing ticks)
 
