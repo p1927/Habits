@@ -12,6 +12,7 @@ export function useAppShell() {
   const [oauthSuccess, setOauthSuccess] = useState(false);
   const [openLogMealPlan, setOpenLogMealPlan] = useState(false);
   const [openLogHistory, setOpenLogHistory] = useState(false);
+  const [openLogType, setOpenLogType] = useState(false);
   const [openLogRecipes, setOpenLogRecipes] = useState(false);
   const [agentPrompt, setAgentPrompt] = useState<{ token: number; text: string } | null>(null);
 
@@ -23,6 +24,7 @@ export function useAppShell() {
     scrollToMealPlanQueue,
     navigateMealPlanSyncSource,
     navigateLogHistory,
+    navigateLogType,
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
@@ -31,6 +33,7 @@ export function useAppShell() {
   } = useAppShellNavigation({
     setOpenLogMealPlan,
     setOpenLogHistory,
+    setOpenLogType,
     setOpenLogRecipes,
     setAgentPrompt,
   });
@@ -88,12 +91,15 @@ export function useAppShell() {
     setOpenLogMealPlan,
     openLogHistory,
     setOpenLogHistory,
+    openLogType,
+    setOpenLogType,
     openLogRecipes,
     setOpenLogRecipes,
     mealPlanQueueScrollToken,
     scrollToMealPlanQueue,
     navigateMealPlanSyncSource,
     navigateLogHistory,
+    navigateLogType,
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,

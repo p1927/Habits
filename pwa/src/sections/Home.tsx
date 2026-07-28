@@ -11,6 +11,7 @@ interface HomeProps {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   onOpenLogHistory?: () => void;
+  onOpenLogType?: () => void;
   onOpenLogRecipes?: () => void;
   onOpenFutureSelf?: () => void;
   scrollToMealPlanQueue?: number;

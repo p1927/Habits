@@ -14,6 +14,8 @@ interface LogProps {
   onMealPlanOpened?: () => void;
   openLogHistory?: boolean;
   onLogHistoryOpened?: () => void;
+  openLogType?: boolean;
+  onLogTypeOpened?: () => void;
   openLogRecipes?: boolean;
   onLogRecipesOpened?: () => void;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
@@ -28,6 +30,8 @@ export function Log({
   onMealPlanOpened,
   openLogHistory,
   onLogHistoryOpened,
+  openLogType,
+  onLogTypeOpened,
   openLogRecipes,
   onLogRecipesOpened,
   onNavigateMealPlanSyncSource,
@@ -56,6 +60,8 @@ export function Log({
     onMealPlanOpened,
     openLogHistory,
     onLogHistoryOpened,
+    openLogType,
+    onLogTypeOpened,
     openLogRecipes,
     onLogRecipesOpened,
     scrollToMealPlanQueue,

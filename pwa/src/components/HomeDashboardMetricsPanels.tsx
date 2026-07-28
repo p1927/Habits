@@ -18,6 +18,7 @@ export function HomeDashboardMetricsPanels({
   handleShareRings,
   calorieTrend,
   habitsTrend,
+  onOpenLogType,
 }: HomeDashboardMetricsProps) {
   return (
     <>
@@ -56,6 +57,7 @@ export function HomeDashboardMetricsPanels({
         proteinTarget={proteinTarget}
         carbs={food?.carbs ?? 0}
         fat={food?.fat ?? 0}
+        onOpenLogType={onOpenLogType}
       />
     </>
   );

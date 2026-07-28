@@ -4,6 +4,7 @@ export type HomeDashboardPanelsProps = Pick<
   UseHomeSectionResult,
   | 'serverOnline'
   | 'onOpenLogHistory'
+  | 'onOpenLogType'
   | 'onOpenLogRecipes'
   | 'onOpenFutureSelf'
   | 'exporting'
@@ -47,12 +48,14 @@ export type HomeDashboardMetricsProps = Pick<
   | 'handleShareRings'
   | 'calorieTrend'
   | 'habitsTrend'
+  | 'onOpenLogType'
 >;
 
 export type HomeDashboardFeedProps = Pick<
   HomeDashboardPanelsProps,
   | 'serverOnline'
   | 'onOpenLogHistory'
+  | 'onOpenLogType'
   | 'onOpenLogRecipes'
   | 'onOpenFutureSelf'
   | 'setFood'

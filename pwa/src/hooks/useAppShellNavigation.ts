@@ -9,6 +9,7 @@ import { useMealPlanQueueScroll } from './useMealPlanQueueScroll';
 interface UseAppShellNavigationOptions {
   setOpenLogMealPlan: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenLogHistory: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenLogType: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenLogRecipes: React.Dispatch<React.SetStateAction<boolean>>;
   setAgentPrompt: React.Dispatch<React.SetStateAction<{ token: number; text: string } | null>>;
 }
@@ -16,6 +17,7 @@ interface UseAppShellNavigationOptions {
 export function useAppShellNavigation({
   setOpenLogMealPlan,
   setOpenLogHistory,
+  setOpenLogType,
   setOpenLogRecipes,
   setAgentPrompt,
 }: UseAppShellNavigationOptions) {
@@ -54,6 +56,12 @@ export function useAppShellNavigation({
     handleTabChange('log');
   }, [handleTabChange, setOpenLogHistory]);
 
+  const navigateLogType = useCallback(() => {
+    preloadAppTabChunk('log');
+    setOpenLogType(true);
+    handleTabChange('log');
+  }, [handleTabChange, setOpenLogType]);
+
   const navigateLogRecipes = useCallback(() => {
     preloadAppTabChunk('log');
     setOpenLogRecipes(true);
@@ -82,6 +90,7 @@ export function useAppShellNavigation({
     scrollToMealPlanQueue,
     navigateMealPlanSyncSource,
     navigateLogHistory,
+    navigateLogType,
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,

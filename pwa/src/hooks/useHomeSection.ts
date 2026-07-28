@@ -8,6 +8,7 @@ interface UseHomeSectionOptions {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   onOpenLogHistory?: () => void;
+  onOpenLogType?: () => void;
   onOpenLogRecipes?: () => void;
   onOpenFutureSelf?: () => void;
   scrollToMealPlanQueue?: number;
@@ -18,6 +19,7 @@ export function useHomeSection({
   serverOnline,
   onNavigateMealPlanSyncSource,
   onOpenLogHistory,
+  onOpenLogType,
   onOpenLogRecipes,
   onOpenFutureSelf,
   scrollToMealPlanQueue,
@@ -59,6 +61,7 @@ export function useHomeSection({
     serverOnline,
     onNavigateMealPlanSyncSource,
     onOpenLogHistory,
+    onOpenLogType,
     onOpenLogRecipes,
     onOpenFutureSelf,
     scrollToMealPlanQueue,

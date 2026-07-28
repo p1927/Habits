@@ -13,6 +13,8 @@ interface UseLogSectionOptions {
   onMealPlanOpened?: () => void;
   openLogHistory?: boolean;
   onLogHistoryOpened?: () => void;
+  openLogType?: boolean;
+  onLogTypeOpened?: () => void;
   openLogRecipes?: boolean;
   onLogRecipesOpened?: () => void;
   scrollToMealPlanQueue?: number;
@@ -25,6 +27,8 @@ export function useLogSection({
   onMealPlanOpened,
   openLogHistory,
   onLogHistoryOpened,
+  openLogType,
+  onLogTypeOpened,
   openLogRecipes,
   onLogRecipesOpened,
   scrollToMealPlanQueue,
@@ -51,6 +55,8 @@ export function useLogSection({
     onMealPlanOpened,
     openLogHistory,
     onLogHistoryOpened,
+    openLogType,
+    onLogTypeOpened,
     openLogRecipes,
     onLogRecipesOpened,
     scrollToMealPlanQueue,

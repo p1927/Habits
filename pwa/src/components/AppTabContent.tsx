@@ -16,11 +16,14 @@ type AppTabContentProps = Pick<
   | 'setOpenLogMealPlan'
   | 'openLogHistory'
   | 'setOpenLogHistory'
+  | 'openLogType'
+  | 'setOpenLogType'
   | 'openLogRecipes'
   | 'setOpenLogRecipes'
   | 'mealPlanQueueScrollToken'
   | 'navigateMealPlanSyncSource'
   | 'navigateLogHistory'
+  | 'navigateLogType'
   | 'navigateLogRecipes'
   | 'navigateAgentPrompt'
   | 'navigateFutureSelf'
@@ -40,11 +43,14 @@ export function AppTabContent({
   setOpenLogMealPlan,
   openLogHistory,
   setOpenLogHistory,
+  openLogType,
+  setOpenLogType,
   openLogRecipes,
   setOpenLogRecipes,
   mealPlanQueueScrollToken,
   navigateMealPlanSyncSource,
   navigateLogHistory,
+  navigateLogType,
   navigateLogRecipes,
   navigateAgentPrompt,
   navigateFutureSelf,
@@ -60,6 +66,7 @@ export function AppTabContent({
           serverOnline={serverOnline}
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           onOpenLogHistory={navigateLogHistory}
+          onOpenLogType={navigateLogType}
           onOpenLogRecipes={navigateLogRecipes}
           onOpenFutureSelf={navigateFutureSelf}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
@@ -73,6 +80,8 @@ export function AppTabContent({
           onMealPlanOpened={() => setOpenLogMealPlan(false)}
           openLogHistory={openLogHistory}
           onLogHistoryOpened={() => setOpenLogHistory(false)}
+          openLogType={openLogType}
+          onLogTypeOpened={() => setOpenLogType(false)}
           openLogRecipes={openLogRecipes}
           onLogRecipesOpened={() => setOpenLogRecipes(false)}
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
