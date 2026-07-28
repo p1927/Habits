@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:05:17Z |
-| where_we_are | relay-210 shipped (d96e0f3); backlog empty |
-| confirmed_next |  |
-| brainstorm_notes | awaiting PO relay-211+ |
+| reviewed_at | 2026-07-28T13:08:01Z |
+| where_we_are | relay-211 shipped (5c2c524); relay-212 next |
+| confirmed_next | relay-212 |
+| brainstorm_notes | Stale SPIN wake; relay-211 done in overlapping recovery |
 
 ---
 
@@ -19,28 +19,32 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:08:21Z` |
-| next_action | `relay-212 next` |
-| phase | `9-arm` |
-| review_status | `skipped` |
+| last_wake | `2026-07-28T13:08:01Z` |
+| next_action | `relay-213 next` |
+| phase | `8-close` |
+| review_status | `done` |
 | review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `67` |
-| last_reviewed_round | `67` |
+| code_changed | `yes` |
+| review_round | `68` |
+| last_reviewed_round | `68` |
 | worktree_status | `none` |
-| review_fingerprint | `relay211list` |
-| ritual_step | `9-arm` |
+| review_fingerprint | `relay212macros` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `5c2c524` |
+| commit_hash | `17f37c1` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `relay-211 shipped 5c2c524; review round 67 complete` |
-| review_changed_files | `pwa/src/components/LogTypeTodayList.tsx` |
+| review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
+| worktree_branch | `loop/worker-relay/relay-212` |
+| worktree_item_id | `relay-212` |
+| current_item_id | `relay-212` |
 
 ## IN_PROGRESS
 
@@ -110,7 +114,7 @@
 - [x] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
 - [x] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
 - [x] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
-- [ ] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
+- [x] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
 - [ ] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
 ## BRAINSTORM (unprioritized)
 
@@ -160,8 +164,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r68-000 | low | relay-212: navigateLogType drill-down matches relay-162 history pattern; HomeMacrosCard tappable with aria-label | round-68 /code-review | closed | — | closed |
 | rf-r67-000 | low | relay-211: ul role=list + aria-label matches AC; explicit attrs satisfy WCAG 1.3.1 | round-67 /code-review | closed | — | closed |
 | rf-r66-000 | low | Idle SPIN tick 2026-07-28T13:05:17Z; backlog empty — no product diff | round-66 /code-review | closed | — | closed |
 | rf-r65-000 | low | Recovery wake idle tick 2026-07-28T13:05:22Z; STATE sync only — no product diff | round-65 /code-review | closed | — | closed |
@@ -272,9 +278,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | relay-212 | done | build | 17f37c1 |
 | — | relay-211 | done | build | 5c2c524 |
 | 2026-07-28 | relay-210 | done | build | d96e0f3 |
 | 2026-07-28 | relay-209 | done | build | a62bd3c |
@@ -339,6 +347,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
