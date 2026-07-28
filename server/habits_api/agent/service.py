@@ -215,7 +215,9 @@ async def chat_stream(
                 args = json.loads(fn.get("arguments") or "{}")
             except json.JSONDecodeError:
                 args = {}
+            yield _sse_event("tool_start", {"tool": name})
             result = await execute_tool(settings, db, name, args)
+            yield _sse_event("tool_end", {"tool": name})
             tool_results.append({"tool": name, "args": args, "result": result})
             messages.append({
                 "role": "tool",

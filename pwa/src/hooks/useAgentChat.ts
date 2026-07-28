@@ -17,7 +17,7 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
 
-  const { listRef, runStream, beginStream } = useAgentChatStream({
+  const { listRef, runStream, beginStream, toolStatusLabels } = useAgentChatStream({
     onToolResults,
     setMessages,
     setLoading,
@@ -106,6 +106,7 @@ export function useAgentChat({ serverOnline, onToolResults }: UseAgentChatOption
     input,
     setInput,
     loading,
+    toolStatusLabels,
     attachImage,
     setAttachImage,
     error,

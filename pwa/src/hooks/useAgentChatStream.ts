@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { agentChatStream } from '../lib/agentChatStream';
 import type { AgentChatMessage } from '../lib/agentSectionShared';
 import type { ChatResponse } from '../lib/api';
+import { toolStatusLabel } from '../lib/agentToolStatus';
 
 function isAbortError(e: unknown): boolean {
   return e instanceof DOMException && e.name === 'AbortError';
@@ -23,6 +24,7 @@ export function useAgentChatStream({
   const listRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const streamGenRef = useRef(0);
+  const [toolStatusLabels, setToolStatusLabels] = useState<string[]>([]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
@@ -52,8 +54,19 @@ export function useAgentChatStream({
                 listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'auto' });
               });
             },
+            onToolStart: (tool) => {
+              if (gen !== streamGenRef.current) return;
+              const label = toolStatusLabel(tool);
+              setToolStatusLabels((prev) => (prev.includes(label) ? prev : [...prev, label]));
+            },
+            onToolEnd: (tool) => {
+              if (gen !== streamGenRef.current) return;
+              const label = toolStatusLabel(tool);
+              setToolStatusLabels((prev) => prev.filter((l) => l !== label));
+            },
             onDone: (res) => {
               if (gen !== streamGenRef.current) return;
+              setToolStatusLabels([]);
               setMessages((m) => {
                 const copy = [...m];
                 const last = copy[copy.length - 1];
@@ -66,6 +79,7 @@ export function useAgentChatStream({
             },
             onError: (msg) => {
               if (gen !== streamGenRef.current) return;
+              setToolStatusLabels([]);
               setError(msg);
             },
           },
@@ -79,6 +93,7 @@ export function useAgentChatStream({
         setError(e instanceof Error ? e.message : 'Chat failed');
       } finally {
         if (gen === streamGenRef.current) {
+          setToolStatusLabels([]);
           setLoading(false);
           listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
         }
@@ -91,8 +106,9 @@ export function useAgentChatStream({
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
+    setToolStatusLabels([]);
     return ++streamGenRef.current;
   }, []);
 
-  return { listRef, runStream, beginStream };
+  return { listRef, runStream, beginStream, toolStatusLabels };
 }

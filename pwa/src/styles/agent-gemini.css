@@ -322,6 +322,24 @@
   outline-offset: 2px;
 }
 
+.agent-tool-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+}
+
+.agent-tool-status__chip {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  border: 1px solid color-mix(in srgb, var(--gemini-accent) 28%, var(--surface2));
+  background: color-mix(in srgb, var(--gemini-accent) 8%, var(--gemini-surface));
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 .voice-coach-legend {
   margin: 0 0 0.75rem;
   font-size: 0.75rem;

@@ -15,6 +15,8 @@ function parseSseBlock(block: string): { event: string; data: string } | null {
 
 export interface AgentChatStreamHandlers {
   onToken: (text: string) => void;
+  onToolStart?: (tool: string) => void;
+  onToolEnd?: (tool: string) => void;
   onDone: (payload: ChatResponse) => void;
   onError: (message: string) => void;
 }
@@ -74,6 +76,10 @@ export async function agentChatStream(
         const payload = JSON.parse(parsed.data) as Record<string, unknown>;
         if (parsed.event === 'token' && typeof payload.text === 'string') {
           handlers.onToken(payload.text);
+        } else if (parsed.event === 'tool_start' && typeof payload.tool === 'string') {
+          handlers.onToolStart?.(payload.tool);
+        } else if (parsed.event === 'tool_end' && typeof payload.tool === 'string') {
+          handlers.onToolEnd?.(payload.tool);
         } else if (parsed.event === 'done') {
           handlers.onDone({
             reply: String(payload.reply ?? ''),

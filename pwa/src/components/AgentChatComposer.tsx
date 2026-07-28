@@ -10,6 +10,7 @@ export interface AgentChatComposerProps {
   attachImage: string | null;
   showDisclaimer?: boolean;
   showVoiceNudge?: boolean;
+  toolStatusLabels?: string[];
   onDismissVoiceNudge?: () => void;
   voiceOrbState?: VoiceOrbVisualState;
   onInputChange: (value: string) => void;
@@ -28,6 +29,7 @@ export function AgentChatComposer({
   attachImage,
   showDisclaimer = false,
   showVoiceNudge = false,
+  toolStatusLabels = [],
   onDismissVoiceNudge,
   voiceOrbState,
   onInputChange,
@@ -38,9 +40,20 @@ export function AgentChatComposer({
   onOpenTools,
 }: AgentChatComposerProps) {
   const canSend = serverOnline && !scanning && (input.trim() || attachImage);
+  const statusChips = toolStatusLabels.length > 0 ? toolStatusLabels : loading ? ['Working…'] : [];
 
   return (
     <div className="agent-composer-dock" aria-label="Message composer">
+      {loading && statusChips.length > 0 && (
+        <div className="agent-tool-status" role="status" aria-live="polite" aria-label="Coach activity">
+          {statusChips.map((label) => (
+            <span key={label} className="agent-tool-status__chip">
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
+
       {showVoiceNudge && (
         <div className="agent-voice-nudge" role="region" aria-label="Voice coach suggestion" aria-live="polite">
           <button type="button" className="agent-voice-nudge__chip" onClick={onOpenVoice}>
