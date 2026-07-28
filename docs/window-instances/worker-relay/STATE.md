@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T00:00:00Z |
-| where_we_are | relay-196 shipped |
-| confirmed_next | relay-197 |
-| brainstorm_notes | VoiceCoachLayer + fallback voice BottomSheet Escape hints |
+| reviewed_at | 2026-07-28T02:45:00Z |
+| where_we_are | relay-198 shipped |
+| confirmed_next | relay-199 |
+| brainstorm_notes | MealPhotoGallery lightbox Escape hint; flex gap spacing fix |
 
 ---
 
@@ -19,23 +19,23 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T00:05:00Z` |
-| confirmed_next | `relay-197` |
-| next_action | `relay-197 Day event detail sheet Escape hint` |
+| last_wake | `2026-07-28T02:50:00Z` |
+| confirmed_next | `relay-199` |
+| next_action | `relay-199 Agent chat empty-state starter chips` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `relay-196 reviewed round 27; committed f6b207a` |
-| review_diff_range | `relay-196` |
+| review_skip_reason | `relay-198 reviewed round 29; committed bbd648c` |
+| review_diff_range | `bbd648c` |
 | code_changed | `no` |
-| review_round | `27` |
-| last_reviewed_round | `27` |
+| review_round | `29` |
+| last_reviewed_round | `29` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css,pwa/src/components/AgentSectionOverlays.tsx,pwa/src/components/VoiceCoachLayer.tsx` |
-| review_fingerprint | `f6b207a` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/MealPhotoGallery.tsx` |
+| review_fingerprint | `bbd648c` |
 | ritual_step | `1-wake` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -97,8 +97,9 @@
 - [x] relay-194 | Agent attach sheet Escape to close | polish | BottomSheet Escape + hint text (e11be06)
 - [x] relay-195 | Agent camera sheet Escape hint | polish | BottomSheet Escape + hint text (4305775)
 - [x] relay-196 | Agent voice sheet Escape hint | polish | VoiceCoachLayer + fallback BottomSheet hint (f6b207a)
-- [ ] relay-197 | Day event detail sheet Escape hint | polish | Given DayCalendarEventSheet open, When user presses Escape, Then sheet closes + hint text | PO Session #26 — post-196 queue refill
-- [ ] relay-198 | Home meal photo gallery Escape hint | polish | Given MealPhotoGallery lightbox open, When user presses Escape, Then closes + visible hint text (Escape handler exists — hint parity) | PO Session #27
+- [x] relay-197 | Day event detail sheet Escape hint | polish | BottomSheet Escape + hint text (73c3806)
+- [x] relay-198 | Home meal photo gallery Escape hint | polish | MealPhotoGallery lightbox hint + flex-gap CSS (bbd648c)
+- [ ] relay-199 | Agent chat empty-state starter chips | feature | Given empty Agent thread, When user opens Agent tab, Then show 3–4 Gemini-style quick prompts (Log food, Plan day, Review rings) tappable to prefill composer | PO Session #28 — post-escape batch refill
 
 ---
 
@@ -158,6 +159,13 @@
 | rf-r27-001 | low | pwa/src/components/VoiceCoachLayer.tsx:51 Escape hint; keydown at :16-17 | round-27 bugbot | closed | relay-196 | closed |
 | rf-r27-002 | low | pwa/src/components/AgentSectionOverlays.tsx:78 fallback voice BottomSheet hint | round-27 /code-review | closed | — | closed |
 | rf-r27-003 | low | pwa/src/App.css:3784-3788 agent-voice-sheet-hint mirrors agent-camera-sheet-hint | round-27 /code-review | closed | — | closed |
+| rf-r28-000 | low | No logic, security, or regression bugs in relay-197 diff (2 files) | round-28 bugbot | closed | — | closed |
+| rf-r28-001 | low | pwa/src/components/DayCalendarEventSheet.tsx:66 Escape hint; close via BottomSheet keydown | round-28 bugbot | closed | relay-197 | closed |
+| rf-r28-002 | low | pwa/src/App.css:4268-4272 day-event-detail-sheet-hint mirrors agent-voice-sheet-hint | round-28 /code-review | closed | — | closed |
+| rf-r29-000 | low | No logic, security, or regression bugs in relay-198 diff (2 files) | round-29 bugbot | closed | — | closed |
+| rf-r29-001 | low | pwa/src/components/MealPhotoGallery.tsx:98 Escape hint matches sheet parity | round-29 /code-review | closed | relay-198 | closed |
+| rf-r29-002 | low | pwa/src/App.css:2439 hint margin stacks with inner flex gap; fixed margin:0 | round-29 /code-review | fix-now | — | closed |
+| rf-r29-003 | low | pwa/src/components/MealPhotoGallery.tsx:24-27 Escape handler unchanged and adequate | round-29 /code-review | closed | — | closed |
 
 ---
 
@@ -165,6 +173,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | relay-198 | done | build | bbd648c |
 | 2026-07-28 | relay-196 | done | build | f6b207a |
 | 2026-07-28 | relay-195 | done | build | 4305775 |
 | 2026-07-27 | relay-194 | done | build | e11be06 |
