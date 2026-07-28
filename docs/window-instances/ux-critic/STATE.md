@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T16:50:00Z |
-| where_we_are | Tick 56 complete — crit-056 Activity feed drill-down proposed |
-| confirmed_next | crit-057 journey-capture-thought re-audit (tick 57, journey mode) |
+| reviewed_at | 2026-07-28T19:30:00Z |
+| where_we_are | Tick 74 complete — crit-074 HomeMealPhotoLogBridge proposed |
+| confirmed_next | crit-075 journey-capture-thought re-audit (tick 75, journey mode) |
 
 ---
 
@@ -18,35 +18,35 @@
 
 | Field | Value |
 |-------|-------|
-| phase | `9-arm` |
-| ritual_step | `9-arm` |
+| phase | `4-execute` |
+| ritual_step | `8-close` |
 | review_status | `pending` |
-| review_skip_reason | `docs-only critique tick — round-72 review complete on STATE.md crit-056` |
-| review_round | `73` |
-| last_reviewed_round | `72` |
-| last_wake | `2026-07-28T13:15:00Z` |
+| review_skip_reason | `docs-only critique tick — round-91 review complete on STATE.md crit-074` |
+| review_round | `92` |
+| last_reviewed_round | `91` |
+| last_wake | `2026-07-28T19:30:00Z` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `crit-057 journey-capture-thought re-audit (tick 57)` |
-| tick_count | `56` |
-| tick_mode | `element` |
+| confirmed_next | `crit-075 journey-capture-thought re-audit (tick 75, journey mode)` |
+| tick_count | `74` |
+| tick_mode | `journey` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `crit-056 — AgentActionFeedRow tappable CTAs; rejected auto-navigate + sticky feed` |
+| brainstorm_outcome | `crit-075 — CardsBodyFirstCapture; rejected FAB long-press menu + voice memo` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `AgentActionFeedRow with View in Log / Open in Day pills per action kind` |
-| design_mitigations | `extend AgentAction with targetTab; fix empty-state copy` |
-| current_item_id | `crit-056` |
+| design_chosen_approach | `body-first capture auto-title from first body line + autofocus body` |
+| design_mitigations | `extend MealPhoto with loggedFoodRow; wire onOpenLogType through HomeMealPhotosPanel; fuzzy match food.items fallback` |
 | review_fingerprint | `cdade04091fcc370` |
+| current_item_id | `crit-075` |
 
 ## IN_PROGRESS
 
@@ -60,14 +60,14 @@
 
 | id | flow | persona | hook_step | touchpoints | last_audited | next_crit_id |
 |----|------|---------|-----------|-------------|--------------|--------------|
-| journey-first-log | Open app → log first meal → Home rings update | first-week user | action | Home → Log → Home | 2026-07-28T16:08:00Z | crit-049 |
-| journey-daily-checkin | Morning open → rings → Day schedule → Agent nudge | returning user | trigger | Home → Day → Agent | 2026-07-28T15:56:00Z | crit-047 |
-| journey-scan-quick | Log scan → OCR confirm → undo within 5s | busy professional | action | Log → Log | 2026-07-28T16:20:00Z | crit-051 |
-| journey-weekly-review | Home rings → Day history → Cards notes | power user | investment | Home → Day → Cards | 2026-07-28T16:32:00Z | crit-053 |
-| journey-coach-trust | Agent empty → first reply → voice sheet | skeptical new user | variable_reward | Agent → Agent | 2026-07-28T16:44:00Z | crit-055 |
-| journey-capture-thought | Cards quick capture → label → find later | knowledge worker | investment | Cards → Cards | 2026-07-28T15:26:00Z | crit-042 |
-| journey-settings-trust | Settings → OAuth connect → disconnect feedback | privacy-conscious | investment | Settings → Settings | 2026-07-28T15:32:00Z | crit-043 |
-| journey-day-plan | Day empty → add block → see on Home | planner | action | Day → Home | 2026-07-28T15:44:00Z | crit-045 |
+| journey-first-log | Open app → log first meal → Home rings update | first-week user | action | Home → Log → Home | 2026-07-28T17:52:00Z | crit-065 |
+| journey-daily-checkin | Morning open → rings → Day schedule → Agent nudge | returning user | trigger | Home → Day → Agent | 2026-07-28T18:12:00Z | crit-067 |
+| journey-scan-quick | Log scan → OCR confirm → undo within 5s | busy professional | action | Log → Log | 2026-07-28T18:32:00Z | crit-069 |
+| journey-weekly-review | Home trends → Day week → Cards strategy reflection | power user | investment | Home → Day → Cards | 2026-07-28T18:52:00Z | crit-071 |
+| journey-coach-trust | Agent empty → first reply → voice sheet | skeptical new user | variable_reward | Agent → Agent | 2026-07-28T19:18:00Z | crit-073 |
+| journey-capture-thought | Cards quick capture → label → find later | knowledge worker | investment | Cards → Cards | 2026-07-28T16:56:00Z | crit-057 |
+| journey-settings-trust | Settings → OAuth connect → disconnect feedback | privacy-conscious | investment | Settings → Settings | 2026-07-28T17:05:00Z | crit-059 |
+| journey-day-plan | Day empty → add block → see on Home | planner | action | Day → Home | 2026-07-28T17:32:00Z | crit-061 |
 
 ---
 
@@ -77,87 +77,47 @@
 
 | order | tab | reference | last_audited | next_crit_id |
 |-------|-----|-----------|--------------|--------------|
-| 1 | Agent | Gemini | 2026-07-28T16:50:00Z | crit-056 |
-| 2 | Day | Google Calendar | 2026-07-28T16:02:00Z | crit-048 |
-| 3 | Cards | Google Keep | 2026-07-28T16:14:00Z | crit-050 |
-| 4 | Log | Tinder | 2026-07-28T16:26:00Z | crit-052 |
-| 5 | Home | Apple Health | 2026-07-28T16:38:00Z | crit-054 |
+| 1 | Agent | Gemini | 2026-07-28T18:02:00Z | crit-066 |
+| 2 | Day | Google Calendar | 2026-07-28T18:22:00Z | crit-068 |
+| 3 | Cards | Google Keep | 2026-07-28T18:42:00Z | crit-070 |
+| 4 | Log | Tinder | 2026-07-28T19:12:00Z | crit-072 |
+| 5 | Home | Apple Health | 2026-07-28T19:24:00Z | crit-074 |
 
 ---
 
 ## CRITIQUE_BACKLOG (local tracker — mirror to ux-relay)
 
+
+
+
 > Rows copied to `ux-relay/STATE.md` `CRITIQUE_BACKLOG` on write. Track handoff status here.
 
 | id | status | journey_ref | persona | impact | touchpoints | ux_relay_status | notes |
 |----|--------|-------------|---------|--------|-------------|-----------------|-------|
-| crit-001 | handed-off | journey-first-log | first-week user | 4 | Home → Log (Scan) → Home | proposed | empty rings CTA + celebration |
-| crit-002 | handed-off | element-only | returning user | 4 | Agent (composer dock) | proposed | streaming tool-status chips |
-| crit-006 | handed-off | journey-daily-checkin | returning user | 4 | Home → Day → Agent | proposed | Home today agenda strip |
-| crit-003 | handed-off | element-only | returning user | 4 | Day (schedule grid) | proposed | scroll-to-now + jump FAB |
-| crit-007 | handed-off | journey-scan-quick | busy professional | 4 | Log (scan overlay) → Log (undo) | proposed | undo restores photo overlay |
-| crit-004 | handed-off | element-only | knowledge worker | 4 | Cards (note grid) | proposed | tap opens note detail/edit |
-| crit-008 | handed-off | journey-weekly-review | power user | 4 | Home → Day → Cards | proposed | weekly recap cross-tab closure |
-| crit-005 | handed-off | element-only | returning user | 4 | Log (swipe card) | proposed | swipe fly-off commit animation |
-| crit-009 | handed-off | journey-coach-trust | skeptical new user | 4 | Agent (greeting) → Agent (voice) | proposed | greeting auto-send + voice trust bridge |
-| crit-010 | handed-off | journey-capture-thought | knowledge worker | 4 | Cards (capture) → Cards (search) | proposed | inline capture + search label chips |
-| crit-013 | handed-off | element-only | returning user | 4 | Home (activity rings) | proposed | ring tap drill-down sheet |
-| crit-011 | handed-off | journey-settings-trust | privacy-conscious | 4 | Settings (connect) → Settings (disconnect) | proposed | scope disclosure + disconnect confirm |
-| crit-012 | handed-off | journey-day-plan | planner | 4 | Day (empty grid) → Home (next block) | proposed | tap-slot create + Home closure |
-| crit-014 | handed-off | element-only | returning user | 4 | Agent (composer dock) | proposed | stop generation button |
-| crit-015 | handed-off | journey-first-log | first-week user | 4 | Log (Scan success) → Home (rings) | proposed | first-log Home payoff bridge |
-| crit-016 | handed-off | element-only | returning user | 4 | Day (agenda list) | proposed | agenda up-next scroll + chip |
-| crit-017 | handed-off | journey-daily-checkin | returning user | 4 | Day (schedule) → Agent (coach) | proposed | populated Day Plan with Coach chip |
-| crit-018 | handed-off | element-only | knowledge worker | 4 | Cards (note grid) | proposed | pin icon + pinned-first sort |
-| crit-019 | handed-off | journey-first-log | first-week user | 4 | Log (Scan success) → Home (rings) | proposed | Home tab-focus refetch + ring pulse |
-| crit-020 | handed-off | element-only | returning user | 4 | Log (swipe card) | proposed | velocity flick commit + aria-live |
-| crit-021 | handed-off | journey-scan-quick | busy professional | 4 | Log (scan overlay) → Log (retry) | proposed | defer clear until log success + Retry |
-| crit-022 | handed-off | element-only | returning user | 4 | Home (decision card) | proposed | pass/skip persist + undo toast |
-| crit-023 | handed-off | journey-weekly-review | power user | 4 | Home (trends) → Day (week rollup) → Cards (strategy) | proposed | Day week-at-a-glance + week note chip |
-| crit-024 | handed-off | element-only | returning user | 4 | Agent (chat bubbles) | proposed | edit last user prompt + Update |
-| crit-025 | handed-off | journey-coach-trust | skeptical new user | 4 | Agent (context) → Agent (voice) | proposed | pre-voice context disclosure |
-| crit-026 | handed-off | element-only | returning user | 4 | Day (event detail sheet) | proposed | event sheet Edit+Delete+Open Calendar |
-| crit-027 | handed-off | journey-capture-thought | knowledge worker | 4 | Cards (capture) → Cards (search) | proposed | post-save find-in-search toast bridge |
-| crit-028 | handed-off | element-only | knowledge worker | 4 | Cards (note grid) | proposed | delete confirm sheet + UndoToast |
-| crit-029 | handed-off | journey-settings-trust | privacy-conscious | 4 | Settings (OAuth return) → Settings (Google card) → Day | proposed | post-OAuth scope recap + partial consent |
-| crit-030 | handed-off | element-only | returning user | 4 | Log (history sub-tab) | proposed | history row tap day drill-down |
-| crit-031 | handed-off | journey-day-plan | planner | 4 | Day (Manage day) → Day (schedule) → Home | proposed | manage-day edit + Schedule chip |
-| crit-032 | handed-off | element-only | returning user | 4 | Home (macros card) → Log (Type tab) | proposed | macro targets + tap drill-down |
-| crit-033 | handed-off | journey-daily-checkin | returning user | 4 | Home → Day → Agent (empty chat) | proposed | Agent Daily Brief card |
-| crit-034 | handed-off | element-only | returning user | 4 | Agent (Tools sheet) → Agent (chat) | proposed | Tools row tap auto-send |
-| crit-035 | handed-off | journey-first-log | first-week user | 4 | Home → Log (Scan) → Log (swipe) | proposed | first-log scan coach + camera fallback |
-| crit-036 | handed-off | element-only | returning user | 4 | Day (agenda list) → Day (event sheet) | proposed | agenda time range + duration chip |
-| crit-037 | handed-off | journey-scan-quick | busy professional | 4 | Log (scan overlay) → Log (confirm) | proposed | low-confidence confirm gate |
-| crit-038 | handed-off | element-only | knowledge worker | 4 | Cards (filter bar) → Cards (note grid) | proposed | note color swatches + color filter |
-| crit-039 | handed-off | journey-weekly-review | power user | 4 | Home (trends) → Agent (Weekly summary) → Day + Cards | proposed | Agent weekly review brief + cross-tab CTAs |
-| crit-040 | handed-off | journey-coach-trust | skeptical new user | 4 | Agent (first reply) → Agent (voice nudge) | proposed | reply source attribution chips |
-| crit-041 | handed-off | element-only | returning user | 4 | Log (swipe card) → Log (edit sheet) | proposed | edit sheet live macro preview |
-| crit-042 | handed-off | journey-capture-thought | knowledge worker | 4 | Cards (capture) → Cards (filter tab) | proposed | post-save filter tab sync + scroll highlight |
-| crit-043 | handed-off | journey-settings-trust | privacy-conscious | 4 | Settings → Day/Cards (feature tab) → Settings | proposed | in-context Google reconnect banners |
-| crit-044 | handed-off | element-only | returning user | 4 | Home (summary tiles) → Log (Type) / Day (habits) | proposed | summary tile metric drill-down |
-| crit-045 | handed-off | journey-day-plan | planner | 4 | Day (meal plan) → Day (schedule grid) → Log | proposed | meal plan blocks on schedule timeline |
-| crit-046 | handed-off | element-only | returning user | 4 | Agent (chat scroll) | proposed | scroll-respect + jump-to-latest chip |
-| crit-047 | handed-off | journey-daily-checkin | returning user | 4 | Home → Day (habits) → Agent | proposed | habit edit cross-tab sync bus |
-| crit-048 | handed-off | element-only | returning user | 4 | Day (agenda list) | proposed | agenda all-day section + chips |
-| crit-049 | handed-off | journey-first-log | first-week user | 4 | Log (swipe success) → Home (rings) | proposed | first-log celebration sheet |
-| crit-050 | handed-off | element-only | knowledge worker | 4 | Cards (filter bar) → Cards (note grid) | proposed | Sort by menu (newest/title) |
-| crit-051 | handed-off | journey-scan-quick | busy professional | 4 | Log (scan overlay) → Log (confirm swipe) | proposed | inline portion stepper on scan card |
-| crit-052 | handed-off | element-only | returning user | 4 | Log (swipe card) → Log (confirm) | proposed | meal type chips on swipe card |
-| crit-053 | handed-off | journey-weekly-review | power user | 4 | Home (trends) → Day (week) → Cards (strategy) | proposed | WoW trend delta chips + CTAs |
-| crit-054 | handed-off | element-only | returning user | 4 | Home (header) → Home (rings refresh) | proposed | dashboard freshness timestamp + stale chip |
 | crit-055 | handed-off | journey-coach-trust | skeptical new user | 4 | Agent (first send) → Agent (error recovery) | proposed | inline stream error recovery bubble |
 | crit-056 | handed-off | element-only | returning user | 4 | Agent (Activity feed) → Log / Day | proposed | tappable action feed rows + cross-tab CTAs |
+| crit-057 | handed-off | journey-capture-thought | knowledge worker | 4 | Cards (filter tab) → Cards (capture sheet) | proposed | filter-tab-aware capture type prefill |
+| crit-058 | handed-off | element-only | returning user | 4 | Day (schedule grid) → Day (event sheet) | proposed | overlapping event column layout |
+| crit-059 | handed-off | journey-settings-trust | privacy-conscious | 4 | Settings (connect) → Google OAuth → Settings (error) | proposed | OAuth failure redirect + recovery banner |
+| crit-060 | handed-off | element-only | knowledge worker | 4 | Cards (filter tab) → Cards (note grid) | proposed | loading skeleton suppress false empty state |
+| crit-061 | handed-off | journey-day-plan | planner | 4 | Day (grid block) → Day (grid adjust) → Home | proposed | grid drag-reschedule + resize handles |
+| crit-072 | handed-off | element-only | returning user | 4 | Log (Type tab) → Log (today list) | proposed | daily kcal + protein totals strip above today list |
+| crit-073 | handed-off | journey-coach-trust | skeptical new user | 5 | Agent (send) → Agent (stream wait) → Agent (reply) | proposed | inline tool step list in streaming assistant bubble |
+| crit-074 | handed-off | element-only | returning user | 4 | Home (meal gallery) → Log (today list) | proposed | meal photo lightbox View in Log bridge |
 
 **Local status:** `draft` → `handed-off` | **ux-relay status:** `proposed` → `agreed` → `shipped` | `rejected`
 
 ---
-
 ## CRITIQUE_LOG
+
+
 
 > Mandatory brainstorm + research + debate + Evidence block per tick.
 
 | tick_at | crit_id | mode | journey_ref | brainstorm_summary | web_citations | habits_files_read | evidence_block | rubric_avg | chosen_direction |
 |---------|---------|------|-------------|-------------------|---------------|-------------------|----------------|------------|------------------|
+| 2026-07-28T19:30:00Z | crit-075 | journey | journey-capture-thought | A: body-first capture — remove title required on CardsCreateSheet; deriveCardTitle from first body line max 80 chars; autofocus body textarea on open; title field optional with Title optional placeholder; Save enabled when body.trim non-empty; B: FAB long-press type menu like Keep widget (rejected: crit-010 covers capture surface not type variety); C: voice memo capture row (rejected: no audio API scope). Chosen A. Outcome tree: outcome capture fleeting thought before context lost — opportunity reduce title friction at capture step before label and find. competitive-teardown delta vs Keep text notes by default: Habits 2.0/5 capture speed vs Keep 4.3/5 blank text note ready for body input. | chromeunboxed.com/a-new-google-keep-update-makes-quick-text-notes-an-absolute-breeze — text notes by default single tap blank note; support.google.com/keep/answer/2888263 — quick capture search find later | pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx. Quote: CardsCreateSheet L39-41 Title input has required attribute — blocks HTML5 submit with empty title. L43-45 body textarea optional rows=3. Cards.tsx L52-54 handleCreate returns early if !newTitle.trim — body-only thoughts discarded even when body filled. L105 FAB opens sheet with newTitle empty — no autofocus body. server/habits_api/cards/sheet_loaders.py L40 accepts title or Note fallback but client never sends body-only payload. crit-010 inline composer; crit-027 post-save find toast; crit-042 filter sync; crit-057 type prefill — distinct gap is capture-step friction: knowledge worker mid-meeting opens FAB wants dump thought in body first title later — must invent title before Save — breaks Keep body-first quick text pattern. Gap: user on Cards at 390px with body filled title blank — N for save in 1 tap within 2s. Desktop: same required title at wide sheet — Keep optional title missing. Rejected: B long-press menu; C voice memo. | 4.4 | A body-first capture with auto-title from first line |
+| 2026-07-28T17:38:00Z | crit-062 | element | element-only | A: LogSubTabs Type tab badge — pass queuedCount/failedCount from Log.tsx; show tab-badge on Type when (queued+failed)>0 and active tab !== type; failedCount priority with tab-badge--failed; tap badge switches to Type + scrollToFoodQueue; aria-label mirrors AppTabBar queue copy; B: inline chip row above sub-tabs (rejected: duplicates FoodQueueBanner); C: disable banner dismiss when queue non-empty (rejected: removes user control). Chosen A. | koder.ai/blog/offline-first-sync-rules-ux tab badge for pending items; coderlegion.com/12022 WhatsApp failed gray icon + retry pattern | pwa/src/components/LogSubTabs.tsx, pwa/src/sections/Log.tsx, pwa/src/components/AppTabBar.tsx | Habits files: pwa/src/components/LogSubTabs.tsx, pwa/src/sections/Log.tsx, pwa/src/components/AppTabBar.tsx. Quote: LogSubTabs L16-34 renders five sub-tabs with icon+label only — zero queuedCount or badge props. Log.tsx L77-84 FoodQueueBanner at section top L99-104 LogSubTabs called without queue counts — banner dismissible while queue persists in LogTypeTodayList pending array. AppTabBar L52-101 shows mealPlanQueueCount badge on main tabs when not active — food offline queue has no sub-tab mirror. useLogSection L125-126 exposes queuedCount/failedCount but only Log.tsx banners consume them. crit-030 history drill-down crit-052 meal chips crit-051 portion — distinct gap is sync visibility while on Scan: returning user logs offline dismisses banner stays on Scan — cannot see pending count on Type tab without manual switch. Gap: user on Log Scan at 390px with 2 queued saves — N for see pending on Type sub-tab in 1 glance. Desktop: same sub-tab row at wide layout — MFP Today pending indicator on tab missing. Rejected: B chip row duplicate; C force banner. | 4.4 | A Type sub-tab queue badge |
 | 2026-07-28T10:05:00Z | crit-001 | journey | journey-first-log | A: Home empty rings Revolut CTA→Log Scan; B: post-log ring celebration toast+aria-live; C: 3-step modal funnel (rejected: heavy). Chosen A+B. | 9to5mac.com/2026/01/11/apple-health-new-features — simplified daily logging + unified nutrition layout iOS 26.4 | pwa/src/components/HomeActivityRingsCard.tsx, pwa/src/hooks/useAppShellNavigation.ts, pwa/src/sections/Log.tsx | Habits files: pwa/src/components/HomeActivityRingsCard.tsx, pwa/src/hooks/useAppShellNavigation.ts. Quote: rings at 0, Share PNG only, no Log CTA. Gap: L43-51 no empty CTA. 390px: primary log action NOT visible on Home in 2s — N (2+ taps via tab bar). Desktop: same bottom tab bar, full-width rings card, no desktop first-log affordance. Rejected: C modal funnel; B-only toast without discovery. | 4.4 | A+B empty panel + ring fill feedback |
 | 2026-07-28T10:12:00Z | crit-002 | element | element-only | A: chip strip in composer-dock during loading/tool calls (Gemini); B: expand streaming bubble inline chips only; C: pin AgentActionFeed above composer (rejected: history not live status). Chosen A. | 9to5google.com/2025/09/15/gemini-tools-redesign — Tools prompt bar + live activity above composer during generation | pwa/src/components/AgentChatComposer.tsx, pwa/src/components/AgentSectionBody.tsx, pwa/src/lib/agentChatStream.ts | Habits files: pwa/src/components/AgentChatComposer.tsx, pwa/src/lib/agentChatStream.ts. Quote: composer-dock has attach preview + bar only — no chip row when loading. agentChatStream L75-78 emits token/done only — tool_results on done. AgentSectionBody L65-75 mounts AgentActionFeed below scroll fold after messages exist. Gap: no live tool-status above composer during stream. 390px: composer visible Y; tool activity requires scroll up — N for status in 2s. Desktop: dock full-width sticky bottom; same gap — chips absent at 768px+. Rejected: B bubble-only (hidden in scroll); C pinned feed (post-hoc not live). | 4.2 | A composer-dock chip strip during stream |
 | 2026-07-28T10:18:00Z | crit-006 | journey | journey-daily-checkin | A: Home Today agenda strip (next event / clear) + Open Day + Ask Coach chips; B: full Gemini Daily Brief card on Home (rejected: scope creep); C: push notification morning brief (rejected: out of PWA). Chosen A. | support.google.com/gemini/answer/17077455 Daily Brief; 9to5google.com/2025/08/20/google-calendar-m3-expressive-widget schedule widget density | pwa/src/lib/homeDashboardFetch.ts, pwa/src/components/AppTabContent.tsx, pwa/src/components/DayScheduleEmptyPanel.tsx | Habits files: pwa/src/lib/homeDashboardFetch.ts, pwa/src/components/AppTabContent.tsx. Quote: homeDashboardFetch L29-38 fetches food/habits/history/mealPlan/decisionCard — no calendar events on Home. AppTabContent L54-62 Home props lack navigateAgentPrompt/onOpenDay. Day empty CTA "Add with Coach" only on Day tab L82. Gap: daily-checkin journey breaks at Home — rings without schedule context. 390px: schedule requires Day tab tap — N for next event in 2s on Home. Desktop: same — no agenda strip at wide layout. Rejected: B full Daily Brief clone; C notifications only. | 4.3 | A Home today strip + cross-tab CTAs |
@@ -214,9 +174,25 @@
 | 2026-07-28T16:38:00Z | crit-054 | element | element-only | A: HomeFreshnessMeta under HomeSectionHeader — track lastSuccessfulFetch in useHomeDashboardRefresh; show relative Updated just now / 2m ago; amber May be stale chip when >5min since fetch or serverOnline=false; tap strip triggers triggerRefresh; aria-live Dashboard updated on success; B: stale badge on Activity rings card only (rejected: partial trust signal); C: toast every 60s poll (rejected: noisy). Chosen A. | lesty.tech/fitness-companion-app-build-wearable-steps display Last synced timestamp for dashboard freshness; vp0.com/blogs/free-healthcare-app-ui show source and timestamp per health value | pwa/src/components/HomeSectionChrome.tsx, pwa/src/hooks/useHomeDashboardRefresh.ts | Habits files: pwa/src/components/HomeSectionChrome.tsx, pwa/src/hooks/useHomeDashboardRefresh.ts. Quote: HomeSectionHeader L65-84 shows Today heading + Refresh pill — zero last-updated text or stale affordance. useHomeDashboardRefresh L42-92 refresh sets dashboardLoading and fetches data but never stores lastSuccessfulFetch timestamp — user cannot tell if rings reflect post-log state or 59s-old poll. L88-92 60s interval refresh runs silently with no UI feedback unless user pulls. crit-019 proposes tab-focus refetch behavior; crit-044 summary tile drill-down; crit-053 WoW trends — distinct gap is data-trust affordance: returning user logs meal on Log, switches Home — rings may lag until poll yet header gives no Updated X ago or stale warning — cannot judge whether to tap Refresh. Gap: user on Home at 390px after logging — sees yesterday-looking calories with no freshness cue — N for know data age in 1 glance. 390px: Refresh pill visible Y; timestamp absent — manual refresh guesswork. Desktop: same header at wide layout — fitness companion Last synced pattern missing. Rejected: B rings-only badge; C poll toasts. | 4.4 | A HomeFreshnessMeta timestamp + stale chip |
 | 2026-07-28T16:44:00Z | crit-055 | journey | journey-coach-trust | A: CoachErrorRecoveryBubble inline in AgentChatPanel when stream fails — retryLastFailedTurn (not regenerateLastReply) re-dispatch; mapAgentStreamError for 503/429; Edit prompt setInput+focusAgentComposer; unify onError+catch to replace empty/failed assistant with error bubble; hide bottom banner when inline visible; B: bottom banner Retry only (rejected: current); C: modal dialog (rejected: Gemini inline). Chosen A. | tianpan.co/blog/2026-05-05-ai-trust-recovery-flows visible recovery paths; github.com/google-gemini/gemini-cli/pull/16489 inline retry Attempt X/Y; datastudios.org AI network error retry guidance | pwa/src/hooks/useAgentChatStream.ts, pwa/src/components/AgentChatPanel.tsx, pwa/src/sections/Agent.tsx | Habits files: pwa/src/hooks/useAgentChatStream.ts, pwa/src/sections/Agent.tsx. Quote: useAgentChatStream L67-79 onError sets setError; catch L76-78 removes empty assistant — inconsistent failure shapes. Agent.tsx L101 error banner below composer. useAgentChat L71-75 regenerateLastReply requires last role assistant — fails after catch removes bubble. crit-009 greeting send; crit-025 voice disclosure; crit-040 source chips — distinct gap is trust recovery when first reply fails at variable_reward step. Gap: skeptical user first send 503 — no inline Retry in 1 tap. 390px: chat visible Y; inline error absent. Desktop: same. Rejected: B banner; C modal. | 4.5 | A CoachErrorRecoveryBubble inline |
 | 2026-07-28T16:50:00Z | crit-056 | element | element-only | A: AgentActionFeedRow becomes tappable button — food actions show View in Log pill (navigate Log History); calendar actions Open in Day pill; habit actions Open Day habits; extend AgentAction kind with targetTab; empty copy Coach actions will appear here; B: auto-navigate on tool result (rejected: invasive); C: sticky feed above composer (rejected: crit-002 scope). Chosen A. | 9to5google.com/2025/09/15/gemini-tools-redesign tool outcomes remain actionable after stream; ai.google.dev/gemini-api/docs/function-calling user-friendly response after tool execution | pwa/src/components/AgentActionFeed.tsx, pwa/src/lib/agentToolFeed.ts, pwa/src/components/AgentSectionBody.tsx | Habits files: pwa/src/components/AgentActionFeed.tsx, pwa/src/lib/agentToolFeed.ts. Quote: AgentActionFeed L19-26 renders static li.agent-action with emoji+message — zero onClick or navigation affordance. L11-14 empty state says Voice actions will appear here but text-chat tool_results also seed feed via toolResultsToActions — misleading copy. agentToolFeed L6-12 maps log_food/create_event/update_habit to message only — no entity id or deep link. AgentSectionBody L65-75 mounts feed below chat fold — user must scroll to verify Coach logged correct food after reply. crit-002 composer status chips; crit-040 source chips on bubble — distinct gap is post-action verification: returning user asks Coach to log lunch, sees Logged chicken in Activity feed but cannot tap to open Log entry and confirm grams. Gap: user at 390px after tool call — feed row visible after scroll — N for verify action in 1 tap. 390px: Activity section Y after scroll; rows non-tappable. Desktop: same static list. Rejected: B auto-navigate; C sticky feed. | 4.4 | A tappable feed rows + cross-tab CTAs |
+| 2026-07-28T16:56:00Z | crit-057 | journey | journey-capture-thought | A: openFab handler syncs newType from active filter tab when filter !== all + CardsCreateSheet shows type chip row pre-selected with Saving as {Type} context (replace dropdown on mobile); on All tab use sessionStorage lastCardsCaptureType; B: hide type field entirely when filtered (rejected: no escape hatch without Change type link); C: sessionStorage last-type only ignoring filter (rejected: misses Keep label-inherit pattern). Chosen A. | support.google.com/keep/answer/16914649 — new note created while label tab open inherits label; geeksontour.com/2024/09/organizing-notes-in-google-keep — clicking label filters view and auto-adds label to new notes | pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx, pwa/src/components/CardsFilterBar.tsx | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx. Quote: Cards L19 filter state tracks active type tab; L22 newType hardcoded notes — never synced on FAB open L105-107. CardsCreateSheet L31-37 type dropdown always defaults to whatever newType state holds (notes) even when user browsed Strategy filter tab. CardsFilterBar L46-63 filter tabs independent of create flow. crit-010 covers inline capture + search label chips; crit-042 covers post-save filter sync when saved type mismatches tab — distinct gap is pre-save label step: knowledge worker on Strategy tab taps FAB expecting Strategy note, sheet opens with Notes selected — must manually change dropdown before save, then crit-042 must fix tab mismatch anyway. Keep label-inherit reduces both friction points. Gap: capture→label journey breaks at open-sheet step — wrong type pre-selected — N for correct label without extra tap at 390px. Desktop: same dropdown default at wide layout — Keep sidebar label context missing. Rejected: B hide type without Change link; C last-type only. | 4.5 | A filter-tab-aware capture prefill + type chips |
+| 2026-07-28T17:02:00Z | crit-058 | element | element-only | A: layoutOverlappingEvents utility assigns column index + columnCount per timed event; DayScheduleGridBody renders width/left % per column (Google Calendar side-by-side); min 44px tap width at 390px; optional Overlaps chip on agenda row when conflict detected; B: agenda-only conflict badge without grid columns (rejected: grid is where blocks hide); C: stack with z-index only (rejected: unreadable). Chosen A. | support.google.com/calendar/answer/6110849 day view shows overlapping events side-by-side; workmate.com mobile calendar gestures — spatial overlap readable in grid not list alone | pwa/src/components/DayScheduleGridBody.tsx, pwa/src/lib/dayCalendarUtils.ts, pwa/src/components/DayTimelineAgendaPanel.tsx | Habits files: pwa/src/components/DayScheduleGridBody.tsx, pwa/src/lib/dayCalendarUtils.ts. Quote: DayScheduleGridBody L74-105 maps timed events with absolute top/height only — every block spans full grid width (--event-color, top%, height%) with zero overlap detection or column offset. grep overlap/conflict in pwa/src/day* returns no matches. eventStartMinutes + eventDurationMinutes in dayCalendarUtils enable interval overlap calc but unused. Two 10–11am meetings render stacked — bottom event title clipped/unreadable. crit-003/ui-061 covers scroll-to-now; crit-036 time range on agenda; crit-048 all-day strip — distinct gap is concurrent event spatial layout on Day grid tab. Gap: returning user with double-booked hour opens Day grid — sees solid color slab not two events — N for read both titles in 1 glance at 390px. Desktop: same full-width stack at wide layout — Google Calendar column split missing. Rejected: B agenda badge only; C z-index stack. | 4.4 | A overlap column layout on Day grid |
+| 2026-07-28T17:05:00Z | crit-059 | journey | journey-settings-trust | A: finish_google_oauth parses Google callback query error=access_denied (and OAuth error codes) OR catches OAuthSessionExpiredError/OAuthStateMissingError/OAuthTokenError and redirects to PWA ?google=error&reason={code}#settings instead of HTTP 400; SettingsOAuthErrorBanner in SettingsSectionChrome with reason-specific copy + Try again pill + scope bullets; useAppShell parses google=error; B: generic Settings error toast only (rejected: Google granular consent needs specific guidance); C: leave HTTP error page (rejected: journey breaks). Chosen A. | developers.google.com/identity/oauth2/web/guides/error access_denied callback handling; developers.google.com/identity/protocols/oauth2/resources/best-practices degrade gracefully when user denies scope | server/habits_api/google/oauth_service.py, server/habits_api/routes/api.py, pwa/src/hooks/useAppShell.ts, pwa/src/components/SettingsSectionChrome.tsx | Habits files: server/habits_api/google/oauth_service.py, server/habits_api/routes/api.py, pwa/src/hooks/useAppShell.ts, pwa/src/components/SettingsSectionChrome.tsx. Quote: oauth_service L61-63 success redirects to ?google=connected#settings; L48-55 pop_flow empty raises OAuthSessionExpiredError (server-side not query param); L52-55 fetch_token failure raises OAuthTokenError with no access_denied branch; api.py L72-75 callback raises oauth_http_exception — user sees raw 400 JSON/page not Settings. useAppShell L56-63 handles google=connected only — zero error query parsing. SettingsSectionChrome L15-21 success banner only — no denial recovery. crit-011 pre-connect scope; crit-029 post-success recap; crit-043 external revoke banners — distinct gap is connect journey failure path: privacy-conscious user denies Calendar on Google consent screen, lands on API error not Settings with retry — trust journey breaks at OAuth return step. Gap: user taps Connect, denies scopes, sees Missing OAuth state or 400 — N for understand denial + retry in 2s on Settings at 390px. Desktop: same HTTP error at wide layout. Rejected: B generic toast; C keep error page. | 4.5 | A OAuth failure redirect + Settings recovery banner |
+| 2026-07-28T17:28:00Z | crit-060 | element | element-only | A: cardsLoadState idle/loading/ready/error in Cards.tsx; CardsGridSkeleton 2-column masonry shimmer (6 tiles matching App.css column-count) while loading; CardsKeepGrid accepts loadState and suppresses No notes yet until ready; active filter tab shows subtle loading indicator during refresh; aria-busy on grid; B: sessionStorage cache show stale cards during fetch (rejected: wrong filter/type flash); C: full-section spinner overlay (rejected: jarring vs Keep inline skeleton). Chosen A. | m3.material.io/components/progress-indicators/guidelines skeleton placeholders for content loading; 9to5google.com/2025/08/21/google-keep-material-3-expressive-redesign fast grid load before notes paint | pwa/src/sections/Cards.tsx, pwa/src/components/CardsKeepGrid.tsx, pwa/src/App.css | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsKeepGrid.tsx, pwa/src/App.css. Quote: Cards L18 cards useState empty array — no loading flag. L30-48 refresh async via useEffect with zero pending UI — L38 setCards on resolve only, never clears during filter switch (stale cards shown not empty). L102 CardsKeepGrid cards={filtered} pass-through. CardsKeepGrid L17-22 if !cards.length renders No notes yet — tap + to capture before first getCards resolves — false empty flash on Cards tab mount and cold open; filter switch lacks loading indicator while stale prior-filter cards remain visible. App.css L3274-3277 column-count 2 masonry with zero skeleton styles. crit-004 detail sheet; crit-050 sort menu; crit-027 search toast — distinct gap is trust on load: knowledge worker with 15 notes opens Cards, sees empty state 300-800ms then grid pops in — feels like data loss. Gap: open Cards tab at 390px — N for see notes or honest loading in 2s without false empty. Desktop: same flash at wide 2-column masonry — Keep M3 loads grid structure before note content. Rejected: B stale cache wrong filter; C blocking overlay. | 4.4 | A CardsGridSkeleton + suppress false empty |
+| 2026-07-28T17:32:00Z | crit-061 | journey | journey-day-plan | A: DayScheduleGridBody timed blocks support vertical drag-to-move start time + bottom resize handle for duration; snap to DAY_GRID_SLOT_MINUTES; on commit call updateCalendarEvent API; optimistic block position + UndoToast; distinguish drag from tap via movement threshold; empty slot tap still opens quick-add per crit-012; B: time picker sheet only (rejected: crit-026 covers form edit not spatial plan); C: Coach-only reschedule via Agent prompt (rejected: 3-tab loop breaks plan-my-day flow). Chosen A. | techchahiye.com/google-calendar-time-blocking-tasks-2025 drag block to new time stretch bottom handle; theverge.com/2025/11 google-calendar-tasks-busy-time-block resize duration on grid | pwa/src/components/DayScheduleGridBody.tsx, pwa/src/lib/apiCalendar.ts, pwa/src/hooks/useDayScheduleGrid.ts | Habits files: pwa/src/components/DayScheduleGridBody.tsx, pwa/src/lib/apiCalendar.ts, pwa/src/hooks/useDayScheduleGrid.ts. Quote: DayScheduleGridBody L87-104 schedule-grid-event buttons onClick onEventSelect only — fixed top/height from eventStartMinutes/eventDurationMinutes with zero pointermove drag or resize handle. L55-59 schedule-grid-line divs have no slot tap handler (crit-012). apiCalendar L8-12 createCalendarEvent POST only — no updateCalendarEvent client wrapper; server/habits_api/google/calendar.py update_event exists for Agent tool but routes/calendar.py exposes GET today + POST event only. useDayScheduleGrid provides scroll/now only — no drag state. crit-012 tap-create; crit-026 sheet Edit; crit-058 overlap columns — distinct gap is plan refinement: planner blocks 2pm Focus on grid then meeting moves to 3pm must open sheet or re-create — Google Calendar drag gesture missing. Home closure depends on crit-012 calendar fetch on Home after reschedule. Gap: planner with event on Day grid at 390px — N for move block 30min later in 1 gesture within 2s. Desktop: same read-only blocks at wide grid — no drag resize at 768px+. Rejected: B sheet-only; C Coach detour. | 4.5 | A grid drag-reschedule + resize handles |
+| 2026-07-28T17:42:00Z | crit-063 | journey | journey-daily-checkin | A: HomeHabitGapChip below Activity rings when habitPct < 100 — compute worst-behind metric from HOME_METRICS vs HOME_MET_TARGETS; show Work below target copy + Update on Day pill; add navigateOpenDayHabits + scrollToDayHabits token scroll DayHabitHoursCard; B: auto-switch Day tab when habitPct < 50% (rejected: invasive); C: push stand reminder (rejected: out of PWA). Chosen A. | apple.com/watch/close-your-rings personalized nudge to close incomplete rings; blog.logrocket.com daily quests Zeigarnik incomplete progress + timely nudge | pwa/src/lib/homeSectionShared.ts, pwa/src/components/HomeActivityRingsCard.tsx, pwa/src/hooks/useAppShellNavigation.ts, pwa/src/components/AppTabContent.tsx, pwa/src/sections/Day.tsx | Habits files: pwa/src/lib/homeSectionShared.ts, pwa/src/components/HomeActivityRingsCard.tsx, pwa/src/hooks/useAppShellNavigation.ts, pwa/src/components/AppTabContent.tsx, pwa/src/sections/Day.tsx. Quote: homeSectionShared L28-39 habitCompletionPct aggregate % only — no worstMetric helper. HomeActivityRingsCard L34-41 Share only L46-50 ActivityRings habits ring — no incomplete-habit CTA. useAppShellNavigation L85-99 no navigateOpenDay. AppTabContent L64-74 Home lacks onOpenDayHabits. Day.tsx L9 no scrollToDayHabits; DayHabitHoursCard in DaySectionScheduleStack L20-31. crit-006 schedule strip crit-017 Day Coach crit-033 Agent Brief crit-047 habit sync — distinct gap is Home→Day action when rings incomplete. Gap: morning user sees 42% habits ring — N for named gap + Update on Day in 2s at 390px. Desktop: same dead-end — Apple Close your rings nudge missing. Rejected: B auto tab; C push. | 4.5 | A HomeHabitGapChip + Day deep link |
+| 2026-07-28T17:48:00Z | crit-064 | element | element-only | A: HomeReportsWeekPreview collapsible under HomeReportsPanel — derive avg kcal, protein hit days, habit week avg from dashboard history + habitWeek already loaded; mini Sparkline + 3 stat chips; Preview report expands before Export PDF; optional pass cached data to handleExportWeekPdf to avoid double fetch; B: open PDF in new tab only (rejected: no preview UX); C: remove Export button (rejected: loses doctor share). Chosen A. | support.apple.com/guide/iphone/share-your-health-data export review before share; vitalina.app export activity full preview before iOS share sheet | pwa/src/components/HomeReportsPanel.tsx, pwa/src/hooks/useHomeDashboardActions.ts, pwa/src/lib/homeDashboardFetch.ts | Habits files: pwa/src/components/HomeReportsPanel.tsx, pwa/src/hooks/useHomeDashboardActions.ts, pwa/src/lib/homeDashboardFetch.ts. Quote: HomeReportsPanel L9-28 Export PDF button only — zero inline week summary. handleExportWeekPdf L86-110 re-fetches getFoodHistory(7)+getHabitsWeek on every export — user taps Export blind. homeDashboardFetch L29-48 already loads history+habitWeek on dashboard mount — duplicate fetch on export; feed panels show trends but Reports panel has no PDF preview. crit-054 freshness crit-044 summary tiles crit-008 weekly recap — distinct gap is Reports trust before download. Gap: user preparing doctor visit — N for week preview in 1 tap at 390px. Desktop: same button-only panel. Rejected: B PDF tab; C remove export. | 4.4 | A HomeReportsWeekPreview before PDF |
+| 2026-07-28T17:52:00Z | crit-065 | journey | journey-first-log | A: AppTabBar Log tab tab-badge--dot when today food items empty and active tab is not Log — subscribe useFoodTodayEmpty from foodTodaySnapshot or home dashboard prime; aria-label Log your first meal; clear dot on Log tab visit or first successful log; optional tab-badge--pulse first session only; B: Home-only empty rings CTA only per crit-001 (rejected: user may land Agent or Day first via hash/deep link); C: full-screen first-run coach overlay on app open (rejected: blocks content, not persistent). Chosen A. Outcome tree: outcome log first meal today — opportunity cross-tab Log discoverability before Home visit. competitive-teardown delta vs MyFitnessPal diary tab + affordance: Habits 2.1/5 discoverability vs MFP 4.2/5 — no global Log nudge when diary empty. | uxdworld.com/bottom-tab-bar-navigation-design-best-practices dot badge for tabs with actionable empty state; setproduct.com/blog/badge-ui-design dot when count matters less than something new here | pwa/src/components/AppTabBar.tsx, pwa/src/hooks/useAppShell.ts, pwa/src/lib/foodTodaySnapshot.ts | Habits files: pwa/src/components/AppTabBar.tsx, pwa/src/hooks/useAppShell.ts, pwa/src/lib/foodTodaySnapshot.ts. Quote: AppTabBar L52-55 showQueueBadge only when mealPlanQueueCount>0 — zero path when user has no food logged today and no meal-plan queue. useAppShell L44-45 exposes mealPlanQueueCount only — no foodTodayEmpty or todayItemsCount to tab bar. foodTodaySnapshot L3-16 caches getFoodToday but nothing in app shell reads item count for navigation affordance. crit-001 proposes Home rings CTA; crit-035 Scan coach inside Log — distinct gap is discover Log tab step when first-week user opens app on Home Agent or Day: five equal tabs with no hint which starts food journey until manual exploration. Gap: first-week user lands Home sees zeros but may not read rings card — switches to Agent — no Log tab dot — N for find Log in 1 glance from any main tab at 390px. Desktop: same tab bar — dot badge pattern missing. Rejected: B Home-only; C blocking overlay. | 4.4 | A Log tab first-meal dot badge |
+| 2026-07-28T18:02:00Z | crit-066 | element | element-only | A: AgentFollowUpChips row below last assistant bubble when stream completes — wire agent-suggested-prompts class as horizontal scroll chip row (author chip styles; agent-gemini.css L349-351 and App.css L3666-3668 currently display:none only); server optional suggested_followups[] on ChatResponse; client heuristic fallback from tool_results + last user intent (Log another meal, Show schedule, Explain macros); tap chip calls sendPrompt like greeting cards; hide during loading and when messages empty; max 3 chips; B: duplicate greeting AGENT_GREETING_CATEGORIES after every reply (rejected: not contextual); C: move chips to composer dock only (rejected: duplicates crit-002 tool-status during stream). Chosen A. competitive-teardown delta vs Gemini follow-up carousel: Habits 2.0/5 conversational continuity vs Gemini 4.5/5 — one-shot Q&A dead-end after coach reply. | androidauthority.com/google-gemini-follow-up-question-suggestions context-aware follow-up chips after response; github.com/Meliwat/awesome-ios-design-md design-md/misc/gemini suggestion chips below greeting and post-reply footer | pwa/src/components/AgentChatPanel.tsx, pwa/src/hooks/useAgentChatStream.ts, pwa/src/styles/agent-gemini.css, pwa/src/lib/apiTypes.ts | Habits files: pwa/src/components/AgentChatPanel.tsx, pwa/src/hooks/useAgentChatStream.ts, pwa/src/styles/agent-gemini.css, pwa/src/lib/apiTypes.ts, pwa/src/App.css. Quote: AgentChatPanel L114-116 last assistant bubble shows disclaimer only — zero follow-up chip row after stream ends. L60-72 greeting grid covers empty chat only — no post-reply suggestions. useAgentChatStream L68-79 onDone updates reply + onToolResults — no suggested_followups on ChatResponse (apiTypes L108-111). agent-gemini.css L349-351 and App.css L3666-3668 agent-suggested-prompts display:none only — class hook exists but no chip row JSX or scroll styles. crit-002 covers composer tool-status during stream; crit-034 Tools auto-send; crit-033 Daily Brief empty chat; crit-056 Activity feed drill-down — distinct gap is multi-turn continuity: returning user asks Coach about lunch macros, gets reply, must manually type next question — N for contextual follow-up in 1 tap at 390px. Desktop: same dead-end at wide layout — Gemini follow-up carousel missing after assistant bubble. Rejected: B static greeting repeat; C composer-only chips. | 4.4 | A post-reply follow-up chip row |
+| 2026-07-28T18:12:00Z | crit-067 | journey | journey-daily-checkin | A: DayCheckinHandoffBar sticky above tab bar on Day tab — derive next upcoming event from section.events + habit completion from DayHabitHoursCard data; show Looking ahead copy + Ask Coach pill (navigateAgentPrompt with contextual prompt including next event title/time) + Review rings on Home pill (handleTabChange home); dismiss per session; hide when offline; B: auto-switch Agent tab after 30s on Day (rejected: crit-017 C rejected invasive); C: duplicate crit-017 Plan with Coach header pill only (rejected: buried in card header, no Home closure). Chosen A. Outcome tree: outcome complete morning check-in — opportunity Day→Agent or Day→Home handoff after schedule review. competitive-teardown delta vs Gemini Daily Brief Looking ahead actions: Habits 2.2/5 journey closure vs Gemini 4.4/5 dedicated action buttons under each brief item. | support.google.com/gemini/answer/17077455 Looking ahead suggested next steps + action buttons; blog.google Gemini Daily Brief proactive next steps from calendar | pwa/src/sections/Day.tsx, pwa/src/components/AppTabContent.tsx, pwa/src/components/DayTimelineCard.tsx, pwa/src/components/DaySectionScheduleStack.tsx | Habits files: pwa/src/sections/Day.tsx, pwa/src/components/AppTabContent.tsx, pwa/src/components/DayTimelineCard.tsx, pwa/src/components/DaySectionScheduleStack.tsx, pwa/src/components/DayTimelineAgendaPanel.tsx. Quote: DaySectionScheduleStack L16-33 stack is Timeline then HabitHours then ManageDay — zero sticky handoff component. DayTimelineCard L86-93 populated agenda renders DayTimelineAgendaPanel with no coach or Home CTA — onAgentSchedulePrompt only wired to DayScheduleEmptyPanel when !events.length (L76-84). AppTabContent L93-99 Day gets static AGENT_SCHEDULE_TODAY_PROMPT via navigateAgentPrompt — no onNavigateHome or contextual next-event prompt. DayTimelineAgendaPanel L24-44 event list + Passed badge only — no bottom next-step affordance. useAppShellNavigation L26-29 handleTabChange exists but Day props omit Home navigation (contrast Home navigate props AppTabContent L64-74). crit-006 Home agenda entry crit-017 Plan with Coach header crit-033 Agent Daily Brief crit-047 habit sync crit-063 Home habit gap — distinct gap is Day middle-step exit after schedule review. Gap: morning user on Day at 390px — N for Ask Coach or Review rings in 1 tap. Desktop: same — Gemini Daily Brief action buttons missing. Rejected: B auto tab switch; C header pill only. | 4.5 | A Day check-in handoff bar |
+| 2026-07-28T18:22:00Z | crit-068 | element | element-only | A: DayHabitQuickAdjustRow under each metric in DayHabitMetricGrid — +30m +1h Mark target pill chips calling onUpdateMetric with min((val ?? 0)+increment, target); hide Mark target when target=0 or at target; +30m/+1h only when target=0; disable while saving===key; aria-live on adjust; optional metric-tap haptic (not streak milestone sessionStorage); B: replace number input with slider only (rejected: imprecise for fractional hours); C: rely on crit-063 Home gap chip only (rejected: does not speed Day entry). Chosen A. competitive-teardown delta vs Apple Watch Streaks tap-to-complete: Habits 2.3/5 habit entry speed vs Streaks 4.3/5 one-tap adjust on wrist. | support.apple.com/guide/watch/close-your-rings adjust Move ring goals; recurrr.com Streaks Apple Watch quick tap habit completion | pwa/src/components/DayHabitMetricGrid.tsx, pwa/src/hooks/useOptimisticHabitLog.ts, pwa/src/lib/daySectionShared.ts | Habits files: pwa/src/components/DayHabitMetricGrid.tsx L18-53, pwa/src/hooks/useOptimisticHabitLog.ts L65-83, pwa/src/lib/daySectionShared.ts L9 (DAY_METRICS re-export from daySectionConstants). Quote: DayHabitMetricGrid L31-48 label/streak + type=number input + /target suffix only — zero +30m +1h or Mark target chip row. L23 habit-chip--behind when val below 50% target — deficit styling without one-tap catch-up. useOptimisticHabitLog L65-80 updateMetric string-only — chip helper must coerce (val ?? 0). game/wasted target=0 hide Mark target and /target suffix L48. crit-047 habit sync crit-063 Home gap nudge — distinct Day element gap is in-card entry friction: returning user on Day habit card at 390px must tap tiny number field and type digits to log 1h work — N for +1h in 1 tap. Desktop: same number-only grid — Streaks-style quick adjust missing. Rejected: B slider-only; C Home nudge only. | 4.4 | A habit quick-adjust chip row |
+| 2026-07-28T18:32:00Z | crit-069 | journey | journey-scan-quick | A: ScanLogContinuationToast — when undo entry originated from scan log extend UndoToast with +{kcal} kcal subtitle and {todayCal} kcal today from FoodTodayResponse.calories; add Scan another pill beside Undo that dismisses toast and invokes onScanAnother wired through useLogStatusShellProps to reopen camera via startCamera on Scan sub-tab; tag FoodLogUndoEntry source=scan; kcal from scan.macros scaled by qty over suggested_grams; keep 5s undo window; B: pre-swipe macro delta on SwipeFoodCard only showing projected today total before swipe (rejected: does not close multi-item meal loop after first log); C: auto-open camera immediately after every log skipping undo window (rejected: removes forgiveness step crit-007 depends on). Chosen A. Outcome tree: outcome log full meal under 60s — opportunity post-log continuation without camera idle dead-end. competitive-teardown delta vs MFP Meal Scan multi-add: Habits 2.4/5 meal logging continuity vs MFP 4.3/5 add-next-item flow after checkmark. | support.myfitnesspal.com/hc/en-us/articles/360045761612 Meal Scan confirm then Add to Diary; nutrola.app/en/blog/best-app-to-scan-food-labels-for-calories-2026 live calorie update on serving adjust | pwa/src/components/LogStatusShell.tsx, pwa/src/hooks/useLogFoodUndo.ts, pwa/src/hooks/useLogFoodScan.ts, pwa/src/components/LogScanTabPanel.tsx | Habits files: pwa/src/components/LogStatusShell.tsx L90-96, pwa/src/hooks/useLogFoodUndo.ts L46-68, pwa/src/hooks/useLogFoodScan.ts L87-99, pwa/src/components/LogScanTabPanel.tsx L72-86, pwa/src/components/SwipeFoodCard.tsx L48-54. Quote: LogStatusShell L92 message Logged ${undoLog.food} only — zero kcal delta or today running total during 5s forgiveness window. useLogFoodUndo L56-65 stores row+food restore scan but no loggedKcal or summary.calories. useLogFoodScan L87-92 clearScanFlow before logItem — after success user lands LogScanTabPanel camera idle L72-86 must tap Open camera again for next item. SwipeFoodCard L48-54 macros available pre-log but not surfaced post-log. crit-007 undo photo restore crit-021 failure retry crit-037 confidence gate crit-051 portion stepper crit-052 meal type — distinct gap is action-step continuity: busy professional logs lunch item 1, sees bare Logged chicken toast, dismisses or waits 5s, faces cold camera placeholder — N for Scan another in 1 tap during payoff window at 390px. Desktop: same toast copy at wide layout — MFP add-next-meal affordance missing. Rejected: B pre-swipe preview only; C auto-camera invasive. | 4.5 | A scan continuation toast with kcal payoff + Scan another |
+| 2026-07-28T18:42:00Z | crit-070 | element | element-only | A: CardsSearchMatchHighlight — pass search query from Cards.tsx into CardsKeepGrid; highlight matched substrings in title and body with mark.cards-search-hit; show body snippet centered on first match when query length >=2; distinct empty state No matches for {query} when cards.length > 0 but filtered empty vs No notes yet when library empty; aria-live announces match count; B: find-in-note only inside crit-004 detail sheet (rejected: requires note open first, Keep 2026 Find in note is in-note not grid); C: filter-only search with no highlight (rejected: current behavior, user must read full card body to spot match). Chosen A. competitive-teardown delta vs Google Keep library search: Habits 2.2/5 search pinpoint vs Keep 3.8/5 surfacing notes but 2026 adding in-note Find — Habits grid shows zero match emphasis. | androidauthority.com/google-keep-find-in-note-3685188 library search surfaces notes but does not highlight in-grid; support.google.com/keep/answer/2888263 search bar filters notes by text | pwa/src/components/CardsKeepGrid.tsx, pwa/src/lib/cardsSectionShared.ts, pwa/src/sections/Cards.tsx | Habits files: pwa/src/lib/cardsSectionShared.ts L13-17 filterCardsBySearch title/body includes only — zero highlight helper. CardsKeepGrid L16-22 empty copy No notes yet whenever cards.length===0 on filtered array — misleading when user has notes but search filters all out. L49-50 renders plain h3 and p with no mark wrapper or snippet. Cards.tsx L50 filtered pass-through L102 no search prop to grid. crit-004 detail sheet crit-018 pin crit-050 sort crit-060 loading skeleton crit-057 capture prefill — distinct Cards element gap is search result scannability: knowledge worker types strategy budget in Search Keep, grid filters to 2 cards but must read every line to find match — N for highlighted hit in 2s at 390px. Desktop: same unmarked masonry at wide 2-column — Keep search highlight pattern missing. Rejected: B in-note find only; C filter-only. | 4.4 | A search match highlight + distinct no-results empty |
+| 2026-07-28T18:52:00Z | crit-071 | journey | journey-weekly-review | A: CardsWeekReflectionBanner at top of Cards when sessionStorage weeklyReviewContext set from HomeHabitTrendCard or HomeCalorieTrendCard Reflect chip tap or DayWeekStrip Reflect pill tap — shared weeklyReviewContext store populated from fetchHomeDashboardData or Home dashboard state with 2-3 bullets (avg kcal, habit met days, worst metric via crit-063-style helper); Write reflection pill opens CardsCreateSheet strategy type title Week of {Sun-Sat per weekStripDays} body prefilled bullets; navigateCardsWeekReflection in useAppShellNavigation wired through AppTabContent to Cards openWeekReflection; dismiss hides until next calendar week; composes crit-053 shared schema; B: Agent-only reflection via crit-039 Save reflection chip (rejected: Cards is journey terminal investment touchpoint); C: PDF export then manual note (rejected: crit-008 B export too late). Chosen A. Outcome tree: outcome close weekly loop with written takeaway — opportunity Cards tab arrival after Home trends and Day week review. competitive-teardown delta vs Apple Health+Journal split: Habits 2.3/5 weekly reflection closure vs Health trends + separate Journal 3.5/5 — no bridge from stats to strategy note in-app. | mattbordey.co/apple-health Weekly Recap layer with small actions; getmindspace.app/apple-health-journal health data beside journal reflection prompt | pwa/src/sections/Cards.tsx, pwa/src/hooks/useAppShellNavigation.ts, pwa/src/components/AppTabContent.tsx, pwa/src/lib/homeDashboardFetch.ts | Habits files: pwa/src/sections/Cards.tsx L76-123, pwa/src/hooks/useAppShellNavigation.ts L85-99, pwa/src/components/AppTabContent.tsx L101-102, pwa/src/lib/homeDashboardFetch.ts L13-50. Quote: Cards section is generic Keep grid — zero CardsWeekReflectionBanner or week context. useAppShellNavigation exports navigateLogHistory navigateAgentPrompt navigateFutureSelf — no navigateCardsWeekReflection. AppTabContent Cards props serverOnline only — no openWeekReflection or weekSummary. homeDashboardFetch L29-50 loads history+habitWeek for Home only — Cards cannot read weekly bullets without shared context store. DayWeekStrip L11-18 non-interactive divs — no Reflect chip setting weeklyReviewContext. crit-008 Home recap crit-023 Day rollup crit-039 Agent brief crit-053 WoW chips — distinct gap is journey terminal Cards step: power user reviews Home trends then Day week then opens Cards manually — N for Write reflection prefilled in 1 tap at 390px without knowing Strategy filter plus FAB. Desktop: same cold Cards landing — Apple Journal pairing pattern missing. Rejected: B Agent-only; C PDF-first. | 4.5 | A Cards week reflection banner + navigation hook |
+| 2026-07-28T19:12:00Z | crit-072 | element | element-only | A: LogTypeTodayTotalsStrip — insert compact progress card above LogTypeTodayList in LogTypeTabPanel; pass FoodTodayResponse plus calorie_target from getFoodTargets (apiFood L16) into LogTypeTodayTotalsStrip; show kcal consumed vs target progress bar + protein row reusing FoodProteinProgressCard pattern and proteinProgressPct from foodSectionShared; kcal remaining chip when under target; updates after manual log, barcode, voice, or delete via existing data refresh; aria-label Today nutrition summary; sticky within Type scroll when list long; B: inline gram Edit on LogTypeTodayList rows matching FoodTodayLogList (rejected: crit-041 edit sheet covers scan path — lower novelty vs totals gap); C: mini Home rings duplicate above Type forms (rejected: duplicates Home tab, not Type-native). Chosen A. competitive-teardown delta vs MyFitnessPal Today diary header: Habits 2.1/5 Type tab logging context vs MFP 4.5/5 calories consumed and remaining at top of diary. | support.myfitnesspal.com/hc/en-us/articles/39985611667341 Today tab calories consumed and remaining prominently at top; blog.myfitnesspal.com/myfitnesspal-today-screen-progress-tab-update real-time calorie and macro visuals while logging | pwa/src/components/LogTypeTabPanel.tsx, pwa/src/components/LogTypeTodayList.tsx, pwa/src/components/FoodProteinProgressCard.tsx | Habits files: pwa/src/components/LogTypeTabPanel.tsx L122-129 renders LogTypeTodayList only — zero totals strip before today list. LogTypeTodayList.tsx L79-96 synced rows show food name + quantity_g + protein only — no per-row kcal and no aggregate header. FoodProteinProgressCard.tsx L8-31 full progress card exists for legacy Food section but not imported in Log Type tab. apiFood.ts getFoodTargets exposes calorie_target — Home uses it via homeDashboardFetch L47 but LogTypeTabPanel never receives target. crit-062 Type badge crit-052 meal chips crit-069 scan toast today kcal crit-041 edit preview — distinct gap: returning user on Type tab manually logging lunch sees form stack then bare item list — must switch Home tab to see daily progress — N for kcal plus protein summary in 1 glance at 390px while logging. Desktop: same form-only Type panel at wide layout — MFP Today header progress missing. Rejected: B inline edit parity; C Home rings duplicate. | 4.4 | A Type tab today totals strip |
+| 2026-07-28T19:18:00Z | crit-073 | journey | journey-coach-trust | A: CoachInlineToolSteps — pass activeTools from useAgentChatStream through AgentSectionBody to AgentChatPanel; when streaming assistant bubble has empty content show vertical step list inside bubble using toolStatusLabel from agentToolStatus.ts with spinner on in-flight tools and checkmark on completed; track completedToolSteps in useAgentChatStream onToolEnd; aria-live polite region Coach is working; hide steps when first token arrives; keep composer agent-tool-status chips per crit-002; B: auto-expand Today context drawer on first send (rejected: crit-025 B pushes greeting); C: composer-only horizontal chips (rejected: crit-002 scope — does not build in-bubble trust during blank reply wait). Chosen A. Outcome tree: outcome trust coach uses my data honestly — opportunity transparent variable-reward wait between first send and first token when tools run. competitive-teardown delta vs Gemini step-based streaming: Habits 2.2/5 in-reply transparency vs Gemini 4.4/5 thought and tool steps visible in stream. | ai.google.dev/gemini-api/docs/interactions/streaming step.start and step.delta symmetric streaming model; blog.google/products/gemini-3/gemini-3-flash operational transparency during generation | pwa/src/components/AgentChatPanel.tsx, pwa/src/hooks/useAgentChatStream.ts, pwa/src/components/AgentSectionBody.tsx | Habits files: pwa/src/components/AgentChatPanel.tsx L77-122, pwa/src/hooks/useAgentChatStream.ts L56-67 L26, pwa/src/components/AgentSectionBody.tsx L49-58. Quote: AgentChatPanel renders empty assistant bubble during stream with generic StreamingDots L120-122 when content blank — zero tool step copy inside bubble. activeTools tracked in useAgentChatStream L26 L56-67 but returned only to AgentChatComposer L72 — AgentSectionBody never receives activeTools prop. toolStatusLabel agentToolStatus.ts L1-20 maps log_food get_food_today list_calendar_events to human labels but unused in chat panel. crit-002 composer dock chips crit-040 post-reply source chips crit-055 error recovery crit-009 greeting send — distinct journey-coach-trust gap: skeptical user sends first question, sees blank Coach bubble for 3-8s while server runs get_food_today and list_calendar_events — composer chips below fold on 390px scrolled chat — N for see Checking food log step inside reply bubble in 2s. Desktop: same empty bubble at wide layout — Gemini inline step list missing. Rejected: B context drawer auto-expand; C composer-only. | 4.5 | A inline tool step list in streaming assistant bubble |
+| 2026-07-28T19:24:00Z | crit-074 | element | element-only | A: HomeMealPhotoLogBridge — extend MealPhoto with optional loggedFoodRow + loggedFoodName on addMealPhoto from useLogFoodScan success; MealPhotoGallery lightbox adds View in Log pill calling onOpenLogType with scrollToFoodRow token; fuzzy-match today food.items by label when row missing; optional Log again pill stores dataUrl in sessionStorage scanPrefillUrl and navigateLogScan; HomeMealPhotosPanel + HomeDashboardFeedPanels pass onOpenLogType from AppTabContent; aria-label Open {label} in today log; B: grid tap navigates Log without lightbox (rejected: loses photo review); C: remove Home gallery move photos to Log only (rejected: Home scan payoff). Chosen A. competitive-teardown delta vs Apple Health sample detail: Habits 2.1/5 orphan meal gallery vs Health 3.6/5 linked sample context. | support.apple.com/guide/iphone/iph4c34a8a95 browse health records with linked sample detail; photos.google.com memories link back to source album context | pwa/src/components/MealPhotoGallery.tsx, pwa/src/components/HomeMealPhotosPanel.tsx, pwa/src/lib/mealPhotos.ts | Habits files: pwa/src/components/MealPhotoGallery.tsx L57-98, pwa/src/lib/mealPhotos.ts L1-6 L34-40, pwa/src/components/HomeMealPhotosPanel.tsx L9-18, pwa/src/components/HomeDashboardFeedPanels.tsx L43. Quote: MealPhotoGallery lightbox L91-98 shows image caption and counter only — zero View in Log or edit affordance. mealPhotos.ts MealPhoto stores id dataUrl label at only — no food row linkage when useLogFoodScan L62 addMealPhoto after scan. HomeMealPhotosPanel L15-17 renders gallery with photos prop only — no onOpenLogType navigation. HomeDashboardFeedPanels L43 passes photos without navigation props. crit-054 freshness crit-064 reports crit-044 summary tiles — distinct Home element gap: user logs lunch via scan sees photo in Home gallery later wants adjust grams — must manually open Log Type and search item — N for jump from photo to log row in 1 tap at 390px. Desktop: same lightbox dead-end at wide layout — Apple Health linked sample pattern missing. Rejected: B skip lightbox; C Log-only gallery. | 4.4 | A meal photo lightbox log bridge |
 
 ---
-
 ## CRITIQUE_OUTCOMES
 
 > Post-ship validation. Updated on validation ticks (every 5th tick or when ux-relay marks `shipped`).
@@ -231,8 +207,222 @@
 
 ## REVIEW_FINDINGS
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| uc-r91-005 | low | docs/window-instances/ux-critic/STATE.md L190 CRITIQUE_LOG evidence matches live code ux-relay mirror aligned | round-91 /code-review | closed | crit-074 | closed |
+| uc-r91-004 | medium | docs/window-instances/ux-critic/STATE.md L190 scrollToFoodRow token net-new mirror foodQueueFocus pattern | round-91 /code-review | closed | crit-074 | closed |
+| uc-r91-003 | medium | docs/window-instances/ux-critic/STATE.md L190 HomeDashboardFeedPanels L43 omits onOpenLogType vs MetricsPanels L60 | round-91 /code-review | closed | crit-074 | closed |
+| uc-r91-002 | high | docs/window-instances/ux-critic/STATE.md L190 useLogFoodScan L62 photo at scan not log success linkage note for ux-relay | round-91 /code-review | closed | crit-074 | closed |
+| uc-r91-001 | high | docs/window-instances/ux-critic/STATE.md L190 mealPhotos.ts L1-6 no loggedFoodRow field per crit-074 AC | round-91 /code-review | closed | crit-074 | closed |
+| uc-r91-000 | high | docs/window-instances/ux-critic/STATE.md L190 crit-074 gap confirmed MealPhotoGallery L91-98 lightbox view-only no View in Log | round-91 /code-review | closed | crit-074 | closed |
+| uc-r91-bugbot | low | docs/window-instances/ux-critic/STATE.md L190 BUGBOT_REQUIRED=no tick 74 crit-074 gap verified MealPhotoGallery mealPhotos HomeMealPhotosPanel | round-91 bugbot | closed | — | closed |
+| uc-r90-010 | low | docs/window-instances/ux-critic/STATE.md L189 CRITIQUE_LOG evidence matches live code ux-relay mirror aligned | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-009 | medium | docs/window-instances/ux-critic/STATE.md CHECKPOINT review_skip_reason updated round-90 crit-073 | round-90 /code-review | closed | — | closed |
+| uc-r90-008 | medium | docs/window-instances/ux-critic/STATE.md CHECKPOINT phase synced to 8-close tick 73 | round-90 /code-review | closed | — | closed |
+| uc-r90-007 | low | docs/window-instances/ux-critic/STATE.md L189 crit-002 composer chips remain per crit-073 spec composes not duplicates | round-90 /code-review | closed | crit-002 | closed |
+| uc-r90-006 | low | docs/window-instances/ux-critic/STATE.md L189 align no-tools Working copy in bubble vs StreamingDots Coach is typing note for ux-relay | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-005 | low | docs/window-instances/ux-critic/STATE.md L189 agentToolStatus.ts ready for panel import no duplicate mapping | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-004 | medium | docs/window-instances/ux-critic/STATE.md L189 CoachInlineToolSteps should replace StreamingDots inside empty assistant bubble | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-003 | medium | docs/window-instances/ux-critic/STATE.md L189 Agent.tsx wires activeTools to composer only not SectionBody journey trust gap | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-002 | high | docs/window-instances/ux-critic/STATE.md L189 useAgentChatStream needs completedToolSteps on onToolEnd for checkmark AC | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-001 | high | docs/window-instances/ux-critic/STATE.md L189 AgentSectionBody must pass activeTools to AgentChatPanel per crit-073 AC | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-000 | high | docs/window-instances/ux-critic/STATE.md L189 crit-073 gap confirmed AgentChatPanel L77-122 no inline tool steps in streaming bubble | round-90 /code-review | closed | crit-073 | closed |
+| uc-r90-bugbot | low | docs/window-instances/ux-critic/STATE.md L189 BUGBOT_REQUIRED=no tick 73 crit-073 gap re-audit confirmed on AgentChatPanel useAgentChatStream AgentSectionBody | round-90 bugbot | closed | — | closed |
+| uc-r89-006 | low | docs/window-instances/ux-critic/STATE.md L188 pre-existing LogTypeTodayList aria-label out of crit-072 scope closed | round-89 /code-review | closed | — | closed |
+| uc-r89-005 | low | docs/window-instances/ux-critic/STATE.md CHECKPOINT design_mitigations updated for crit-072 | round-89 /code-review | closed | crit-072 | closed |
+| uc-r89-004 | low | docs/window-instances/ux-critic/STATE.md L188 protein-only fallback AC validated in crit-072 evidence block | round-89 /code-review | closed | crit-072 | closed |
+| uc-r89-003 | low | docs/window-instances/ux-critic/STATE.md L188 FoodProteinProgressCard pattern reuse in crit-072 chosen direction | round-89 /code-review | closed | crit-072 | closed |
+| uc-r89-002 | medium | docs/window-instances/ux-critic/STATE.md L188 getFoodTargets wiring in crit-072 AC and CHECKPOINT design_mitigations | round-89 /code-review | closed | crit-072 | closed |
+| uc-r89-001 | low | docs/window-instances/ux-critic/STATE.md L188 LogTypeTodayList per-row calories gap noted in crit-072 evidence | round-89 /code-review | closed | crit-072 | closed |
+| uc-r89-bugbot | low | docs/window-instances/ux-critic/STATE.md L188 BUGBOT_REQUIRED=yes tick 72 verified LogTypeTabPanel LogTypeTodayList crit-072 gap confirmed | round-89 bugbot | closed | — | closed |
+| uc-r89-000 | low | STATE.md L188 crit-072 gap verified LogTypeTabPanel no totals strip above today list | round-89 /code-review | closed | crit-072 | closed |
+| uc-r88-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 71; verified Cards.tsx useAppShellNavigation.ts AppTabContent.tsx homeDashboardFetch.ts DayWeekStrip.tsx; docs/window-instances/ux-critic/STATE.md L187 crit-071 core gap confirmed | round-88 bugbot | closed | — | closed |
+| uc-r88-000 | low | docs/window-instances/ux-critic/STATE.md L187 crit-071 journey terminal Cards gap verified — no banner nav hook or week context | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-001 | medium | docs/window-instances/ux-critic/STATE.md checkpoint synced tick_count=71 current_item_id=crit-071 | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-002 | medium | docs/window-instances/ux-critic/STATE.md CRITIQUE_BACKLOG crit-071 row added | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-003 | medium | docs/window-instances/ux-critic/STATE.md JOURNEY_BACKLOG flow amended Home trends Day week Cards strategy reflection | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-004 | medium | docs/window-instances/ux-critic/STATE.md L187 amended — HomeCalorieTrendCard Reflect chip entry added alongside HomeHabitTrendCard | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-005 | medium | docs/window-instances/ux-critic/STATE.md L187 amended — DayWeekStrip Reflect pill tap not dwell; explicit interaction AC | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-006 | medium | docs/window-instances/ux-critic/STATE.md L187 amended — shared weeklyReviewContext store not inflight-only cache | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-007 | low | docs/window-instances/ux-critic/STATE.md L187 amended — Week of Sun-Sat aligned with weekStripDays not ISO Mon | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-008 | low | docs/window-instances/ux-critic/STATE.md L187 amended — navigateCardsWeekReflection wires AppTabContent openWeekReflection to Cards sheet prefill | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-009 | low | docs/window-instances/ux-critic/STATE.md L187 worst-metric helper composes crit-063 homeSectionShared pattern | round-88 /code-review | closed | crit-071 | closed |
+| uc-r88-010 | low | docs/window-instances/ux-critic/STATE.md L187 composes crit-053 shared weeklyReviewContext schema — distinct Cards terminal banner | round-88 /code-review | closed | crit-053 | closed |
+| uc-r88-011 | low | docs/window-instances/ux-critic/STATE.md HISTORY crit-071 row added tick 71 | round-88 /code-review | closed | crit-071 | closed |
+| uc-r87-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 70; verified CardsKeepGrid.tsx L16-22 L49-50 cardsSectionShared.ts L13-17 Cards.tsx L50 L102; docs/window-instances/ux-critic/STATE.md L245 crit-070 core gap confirmed | round-87 bugbot | closed | — | closed |
+| uc-r87-000 | low | docs/window-instances/ux-critic/STATE.md L245 crit-070 gap verified — filter-only search, misleading empty copy, no highlight or search prop | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-001 | medium | docs/window-instances/ux-critic/STATE.md L245 filterCardsBySearch filters only — highlightCardsSearchMatch helper needed in cardsSectionShared.ts | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-002 | medium | docs/window-instances/ux-critic/STATE.md L245 CardsKeepGrid receives filtered slice only — pass libraryCount+search for No matches copy | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-003 | medium | docs/window-instances/ux-critic/STATE.md L245 mark.cards-search-hit on title/body per crit-070 A | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-004 | medium | docs/window-instances/ux-critic/STATE.md L245 Cards.tsx search state not passed to CardsKeepGrid — wire search prop | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-005 | low | docs/window-instances/ux-critic/STATE.md L245 aria-live match count AC added for Cards search flow | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-006 | low | docs/window-instances/ux-critic/STATE.md L245 cards-search-hit CSS token noted for relay App.css | round-87 /code-review | closed | crit-070 | closed |
+| uc-r87-007 | low | docs/window-instances/ux-critic/STATE.md L245 crit-027 empty-state overlap — implement once shared API with crit-070 | round-87 /code-review | closed | crit-027 | closed |
+| uc-r86-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 69; verified LogStatusShell.tsx L90-96 useLogFoodUndo.ts L46-68 useLogFoodScan.ts L87-99 LogScanTabPanel.tsx L72-86; docs/window-instances/ux-critic/STATE.md L244 crit-069 core gap confirmed | round-86 bugbot | closed | — | closed |
+| uc-r86-000 | low | docs/window-instances/ux-critic/STATE.md L244 crit-069 core gap verified — bare Logged food toast, no kcal payoff or Scan another during 5s window | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-001 | low | docs/window-instances/ux-critic/STATE.md L244 LogStatusShell.tsx L90-96 message Logged food only — evidence accurate | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-002 | low | docs/window-instances/ux-critic/STATE.md L244 FoodLogUndoEntry lacks source loggedKcal — relay schema note valid | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-003 | low | docs/window-instances/ux-critic/STATE.md L244 offerUndo receives FoodTodayResponse.calories but unused — gap claim valid | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-004 | low | docs/window-instances/ux-critic/STATE.md L244 clearScanFlow before logItem useLogFoodScan.ts L92 — post-log idle path confirmed | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-005 | low | docs/window-instances/ux-critic/STATE.md L244 LogScanTabPanel L72-86 Open camera required for next item — evidence accurate | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-006 | low | docs/window-instances/ux-critic/STATE.md L244 SwipeFoodCard L48-54 macros pre-log only — post-log surface lacks reuse | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-007 | low | docs/window-instances/ux-critic/STATE.md L244 UndoToast 5s window intact — aligns with crit-069 AC | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-008 | medium | docs/window-instances/ux-critic/STATE.md L244 amended — UndoToast needs subtitle + secondary action slot for Scan another pill | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-009 | medium | docs/window-instances/ux-critic/STATE.md L244 amended — onScanAnother must wire through useLogStatusShellProps to LogStatusShell | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-010 | low | docs/window-instances/ux-critic/STATE.md L244 amended — kcal payoff uses scan.macros scaled by qty over suggested_grams at log time | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-011 | low | docs/window-instances/ux-critic/STATE.md L244 amended — today total from FoodTodayResponse.calories flat field not nested summary | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-012 | low | docs/window-instances/ux-critic/STATE.md L244 Scan another distinct from crit-007 undo photo restore — composes not duplicates | round-86 /code-review | closed | crit-007 | closed |
+| uc-r86-013 | low | docs/window-instances/ux-critic/STATE.md L244 rejected alt B validated — no pre-swipe today total on SwipeFoodCard | round-86 /code-review | closed | crit-069 | closed |
+| uc-r86-014 | low | docs/window-instances/ux-critic/STATE.md L244 rejected alt C validated — no auto-open camera after log | round-86 /code-review | closed | crit-069 | closed |
+| uc-r85-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 68; verified DayHabitMetricGrid.tsx L18-53 useOptimisticHabitLog.ts L65-83 daySectionConstants.ts L21-28; docs/window-instances/ux-critic/STATE.md L242 crit-068 core gap confirmed | round-85 bugbot | closed | — | closed |
+| uc-r85-000 | low | docs/window-instances/ux-critic/STATE.md L242 crit-068 core gap verified — number input only, no quick-adjust chips, habit-chip--behind at L23 without catch-up | round-85 /code-review | closed | crit-068 | closed |
+| uc-r85-001 | low | docs/window-instances/ux-critic/STATE.md L242 amended — runtime import daySectionShared.ts L9 re-export not daySectionConstants direct | round-85 /code-review | closed | crit-068 | closed |
+| uc-r85-002 | medium | docs/window-instances/ux-critic/STATE.md L242 amended — metric-tap haptic distinct from useDayStreakHaptics milestone keys; relay must add explicit adjust feedback | round-85 /code-review | closed | crit-068 | closed |
+| uc-r85-003 | low | docs/window-instances/ux-critic/STATE.md L242 amended — target=0 metrics hide Mark target; +30m/+1h only per daySectionConstants game/wasted | round-85 /code-review | closed | crit-068 | closed |
+| uc-r85-004 | low | docs/window-instances/ux-critic/STATE.md L242 evidence span widened L31-48 label+input block | round-85 /code-review | closed | crit-068 | closed |
+| uc-r85-005 | low | docs/window-instances/ux-critic/STATE.md L242 amended — chip clamp uses (val ?? 0) for empty field first tap | round-85 /code-review | closed | crit-068 | closed |
+| uc-r85-006 | low | docs/window-instances/ux-critic/STATE.md L242 behind threshold 50% target noted — AC example 1.2h/4h still qualifies | round-85 /code-review | closed | crit-068 | closed |
+| uc-r84-005 | low | docs/window-instances/ux-critic/STATE.md L240 no first-upcoming helper in pwa/src/lib — client filter required for handoff bar; gap claim valid | round-84 /code-review | backlog | crit-067 | closed |
+| uc-r84-004 | low | docs/window-instances/ux-critic/STATE.md L240 amended — DaySectionScheduleStack.tsx L20-31 habit data path added to evidence | round-84 /code-review | closed | crit-067 | closed |
+| uc-r84-003 | low | docs/window-instances/ux-critic/STATE.md L240 Review rings pill needs new onNavigateHome prop — handleTabChange exists useAppShellNavigation L26-29 but Day omits it | round-84 /code-review | backlog | crit-067 | closed |
+| uc-r84-002 | medium | docs/window-instances/ux-critic/STATE.md L240 amended — DayTimelineCard L76-94 populated agenda no coach CTA added to evidence | round-84 /code-review | closed | crit-067 | closed |
+| uc-r84-001 | medium | docs/window-instances/ux-critic/STATE.md L240 amended — Day.tsx L34-43 misattribution fixed; cite DaySectionScheduleStack L16-33 | round-84 /code-review | closed | crit-067 | closed |
+| uc-r84-000 | low | docs/window-instances/ux-critic/STATE.md L240 crit-067 core gap verified — populated Day agenda dead-end, no handoff bar | round-84 /code-review | closed | crit-067 | closed |
+| uc-r84-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 67; verified Day.tsx DaySectionScheduleStack.tsx DayTimelineCard.tsx AppTabContent.tsx DayTimelineAgendaPanel.tsx; docs/window-instances/ux-critic/STATE.md L240 crit-067 | round-84 bugbot | closed | — | closed |
+| uc-r83-005 | low | docs/window-instances/ux-critic/STATE.md L238 client heuristic follow-up copy is net-new — agentToolFeed.ts L5-14 maps tools to feed only; note for relay implementation | round-83 /code-review | backlog | crit-066 | closed |
+| uc-r83-004 | low | docs/window-instances/ux-critic/STATE.md L238 rejected alt C validated — AgentChatComposer L62-69 tool-status chips during loading only; distinct from post-reply follow-ups | round-83 /code-review | closed | crit-066 | closed |
+| uc-r83-003 | low | docs/window-instances/ux-critic/STATE.md L238 amended — App.css L3666-3668 duplicate agent-suggested-prompts display:none added to habits_files_read | round-83 /code-review | closed | crit-066 | closed |
+| uc-r83-002 | low | docs/window-instances/ux-critic/STATE.md L238 amended — onDone also forwards tool_results via onToolResults; no suggested_followups on ChatResponse apiTypes L108-111 | round-83 /code-review | closed | crit-066 | closed |
+| uc-r83-001 | medium | docs/window-instances/ux-critic/STATE.md L238 amended — agent-suggested-prompts is class hook only (display:none); chip row styles must be authored not toggled | round-83 /code-review | closed | crit-066 | closed |
+| uc-r83-000 | low | docs/window-instances/ux-critic/STATE.md L238 crit-066 core gap verified — post-reply disclaimer only, no follow-up JSX, dormant CSS class | round-83 /code-review | closed | crit-066 | closed |
+| uc-r83-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 66; verified AgentChatPanel.tsx L114-116 L60-72 useAgentChatStream.ts L68-79 agent-gemini.css L349-351; docs/window-instances/ux-critic/STATE.md L238 crit-066 | round-83 bugbot | closed | — | closed |
+| uc-r82-002 | low | docs/window-instances/ux-critic/STATE.md L236 useFoodTodayEmpty needs reactive layer — foodTodaySnapshot has fetch/prime/invalidate only; badge must subscribe to invalidate after first log | round-82 /code-review | backlog | crit-065 | closed |
+| uc-r82-001 | low | docs/window-instances/ux-critic/STATE.md L236 optional precision — homeDashboardFetch L40 and useAgentContext L56 prime snapshot but App.tsx shell spread omits items for tab bar | round-82 /code-review | closed | crit-065 | closed |
+| uc-r82-000 | low | docs/window-instances/ux-critic/STATE.md L236 crit-065 evidence verified — AppTabBar L52-55 queue-only badge, useAppShell L44-45 no food-empty props, gap distinct from crit-001 and crit-035 | round-82 /code-review | closed | crit-065 | closed |
+| uc-r82-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 65; verified AppTabBar.tsx L52-55 useAppShell.ts L44-45 foodTodaySnapshot.ts L3-16 HomeActivityRingsCard.tsx L34-41; docs/window-instances/ux-critic/STATE.md L236 crit-065 | round-82 bugbot | closed | — | closed |
+| uc-r81-001 | low | docs/window-instances/ux-critic/STATE.md L234 amended — history/habitWeek cite homeDashboardFetch L29-48 not MetricsPanels L25-28 | round-81 /code-review | closed | crit-064 | closed |
+| uc-r81-000 | low | docs/window-instances/ux-critic/STATE.md L234 crit-064 verified blind PDF export + duplicate fetch gap in pwa/ | round-81 /code-review | closed | crit-064 | closed |
+| uc-r81-bugbot | low | BUGBOT_REQUIRED=yes — docs-only tick 64; verified HomeReportsPanel.tsx L9-28 useHomeDashboardActions.ts L86-110 homeDashboardFetch.ts L29-48; docs/window-instances/ux-critic/STATE.md L234 crit-064 | round-81 bugbot | closed | — | closed |
+| uc-r80-002 | low | docs/window-instances/ux-critic/STATE.md L231 amended — Share L34-41 vs ActivityRings L46-50; added Day.tsx to habits_files_read per review | round-80 /code-review | closed | crit-063 | closed |
+| uc-r80-001 | low | docs/window-instances/ux-critic/STATE.md L231 crit-063 distinct from crit-006 crit-017 crit-033 crit-047 — Home→Day habit action bridge when rings incomplete | round-80 /code-review | closed | crit-063 | closed |
+| uc-r80-000 | low | docs/window-instances/ux-critic/STATE.md L231 crit-063 core gap verified — no Home incomplete-habit nudge, no navigateOpenDayHabits, no scrollToDayHabits in pwa/ | round-80 /code-review | closed | crit-063 | closed |
+| uc-r80-bugbot | low | BUGBOT_REQUIRED=yes — docs-only STATE diff tick 63; verified homeSectionShared.tsx L28-39 HomeActivityRingsCard.tsx L34-50 useAppShellNavigation.ts L85-99 AppTabContent.tsx L64-74 Day.tsx L9; docs/window-instances/ux-critic/STATE.md L231 crit-063 | round-80 bugbot | closed | — | closed |
+| uc-r79-002 | low | docs/window-instances/ux-critic/STATE.md L168 AppTabBar meal plan badge pattern L52-101 cited as mirror target for food queue sub-tab badge — consistent with existing tab-badge CSS | round-79 /code-review | closed | crit-062 | closed |
+| uc-r79-001 | low | docs/window-instances/ux-critic/STATE.md L168 crit-062 Type sub-tab badge gap distinct from crit-052 meal chips and crit-030 history drill-down — offline sync visibility | round-79 /code-review | closed | crit-062 | closed |
+| uc-r79-000 | low | docs/window-instances/ux-critic/STATE.md L168 crit-062 verified LogSubTabs.tsx L16-34 no queuedCount badge props; Log.tsx L99-104 omits queue counts | round-79 /code-review | closed | crit-062 | closed |
+| uc-r79-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 62; verified LogSubTabs.tsx L10-47 Log.tsx L77-104 AppTabBar.tsx L52-101; docs/window-instances/ux-critic/STATE.md L168 crit-062 | round-79 bugbot | closed | — | closed |
+| uc-r78-003 | low | docs/window-instances/ux-critic/STATE.md L226 Home closure note added — depends crit-012 calendar on Home | round-78 /code-review | closed | crit-061 | closed |
+| uc-r78-002 | medium | docs/window-instances/ux-critic/STATE.md L226 amended — server calendar.py update_event exists; needs REST route + apiCalendar wrapper | round-78 /code-review | closed | crit-061 | closed |
+| uc-r78-001 | low | docs/window-instances/ux-critic/STATE.md L226 Habits files header now includes useDayScheduleGrid.ts | round-78 /code-review | closed | — | closed |
+| uc-r78-000 | low | docs/window-instances/ux-critic/STATE.md L226 crit-061 verified grid blocks tap-only no drag handlers in pwa/ | round-78 /code-review | closed | crit-061 | closed |
+| uc-r78-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 61; verified DayScheduleGridBody.tsx L87-104 apiCalendar.ts L8-12 useDayScheduleGrid.ts; docs/window-instances/ux-critic/STATE.md L226 crit-061 | round-78 bugbot | closed | — | closed |
+| uc-r77-004 | low | docs/window-instances/ux-critic/STATE.md L153+L224 crit-060 distinct from crit-027 search empty crit-043 sheets disconnected | round-77 /code-review | closed | crit-060 | closed |
+| uc-r77-003 | low | docs/window-instances/ux-critic/STATE.md L224 habits_files_read header now lists Cards.tsx CardsKeepGrid.tsx App.css | round-77 /code-review | closed | — | closed |
+| uc-r77-002 | low | docs/window-instances/ux-critic/STATE.md L224 grid pass-through cites L102; Habits files header includes App.css | round-77 /code-review | closed | crit-060 | closed |
+| uc-r77-001 | medium | docs/window-instances/ux-critic/STATE.md L224 filter-switch false-empty overstatement — amended: mount false empty; filter switch shows stale cards until ready | round-77 /code-review | closed | crit-060 | closed |
+| uc-r77-000 | low | docs/window-instances/ux-critic/STATE.md L224 crit-060 verified mount-time false empty from cards=[] + CardsKeepGrid length check | round-77 /code-review | closed | crit-060 | closed |
+| uc-r77-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 60; verified Cards.tsx L18 L30-48 L102 CardsKeepGrid.tsx L17-22 App.css L3274-3277; docs/window-instances/ux-critic/STATE.md L224 crit-060 | round-77 bugbot | closed | — | closed |
+| uc-r76-006 | low | docs/window-instances/ux-critic/STATE.md L222 evidence cites useAppShell L56-63 SettingsSectionChrome L15-21 | round-76 /code-review | closed | — | closed |
+| uc-r76-005 | low | docs/window-instances/ux-critic/STATE.md HISTORY crit-059 8-close row appended Phase 8 | round-76 /code-review | closed | — | closed |
+| uc-r76-004 | low | docs/window-instances/ux-critic/STATE.md CHECKPOINT tick_count bumped 59 on Phase 8 close | round-76 /code-review | closed | — | closed |
+| uc-r76-003 | low | docs/window-instances/ux-critic/STATE.md L11-13 LAST_REVIEW stale — fixed on Phase 8 close | round-76 /code-review | closed | — | closed |
+| uc-r76-002 | low | docs/window-instances/ux-critic/STATE.md L222 evidence_block Habits files header now lists all four paths | round-76 /code-review | closed | — | closed |
+| uc-r76-001 | medium | docs/window-instances/ux-critic/STATE.md L222 conflated session_expired query param — amended to split Google query error vs server OAuthSessionExpiredError reason=flow_expired | round-76 /code-review | closed | crit-059 | closed |
+| uc-r76-000 | low | docs/window-instances/ux-critic/STATE.md L222 crit-059 verified oauth_service L40-63 useAppShell L56-63 SettingsSectionChrome L15-21 — zero error handling in pwa/ | round-76 /code-review | closed | crit-059 | closed |
+| uc-r76-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 59; verified oauth_service.py L40-63 api.py L72-75 useAppShell.ts L56-63 SettingsSectionChrome.tsx L15-21; docs/window-instances/ux-critic/STATE.md L222 crit-059 | round-76 bugbot | closed | — | closed |
+| uc-r75-005 | low | checkpoint hygiene tick_count=58 on Phase 8 close | round-75 /code-review | closed | — | closed |
+| uc-r75-004 | low | layoutOverlappingEvents natural home dayCalendarUtils.ts re-export daySectionShared — noted | round-75 /code-review | closed | crit-058 | closed |
+| uc-r75-003 | medium | grid blocks start-only L97-101 complements crit-036 not duplicate — spatial vs temporal | round-75 /code-review | closed | crit-058 | closed |
+| uc-r75-002 | medium | overlap detection must document 60min default when event.end absent dayCalendarUtils L27 — AC amended ux-relay crit-058 | round-75 /code-review | closed | crit-058 | closed |
+| uc-r75-001 | low | docs/window-instances/ux-critic/STATE.md L220 crit-058 distinct from crit-003 scroll crit-036 time range crit-048 all-day agenda | round-75 /code-review | closed | crit-058 | closed |
+| uc-r75-000 | low | docs/window-instances/ux-critic/STATE.md L220 crit-058 verified DayScheduleGridBody.tsx L74-105 top/height-only App.css L4083-4086 full-width; dayCalendarUtils L14-28; zero overlap in pwa/ | round-75 /code-review | closed | crit-058 | closed |
+| uc-r75-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 58; reviewed docs/window-instances/ux-critic/STATE.md L151+L220 crit-058 + ux-relay mirror | round-75 bugbot | closed | — | closed |
+| uc-r74-005 | low | checkpoint hygiene tick_count=57 on Phase 8 close | round-74 /code-review | closed | — | closed |
+| uc-r74-004 | low | filter change while sheet open: inherit at FAB open only no re-sync — AC amended ux-relay | round-74 /code-review | closed | crit-057 | closed |
+| uc-r74-003 | medium | persist lastCardsCaptureType in handleCreate on success — AC amended ux-relay crit-057 | round-74 /code-review | closed | crit-057 | closed |
+| uc-r74-002 | low | optional evidence Cards.tsx L109-116 prop pass-through CardsFilterBar L30-33 — noted CRITIQUE_LOG | round-74 /code-review | closed | crit-057 | closed |
+| uc-r74-001 | low | docs/window-instances/ux-critic/STATE.md L150+L218 crit-057 pre-save filter→capture prefill distinct from crit-010/027/042 by lifecycle and touchpoints | round-74 /code-review | closed | crit-057 | closed |
+| uc-r74-000 | low | crit-057 evidence paths accurate Cards.tsx L19 L22 L105-107 CardsCreateSheet L31-37; filter/newType disconnected on FAB confirmed | round-74 /code-review | closed | crit-057 | closed |
+| uc-r74-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 57; reviewed docs/window-instances/ux-critic/STATE.md L150+L218 crit-057 + ux-relay mirror L79 | round-74 bugbot | closed | — | closed |
 | uc-r0-000 | low | No code changes — critique-only tick 1 | round-0 | closed | — | closed |
 | uc-r0-001 | low | No code changes — critique-only tick 2 | round-0 | closed | — | closed |
 | uc-r0-002 | low | No code changes — critique-only tick 3 | round-0 | closed | — | closed |
@@ -458,12 +648,49 @@
 | uc-r71-008 | low | voice nudge correctly hidden after failure — noted depends_on no voice chip on error path | round-71 /code-review | closed | crit-055 | closed |
 | uc-r71-009 | medium | checkpoint hygiene fixed tick_count=55 confirmed_next crit-056 brainstorm crit-055 | round-71 /code-review | closed | — | closed |
 | uc-r71-010 | low | ux-relay mirror crit-055 L132 aligned with AC | round-71 /code-review | closed | crit-055 | closed |
+| uc-r73-bugbot | low | BUGBOT_REQUIRED=no — docs-only STATE diff tick 56; reviewed docs/window-instances/ux-critic/STATE.md crit-056 L149+L216 | round-73 bugbot | closed | — | closed |
+| uc-r73-000 | low | crit-056 static AgentActionFeed gap distinct from crit-002/040; evidence AgentActionFeed.tsx L19-26 agentToolFeed.ts L6-12 valid | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-001 | high | food CTA amended — View today's log opens Log Type tab not History (confirm grams); ux-relay crit-056 L133 | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-002 | high | update_habit kind bug at agentToolFeed.ts L11 — AC requires kind habit + fix before habit pill | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-003 | medium | wire onOpenLogType + onOpenDay navigators AppTabContent → Agent → AgentActionFeed — noted ux-relay | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-004 | medium | habit AC added Given habit row When tap Then Day tab opens — ux-relay L133 | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-005 | medium | v1 tab-only navigation OK; v2 entity deep-link deferred — depends_on crit-030 | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-006 | medium | optional entityRef on AgentAction deferred — tab pills sufficient v1 | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-007 | low | empty-state copy fix edge case only — feed mounts when messages.length>0 | round-73 /code-review | closed | crit-056 | closed |
+| uc-r73-008 | low | 390px row button ≥44px tap target AC added ux-relay L133 | round-73 /code-review | closed | crit-056 | closed |
 
 ---
-
 ## HISTORY
 
+
+
+
+
+
+
+
+
+
+
 | completed_at | item_id | phase | outcome | evidence |
+| 2026-07-28T19:30:00Z | crit-074 | 8-close | Home element audit → meal photo log bridge proposed | validate_critique_tick OK |
+| 2026-07-28T19:25:00Z | crit-073 | 8-close | journey-coach-trust re-audit → inline tool steps proposed | validate_critique_tick OK |
+| 2026-07-28T19:20:00Z | crit-072 | 8-close | Log element audit → daily totals strip proposed | validate_critique_tick OK |
+| 2026-07-28T18:55:00Z | crit-071 | 8-close | journey-weekly-review re-audit → Cards week reflection banner proposed | validate_critique_tick OK |
+| 2026-07-28T18:45:00Z | crit-070 | 8-close | Cards element audit → search match highlight proposed | validate_critique_tick OK |
+| 2026-07-28T18:35:00Z | crit-069 | 8-close | journey-scan-quick re-audit → scan log continuation toast proposed | validate_critique_tick OK |
+| 2026-07-28T18:28:00Z | crit-068 | 8-close | Day element audit → habit quick-adjust chips proposed | validate_critique_tick OK |
+| 2026-07-28T18:18:00Z | crit-067 | 8-close | journey-daily-checkin re-audit → Day check-in handoff bar proposed | validate_critique_tick OK |
+| 2026-07-28T18:08:00Z | crit-066 | 8-close | Agent element audit → post-reply follow-up chips proposed | validate_critique_tick OK |
+| 2026-07-28T17:58:00Z | crit-065 | 8-close | journey-first-log re-audit → Log tab first-meal dot badge proposed | validate_critique_tick OK |
+| 2026-07-28T17:50:00Z | crit-064 | 8-close | Home element audit → week report inline preview before PDF proposed | validate_critique_tick OK |
+| 2026-07-28T17:45:00Z | crit-063 | 8-close | journey-daily-checkin re-audit → Home habit-gap nudge + Day deep link proposed | validate_critique_tick OK |
+| 2026-07-28T17:40:00Z | crit-062 | 8-close | Log element audit → Type sub-tab offline queue badge proposed | validate_critique_tick OK |
+| 2026-07-28T17:35:00Z | crit-061 | 8-close | journey-day-plan re-audit → grid drag-reschedule + resize proposed | validate_critique_tick OK |
+| 2026-07-28T17:32:00Z | crit-060 | 8-close | Cards element audit → loading skeleton suppress false empty proposed | validate_critique_tick OK |
+| 2026-07-28T17:22:00Z | crit-059 | 8-close | journey-settings-trust re-audit → OAuth failure redirect + recovery banner proposed | validate_critique_tick OK |
+| 2026-07-28T17:05:00Z | crit-058 | 8-close | Day element audit → grid overlap column layout proposed | validate_critique_tick OK |
+| 2026-07-28T17:00:00Z | crit-057 | 8-close | journey-capture-thought re-audit → filter-tab capture prefill proposed | validate_critique_tick OK |
 |--------------|---------|-------|---------|----------|
 | 2026-07-28T10:05:00Z | crit-001 | 8-close | journey-first-log critique → ux-relay CRITIQUE_BACKLOG proposed | validate_critique_tick OK |
 | 2026-07-28T10:12:00Z | crit-002 | 8-close | Agent element audit → streaming tool chips proposed | validate_critique_tick OK |
@@ -521,3 +748,87 @@
 | 2026-07-28T16:38:00Z | crit-054 | 8-close | Home element audit → dashboard freshness timestamp proposed | validate_critique_tick OK |
 | 2026-07-28T16:44:00Z | crit-055 | 8-close | journey-coach-trust re-audit → stream error recovery proposed | validate_critique_tick OK |
 | 2026-07-28T16:50:00Z | crit-056 | 8-close | Agent element audit → Activity feed drill-down proposed | validate_critique_tick OK |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

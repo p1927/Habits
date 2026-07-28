@@ -46,6 +46,20 @@ grep -q 'phase.*2-orient' "${PROJECT}/docs/window-instances/worker-relay/STATE.m
 }
 echo "OK set checkpoint + sidecar"
 
+# After write, done [x] items must be pruned to ≤10
+DONE_COUNT=$(grep -c '^- \[x\]' "${PROJECT}/docs/window-instances/worker-relay/STATE.md" || true)
+[[ "$DONE_COUNT" -le 10 ]] || { echo "FAIL: expected ≤10 done items after prune, got $DONE_COUNT"; exit 1; }
+# Open items must all survive pruning
+OPEN_AFTER=$(bash "${SCRIPTS}/state_api.sh" "${PROJECT}" --loop-id worker-relay get backlog --open | \
+  python3 -c "import sys,re; t=sys.stdin.read(); m=re.search(r'STATE_API_JSON_BEGIN\n(.*)\nSTATE_API_JSON_END', t, re.S); import json; d=json.loads(m.group(1)); print(len(d))")
+[[ "$OPEN_AFTER" == "3" ]] || { echo "FAIL: expected 3 open items after prune, got $OPEN_AFTER"; exit 1; }
+# Explicit prune command must succeed
+bash "${SCRIPTS}/state_api.sh" "${PROJECT}" --loop-id worker-relay prune | grep -q 'STATE_API_OK verb=prune' || {
+  echo "FAIL: prune command did not emit OK"
+  exit 1
+}
+echo "OK backlog prune on write"
+
 PAYLOAD=$(python3 "${SCRIPTS}/build_wake_prompt.py" \
   --loop-id worker-relay \
   --contract-doc docs/window-instances/worker-relay/INSTANCE.md \

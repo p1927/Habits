@@ -66,6 +66,7 @@ def write_state(
     repair: bool = False,
 ) -> dict[str, Any]:
     body = sc.repair_checkpoint_section(text) if repair else text
+    body = ss.prune_backlog_text(body, backlog_sections)
     atomic_write_text(state_path, body)
     return rebuild_sidecar(
         state_path,

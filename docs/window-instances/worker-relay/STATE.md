@@ -56,57 +56,11 @@
 
  (priority ordered)
 
-- [x] relay-162 | Tap Home calorie trend → open Log History tab | feature | `navigateLogHistory` in App; tappable `HomeCalorieTrendCard` with hint
-- [x] relay-163 | Agent chat image attach in first message (no history required) | feature | `image_base64` on `/api/agent/chat`; multimodal user message in agent service
-- [x] relay-164 | Day tab streak milestone toast on week complete | feature | StreakMilestoneToast at 7d/14d overall streak
 
-- [x] relay-165 | Agent chat SSE streaming replies | feature | `/api/agent/chat/stream`; token events + streaming bubble
-- [x] relay-166 | Home meal photo tap → full-screen gallery | feature | MealPhotoGallery lightbox (ad69715)
-- [x] relay-167 | Log tab remember last sub-tab on return | polish | localStorage `habits-log-last-tab`
 
-- [x] relay-168 | Agent chat cancel in-flight stream on new send | polish | AbortController + generation guard; send while streaming
-- [x] relay-169 | Day tab export week report PDF from header action | feature | `DaySectionHeader` Week PDF + `useDayWeekReportExport`
-- [x] relay-170 | Home rings card share image with streak label | feature | PO round-2 verified shipped — `ringShareCard` streak pill + `useHomeDashboardActions`
-- [x] relay-149 | VoiceStatusOrb reflects live mic state from voice iframe postMessage | feature | persist iframe + postMessage → header orb
-- [x] relay-150 | Home saved recipe → Log Recipes sub-tab deep link | feature | navigateLogRecipes + refresh on openLogRecipes
 
-- [x] relay-171 | Agent context panel refresh after tool-call stream completes | polish | context.refresh + action feed seed on tool_results
-- [x] relay-172 | Log History export CSV from header | feature | Export CSV pill + downloadLogHistoryCsv
-- [x] relay-173 | Day timeline tap event → calendar detail sheet | feature | DayCalendarEventSheet + tappable agenda/grid events
 
-- [x] relay-174 | Day schedule empty state → Agent quick add prompt | feature | Add with Coach → navigateAgentPrompt + composer prefill
-- [x] relay-175 | Log History CSV include meal count per day | polish | Followed col B → meal_count; CSV date,meals,calories,protein
-- [x] relay-176 | Home dashboard pull-to-refresh gesture | polish | usePullToRefresh + HomePullRefreshIndicator (e9b67a1)
 
-- [x] relay-177 | Log History list show meal count inline | polish | meal count suffix on history rows when API provides it
-- [x] relay-178 | Agent chat copy assistant message | polish | Copy pill on completed coach bubbles via clipboard API
-- [x] relay-179 | Day manage-day quadrant tap → expand task list | feature | accordion toggle + task preview when collapsed
-- [x] relay-180 | Agent chat regenerate last reply | polish | Regenerate pill re-streams last user turn
-- [x] relay-181 | Home decision card tap → Future Self tab | feature | `#futureself` deep link + Open Future Self on decision card
-- [x] relay-182 | Log tab keyboard shortcut hint on first visit | polish | verify-only — `useLogTabShortcuts` + LogSubTabs hint (f3af1b5)
-- [x] relay-183 | Day tab keyboard shortcut hint on first visit | polish | useDayScheduleShortcuts + DayTimelineCard hint (⌘1/⌘2)
-- [x] relay-184 | Agent composer focus shortcut (⌘/Ctrl+K) | polish | useAgentComposerFocusShortcut + disclaimer hint
-- [x] relay-185 | Cards tab keyboard shortcut hint on first visit | polish | useCardsFilterShortcuts + CardsFilterBar hint (⌘1–4)
-- [x] relay-186 | Settings tab keyboard shortcut from header gear hint | polish | useSettingsOpenShortcut + AppHeader hint (⌘,)
-- [x] relay-187 | App tab bar keyboard shortcuts ⌘/Ctrl+1–5 | polish | useAppTabShortcuts + AppTabBar hint; defers on Log/Day/Cards
-- [x] relay-188 | OAuth success banner auto-dismiss after 5s | polish | Settings useEffect 5s auto-dismiss
-- [x] relay-189 | Home rings share sheet keyboard Escape to close | polish | HomeRingShareSheet + BottomSheet Escape
-- [x] relay-190 | Settings OAuth banner aria-live polite on show | polish | role=status aria-live=polite on OAuth success banner
-- [x] relay-191 | Agent tools sheet Escape to close | polish | BottomSheet Escape + hint text (ad3d6a0)
-- [x] relay-192 | Cards create sheet Escape to close | polish | BottomSheet Escape + hint text (3e03d10)
-- [x] relay-193 | Log food edit sheet Escape to close | polish | BottomSheet Escape + hint text (788b258)
-- [x] relay-194 | Agent attach sheet Escape to close | polish | BottomSheet Escape + hint text (e11be06)
-- [x] relay-195 | Agent camera sheet Escape hint | polish | BottomSheet Escape + hint text (4305775)
-- [x] relay-196 | Agent voice sheet Escape hint | polish | VoiceCoachLayer + fallback BottomSheet hint (f6b207a)
-- [x] relay-197 | Day event detail sheet Escape hint | polish | BottomSheet Escape + hint text (73c3806)
-- [x] relay-198 | Home meal photo gallery Escape hint | polish | MealPhotoGallery lightbox hint + flex-gap CSS (bbd648c)
-- [x] relay-199 | Agent chat empty-state starter chips | feature | Gemini greeting + composer chips (Log food, Plan day, Review rings, Schedule); prefill composer
-- [x] relay-200 | Agent empty state: single prompt surface (greeting OR chips) | polish | Greeting grid only; composer chips + AgentToolChips removed; composerDraft hides cards after prefill (ee37839)
-- [x] relay-201 | Remove dead agent-tool-chips CSS | polish | Deleted unused rules from App.css and agent-gemini.css (2d5575c)
-- [x] relay-202 | Agent greeting cards disable when offline or scanning | polish | greetingActionsDisabled via serverOnline/loading/scanning (4fc6ec6)
-- [x] relay-203 | Agent greeting hide when attach preview open | polish | Hide greeting grid when attachImage set to avoid layout clash above attach preview
-- [x] relay-204 | Agent composer disclaimer hide when attach preview open | polish | showDisclaimer excludes attachImage like greeting hide
-- [x] relay-205 | Agent attach sheet close returns focus to composer | polish | After pick/cancel attach sheet, focus textarea
 - [x] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
 - [x] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
 - [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style

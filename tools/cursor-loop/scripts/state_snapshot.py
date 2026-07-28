@@ -189,6 +189,88 @@ def snapshot_fingerprint(checkpoint: dict[str, str], open_backlog: list[dict[str
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
+# ---------------------------------------------------------------------------
+# Backlog pruning
+# ---------------------------------------------------------------------------
+
+_DONE_TABLE_STATUSES: frozenset[str] = frozenset({"shipped", "handed-off"})
+_DONE_CHECKBOX_RE = re.compile(r"^\s*-\s*\[[xX]\]", re.MULTILINE)
+
+
+def _prune_checkbox_section(section_body: str, keep_last: int) -> str:
+    """Keep all open [ ] lines; trim done [x] lines to last `keep_last`."""
+    lines = section_body.split("\n")
+    done_indices = [i for i, ln in enumerate(lines) if _DONE_CHECKBOX_RE.match(ln)]
+    to_remove = set(done_indices[:-keep_last] if keep_last > 0 else done_indices)
+    if not to_remove:
+        return section_body
+    return "\n".join(ln for i, ln in enumerate(lines) if i not in to_remove)
+
+
+def _prune_table_section(section_body: str, keep_last: int) -> str:
+    """For tables with a 'status' column, trim done rows to last `keep_last`."""
+    lines = section_body.split("\n")
+    status_col: int | None = None
+    data_start: int = 0
+    for i, line in enumerate(lines):
+        if not line.strip().startswith("|"):
+            continue
+        cells = [c.strip().lower() for c in line.split("|")[1:-1]]
+        if "status" in cells:
+            status_col = cells.index("status")
+            data_start = i + 2  # skip header + separator row
+            break
+    if status_col is None:
+        return section_body
+    done_indices = []
+    for i in range(data_start, len(lines)):
+        line = lines[i]
+        if not line.strip().startswith("|"):
+            continue
+        cells = [c.strip() for c in line.split("|")[1:-1]]
+        if len(cells) > status_col:
+            status = cells[status_col].strip("`").lower()
+            if status in _DONE_TABLE_STATUSES:
+                done_indices.append(i)
+    to_remove = set(done_indices[:-keep_last] if keep_last > 0 else done_indices)
+    if not to_remove:
+        return section_body
+    return "\n".join(ln for i, ln in enumerate(lines) if i not in to_remove)
+
+
+def prune_backlog_text(
+    state_text: str,
+    sections: tuple[str, ...] | None = None,
+    *,
+    keep_last: int = 10,
+) -> str:
+    """Prune done items from backlog sections, keeping last `keep_last` per section.
+
+    Supports two formats:
+    - Checkbox lists: ``- [x]`` lines are done; ``- [ ]`` lines are kept.
+    - Markdown tables: rows where the ``status`` column is ``shipped`` or
+      ``handed-off`` are done; all other rows are kept.
+    """
+    names = sections or DEFAULT_BACKLOG_SECTIONS
+    for section_name in names:
+        marker = f"## {section_name}"
+        if marker not in state_text:
+            continue
+        before, rest = state_text.split(marker, 1)
+        if "\n## " in rest:
+            section_body, after_str = rest.split("\n## ", 1)
+            after_str = "\n## " + after_str
+        else:
+            section_body = rest
+            after_str = ""
+        if _DONE_CHECKBOX_RE.search(section_body):
+            pruned = _prune_checkbox_section(section_body, keep_last)
+        else:
+            pruned = _prune_table_section(section_body, keep_last)
+        state_text = before + marker + pruned + after_str
+    return state_text
+
+
 def build_local_snapshot(
     state_text: str,
     *,
@@ -196,7 +278,7 @@ def build_local_snapshot(
     state_path: Path | None = None,
     backlog_sections: tuple[str, ...] | None = None,
     history_limit: int = 10,
-    recent_done_limit: int = 5,
+    recent_done_limit: int = 10,
 ) -> dict[str, Any]:
     checkpoint = rp.parse_checkpoint_table(state_text)
     all_backlog = parse_backlog_items(state_text, backlog_sections)

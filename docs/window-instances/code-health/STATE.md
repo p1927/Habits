@@ -19,7 +19,7 @@
 | Field | Value |
 |-------|-------|
 | confirmed_next | `ch-144` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | current_item_id | `—` |
 | last_wake | `2026-07-28T13:30:00Z` |
 | code_changed | `no` |
@@ -34,7 +34,7 @@
 | review_fingerprint | `2b91e7074ac58d73` |
 | review_diff_range | `uncommitted` |
 | review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
@@ -54,139 +54,6 @@
 
 ## REFACTOR_BACKLOG
 
-- [x] ch-001 | DRY meal plan remote/pending banners → `MealPlanSyncAwarenessSlot` | dry, separation | done tick #1
-- [x] ch-002 | Move `mealPlanSyncSourceLabel` hook → `lib/mealPlanQueue.ts` | separation | done tick #1
-- [x] ch-003 | Singleton `mealPlanQueueCountStore` + failed-id cleanup in `writeQueue` | robustness, dry | done tick #2
-- [x] ch-004 | `mealPlanQueueRemoteSyncStore` singleton (one MEAL_PLAN_SYNC_CHANGE listener) | dry | done tick #3
-- [x] ch-005 | Line scan `server/habits_api/routes/*` — thin route enforcement | structure | done tick #4
-- [x] ch-006 | Move `routes/settings.py` → `settings/service.py` | separation, structure | done tick #5
-- [x] ch-007 | Extract OAuth from `routes/api.py` → `google/oauth_service.py` | separation | done tick #6
-- [x] ch-008 | Unify `google_connected` guards in habits/calendar services | patchwork | done tick #7
-- [x] ch-009 | `mealPlanQueueEventBus` — shared DOM/browser listeners for lib stores | dry | done tick #8
-- [x] ch-010 | `localStorageQueue.ts` shared by food/habit/recipe queues | dry | done tick #9
-- [x] ch-011 | Log.tsx slice: `logSectionShared`, `LogSubTabs`, `LogHistoryPanel` | structure | done tick #10
-- [x] ch-012 | Extract Log tab panels → 7 components + `logSectionShared` | structure | done tick #9
-- [x] ch-013 | DRY meal plan: `useMealPlanEntryLogging` + `MealPlanTodayCard` + Home panels | dry, structure | done tick #10
-- [x] ch-014 | Day timeline/habit panels + Home sparkline/decision cards | structure | done tick #11
-- [x] ch-015 | Log.tsx tab-panel decompose verified (1287→869 lines) | structure | done tick #12
-- [x] ch-016 | Rename `voice-status.ts` → `voiceStatus.ts` | naming | done tick #12
-- [x] ch-017 | Agent panels + hook DRY (`useMealPlanQueueRemoteSync` → store re-export) | structure | done tick #14
-- [x] ch-018 | Components scan — removed duplicate `FoodQueueAwareness` (= `FoodQueueBanner`) | dry | done tick #1
-- [x] ch-019 | `food/service.py` → `models.py` + `sheet_log.py` + thin orchestration (469→328) | structure | done tick #2
-- [x] ch-020 | Remove duplicate `routes/settings.py`; wire api + meal_plan → `settings/service` | patchwork, dry | done tick #3
-- [x] ch-021 | `habits/service.py` → `models.py` + `tracker_sheet.py` (222→154) | structure | done tick #3
-- [x] ch-022 | `cards/service.py` → `models.py` + `sheet_loaders.py` (243→85) | structure | done tick #4
-- [x] ch-023 | `future_self/service.py` → `image_client.py` + `habit_cards.py` (209→95) | structure | done tick #5
-- [x] ch-024 | `Food.tsx` → 4 panel components + `foodSectionShared` (300→188) | structure | done tick #6
-- [x] ch-025 | `Settings.tsx` → 5 panel components + `settingsSectionShared` (276→176) | structure | done tick #7
-- [x] ch-026 | `FutureSelf.tsx` → 4 panel components + `futureSelfSectionShared` (220→168) | structure | done tick #8
-- [x] ch-027 | Log.tsx panel wiring verified; mealplan → `LogMealPlanTabShell` (869→860) | structure | done tick #9
-- [x] ch-028 | `agent/service.py` → `tools.py` + `context.py` (190→75) | structure | done tick #10
-- [x] ch-029 | `google/sheets.py` → `sheet_constants` + `sheet_auth` + `sheet_io` (202→32 re-export) | structure | done tick #11
-- [x] ch-030 | `Cards.tsx` → 4 panel components + `cardsSectionShared` (185→117) | structure | done tick #12
-- [x] ch-031 | DRY `useMealPlanQueueCount` → store re-export; `FOOD_MEAL_TYPES` → `MEAL_TYPES` | dry | done tick #13
-- [x] ch-032 | `day/service.py` → `manage_day_sheet.py` parser (72→52; already thin) | structure | done tick #14
-- [x] ch-033 | `settings/service` → constants + meal_plan_sheet; `food/recipes` → recipe_sheet + models DRY (182→87, 129→45) | structure, dry | done tick #15
-- [x] ch-034 | Food routes: `service_invoke` + `food_schemas`; `get_food_targets` → service (144+125→106+99) | structure, dry | done tick #16
-- [x] ch-035 | `service_invoke` on habits/cards/calendar routes; disconnected guards → habits service (78→56, 71→61, 56→47) | dry, structure | done tick #17
-- [x] ch-036 | `service_invoke` on agent/future_self/day routes (32→31, 71→65, 43→38) | dry | done tick #18
-- [x] ch-037 | Wire `api.py` OAuth → `oauth_service`; settings routes → `service_invoke` (119→99) | patchwork, dry | done tick #19
-- [x] ch-038 | Extract Log.tsx scan/recipe hooks → `useLogFoodScan` + `useLogRecipeScan` (860→686) | structure | done tick #20
-- [x] ch-039 | Extract Log.tsx type-tab hook → `useLogTypeTab` (686→587) | structure | done tick #21
-- [x] ch-040 | Extract Log.tsx food-log undo → `useLogFoodUndo` (587→527) | structure | done tick #22
-- [x] ch-041 | Home.tsx → `useHomeDashboard` + Reports/MealPhotos panels (435→434) | structure | done tick #23
-- [x] ch-042 | `food/service` → history_sheet + body_targets; `db` → schema + token_db package (337→260, 127→108+29) | structure | done tick #24
-- [x] ch-043 | Log.tsx → `useLogSectionData` + `useLogMealPlanShell` + `useLogTabShortcuts` (527→427) | structure | done tick #25
-- [x] ch-044 | Day.tsx → `useDaySectionData` + `useDayMealPlanShell` + `useDayStreakHaptics` (277→159); agent/context already thin | structure | done tick #26
-- [x] ch-045 | DRY meal-plan shells → unified `useMealPlanShell`; deleted Log/Day wrappers; Home wired (434→235) | dry | done tick #27
-- [x] ch-046 | Agent.tsx → `useAgentChat` + `useAgentPhotoAttach` (190→156) | structure | done tick #28
-- [x] ch-047 | Section/server line scan — top targets: Log 429, useMealPlanQueueSync 313, useOptimisticFoodLog 287, food/service 260 | structure | done tick #29
-- [x] ch-048 | Food.tsx → `useFoodSection` (188→93) | structure | done tick #29
-- [x] ch-049 | Split `useMealPlanQueueSync` → `mealPlanQueueSyncApi` + `useMealPlanQueueSyncEffects` (313→278) | structure | done tick #30
-- [x] ch-050 | `habits/service` → `week_streak.py` re-export (171→103+84) | structure | done tick #31
-- [x] ch-051 | `useOptimisticFoodLog` → `optimisticFoodLog` lib + `useFoodLogQueueFlush` (287→207) | structure | done tick #32
-- [x] ch-052 | Log.tsx → `LogStatusShell` + `useLogFoodUndoRestore` (429→401) | structure | done tick #33
-- [x] ch-053 | Settings.tsx → `useSettingsSection` (177→105) | structure | done tick #34
-- [x] ch-054 | `useMealPlanQueueSync` → `mealPlanQueueSyncRunner` lib (278→244) | structure | done tick #35
-- [x] ch-055 | `food/service` → `today_summary` + `log_operations` re-export (260→34) | structure | done tick #36
-- [x] ch-056 | `executeOptimisticFoodLog` DRY + `logEntireSavedRecipe` in recipe hook (207→157) | dry | done tick #37
-- [x] ch-057 | Log.tsx re-wired to decomposed hooks + LogStatusShell (872→396) | structure | done tick #38
-- [x] ch-058 | Line scan — top: Log 396, useLogRecipeScan 260, useMealPlanQueueSync 244, Home 242, useLogTypeTab 216 | structure | done tick #39
-- [x] ch-059 | `useLogRecipeScan` → `recipeScanFlow` + `useRecipeScanQueueEffects` (260→215) | structure | done tick #39
-- [x] ch-060 | `useOptimisticHabitLog` → `optimisticHabitLog` + `useHabitLogQueueFlush` (175→111) | dry | done tick #40
-- [x] ch-061 | `useLogTypeTab` → `logBarcodeLookup` + `useDebouncedFoodSearch` (216→183) | structure | done tick #41
-- [x] ch-062 | `useMealPlanQueueSync` → `useMealPlanQueueSyncState` (244→213) | structure | done tick #42
-- [x] ch-063 | `log_operations` → `row_log_ops` + `food_db_search` re-export (176→120) | structure | done tick #43
-- [x] ch-064 | `useHomeDashboard` → fetch + actions + refresh shortcut (215→134) | structure | done tick #44
-- [x] ch-065 | `useMealPlanEntryLogging` → `executeMealPlanEntryLog` lib (171→88) | dry | done tick #45
-- [x] ch-066 | Line scan — top: Log 396, Home 242, useLogRecipeScan 215, useMealPlanQueueSync 213, useLogTypeTab 183 | structure | done tick #46
-- [x] ch-067 | Log.tsx → `LogTabPanels` tab switch extract (396→367 + 248 panel component) | structure | done tick #46
-- [x] ch-068 | Home.tsx → `HomeMealPlanBlock`; `useLogRecipeScan` → `recipeScanFlow` helpers (242→218, 215→189) | structure | done tick #47
-- [x] ch-069 | `useMealPlanQueueSync` → `useMealPlanQueueSyncActions` + runner execute helpers (213→59) | structure | done tick #48
-- [x] ch-070 | `useLogTypeTab` → `logTypeTabActions` lib (183→153) | structure | done tick #49
-- [x] ch-071 | Server scan + `cards/sickness_sheet.py` split from sheet_loaders (146→76+87) | structure | done tick #50
-- [x] ch-072 | `google/sheet_io` → `sheet_key_value` for KV helpers (140→88+57) | structure | done tick #51
-- [x] ch-073 | Log.tsx → `useLogSection` hook (370→87 + 314 hook) | structure | done tick #52
-- [x] ch-074 | `useLogSection` → `useLogTabPanelsProps` + `useLogStatusShellProps` (314→165) | structure | done tick #53
-- [x] ch-075 | Line scan + `LogTypeTabPanel` → 4 sub-panels (264→129) | structure | done tick #54
-- [x] ch-076 | Home.tsx → `useHomeSection` hook (262→162) | structure | done tick #55
-- [x] ch-077 | `MealPlanQueuePanel` → `MealPlanQueueList` + `useMealPlanQueuePanelFocus` (259→171) | structure | done tick #56
-- [x] ch-078 | Line scan — top: api 298, App 284, mealPlanQueue 253, LogTabPanels 248, syncRunner 194 | structure | done tick #57
-- [x] ch-079 | `LogTabPanels` → props lib + prop pickers + `LogTabPanelSwitch` (248→12) | structure | done tick #58
-- [x] ch-080 | `useLogRecipeScan` → `useRecipeScanState` + tab photo + flow helpers (189→142) | structure | done tick #59
-- [x] ch-081 | `useMealPlanQueueSyncActions` → options type + action builders lib (181→133) | structure | done tick #60
-- [x] ch-082 | Line scan — top: api 298, App 294, mealPlanQueue 253, syncRunner 194, useOptimisticFoodLog 190 | structure | done tick #61
-- [x] ch-083 | `mealPlanQueue.ts` → types + storage + sync session + events (253→38 re-export) | structure | done tick #62
-- [x] ch-084 | `mealPlanQueueSyncRunner` → batch + single sync + execute + types (194→13) | structure | done tick #63
-- [x] ch-085 | `useOptimisticFoodLog` → pending state + submitters + retry lib (190→140) | structure | done tick #64
-- [x] ch-086 | Line scan — top: api 302, App 296, CameraCapture 188, recipeScanFlow 178, useLogSection 171 | structure | done tick #65
-- [x] ch-087 | `CameraCapture` → `useCameraCapture` + `cameraCaptureFrame` (188→88) | structure | done tick #66
-- [x] ch-088 | `recipeScanFlow` → api + capture + log + types (178→17 re-export) | structure | done tick #67
-- [x] ch-089 | `useLogSection` → `useLogSectionFoodStack` (171→118) | structure | done tick #68
-- [x] ch-090 | Line scan — top: api 302, App 296, MealPlanQueuePanel 171, FutureSelf/Day 168, Home 163 | structure | done tick #69
-- [x] ch-091 | `MealPlanQueuePanel` → banner + progress + copy lib (171→133) | structure | done tick #70
-- [x] ch-092 | `FutureSelf.tsx` → `useFutureSelfSection` (168→84) | structure | done tick #71
-- [x] ch-093 | `Day.tsx` → `useDaySection` hook (168→156) | structure | done tick #72
-- [x] ch-094 | `Home.tsx` → dashboard panels + section chrome + shell props (163→57) | structure | done tick #73
-- [x] ch-095 | Line scan — top: api 302, App 296, mealNotifications 163, useLogTabPanelsProps 162, BarcodeScanner 159 | structure | done tick #74
-- [x] ch-096 | `mealNotifications` → storage + permission + scheduler (163→12 re-export) | structure | done tick #75
-- [x] ch-097 | `useLogTabPanelsProps` → builder lib + swipe handler (162→36) | structure | done tick #76
-- [x] ch-098 | Line scan — top: api 302, App 296, BarcodeScanner 159, Day/Agent 156, HomeSavedRecipeCard 155 | structure | done tick #77
-- [x] ch-099 | `BarcodeScanner.tsx` → `useBarcodeScanner` + support lib (159→78) | structure | done tick #78
-- [x] ch-100 | `Agent.tsx` → `useAgentSection` (156→139) | structure | done tick #79
-- [x] ch-101 | `HomeSavedRecipeCard.tsx` → `useHomeSavedRecipeCard` (155→87) | structure | done tick #80
-- [x] ch-102 | `useLogTypeTab.ts` → form state + handlers + types (153→15) | structure | done tick #81
-- [x] ch-103 | `SwipeStack.tsx` → `useSwipeStack` + types/constants (152→110) | structure | done tick #82
-- [x] ch-104 | `optimisticFoodLog.ts` → types + queue + execute (151→3 re-export) | structure | done tick #83
-- [x] ch-105 | `LogRecipesTabPanel.tsx` → scan + saved cards + types (151→47) | structure | done tick #84
-- [x] ch-106 | `daySectionShared.ts` → constants + calendar + date + streak (150→31 re-export) | structure | done tick #85
-- [x] ch-107 | `useFoodSection.ts` → data + form + actions (149→29) | structure | done tick #86
-- [x] ch-108 | `DayHabitHoursCard.tsx` → legend + grid + failed sync (148→42) | structure | done tick #87
-- [x] ch-109 | `useSettingsSection.ts` → data + notifications (146→38) | structure | done tick #88
-- [x] ch-110 | `ringShareCard.ts` → theme + canvas + types (144→11) | structure | done tick #89
-- [x] ch-111 | `mealPlanQueueStorage.ts` → io + queue + failed + cache (143→19 re-export) | structure | done tick #90
-- [x] ch-112 | `useLogRecipeScan.ts` → actions + types (142→53) | structure | done tick #91
-- [x] ch-113 | `useOptimisticFoodLog.ts` → actions + hook types (140→51) | structure | done tick #92
-- [x] ch-114 | `HomeDashboardPanels.tsx` → metrics + feed stacks (140→14) | structure | done tick #93
-- [x] ch-115 | `Agent.tsx` (139) split | structure | AgentSectionHeader + Body + Overlays; 139→71 |
-- [x] ch-116 | `App.tsx` → `useAppShell` + tab/header/banners (296→28) | structure | done (prior tick)
-- [x] ch-117 | Line scan — top: api 302, Day 156, ringShareCardCanvas 143, useCameraCapture 137, weekReportPdf 136 | structure | done tick #95
-- [x] ch-118 | `Day.tsx` → header + meal + schedule + alerts stacks (156→54) | structure | done tick #96
-- [x] ch-119 | `useCameraCapture.ts` → stream + actions modules (137→26) | structure | done tick #97
-- [x] ch-120 | `ringShareCardCanvas.ts` (143) split | structure | drawRings + render + export; canvas 143→16 re-export |
-- [x] ch-121 | `weekReportPdf.ts` (136) split | structure | types + docUtils + sections; main 136→20 |
-- [x] ch-122 | `useMealPlanQueueSyncActions.ts` (181) split | structure | stableCallbacks + actionRunners; main 181→111 |
-- [x] ch-123 | `api.ts` (307) split | structure | apiClient + apiTypes + 7 domain modules; main 307→38 |
-- [x] ch-124 | `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; main 155→122 |
-- [x] ch-125 | `useHomeDashboard.ts` (153) split | structure | refresh hook + homeDashboardDerived; main 153→87 |
-- [x] ch-126 | `useAgentChat.ts` (171) split | structure | useAgentChatStream + composition; 171→99 |
-- [x] ch-127 | Line scan + `useMealPlanShell.ts` (155) split | structure | useMealPlanShellSyncContext; 155→128 |
-- [x] ch-128 | `DayTimelineCard.tsx` (151) split | structure | DayTimelineAgendaPanel + DayScheduleEmptyPanel; 151→99 |
-- [x] ch-129 | Meal plan hook test coverage | robustness | deferred — no test ticks without user request |
-- [x] ch-131 | `useFutureSelfSection.ts` (150) split | structure | load + actions hooks; 150→61 | done tick #131
-- [x] ch-130 | Line scan + `useAppShell.ts` (137) split | structure | useAppShellNavigation; 137→109 | done
-- [x] ch-132 | `api.ts` (319) domain split | structure | apiClient + apiTypes + 8 modules; 319→39 | done tick #132
-- [x] ch-133 | `useAppShellNavigation` onBeforeLogScroll stabilize | structure | useCallback; fixes ch-r11-001 | done tick #133
 - [x] ch-134 | Line scan — post api split targets | structure | api 39; top: AgentActionFeed 138, Settings 133 | done tick #134
 - [x] ch-135 | `AgentActionFeed.tsx` (138) split | structure | hook + poll lib + types; main 138→28 | done tick #135
 - [x] ch-136 | line scan — post ch-135 targets | structure | top: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 | done tick #136

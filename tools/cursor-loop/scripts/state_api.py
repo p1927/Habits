@@ -371,6 +371,22 @@ def cmd_refresh(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prune(args: argparse.Namespace) -> int:
+    """Read STATE.md, prune done backlog items in-place, write back."""
+    root = Path(args.project).resolve()
+    loop_id = args.loop_id
+    state_path, _, sections = _resolve_paths(root, loop_id, args.state_file)
+    text = _load_text(state_path, loop_id, sections)
+    snap = sp.write_state(state_path, text, loop_id=loop_id, backlog_sections=sections or None)
+    _emit_ok("prune", "backlog", loop_id, snap.get("fingerprint", ""))
+    _emit_json({
+        "fingerprint": snap.get("fingerprint", ""),
+        "open_backlog": len(snap.get("open_backlog", [])),
+        "recent_done": len(snap.get("recent_done", [])),
+    })
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Window instance state API")
     parser.add_argument("--project", default=".", help="Project root")
@@ -423,6 +439,7 @@ def main() -> int:
     mark_p.add_argument("--id", required=True)
 
     sub.add_parser("refresh")
+    sub.add_parser("prune")
 
     args = parser.parse_args()
 
@@ -436,6 +453,8 @@ def main() -> int:
         return cmd_mark(args)
     if args.verb == "refresh":
         return cmd_refresh(args)
+    if args.verb == "prune":
+        return cmd_prune(args)
     return 1
 
 
