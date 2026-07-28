@@ -1,20 +1,9 @@
-import { useEffect } from 'react';
-import { SettingsBodyTargetsCard } from '../components/SettingsBodyTargetsCard';
-import { SettingsConnectionCard } from '../components/SettingsConnectionCard';
-import { SettingsGoogleCard } from '../components/SettingsGoogleCard';
-import { SettingsMealNotificationsCard } from '../components/SettingsMealNotificationsCard';
-import { SettingsMealPlanCard } from '../components/SettingsMealPlanCard';
-import { SettingsVoiceStackCard } from '../components/SettingsVoiceStackCard';
+import { SettingsSectionCards } from '../components/SettingsSectionCards';
+import { SettingsSectionChrome } from '../components/SettingsSectionChrome';
+import { SettingsSectionFooter } from '../components/SettingsSectionFooter';
 import { useSettingsSection } from '../hooks/useSettingsSection';
-import { getBuildLabel } from '../lib/config';
-
-interface SettingsProps {
-  serverOnline: boolean;
-  googleConnected: boolean;
-  onBearerSaved?: () => void;
-  oauthSuccess?: boolean;
-  onDismissOauth?: () => void;
-}
+import { useSettingsSectionEffects } from '../hooks/useSettingsSectionEffects';
+import type { SettingsSectionProps } from '../lib/settingsSectionTypes';
 
 export function Settings({
   serverOnline,
@@ -22,115 +11,45 @@ export function Settings({
   onBearerSaved,
   oauthSuccess,
   onDismissOauth,
-}: SettingsProps) {
-  const {
-    bearerInput,
-    setBearerInput,
-    settings,
-    error,
-    saving,
-    mealDay,
-    setMealDay,
-    remindersEnabled,
-    notifyPermission,
-    saveBearer,
-    saveSettings,
-    disconnectGoogle,
-    disconnectSuccess,
-    dismissDisconnectSuccess,
-    authUrl,
-    updateBody,
-    updateNotificationTime,
-    updateMealPlan,
-    handleRemindersChange,
-    handleRequestPermission,
-  } = useSettingsSection({ serverOnline, googleConnected, onBearerSaved });
+}: SettingsSectionProps) {
+  const section = useSettingsSection({ serverOnline, googleConnected, onBearerSaved });
 
-  useEffect(() => {
-    if (!oauthSuccess || !onDismissOauth) return;
-    const id = window.setTimeout(onDismissOauth, 5000);
-    return () => window.clearTimeout(id);
-  }, [oauthSuccess, onDismissOauth]);
-
-  useEffect(() => {
-    if (!disconnectSuccess) return;
-    const id = window.setTimeout(dismissDisconnectSuccess, 5000);
-    return () => window.clearTimeout(id);
-  }, [disconnectSuccess, dismissDisconnectSuccess]);
+  useSettingsSectionEffects({
+    oauthSuccess,
+    onDismissOauth,
+    disconnectSuccess: section.disconnectSuccess,
+    dismissDisconnectSuccess: section.dismissDisconnectSuccess,
+  });
 
   return (
     <section className="section settings-page">
-      <p className="section-eyebrow">Account</p>
-      <h1>Settings</h1>
-      <p className="muted settings-lede">Everything settable here syncs to your Google Sheets — same as Excel.</p>
-
-      {oauthSuccess && (
-        <div className="banner banner-ok banner-revolut banner-row" role="status" aria-live="polite">
-          Google connected successfully.
-          <button type="button" className="btn-pill btn-pill-outline" onClick={onDismissOauth}>Dismiss</button>
-        </div>
-      )}
-
-      {disconnectSuccess && (
-        <div className="banner banner-ok banner-revolut banner-row" role="status" aria-live="polite">
-          Google account disconnected.
-          <button type="button" className="btn-pill btn-pill-outline" onClick={dismissDisconnectSuccess}>
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      <SettingsConnectionCard
-        bearerInput={bearerInput}
-        onBearerChange={setBearerInput}
-        onSave={() => void saveBearer()}
+      <SettingsSectionChrome
+        oauthSuccess={oauthSuccess}
+        onDismissOauth={onDismissOauth}
+        disconnectSuccess={section.disconnectSuccess}
+        dismissDisconnectSuccess={section.dismissDisconnectSuccess}
       />
-
-      <SettingsGoogleCard
+      <SettingsSectionCards
         googleConnected={googleConnected}
-        authUrl={authUrl}
-        onDisconnect={() => void disconnectGoogle()}
+        bearerInput={section.bearerInput}
+        setBearerInput={section.setBearerInput}
+        settings={section.settings}
+        saving={section.saving}
+        mealDay={section.mealDay}
+        setMealDay={section.setMealDay}
+        remindersEnabled={section.remindersEnabled}
+        notifyPermission={section.notifyPermission}
+        authUrl={section.authUrl}
+        saveBearer={section.saveBearer}
+        saveSettings={section.saveSettings}
+        disconnectGoogle={section.disconnectGoogle}
+        updateBody={section.updateBody}
+        updateNotificationTime={section.updateNotificationTime}
+        updateMealPlan={section.updateMealPlan}
+        handleRemindersChange={section.handleRemindersChange}
+        handleRequestPermission={section.handleRequestPermission}
       />
-
-      <SettingsVoiceStackCard />
-
-      {settings && (
-        <>
-          <SettingsBodyTargetsCard
-            settings={settings}
-            saving={saving}
-            onBodyChange={updateBody}
-            onSave={() => void saveSettings()}
-          />
-
-          <SettingsMealNotificationsCard
-            settings={settings}
-            saving={saving}
-            remindersEnabled={remindersEnabled}
-            notifyPermission={notifyPermission}
-            onRemindersChange={handleRemindersChange}
-            onRequestPermission={handleRequestPermission}
-            onNotificationTimeChange={updateNotificationTime}
-            onSave={() => void saveSettings()}
-          />
-
-          <SettingsMealPlanCard
-            settings={settings}
-            mealDay={mealDay}
-            saving={saving}
-            onMealDayChange={setMealDay}
-            onMealPlanChange={updateMealPlan}
-            onSave={() => void saveSettings()}
-          />
-        </>
-      )}
-
-      {error && (
-        <div className="banner banner-warn banner-revolut" role="alert">
-          {error}
-        </div>
-      )}
-      <p className="muted build-label">Build {getBuildLabel()}</p>
+      <SettingsSectionFooter error={section.error} />
     </section>
   );
 }
