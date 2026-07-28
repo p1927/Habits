@@ -19,7 +19,7 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:41:06Z` |
+| last_wake | `2026-07-28T12:44:45Z` |
 | next_action | `relay-210` |
 | phase | `9-arm` |
 | review_status | `skipped` |
@@ -39,7 +39,7 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-209 shipped; arm steady state` |
+| review_skip_reason | `Recovery arm wake 2026-07-28T12:44:45Z; relay-210 deferred to next tick` |
 | review_changed_files | `pwa/src/lib/foodQueueFocus.ts pwa/src/components/LogTypeTodayList.tsx` |
 
 ## IN_PROGRESS
@@ -140,8 +140,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r53-000 | low | Recovery arm wake 2026-07-28T12:44:45Z; relay-210 queued for next tick | round-53 /code-review | closed | — | closed |
 | rf-r52-000 | low | relay-209: queued li exposes aria-label Pending:<food> via foodQueuePendingAriaLabel; AC satisfied | round-52 /code-review | closed | relay-209 | closed |
 | rf-r51-000 | low | Recovery arm wake 2026-07-28T12:40:51Z; no diff — relay-209 queued for next tick | round-51 /code-review | closed | — | closed |
 | rf-r50-000 | low | relay-208: :focus-visible uses --focus-ring tokens on .food-row--queued; AC satisfied | round-50 /code-review | closed | relay-208 | closed |
@@ -300,6 +302,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
