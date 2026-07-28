@@ -21,7 +21,7 @@
 |-------|-------|
 | last_wake | `2026-07-28T13:17:18Z` |
 | next_action | `relay-213 next` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
@@ -29,13 +29,13 @@
 | last_reviewed_round | `69` |
 | worktree_status | `none` |
 | review_fingerprint | `relay212macros` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `62a0abc` |
+| commit_hash | `17f37c1` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
