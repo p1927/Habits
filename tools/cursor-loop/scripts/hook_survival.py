@@ -167,6 +167,26 @@ def main() -> int:
     interval = mod.binding_interval_sec(binding)
     stale_while_armed = False
     if _is_loop_up(binding) and not fired:
+        # Orphan arm: process alive but notify_on_output not attached — sentinel fires silently
+        meta = mod.read_wake_meta(loop_id)
+        if not mod.is_notify_attached(meta):
+            arm_src = (meta.get("arm_source") or "orphan") if meta else "orphan"
+            sf_note = f" and {state_file}" if state_file else ""
+            msg = (
+                f"ORPHAN ARM for {loop_id}: wake process is ARMED but "
+                f"notify_on_output is NOT attached (arm_source={arm_src}). "
+                "Sentinel will fire silently \u2014 this chat will NOT wake. "
+                "Kill the orphan and re-arm: run "
+                f"prepare_arm_wake.sh --state-file "
+                f"{state_file or 'docs/window-instances/' + loop_id + '/STATE.md'} "
+                f"--loop-id {loop_id}, then run ARM_COMMAND with "
+                "block_until_ms=0 AND notify_on_output=SHELL_NOTIFY_ON_OUTPUT. "
+                f"Read {contract_doc}{sf_note}."
+            )
+            if wake_sentinel:
+                msg += f" Monitor: ^{wake_sentinel}"
+            print(json.dumps({"followup_message": msg}))
+            return 0
         if state_file:
             state_path = root / state_file
             if state_path.is_file():

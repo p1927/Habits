@@ -51,6 +51,17 @@ PAYLOAD="$(python3 "${SCRIPT_DIR}/build_wake_prompt.py" \
 echo "$$" > "$WAKE_PIDFILE"
 python3 "${SCRIPT_DIR}/record_wake_meta.py" "$LOOP_ID" "$INTERVAL" "$WAKE_SENTINEL" "$$" 2>/dev/null || true
 
+# Warn immediately if notify_on_output was not recorded — sentinel will fire silently.
+_notify_ok="$(PYTHONPATH="${SCRIPT_DIR}" LOOP_ID="${LOOP_ID}" python3 -c "
+import os, loop_hook_lib as m
+lid = os.environ.get('LOOP_ID', '')
+meta = m.read_wake_meta(lid)
+print('yes' if m.is_notify_attached(meta) else 'no')
+" 2>/dev/null || echo 'no')"
+if [[ "$_notify_ok" != "yes" ]]; then
+    echo "WAKE_ORPHAN_WARN loop_id=${LOOP_ID} notify_on_output not attached — sentinel will fire silently; re-arm with block_until_ms=0 and notify_on_output=SHELL_NOTIFY_ON_OUTPUT"
+fi
+
 cleanup() {
   rm -f "$WAKE_PIDFILE"
 }

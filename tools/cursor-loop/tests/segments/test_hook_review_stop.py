@@ -122,3 +122,63 @@ def test_hook_survival_review_before_wake_armed(minimal_project: Path, monkeypat
     assert "REVIEW INCOMPLETE" in msg
     assert "pwa/test.ts" in msg
     assert "/code-review" in msg
+
+
+def test_hook_survival_orphan_arm_sends_rearm_followup(minimal_project: Path, monkeypatch):
+    """When arm is ARMED but notify_attached=False, survival hook sends ORPHAN ARM rearm message."""
+    loop_id = "worker-relay"
+    state_rel = "docs/window-instances/worker-relay/STATE.md"
+    state_dir = minimal_project / "docs/window-instances/worker-relay"
+    state_dir.mkdir(parents=True)
+    state_text = """## CHECKPOINT
+| Field | Value |
+| phase | `9-arm` |
+| review_status | skipped |
+| review_skip_reason | no changes |
+| code_changed | no |
+"""
+    (state_dir / "STATE.md").write_text(state_text, encoding="utf-8")
+
+    cid = "orphan-arm-test"
+    binding = {
+        "loop_id": loop_id,
+        "contract_doc": "docs/window-instances/worker-relay/INSTANCE.md",
+        "state_file": state_rel,
+        "loop_mode": "dynamic",
+        "wake_sentinel": "AGENT_LOOP_WAKE_WORKER",
+        "interval_sec": "120",
+        "stopped": False,
+    }
+    mod.write_binding(minimal_project, cid, binding)
+
+    monkeypatch.setenv(
+        "CURSOR_LOOP_INPUT",
+        json.dumps({"conversation_id": cid, "workspace_roots": [str(minimal_project)]}),
+    )
+
+    # Arm is alive but notify not attached (orphan)
+    monkeypatch.setattr(hook_survival, "_is_loop_up", lambda _b: True)
+    orphan_meta = {
+        "loop_id": loop_id,
+        "notify_attached": False,
+        "arm_source": "orphan",
+        "notify_pattern": None,
+        "block_until_ms": None,
+    }
+    monkeypatch.setattr(mod, "read_wake_meta", lambda _lid: orphan_meta)
+    monkeypatch.setattr(mod, "read_wake_fired", lambda _lid: None)
+    monkeypatch.setattr(mod, "read_inject_request", lambda _lid: None)
+
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        rc = hook_survival.main()
+    assert rc == 0
+    out = buf.getvalue().strip()
+    assert out, "Expected followup message for orphan arm"
+    payload = json.loads(out)
+    assert "followup_message" in payload
+    msg = payload["followup_message"]
+    assert "ORPHAN ARM" in msg
+    assert loop_id in msg
+    assert "notify_on_output" in msg.lower() or "notify" in msg.lower()
+    assert "block_until_ms=0" in msg
