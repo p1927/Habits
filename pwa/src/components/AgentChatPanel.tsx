@@ -44,7 +44,7 @@ export function AgentChatPanel({
       {showGreeting && (
         <div className="agent-greeting">
           <h2 className="agent-greeting__title">Hello</h2>
-          <p className="agent-greeting__sub">What would you like to do?</p>
+          <p className="agent-greeting__sub">Where should we start?</p>
           {onSelectPrompt && (
             <div className="agent-greeting-grid" role="group" aria-label="Suggested actions">
               {AGENT_GREETING_CATEGORIES.map(({ label, icon, description, text }) => (
