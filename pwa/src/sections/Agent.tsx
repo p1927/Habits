@@ -86,7 +86,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         toolsOpen={s.toolsOpen}
         onToolsOpenChange={s.setToolsOpen}
         onSelectToolPrompt={(text) => void s.sendPrompt(text)}
-        toolsLoading={s.loading}
+        toolsLoading={s.loading || s.scanning}
         attachOpen={s.attachOpen}
         onAttachOpenChange={s.setAttachOpen}
         cameraOpen={s.cameraOpen}
