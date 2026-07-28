@@ -19,28 +19,29 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:26:29Z` |
-| next_action | `relay-215 next` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `72` |
-| last_reviewed_round | `73` |
+| last_wake | `2026-07-28T13:26:22Z` |
+| next_action | `relay-216 next` |
+| phase | `8-close` |
+| review_status | `done` |
+| review_diff_range | `293f020..612e3cd` |
+| code_changed | `yes` |
+| review_round | `74` |
+| last_reviewed_round | `74` |
 | worktree_status | `none` |
-| review_fingerprint | `relay214css` |
-| ritual_step | `9-arm` |
+| review_fingerprint | `relay215tools` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
+| execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `57b8c2d` |
+| commit_hash | `612e3cd` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `Recovery wake 2026-07-28T13:26:29Z; relay-214 shipped in primary SPIN` |
-| review_changed_files | `pwa/src/App.css` |
+| review_changed_files | `pwa/src/components/AgentChatComposer.tsx pwa/src/hooks/useAgentChatStream.ts pwa/src/lib/agentToolStatus.ts server/habits_api/agent/service.py` |
+| current_item_id | `relay-215` |
 
 ## IN_PROGRESS
 
@@ -116,7 +117,7 @@
 - [x] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
 - [x] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
 - [x] relay-214 | Remove dead legacy .card/.card-placeholder/.btn-decline CSS | quality | Given App.css legacy selectors unused in pwa/src, When build runs, Then dead rules removed per maint-004
-- [ ] relay-215 | Agent composer tool status chips during streaming | feature | Given Agent loading with tool_results pending, When streaming, Then status chips above composer per crit-002
+- [x] relay-215 | Agent composer tool status chips during streaming | feature | Given Agent loading with tool_results pending, When streaming, Then status chips above composer per crit-002
 - [ ] relay-216 | Home empty rings Log first meal CTA | feature | Given zero food logged today, When Home rings visible, Then primary CTA opens Log Scan per crit-001
 ## BRAINSTORM (unprioritized)
 
@@ -172,8 +173,14 @@
 
 
 
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r74-003 | medium | tool_end not emitted when execute_tool throws | round-74 /code-review | fix-now | — | closed |
+| rf-r74-001 | high | Shared status labels dropped when multiple tools share label | round-74 /code-review | fix-now | — | closed |
+| rf-r74-000 | low | Bugbot+review: relay-215 tool status chips; wr-r74-001/003 fixed in follow-up commit | round-74 bugbot | closed | — | closed |
 | rf-r73-000 | low | Recovery wake after relay-214 SPIN; relay-215 queued for next tick | round-73 /code-review | closed | — | closed |
 | rf-r72-000 | low | relay-214: removed unused .card/.card-placeholder/.btn-decline; build+lint pass | round-72 /code-review | closed | — | closed |
 | rf-r71-000 | low | Recovery idle wake; backlog empty after relay-213 verify — awaiting PO relay-214+ | round-71 /code-review | closed | — | closed |
@@ -363,6 +370,9 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
 
 
 
