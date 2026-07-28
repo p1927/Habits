@@ -42,6 +42,10 @@
 | review_skip_reason | `relay-212 shipped 17f37c1; review round 68 complete` |
 | review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
 
+| current_item_id | `` |
+| worktree_item_id | `` |
+| worktree_branch | `` |
+| worktree_path | `` |
 ## IN_PROGRESS
 
 *(empty)*
