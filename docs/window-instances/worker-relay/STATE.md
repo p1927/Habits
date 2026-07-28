@@ -9,9 +9,9 @@
 | Field | Value |
 |-------|-------|
 | reviewed_at | 2026-07-28T00:00:00Z |
-| where_we_are | relay-195 shipped |
-| confirmed_next | relay-196 |
-| brainstorm_notes | Agent camera sheet Escape hint; BottomSheet already handles key |
+| where_we_are | relay-196 shipped |
+| confirmed_next | relay-197 |
+| brainstorm_notes | VoiceCoachLayer + fallback voice BottomSheet Escape hints |
 
 ---
 
@@ -19,33 +19,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T00:00:00Z` |
-| confirmed_next | `relay-196` |
-| next_action | `relay-196 Agent voice sheet Escape hint` |
-| phase | `9-arm` |
-| review_status | `skipped` |
+| last_wake | `2026-07-28T00:05:00Z` |
+| confirmed_next | `relay-197` |
+| next_action | `relay-197 Day event detail sheet Escape hint` |
+| phase | `8-close` |
+| review_status | `triaged` |
 | review_skip_reason | `relay-195 reviewed round 26; committed 4305775` |
-| review_diff_range | `relay-195` |
-| code_changed | `no` |
-| review_round | `26` |
-| last_reviewed_round | `26` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `27` |
+| last_reviewed_round | `27` |
 | worktree_status | `none` |
-| current_item_id | `—` |
+| current_item_id | `relay-196` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css,pwa/src/components/AgentSectionOverlays.tsx` |
-| review_fingerprint | `4305775` |
-| ritual_step | `1-wake` |
-| brainstorm_done | `no` |
-| brainstorm_outcome | `—` |
-| execute_started | `no` |
-| fix_verify_done | `no` |
-| reflect_done | `no` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/AgentSectionOverlays.tsx pwa/src/components/VoiceCoachLayer.tsx` |
+| review_fingerprint | `543cabe183f405d7` |
+| ritual_step | `8-commit` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `VoiceCoachLayer + voice fallback BottomSheet: add muted Escape hints; Escape already handled` |
+| execute_started | `yes` |
+| fix_verify_done | `yes` |
+| reflect_done | `yes` |
 | commit_hash | `—` |
-| receive_review_done | `no` |
+| receive_review_done | `yes` |
 | commit_done | `no` |
-| merge_done | `no` |
+| merge_done | `yes` |
 
 ## IN_PROGRESS
 
@@ -96,7 +96,7 @@
 - [x] relay-193 | Log food edit sheet Escape to close | polish | BottomSheet Escape + hint text (788b258)
 - [x] relay-194 | Agent attach sheet Escape to close | polish | BottomSheet Escape + hint text (e11be06)
 - [x] relay-195 | Agent camera sheet Escape hint | polish | BottomSheet Escape + hint text (4305775)
-- [ ] relay-196 | Agent voice sheet Escape hint | polish | Given voice BottomSheet open, When user presses Escape, Then sheet closes + hint text (AgentSectionOverlays)
+- [x] relay-196 | Agent voice sheet Escape hint | polish | VoiceCoachLayer + fallback BottomSheet hint (f6b207a)
 - [ ] relay-197 | Day event detail sheet Escape hint | polish | Given DayCalendarEventSheet open, When user presses Escape, Then sheet closes + hint text | PO Session #26 — post-196 queue refill
 - [ ] relay-198 | Home meal photo gallery Escape hint | polish | Given MealPhotoGallery lightbox open, When user presses Escape, Then closes + visible hint text (Escape handler exists — hint parity) | PO Session #27
 
@@ -154,6 +154,10 @@
 | rf-r26-000 | low | No logic, security, or regression bugs in relay-195 diff (2 files) | round-26 bugbot | closed | — | closed |
 | rf-r26-001 | low | pwa/src/components/AgentSectionOverlays.tsx:65 Escape hint; BottomSheet handles keydown | round-26 bugbot | closed | relay-195 | closed |
 | rf-r26-002 | low | pwa/src/App.css:3778-3782 agent-camera-sheet-hint mirrors agent-attach-sheet-hint | round-26 /code-review | closed | — | closed |
+| rf-r27-000 | low | No logic, security, or regression bugs in relay-196 diff (3 files) | round-27 bugbot | closed | — | closed |
+| rf-r27-001 | low | pwa/src/components/VoiceCoachLayer.tsx:51 Escape hint; keydown at :16-17 | round-27 bugbot | closed | relay-196 | closed |
+| rf-r27-002 | low | pwa/src/components/AgentSectionOverlays.tsx:78 fallback voice BottomSheet hint | round-27 /code-review | closed | — | closed |
+| rf-r27-003 | low | pwa/src/App.css:3784-3788 agent-voice-sheet-hint mirrors agent-camera-sheet-hint | round-27 /code-review | closed | — | closed |
 
 ---
 
@@ -161,6 +165,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | relay-196 | done | build | f6b207a |
 | 2026-07-28 | relay-195 | done | build | 4305775 |
 | 2026-07-27 | relay-194 | done | build | e11be06 |
 | 2026-07-27 | relay-193 | done | build | 788b258 |
