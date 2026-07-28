@@ -22,30 +22,30 @@
 | last_wake | `2026-07-28T00:05:00Z` |
 | confirmed_next | `relay-197` |
 | next_action | `relay-197 Day event detail sheet Escape hint` |
-| phase | `8-close` |
-| review_status | `triaged` |
-| review_skip_reason | `relay-195 reviewed round 26; committed 4305775` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| phase | `9-arm` |
+| review_status | `skipped` |
+| review_skip_reason | `relay-196 reviewed round 27; committed f6b207a` |
+| review_diff_range | `relay-196` |
+| code_changed | `no` |
 | review_round | `27` |
 | last_reviewed_round | `27` |
 | worktree_status | `none` |
-| current_item_id | `relay-196` |
+| current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/AgentSectionOverlays.tsx pwa/src/components/VoiceCoachLayer.tsx` |
-| review_fingerprint | `543cabe183f405d7` |
-| ritual_step | `8-commit` |
-| brainstorm_done | `yes` |
-| brainstorm_outcome | `VoiceCoachLayer + voice fallback BottomSheet: add muted Escape hints; Escape already handled` |
-| execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| review_changed_files | `pwa/src/App.css,pwa/src/components/AgentSectionOverlays.tsx,pwa/src/components/VoiceCoachLayer.tsx` |
+| review_fingerprint | `f6b207a` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
+| brainstorm_outcome | `—` |
+| execute_started | `no` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `—` |
-| receive_review_done | `yes` |
+| receive_review_done | `no` |
 | commit_done | `no` |
-| merge_done | `yes` |
+| merge_done | `no` |
 
 ## IN_PROGRESS
 
