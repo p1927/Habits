@@ -22,7 +22,7 @@
 | last_wake | `2026-07-28T13:08:21Z` |
 | next_action | `relay-212 next` |
 | phase | `9-arm` |
-| review_status | `done` |
+| review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `67` |
@@ -39,12 +39,8 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
+| review_skip_reason | `relay-211 shipped 5c2c524; review round 67 complete` |
 | review_changed_files | `pwa/src/components/LogTypeTodayList.tsx` |
-| worktree_path | `` |
-| worktree_branch | `` |
-| worktree_item_id | `` |
-| current_item_id | `` |
 
 ## IN_PROGRESS
 
