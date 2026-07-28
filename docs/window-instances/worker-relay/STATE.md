@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T03:25:00Z |
-| where_we_are | relay-202 shipped |
-| confirmed_next | relay-203 |
-| brainstorm_notes | Greeting cards disabled offline/scanning; attach preview hide next |
+| reviewed_at | 2026-07-28T10:46:00Z |
+| where_we_are | relay-203 shipped |
+| confirmed_next | relay-204 |
+| brainstorm_notes | Greeting hides on attach preview; disclaimer hide next |
 
 ---
 
@@ -19,33 +19,33 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T03:25:00Z` |
-| confirmed_next | `relay-203` |
-| next_action | `relay-203 Agent greeting hide when attach preview open` |
+| last_wake | `2026-07-28T10:46:00Z` |
+| confirmed_next | `relay-204` |
+| next_action | `relay-204 Agent composer disclaimer hide when attach preview open` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
-| review_diff_range | `none` |
+| review_skip_reason | `No uncommitted diff at Phase 5 — committed in worktree before prepare_review_tick` |
+| review_diff_range | `main...552a0e0` |
 | code_changed | `no` |
 | review_round | `33` |
 | last_reviewed_round | `33` |
-| worktree_status | `active` |
-| current_item_id | `relay-203` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-203` |
-| worktree_item_id | `relay-203` |
-| review_changed_files | `—` |
+| worktree_status | `none` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `pwa/src/components/AgentChatPanel.tsx pwa/src/components/AgentSectionBody.tsx pwa/src/sections/Agent.tsx` |
 | review_fingerprint | `—` |
-| ritual_step | `1-wake` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
-| fix_verify_done | `no` |
-| reflect_done | `no` |
-| commit_hash | `—` |
-| receive_review_done | `no` |
-| commit_done | `no` |
-| merge_done | `no` |
+| execute_started | `yes` |
+| fix_verify_done | `yes` |
+| reflect_done | `yes` |
+| commit_hash | `552a0e0` |
+| receive_review_done | `yes` |
+| commit_done | `yes` |
+| merge_done | `yes` |
 
 ## IN_PROGRESS
 
@@ -103,7 +103,11 @@
 - [x] relay-200 | Agent empty state: single prompt surface (greeting OR chips) | polish | Greeting grid only; composer chips + AgentToolChips removed; composerDraft hides cards after prefill (ee37839)
 - [x] relay-201 | Remove dead agent-tool-chips CSS | polish | Deleted unused rules from App.css and agent-gemini.css (2d5575c)
 - [x] relay-202 | Agent greeting cards disable when offline or scanning | polish | greetingActionsDisabled via serverOnline/loading/scanning (4fc6ec6)
-- [ ] relay-203 | Agent greeting hide when attach preview open | polish | Hide greeting grid when attachImage set to avoid layout clash above attach preview
+- [x] relay-203 | Agent greeting hide when attach preview open | polish | Hide greeting grid when attachImage set to avoid layout clash above attach preview
+- [ ] relay-204 | Agent composer disclaimer hide when attach preview open | polish | showDisclaimer excludes attachImage like greeting hide
+- [ ] relay-205 | Agent attach sheet close returns focus to composer | polish | After pick/cancel attach sheet, focus textarea
+- [ ] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
+- [ ] relay-204 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
 
 ## BRAINSTORM (unprioritized)
 
@@ -181,7 +185,7 @@
 | rf-r31-002 | low | Greeting visible when attach preview open | round-31 /code-review | backlog | relay-203 | closed |
 | rf-r31-003 | low | Dead .agent-tool-chips CSS after component removal | round-31 /code-review | backlog | relay-201 | closed |
 | rf-r31-004 | low | No tests for showGreeting vs composerDraft | round-31 /code-review | backlog | — | closed |
-| rf-r31-005 | low | No server changes for relay-200 | round-31 /code-review | closed | — | closed |
+| rf-r33-000 | low | relay-203 AC satisfied: showGreeting excludes attachImage via prop chain | round-33 /code-review | closed | relay-203 | closed |
 
 ---
 
@@ -189,6 +193,7 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | relay-203 | done | build | 552a0e0 |
 | 2026-07-28 | relay-202 | done | build | 4fc6ec6 |
 | 2026-07-28 | relay-200 | done | build | ee37839 |
 | 2026-07-28 | relay-199 | done | build | 5aefaef |
