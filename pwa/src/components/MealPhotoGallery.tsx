@@ -95,6 +95,7 @@ export function MealPhotoGallery({ photos }: MealPhotoGalleryProps) {
                 {activeIndex + 1} / {photos.length}
               </p>
             )}
+            <p className="muted meal-photo-lightbox-hint">Press Escape to close</p>
           </div>
         </div>
       )}

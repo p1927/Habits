@@ -2435,6 +2435,12 @@ button:disabled {
   color: var(--muted);
 }
 
+.meal-photo-lightbox-hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
 .meal-photo-lightbox-close {
   position: absolute;
   top: -0.25rem;
