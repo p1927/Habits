@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:08:01Z |
-| where_we_are | relay-211 shipped (5c2c524); relay-212 next |
-| confirmed_next | relay-212 |
-| brainstorm_notes | Stale SPIN wake; relay-211 done in overlapping recovery |
+| reviewed_at | 2026-07-28T13:17:18Z |
+| where_we_are | relay-212 shipped (17f37c1); relay-213 next |
+| confirmed_next | relay-213 |
+| brainstorm_notes |  |
 
 ---
 
@@ -19,33 +19,29 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:08:01Z` |
+| last_wake | `2026-07-28T13:17:18Z` |
 | next_action | `relay-213 next` |
-| phase | `9-arm` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `68` |
-| last_reviewed_round | `68` |
+| last_reviewed_round | `69` |
 | worktree_status | `none` |
 | review_fingerprint | `relay212macros` |
-| ritual_step | `9-arm` |
+| ritual_step | `8-close` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `yes` |
+| execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `17f37c1` |
+| commit_hash | `62a0abc` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-212 shipped 17f37c1; review round 68 complete` |
+| review_skip_reason | `Recovery wake 2026-07-28T13:17:18Z; relay-212 shipped in primary SPIN; STATE sync only` |
 | review_changed_files | `pwa/src/components/HomeMacrosCard.tsx pwa/src/hooks/useAppShellNavigation.ts pwa/src/components/AppTabContent.tsx` |
 
-| current_item_id | `` |
-| worktree_item_id | `` |
-| worktree_branch | `` |
-| worktree_path | `` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -165,8 +161,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r69-000 | low | Recovery wake STATE sync; relay-212 shipped in same turn primary SPIN | round-69 /code-review | closed | — | closed |
 | rf-r68-000 | low | relay-212: navigateLogType drill-down matches relay-162 history pattern; HomeMacrosCard tappable with aria-label | round-68 /code-review | closed | — | closed |
 | rf-r67-000 | low | relay-211: ul role=list + aria-label matches AC; explicit attrs satisfy WCAG 1.3.1 | round-67 /code-review | closed | — | closed |
 | rf-r66-000 | low | Idle SPIN tick 2026-07-28T13:05:17Z; backlog empty — no product diff | round-66 /code-review | closed | — | closed |
@@ -347,6 +345,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
