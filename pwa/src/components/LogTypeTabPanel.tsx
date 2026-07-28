@@ -38,6 +38,7 @@ export interface LogTypeTabPanelProps {
   onRetryPending: (entry: OptimisticFoodEntry) => void;
   onDismissPending: (id: string) => void;
   onDeleteItem: (row: number) => void;
+  scrollToFoodQueue?: number;
 }
 
 export function LogTypeTabPanel({
@@ -68,6 +69,7 @@ export function LogTypeTabPanel({
   onRetryPending,
   onDismissPending,
   onDeleteItem,
+  scrollToFoodQueue,
 }: LogTypeTabPanelProps) {
   return (
     <>
@@ -123,6 +125,7 @@ export function LogTypeTabPanel({
         onRetryPending={onRetryPending}
         onDismissPending={onDismissPending}
         onDeleteItem={onDeleteItem}
+        scrollToFoodQueue={scrollToFoodQueue}
       />
     </>
   );

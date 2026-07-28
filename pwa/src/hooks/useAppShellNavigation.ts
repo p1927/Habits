@@ -3,6 +3,7 @@ import type { TabId } from '../lib/config';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 import { parseInitialAppTab } from '../lib/appShellShared';
 import { preloadAppTabChunk } from '../lib/appTabPreload';
+import { useFoodQueueScroll } from './useFoodQueueScroll';
 import { useMealPlanQueueScroll } from './useMealPlanQueueScroll';
 
 interface UseAppShellNavigationOptions {
@@ -33,6 +34,12 @@ export function useAppShellNavigation({
     handleTabChange,
     { onBeforeLogScroll },
   );
+
+  const navigateLogTab = useCallback(() => {
+    handleTabChange('log');
+  }, [handleTabChange]);
+
+  const { foodQueueFocusToken, navigateFoodQueuePending } = useFoodQueueScroll(navigateLogTab);
 
   const navigateMealPlanSyncSource = useCallback(
     (source: MealPlanSyncSource) => {
@@ -78,5 +85,7 @@ export function useAppShellNavigation({
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
+    foodQueueFocusToken,
+    navigateFoodQueuePending,
   };
 }

@@ -26,6 +26,8 @@ export function useAppShell() {
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
+    foodQueueFocusToken,
+    navigateFoodQueuePending,
   } = useAppShellNavigation({
     setOpenLogMealPlan,
     setOpenLogHistory,
@@ -95,6 +97,8 @@ export function useAppShell() {
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
+    foodQueueFocusToken,
+    navigateFoodQueuePending,
     agentPrompt,
     handleTabChange,
     refresh,

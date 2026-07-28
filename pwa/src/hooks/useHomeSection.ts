@@ -11,6 +11,7 @@ interface UseHomeSectionOptions {
   onOpenLogRecipes?: () => void;
   onOpenFutureSelf?: () => void;
   scrollToMealPlanQueue?: number;
+  onNavigateFoodQueuePending?: () => void;
 }
 
 export function useHomeSection({
@@ -20,6 +21,7 @@ export function useHomeSection({
   onOpenLogRecipes,
   onOpenFutureSelf,
   scrollToMealPlanQueue,
+  onNavigateFoodQueuePending,
 }: UseHomeSectionOptions) {
   const [mealPlanMessage, setMealPlanMessage] = useState('');
   const [recipeMessage, setRecipeMessage] = useState('');
@@ -60,6 +62,7 @@ export function useHomeSection({
     onOpenLogRecipes,
     onOpenFutureSelf,
     scrollToMealPlanQueue,
+    onNavigateFoodQueuePending,
     pullProgress: dashboard.pullProgress,
     refreshing: dashboard.refreshing,
     triggerRefresh: dashboard.triggerRefresh,

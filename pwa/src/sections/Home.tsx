@@ -14,6 +14,7 @@ interface HomeProps {
   onOpenLogRecipes?: () => void;
   onOpenFutureSelf?: () => void;
   scrollToMealPlanQueue?: number;
+  onNavigateFoodQueuePending?: () => void;
 }
 
 export function Home(props: HomeProps) {
@@ -34,6 +35,7 @@ export function Home(props: HomeProps) {
         queuedCount={h.queuedCount}
         queueSyncClearedToken={h.queueSyncClearedToken}
         onDismiss={h.dismissAllQueued}
+        onFocusQueue={h.onNavigateFoodQueuePending}
       />
 
       <FoodFailedBanner failedCount={h.failedCount} onRetryAll={() => h.retryAllFailed()} />

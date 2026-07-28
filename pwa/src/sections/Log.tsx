@@ -18,6 +18,8 @@ interface LogProps {
   onLogRecipesOpened?: () => void;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   scrollToMealPlanQueue?: number;
+  scrollToFoodQueue?: number;
+  onNavigateFoodQueuePending?: () => void;
 }
 
 export function Log({
@@ -30,6 +32,8 @@ export function Log({
   onLogRecipesOpened,
   onNavigateMealPlanSyncSource,
   scrollToMealPlanQueue,
+  scrollToFoodQueue,
+  onNavigateFoodQueuePending,
 }: LogProps) {
   const {
     tab,
@@ -55,6 +59,7 @@ export function Log({
     openLogRecipes,
     onLogRecipesOpened,
     scrollToMealPlanQueue,
+    scrollToFoodQueue,
   });
 
   return (
@@ -67,6 +72,7 @@ export function Log({
         queuedCount={queuedCount}
         queueSyncClearedToken={queueSyncClearedToken}
         onDismiss={dismissFoodLogQueue}
+        onFocusQueue={onNavigateFoodQueuePending}
       />
 
       <FoodFailedBanner failedCount={failedCount} onRetryAll={() => retryAllFailed()} />

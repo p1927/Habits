@@ -16,6 +16,7 @@ export function useLogTabPanelsProps(options: BuildLogTabPanelsPropsInput) {
     [
       options.loading,
       options.scrollToMealPlanQueue,
+      options.scrollToFoodQueue,
       options.foodScan,
       options.typeTab,
       options.foodLog.pending,

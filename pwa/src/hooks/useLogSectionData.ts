@@ -18,6 +18,7 @@ interface UseLogSectionDataOptions {
   openLogRecipes?: boolean;
   onLogRecipesOpened?: () => void;
   scrollToMealPlanQueue?: number;
+  scrollToFoodQueue?: number;
   onTabRecipes?: () => void;
 }
 
@@ -32,6 +33,7 @@ export function useLogSectionData({
   openLogRecipes,
   onLogRecipesOpened,
   scrollToMealPlanQueue,
+  scrollToFoodQueue,
   onTabRecipes,
 }: UseLogSectionDataOptions) {
   const [data, setData] = useState<FoodTodayResponse | null>(null);
@@ -86,6 +88,11 @@ export function useLogSectionData({
     if (!scrollToMealPlanQueue) return;
     setTab('mealplan');
   }, [scrollToMealPlanQueue, setTab]);
+
+  useEffect(() => {
+    if (!scrollToFoodQueue) return;
+    setTab('type');
+  }, [scrollToFoodQueue, setTab]);
 
   useEffect(() => {
     void refresh();

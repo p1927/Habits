@@ -24,6 +24,8 @@ type AppTabContentProps = Pick<
   | 'navigateLogRecipes'
   | 'navigateAgentPrompt'
   | 'navigateFutureSelf'
+  | 'foodQueueFocusToken'
+  | 'navigateFoodQueuePending'
   | 'agentPrompt'
   | 'refresh'
 >;
@@ -46,6 +48,8 @@ export function AppTabContent({
   navigateLogRecipes,
   navigateAgentPrompt,
   navigateFutureSelf,
+  foodQueueFocusToken,
+  navigateFoodQueuePending,
   agentPrompt,
   refresh,
 }: AppTabContentProps) {
@@ -59,6 +63,7 @@ export function AppTabContent({
           onOpenLogRecipes={navigateLogRecipes}
           onOpenFutureSelf={navigateFutureSelf}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
+          onNavigateFoodQueuePending={navigateFoodQueuePending}
         />
       )}
       {tab === 'log' && (
@@ -72,6 +77,8 @@ export function AppTabContent({
           onLogRecipesOpened={() => setOpenLogRecipes(false)}
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
+          scrollToFoodQueue={foodQueueFocusToken}
+          onNavigateFoodQueuePending={navigateFoodQueuePending}
         />
       )}
       {tab === 'day' && (

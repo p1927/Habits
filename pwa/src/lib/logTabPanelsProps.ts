@@ -12,6 +12,7 @@ export interface LogTabPanelsProps {
   serverOnline: boolean;
   loading: boolean;
   scrollToMealPlanQueue?: number;
+  scrollToFoodQueue?: number;
   scanPreviewUrl: string | null;
   scanResult: FoodScanResult | null;
   scanHistory: ScanHistoryEntry[];

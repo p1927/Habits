@@ -1,6 +1,8 @@
 import { Card } from './ui/Card';
 import type { FoodLogItem, FoodTodayResponse } from '../lib/api';
 import type { OptimisticFoodEntry } from '../hooks/useOptimisticFoodLog';
+import { useFoodQueuePendingFocus } from '../hooks/useFoodQueuePendingFocus';
+import { foodQueuePendingItemId } from '../lib/foodQueueFocus';
 import { formatRelativeTime } from '../lib/relativeTime';
 
 export interface LogTypeTodayListProps {
@@ -9,6 +11,7 @@ export interface LogTypeTodayListProps {
   onRetryPending: (entry: OptimisticFoodEntry) => void;
   onDismissPending: (id: string) => void;
   onDeleteItem: (row: number) => void;
+  scrollToFoodQueue?: number;
 }
 
 export function LogTypeTodayList({
@@ -17,7 +20,10 @@ export function LogTypeTodayList({
   onRetryPending,
   onDismissPending,
   onDeleteItem,
+  scrollToFoodQueue,
 }: LogTypeTodayListProps) {
+  useFoodQueuePendingFocus(pending, scrollToFoodQueue);
+
   return (
     <Card className="log-type-card home-export-card--health">
       <p className="section-eyebrow">Today</p>
@@ -37,7 +43,12 @@ export function LogTypeTodayList({
                     : ' · Queued offline'
                   : ' · Failed to save';
             return (
-              <li key={entry.id} className={`food-row food-row--${entry.status}`}>
+              <li
+                key={entry.id}
+                id={entry.status === 'queued' ? foodQueuePendingItemId(entry.id) : undefined}
+                tabIndex={entry.status === 'queued' ? -1 : undefined}
+                className={`food-row food-row--${entry.status}`}
+              >
                 <div>
                   <strong>{entry.food}</strong>
                   <span className="muted">

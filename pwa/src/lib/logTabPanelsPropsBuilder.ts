@@ -31,6 +31,7 @@ export type RecipeScanSwipeHandler = (dir: SwipeDirection) => void;
 export interface BuildLogTabPanelsPropsInput {
   loading: boolean;
   scrollToMealPlanQueue?: number;
+  scrollToFoodQueue?: number;
   foodScan: FoodScan;
   recipeScan: RecipeScan;
   typeTab: TypeTab;
@@ -47,6 +48,7 @@ export interface AssembledLogTabPanelsPropsInput extends BuildLogTabPanelsPropsI
 export function buildLogTabPanelsProps({
   loading,
   scrollToMealPlanQueue,
+  scrollToFoodQueue,
   foodScan,
   recipeScan,
   typeTab,
@@ -62,6 +64,7 @@ export function buildLogTabPanelsProps({
   return {
     loading,
     scrollToMealPlanQueue,
+    scrollToFoodQueue,
     scanPreviewUrl: foodScan.scanPreviewUrl,
     scanResult: foodScan.scanResult,
     scanHistory: foodScan.scanHistory,

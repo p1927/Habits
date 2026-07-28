@@ -5,9 +5,15 @@ export interface FoodQueueBannerProps {
   queuedCount: number;
   queueSyncClearedToken: number;
   onDismiss: () => void;
+  onFocusQueue?: () => void;
 }
 
-export function FoodQueueBanner({ queuedCount, queueSyncClearedToken, onDismiss }: FoodQueueBannerProps) {
+export function FoodQueueBanner({
+  queuedCount,
+  queueSyncClearedToken,
+  onDismiss,
+  onFocusQueue,
+}: FoodQueueBannerProps) {
   const [announceEmpty, setAnnounceEmpty] = useState(false);
 
   useEffect(() => {
@@ -18,11 +24,24 @@ export function FoodQueueBanner({ queuedCount, queueSyncClearedToken, onDismiss 
   }, [queueSyncClearedToken]);
 
   if (queuedCount > 0) {
+    const queueLabel = `${queuedCount} food log${queuedCount === 1 ? '' : 's'} queued offline — tap to view queue`;
+
     return (
       <div className="banner banner-warn banner-row banner-revolut" role="status">
-        <span>
-          {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
-        </span>
+        {onFocusQueue ? (
+          <button
+            type="button"
+            className="food-queue-banner__body"
+            aria-label={queueLabel}
+            onClick={onFocusQueue}
+          >
+            {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — tap to view queue
+          </button>
+        ) : (
+          <span>
+            {queuedCount} food log{queuedCount === 1 ? '' : 's'} queued offline — will sync when online.
+          </span>
+        )}
         <button
           type="button"
           className="btn-pill btn-pill-outline"
