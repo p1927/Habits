@@ -75,6 +75,7 @@ export function AgentSectionOverlays({
       ) : (
         <BottomSheet open={voiceOpen} onClose={() => onVoiceOpenChange(false)} title="Voice coach">
           <p className="muted">Set VITE_VOICE_UI_URL in config.</p>
+          <p className="muted agent-voice-sheet-hint">Press Escape to close</p>
         </BottomSheet>
       )}
     </>

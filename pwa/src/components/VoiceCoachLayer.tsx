@@ -48,6 +48,7 @@ export function VoiceCoachLayer({ url, open, onClose, onStatusChange }: VoiceCoa
           </>
         )}
         <VoiceEmbed url={url} agent="habits" persist={!open} onStatusChange={onStatusChange} />
+        {open && <p className="muted agent-voice-sheet-hint">Press Escape to close</p>}
       </div>
     </div>
   );
