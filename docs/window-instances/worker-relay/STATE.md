@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:17:12Z |
-| where_we_are | relay-212 shipped (17f37c1); relay-213 verify |
-| confirmed_next | relay-213 |
+| reviewed_at | 2026-07-28T13:26:29Z |
+| where_we_are | relay-214 shipped (57b8c2d); relay-215 next |
+| confirmed_next | relay-215 |
 | brainstorm_notes | AgentToolsSheet already auto-sends on row tap |
 
 ---
@@ -19,14 +19,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:20:36Z` |
+| last_wake | `2026-07-28T13:26:29Z` |
 | next_action | `relay-215 next` |
 | phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `72` |
-| last_reviewed_round | `72` |
+| last_reviewed_round | `73` |
 | worktree_status | `none` |
 | review_fingerprint | `relay214css` |
 | ritual_step | `9-arm` |
@@ -39,7 +39,7 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `relay-214 shipped 57b8c2d; review round 72 complete` |
+| review_skip_reason | `Recovery wake 2026-07-28T13:26:29Z; relay-214 shipped in primary SPIN` |
 | review_changed_files | `pwa/src/App.css` |
 
 ## IN_PROGRESS
@@ -171,8 +171,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r73-000 | low | Recovery wake after relay-214 SPIN; relay-215 queued for next tick | round-73 /code-review | closed | — | closed |
 | rf-r72-000 | low | relay-214: removed unused .card/.card-placeholder/.btn-decline; build+lint pass | round-72 /code-review | closed | — | closed |
 | rf-r71-000 | low | Recovery idle wake; backlog empty after relay-213 verify — awaiting PO relay-214+ | round-71 /code-review | closed | — | closed |
 | rf-r70-000 | low | relay-213 verify: AgentToolsSheet row tap calls sendPrompt(text) then onClose — AC satisfied in main (cfec619+) | round-70 /code-review | closed | — | closed |
@@ -361,6 +363,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
