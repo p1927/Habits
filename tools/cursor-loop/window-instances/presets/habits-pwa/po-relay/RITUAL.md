@@ -3,6 +3,19 @@
 **extends:** `product`  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
+## Phase 1 — Wake
+
+**First action — before reading any file:**
+
+```bash
+bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
+  --state-file docs/window-instances/po-relay/STATE.md \
+  --loop-id po-relay \
+  --apply
+```
+
+Read INSTANCE → IDENTITY → RITUAL; read wake JSON `state_snapshot` — **never read `STATE.md` directly**; confirm `loop_id`.
+
 ## Phase 2 — Orient
 
 Snapshot own state — **do not open STATE.md directly**:

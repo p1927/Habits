@@ -5,7 +5,16 @@
 
 ## Phase 1 — Wake
 
-Read INSTANCE → IDENTITY → RITUAL. If `idle_mode=true` in the wake JSON `state_snapshot`: immediately run:
+**First action — before reading any file:**
+
+```bash
+bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
+  --state-file docs/window-instances/worker-relay/STATE.md \
+  --loop-id worker-relay \
+  --apply
+```
+
+Read INSTANCE → IDENTITY → RITUAL. Read wake JSON `state_snapshot` — **never read `STATE.md` directly**. If `idle_mode=true` in the wake JSON `state_snapshot`: immediately run:
 
 ```bash
 state_api.sh . --loop-id worker-relay set checkpoint idle_mode_triggered=yes idle_rescue_done=no

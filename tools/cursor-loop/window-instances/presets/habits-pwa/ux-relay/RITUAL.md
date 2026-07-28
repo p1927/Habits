@@ -3,6 +3,19 @@
 **extends:** `designer`  
 **base:** [`../_template/RITUAL.base.md`](../_template/RITUAL.base.md)
 
+## Phase 1 — Wake
+
+**First action — before reading any file:**
+
+```bash
+bash tools/cursor-loop/scripts/advance_ritual_step.sh . \
+  --state-file docs/window-instances/ux-relay/STATE.md \
+  --loop-id ux-relay \
+  --apply
+```
+
+Read INSTANCE → IDENTITY → RITUAL; read wake JSON `state_snapshot` — **never read `STATE.md` directly**; confirm `loop_id`.
+
 ## Phase 2 — Orient
 
 Read po-relay UI_PROPOSALS and own CRITIQUE_BACKLOG via handoff — never open STATE.md files directly:
