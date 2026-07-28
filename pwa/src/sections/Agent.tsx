@@ -38,6 +38,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         loading={s.loading}
         listRef={s.listRef}
         composerDraft={s.input}
+        scanning={s.scanning}
         onSelectPrompt={s.setInput}
         onRegenerateLastReply={() => void s.regenerateLastReply()}
         context={s.context}

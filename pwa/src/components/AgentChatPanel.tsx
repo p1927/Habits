@@ -7,6 +7,7 @@ export interface AgentChatPanelProps {
   loading: boolean;
   listRef: React.RefObject<HTMLDivElement | null>;
   composerDraft?: string;
+  greetingActionsDisabled?: boolean;
   onSelectPrompt?: (text: string) => void;
   onRegenerateLastReply?: () => void;
 }
@@ -16,6 +17,7 @@ export function AgentChatPanel({
   loading,
   listRef,
   composerDraft = '',
+  greetingActionsDisabled = false,
   onSelectPrompt,
   onRegenerateLastReply,
 }: AgentChatPanelProps) {
@@ -48,6 +50,7 @@ export function AgentChatPanel({
                   key={label}
                   type="button"
                   className="agent-greeting-card"
+                  disabled={greetingActionsDisabled}
                   onClick={() => onSelectPrompt(text)}
                 >
                   <span className="agent-greeting-card__icon" aria-hidden="true">{icon}</span>
