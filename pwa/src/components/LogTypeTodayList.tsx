@@ -2,7 +2,7 @@ import { Card } from './ui/Card';
 import type { FoodLogItem, FoodTodayResponse } from '../lib/api';
 import type { OptimisticFoodEntry } from '../hooks/useOptimisticFoodLog';
 import { useFoodQueuePendingFocus } from '../hooks/useFoodQueuePendingFocus';
-import { foodQueuePendingItemId } from '../lib/foodQueueFocus';
+import { foodQueuePendingAriaLabel, foodQueuePendingItemId } from '../lib/foodQueueFocus';
 import { formatRelativeTime } from '../lib/relativeTime';
 
 export interface LogTypeTodayListProps {
@@ -47,6 +47,7 @@ export function LogTypeTodayList({
                 key={entry.id}
                 id={entry.status === 'queued' ? foodQueuePendingItemId(entry.id) : undefined}
                 tabIndex={entry.status === 'queued' ? -1 : undefined}
+                aria-label={entry.status === 'queued' ? foodQueuePendingAriaLabel(entry.food) : undefined}
                 className={`food-row food-row--${entry.status}`}
               >
                 <div>
