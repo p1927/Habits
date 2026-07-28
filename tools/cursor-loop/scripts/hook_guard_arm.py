@@ -13,6 +13,7 @@ import loop_hook_lib as mod
 _RECOVERY_FOREGROUND = re.compile(r"--recovery-foreground")
 _PREPARE_EXEC = re.compile(r"prepare_arm_wake\.sh[^\n;|&]*--exec")
 _ARM_WAKE = re.compile(r"(?:^|[;&|\s(])(?:bash\s+)?(?:[^\s'\"]*[/])?arm-wake\.sh\b")
+_PHASE9_NOTIFY_ARM = re.compile(r"(?:^|[;&|\s(])(?:bash\s+)?(?:[^\s'\"]*[/])?phase9-notify-arm\.sh\b")
 _PREPARE_ARM = re.compile(r"prepare_arm_wake\.sh")
 
 
@@ -67,7 +68,14 @@ def _is_arm_command(command: str) -> bool:
     cmd = command.strip()
     if not cmd:
         return False
-    return bool(_ARM_WAKE.search(cmd) or _PREPARE_ARM.search(cmd))
+    return bool(_ARM_WAKE.search(cmd) or _PHASE9_NOTIFY_ARM.search(cmd) or _PREPARE_ARM.search(cmd))
+
+
+def _is_notify_arm_command(command: str) -> bool:
+    cmd = command.strip()
+    if not cmd:
+        return False
+    return bool(_PHASE9_NOTIFY_ARM.search(cmd) or (_ARM_WAKE.search(cmd) and not _PREPARE_EXEC.search(cmd)))
 
 
 def should_deny_arm(
@@ -91,7 +99,7 @@ def should_deny_arm(
             "Use --recovery-foreground only when stop hook sent a recovery wake."
         )
 
-    if _ARM_WAKE.search(cmd) and not _PREPARE_EXEC.search(cmd):
+    if _is_notify_arm_command(cmd) and not _PREPARE_EXEC.search(cmd):
         if block_until_ms is not None and block_until_ms > 0:
             return False, None
         if enforce_notify:
@@ -101,7 +109,7 @@ def should_deny_arm(
                     "matching AGENT_LOOP_WAKE_* (use SHELL_NOTIFY_ON_OUTPUT from prepare_arm_wake.sh). "
                     "Also set block_until_ms=0 for background arm."
                 )
-            if block_until_ms != 0:
+            if block_until_ms is not None and block_until_ms != 0:
                 return True, (
                     "BLOCKED: background arm-wake.sh requires block_until_ms=0 plus "
                     "notify_on_output on monitor_regex."
@@ -144,9 +152,9 @@ def main() -> int:
 
     if (
         event == "preToolUse"
-        and _ARM_WAKE.search(command)
+        and _is_notify_arm_command(command)
         and notify_pattern
-        and block_ms == 0
+        and (block_ms == 0 or block_ms is None)
         and "AGENT_LOOP_WAKE" in notify_pattern
     ):
         loop_id, _ = _loop_context_from_command(command)
@@ -154,7 +162,7 @@ def main() -> int:
             mod.write_wake_pending(
                 loop_id,
                 notify_pattern=notify_pattern,
-                block_until_ms=0,
+                block_until_ms=0 if block_ms is None else block_ms,
                 arm_source="agent_notify",
             )
 

@@ -62,7 +62,7 @@ echo "monitor_regex=${MONITOR_REGEX}"
 echo "SHELL_BLOCK_UNTIL_MS=${BLOCK_MS}"
 echo "SHELL_NOTIFY_ON_OUTPUT=${MONITOR_REGEX}"
 echo "PHASE_9_MODE=background_notify_primary"
-echo "ARM_COMMAND=LOOP_ID=${LOOP_ID} WAKE_SENTINEL=${WAKE_SENTINEL} INTERVAL=${INTERVAL_SEC} CONTRACT_DOC=${CONTRACT_DOC} STATE_FILE=${STATE_FILE} PROJECT_ROOT=${ROOT} bash tools/cursor-loop/scripts/arm-wake.sh"
+echo "ARM_COMMAND=LOOP_ID=${LOOP_ID} WAKE_SENTINEL=${WAKE_SENTINEL} INTERVAL=${INTERVAL_SEC} CONTRACT_DOC=${CONTRACT_DOC} STATE_FILE=${STATE_FILE} PROJECT_ROOT=${ROOT} bash tools/cursor-loop/scripts/phase9-notify-arm.sh"
 echo "CRITICAL=Run ARM_COMMAND with block_until_ms=0 (background) AND notify_on_output=SHELL_NOTIFY_ON_OUTPUT; end turn while verify-wake shows ARMED"
 if [[ "$RECOVERY_FOREGROUND" -eq 1 ]]; then
   echo "EXEC_COMMAND=bash tools/cursor-loop/scripts/prepare_arm_wake.sh . --state-file ${STATE_FILE} --loop-id ${LOOP_ID} --exec --recovery-foreground"

@@ -1,122 +1,57 @@
 import { MealPlanQueueList } from './MealPlanQueueList';
 import { MealPlanQueuePanelBanner } from './MealPlanQueuePanelBanner';
 import { MealPlanQueueSyncProgressBar } from './MealPlanQueueSyncProgressBar';
-import type { QueuedMealPlanLog } from '../lib/mealPlanQueue';
-import {
-  countFailedMealPlanQueueItems,
-  mealPlanQueueBannerText,
-  mealPlanQueuePanelClasses,
-  mealPlanQueueProgressClass,
-  mealPlanQueueShortcutHint,
-  type MealPlanQueuePanelVariant,
-} from '../lib/mealPlanQueuePanelCopy';
-import { useMealPlanQueuePanelFocus } from '../hooks/useMealPlanQueuePanelFocus';
-import { useMealPlanQueueShortcuts } from '../hooks/useMealPlanQueueShortcuts';
+import { useMealPlanQueuePanel } from '../hooks/useMealPlanQueuePanel';
+import type { MealPlanQueuePanelProps } from '../lib/mealPlanQueuePanelTypes';
 
-export type { MealPlanQueuePanelVariant } from '../lib/mealPlanQueuePanelCopy';
+export type { MealPlanQueuePanelProps, MealPlanQueuePanelVariant } from '../lib/mealPlanQueuePanelTypes';
 
-export interface MealPlanQueuePanelProps {
-  serverOnline: boolean;
-  queue: QueuedMealPlanLog[];
-  syncing: boolean;
-  syncProgress: { done: number; total: number } | null;
-  failedIds: Set<string>;
-  retryingId: string | null;
-  variant?: MealPlanQueuePanelVariant;
-  noPlanToday?: boolean;
-  syncAllLabel?: string;
-  clearAllLabel?: string;
-  bannerSuffix?: string;
-  syncActionHint?: string;
-  onSyncAll: () => void;
-  onRetryFailed?: () => void;
-  onRetry: (item: QueuedMealPlanLog) => void;
-  onDismissItem: (id: string) => void;
-  onClearAll: () => void;
-  scrollToQueueToken?: number;
-}
-
-export function MealPlanQueuePanel({
-  serverOnline,
-  queue,
-  syncing,
-  syncProgress,
-  failedIds,
-  retryingId,
-  variant = 'default',
-  noPlanToday = false,
-  syncAllLabel = 'Sync now',
-  clearAllLabel = 'Dismiss all',
-  bannerSuffix = '',
-  syncActionHint = 'Sync now',
-  onSyncAll,
-  onRetryFailed,
-  onRetry,
-  onDismissItem,
-  onClearAll,
-  scrollToQueueToken = 0,
-}: MealPlanQueuePanelProps) {
-  const failedCount = countFailedMealPlanQueueItems(queue, failedIds);
-
-  const { panelRef, syncBtnRef, prefersReducedMotion } = useMealPlanQueuePanelFocus({
+export function MealPlanQueuePanel(props: MealPlanQueuePanelProps) {
+  const {
+    serverOnline,
     queue,
-    failedIds,
-    failedCount,
-    serverOnline,
-    syncing,
-    retryingId,
-    scrollToQueueToken,
-  });
-
-  const announceSyncProgress = syncing && !!syncProgress && !prefersReducedMotion;
-
-  useMealPlanQueueShortcuts({
-    enabled: queue.length > 0 || syncing,
-    serverOnline,
-    syncing,
-    retrying: !!retryingId,
-    failedCount,
-    onSyncAll,
-    onRetryFailed: failedCount > 0 ? onRetryFailed : undefined,
-  });
-
-  const bannerText = mealPlanQueueBannerText(
-    queue.length,
-    failedCount,
-    serverOnline,
     syncing,
     syncProgress,
-    bannerSuffix,
-    mealPlanQueueShortcutHint(failedCount, onRetryFailed, syncActionHint),
-  );
+    failedIds,
+    retryingId,
+    syncAllLabel = 'Sync now',
+    clearAllLabel = 'Dismiss all',
+    onSyncAll,
+    onRetryFailed,
+    onRetry,
+    onDismissItem,
+    onClearAll,
+  } = props;
+
+  const panel = useMealPlanQueuePanel(props);
 
   return (
     <div
-      ref={panelRef}
+      ref={panel.panelRef}
       id="meal-plan-queue-panel"
       tabIndex={-1}
-      className={mealPlanQueuePanelClasses(variant, { syncing, noPlanToday, failedCount })}
+      className={panel.panelClassName}
       role="status"
     >
       <MealPlanQueuePanelBanner
-        bannerText={bannerText}
-        failedCount={failedCount}
+        bannerText={panel.bannerText}
+        failedCount={panel.failedCount}
         serverOnline={serverOnline}
         syncing={syncing}
         retryingId={retryingId}
         syncAllLabel={syncAllLabel}
         clearAllLabel={clearAllLabel}
-        announceSyncProgress={announceSyncProgress}
-        syncBtnRef={syncBtnRef}
+        announceSyncProgress={panel.announceSyncProgress}
+        syncBtnRef={panel.syncBtnRef}
         onSyncAll={onSyncAll}
         onRetryFailed={onRetryFailed}
         onClearAll={onClearAll}
       />
       {syncing && syncProgress && (
         <MealPlanQueueSyncProgressBar
-          className={mealPlanQueueProgressClass(variant)}
+          className={panel.progressClassName}
           syncProgress={syncProgress}
-          announceSyncProgress={announceSyncProgress}
+          announceSyncProgress={panel.announceSyncProgress}
         />
       )}
       <MealPlanQueueList
