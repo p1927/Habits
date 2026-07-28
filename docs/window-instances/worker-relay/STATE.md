@@ -35,7 +35,7 @@
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `d20b3df` |
+| commit_hash | `17c55ab` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
