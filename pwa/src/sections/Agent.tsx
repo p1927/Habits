@@ -51,6 +51,7 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         scanning={s.scanning}
         input={s.input}
         attachImage={s.attachImage}
+        showQuickChips={s.messages.length === 0 && !s.input.trim()}
         showDisclaimer={s.messages.length === 0 && !s.input.trim()}
         onInputChange={s.setInput}
         onSubmit={() => void s.send()}

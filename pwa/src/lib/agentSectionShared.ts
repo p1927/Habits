@@ -1,21 +1,16 @@
 import type { FoodScanResult } from './api';
 
-export const AGENT_QUICK_PROMPTS = [
-  { label: 'Log food', text: 'Help me log what I ate today' },
-  { label: 'Habits', text: 'How am I doing on habits today?' },
-  { label: 'Schedule', text: 'Add a calendar event for tomorrow' },
-  { label: 'Health note', text: 'Add a note to my health cards' },
+export const AGENT_GREETING_CATEGORIES = [
+  { label: 'Log food', icon: '◉', description: 'Track meals, macros, and portions', text: 'Help me log what I ate today' },
+  { label: 'Plan day', icon: '⌁', description: 'Schedule events and shape your day', text: 'Help me plan my calendar for today' },
+  { label: 'Review rings', icon: '◎', description: 'Protein target and habit progress', text: 'How am I doing on my protein and habit rings today?' },
+  { label: 'Schedule', icon: '▦', description: 'See what is already on your calendar', text: 'What is on my calendar today?' },
 ] as const;
+
+export const AGENT_QUICK_PROMPTS = AGENT_GREETING_CATEGORIES.map(({ label, text }) => ({ label, text }));
 
 /** Prefill when Day schedule is empty — opens Agent with this message. */
 export const AGENT_SCHEDULE_TODAY_PROMPT = 'Add a calendar event for today';
-
-export const AGENT_GREETING_CATEGORIES = [
-  { label: 'Log food', icon: '◉', description: 'Track meals, macros, and portions', text: 'Help me log what I ate today' },
-  { label: 'Habits', icon: '☰', description: 'Sleep, work, and daily targets', text: 'How am I doing on habits today?' },
-  { label: 'Schedule', icon: '⌁', description: 'Calendar events and your day', text: 'What is on my calendar today?' },
-  { label: 'Health note', icon: '✎', description: 'Notes, sickness, or strategy cards', text: 'Add a note to my health cards' },
-] as const;
 
 export const AGENT_TOOLS = [
   { label: 'Log food', description: 'Track meals, macros, and portions', text: 'Help me log what I ate today' },

@@ -9,6 +9,7 @@ export interface AgentChatComposerProps {
   scanning: boolean;
   input: string;
   attachImage: string | null;
+  showQuickChips?: boolean;
   showDisclaimer?: boolean;
   voiceOrbState?: VoiceOrbVisualState;
   onInputChange: (value: string) => void;
@@ -25,6 +26,7 @@ export function AgentChatComposer({
   scanning,
   input,
   attachImage,
+  showQuickChips = false,
   showDisclaimer = false,
   voiceOrbState,
   onInputChange,
@@ -47,10 +49,12 @@ export function AgentChatComposer({
         </div>
       )}
 
-      <AgentToolChips
-        disabled={!serverOnline || loading || scanning}
-        onSelect={onInputChange}
-      />
+      {showQuickChips && (
+        <AgentToolChips
+          disabled={!serverOnline || loading || scanning}
+          onSelect={onInputChange}
+        />
+      )}
 
       <form
         className="agent-composer-bar"

@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T02:45:00Z |
-| where_we_are | relay-198 shipped |
-| confirmed_next | relay-199 |
-| brainstorm_notes | MealPhotoGallery lightbox Escape hint; flex gap spacing fix |
+| reviewed_at | 2026-07-28T03:00:00Z |
+| where_we_are | relay-199 + agent LiveKit route fix shipped |
+| confirmed_next | refill backlog |
+| brainstorm_notes | Dedupe greeting/chips; hide composer chips after prefill |
 
 ---
 
@@ -19,31 +19,31 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T02:50:00Z` |
-| confirmed_next | `relay-199` |
-| next_action | `relay-199 Agent chat empty-state starter chips` |
+| last_wake | `2026-07-28T03:00:00Z` |
+| confirmed_next | `backlog refill` |
+| next_action | `refill BACKLOG from BRAINSTORM` |
 | phase | `9-arm` |
-| review_status | `skipped` |
-| review_skip_reason | `relay-198 reviewed round 29; committed bbd648c` |
-| review_diff_range | `bbd648c` |
-| code_changed | `no` |
-| review_round | `29` |
-| last_reviewed_round | `29` |
+| review_status | `done` |
+| review_skip_reason | `—` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `30` |
+| last_reviewed_round | `30` |
 | worktree_status | `none` |
 | current_item_id | `—` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/MealPhotoGallery.tsx` |
-| review_fingerprint | `bbd648c` |
-| ritual_step | `1-wake` |
+| review_changed_files | `pwa/src/components/AgentChatComposer.tsx pwa/src/components/AgentToolChips.tsx pwa/src/lib/agentSectionShared.ts pwa/src/sections/Agent.tsx server/habits_api/routes/agent.py server/habits_api/routes/agent_tools.py server/habits_api/routes/voice.py .env.example` |
+| review_fingerprint | `relay-199-livekit` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
-| execute_started | `no` |
-| fix_verify_done | `no` |
-| reflect_done | `no` |
+| execute_started | `yes` |
+| fix_verify_done | `yes` |
+| reflect_done | `yes` |
 | commit_hash | `—` |
-| receive_review_done | `no` |
+| receive_review_done | `yes` |
 | commit_done | `no` |
 | merge_done | `no` |
 
@@ -99,9 +99,9 @@
 - [x] relay-196 | Agent voice sheet Escape hint | polish | VoiceCoachLayer + fallback BottomSheet hint (f6b207a)
 - [x] relay-197 | Day event detail sheet Escape hint | polish | BottomSheet Escape + hint text (73c3806)
 - [x] relay-198 | Home meal photo gallery Escape hint | polish | MealPhotoGallery lightbox hint + flex-gap CSS (bbd648c)
-- [ ] relay-199 | Agent chat empty-state starter chips | feature | Given empty Agent thread, When user opens Agent tab, Then show 3–4 Gemini-style quick prompts (Log food, Plan day, Review rings) tappable to prefill composer | PO Session #28 — post-escape batch refill
-
----
+- [x] relay-199 | Agent chat empty-state starter chips | feature | Gemini greeting + composer chips (Log food, Plan day, Review rings, Schedule); prefill composer
+- [ ] relay-200 | Agent empty state: single prompt surface (greeting OR chips) | polish | Hide duplicate greeting grid or composer chips when both show same prompts
+- [ ] relay-201 | Agent tool-chips CSS single rule set | polish | Scope composer chips under .agent-composer-dock; remove flex-wrap conflict with scroll strip
 
 ## BRAINSTORM (unprioritized)
 
@@ -166,6 +166,14 @@
 | rf-r29-001 | low | pwa/src/components/MealPhotoGallery.tsx:98 Escape hint matches sheet parity | round-29 /code-review | closed | relay-198 | closed |
 | rf-r29-002 | low | pwa/src/App.css:2439 hint margin stacks with inner flex gap; fixed margin:0 | round-29 /code-review | fix-now | — | closed |
 | rf-r29-003 | low | pwa/src/components/MealPhotoGallery.tsx:24-27 Escape handler unchanged and adequate | round-29 /code-review | closed | — | closed |
+| rf-r30-000 | low | No logic, security, or regression bugs in relay-199 + LiveKit route fix diff | round-30 bugbot | closed | — | closed |
+| rf-r30-001 | medium | Duplicate prompt catalogs in agentSectionShared | round-30 /code-review | fix-now | — | closed |
+| rf-r30-002 | low | Redundant empty-state greeting grid + composer chips | round-30 /code-review | backlog | relay-200 | closed |
+| rf-r30-003 | low | Conflicting .agent-tool-chips CSS cascade | round-30 /code-review | backlog | relay-201 | closed |
+| rf-r30-004 | low | Composer chips visible after prefill | round-30 /code-review | fix-now | — | closed |
+| rf-r30-005 | low | No tests for empty-state chip visibility | round-30 /code-review | backlog | — | closed |
+| rf-r30-006 | low | Chip toolbar aria-label mislabeled Quick tools | round-30 /code-review | fix-now | — | closed |
+| rf-r30-007 | low | Server routes static review clean | round-30 /code-review | closed | — | closed |
 
 ---
 
@@ -173,6 +181,8 @@
 
 | Timestamp | Item | Outcome | Verified | Commit |
 |-----------|------|---------|----------|--------|
+| 2026-07-28 | relay-199 | done | build | — |
+| 2026-07-28 | agent-livekit-routes | done | import+build | — |
 | 2026-07-28 | relay-198 | done | build | bbd648c |
 | 2026-07-28 | relay-196 | done | build | f6b207a |
 | 2026-07-28 | relay-195 | done | build | 4305775 |
