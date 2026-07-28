@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T12:25:00Z |
-| where_we_are | relay-206 shipped |
-| confirmed_next | relay-207 |
-| brainstorm_notes | Greeting layout reserved on attach; queue banner focus next |
+| reviewed_at | 2026-07-28T12:05:41Z |
+| where_we_are | relay-207 shipped (487aed2) |
+| confirmed_next |  |
+| brainstorm_notes | Backlog empty; idle until PO proposes relay-208+ |
 
 ---
 
@@ -19,7 +19,7 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:25:00Z` |
+| last_wake | `2026-07-28T12:05:41Z` |
 | next_action | `await PO backlog` |
 | phase | `8-close` |
 | review_status | `skipped` |
@@ -36,11 +36,11 @@
 | execute_started | `no` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `487aed2` |
+| commit_hash | `ad18b75` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Round 37 review completed; relay-207 shipped (487aed2)` |
+| review_skip_reason | `Idle tick; STATE checkpoint sync only — no product diff since relay-207` |
 
 ## IN_PROGRESS
 
@@ -122,8 +122,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r38-000 | low | Idle spin tick; STATE checkpoint sync only — no product code diff to review | round-38 /code-review | closed | — | closed |
 | rf-r37-004 | low | Focused queue li lacks aria-label for screen readers | round-37 /code-review | backlog | — | closed |
 | rf-r37-003 | low | No unit tests for foodQueueFocus helpers | round-37 /code-review | backlog | — | closed |
 | rf-r37-002 | low | Queued row focus lacks :focus-visible styling | round-37 /code-review | backlog | — | closed |
@@ -263,6 +265,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
