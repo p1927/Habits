@@ -23,8 +23,8 @@
 | next_action | `relay-212 next` |
 | phase | `9-arm` |
 | review_status | `done` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| review_diff_range | `none` |
+| code_changed | `no` |
 | review_round | `67` |
 | last_reviewed_round | `67` |
 | worktree_status | `none` |
@@ -41,10 +41,10 @@
 | merge_done | `yes` |
 | review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
 | review_changed_files | `pwa/src/components/LogTypeTodayList.tsx` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-211` |
-| worktree_item_id | `relay-211` |
-| current_item_id | `relay-211` |
+| worktree_path | `` |
+| worktree_branch | `` |
+| worktree_item_id | `` |
+| current_item_id | `` |
 
 ## IN_PROGRESS
 
