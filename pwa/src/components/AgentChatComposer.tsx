@@ -88,7 +88,7 @@ export function AgentChatComposer({
           type="button"
           className="agent-composer-tools"
           aria-label="Open tools"
-          disabled={!serverOnline || loading || scanning}
+          disabled={loading || scanning}
           onClick={onOpenTools}
         >
           Tools

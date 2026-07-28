@@ -85,7 +85,8 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
         onVoiceStatusChange={s.setVoiceIframeStatus}
         toolsOpen={s.toolsOpen}
         onToolsOpenChange={s.setToolsOpen}
-        onSelectToolPrompt={s.setInput}
+        onSelectToolPrompt={(text) => void s.sendPrompt(text)}
+        toolsLoading={s.loading}
         attachOpen={s.attachOpen}
         onAttachOpenChange={s.setAttachOpen}
         cameraOpen={s.cameraOpen}

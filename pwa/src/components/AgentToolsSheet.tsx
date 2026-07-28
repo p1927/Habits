@@ -5,18 +5,36 @@ interface AgentToolsSheetProps {
   open: boolean;
   onClose: () => void;
   onSelect: (text: string) => void;
+  loading?: boolean;
+  serverOnline?: boolean;
 }
 
-export function AgentToolsSheet({ open, onClose, onSelect }: AgentToolsSheetProps) {
+export function AgentToolsSheet({
+  open,
+  onClose,
+  onSelect,
+  loading = false,
+  serverOnline = true,
+}: AgentToolsSheetProps) {
+  const rowsDisabled = loading || !serverOnline;
+
   return (
     <BottomSheet open={open} onClose={onClose} title="Tools">
+      {!serverOnline && (
+        <p className="banner banner-warn banner-revolut agent-tools-offline" role="status">
+          Connect to the Habits server to use tools.
+        </p>
+      )}
       <ul className="agent-tools-list" aria-label="Coach tools">
         {AGENT_TOOLS.map((tool) => (
           <li key={tool.label}>
             <button
               type="button"
               className="agent-tools-row"
+              disabled={rowsDisabled}
+              aria-disabled={rowsDisabled}
               onClick={() => {
+                if (rowsDisabled) return;
                 onSelect(tool.text);
                 onClose();
               }}

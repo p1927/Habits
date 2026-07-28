@@ -369,6 +369,15 @@
   line-height: 1.35;
 }
 
+.agent-tools-row:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.agent-tools-offline {
+  margin-bottom: 0.75rem;
+}
+
 .agent-attach-sheet {
   display: flex;
   flex-direction: column;
