@@ -19,14 +19,14 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T12:56:07Z` |
+| last_wake | `2026-07-28T12:58:35Z` |
 | next_action | `await PO backlog proposals` |
 | phase | `9-arm` |
 | review_status | `skipped` |
 | review_diff_range | `none` |
 | code_changed | `no` |
 | review_round | `54` |
-| last_reviewed_round | `60` |
+| last_reviewed_round | `61` |
 | worktree_status | `none` |
 | review_fingerprint | `relay210tests` |
 | ritual_step | `9-arm` |
@@ -39,7 +39,7 @@
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Idle SPIN tick 2026-07-28T12:56:07Z; backlog empty` |
+| review_skip_reason | `Recovery arm wake 2026-07-28T12:58:35Z; backlog empty` |
 | review_changed_files | `pwa/package.json pwa/vitest.config.ts pwa/src/lib/foodQueueFocus.test.ts pwa/src/hooks/useFoodQueuePendingFocus.test.tsx` |
 
 ## IN_PROGRESS
@@ -148,8 +148,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r61-000 | low | Recovery arm wake 2026-07-28T12:58:35Z; idle checkpoint sync only | round-61 /code-review | closed | — | closed |
 | rf-r60-000 | low | Idle SPIN tick 2026-07-28T12:56:07Z; backlog empty — checkpoint sync only | round-60 /code-review | closed | — | closed |
 | rf-r59-000 | low | Recovery arm wake 2026-07-28T12:55:48Z; idle checkpoint sync only | round-59 /code-review | closed | — | closed |
 | rf-r58-000 | low | Idle SPIN tick 2026-07-28T12:53:33Z; backlog empty — checkpoint sync only | round-58 /code-review | closed | — | closed |
@@ -318,6 +320,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
