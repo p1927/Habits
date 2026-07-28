@@ -4,7 +4,7 @@ import type { MealPhoto } from '../lib/mealPhotos';
 
 interface AgentAttachSheetProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (opts?: { focusComposer?: boolean }) => void;
   recentPhotos: MealPhoto[];
   onOpenCamera: () => void;
   onPickImage: (dataUrl: string, label?: string) => void;
@@ -29,14 +29,14 @@ export function AgentAttachSheet({
   const galleryRef = useRef<HTMLInputElement>(null);
 
   return (
-    <BottomSheet open={open} onClose={onClose} title="Add to chat">
+    <BottomSheet open={open} onClose={() => onClose({ focusComposer: true })} title="Add to chat">
       <div className="agent-attach-sheet" role="group" aria-label="Attachment options">
         <div className="agent-attach-pills">
           <button
             type="button"
             className="agent-attach-pill"
             onClick={() => {
-              onClose();
+              onClose({ focusComposer: false });
               onOpenCamera();
             }}
           >
@@ -63,7 +63,7 @@ export function AgentAttachSheet({
             if (!file) return;
             void readFileAsDataUrl(file).then((dataUrl) => {
               onPickImage(dataUrl, file.name);
-              onClose();
+              onClose({ focusComposer: true });
             });
           }}
         />
@@ -80,7 +80,7 @@ export function AgentAttachSheet({
                   aria-label={`Attach ${photo.label}`}
                   onClick={() => {
                     onPickImage(photo.dataUrl, photo.label);
-                    onClose();
+                    onClose({ focusComposer: true });
                   }}
                 >
                   <img src={photo.dataUrl} alt="" className="agent-attach-recent-thumb" />

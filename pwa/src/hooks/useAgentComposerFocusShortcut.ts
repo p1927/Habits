@@ -3,6 +3,13 @@ import { isTypingTarget } from '../lib/logSectionShared';
 
 const COMPOSER_INPUT_ID = 'agent-chat-input';
 
+export function focusAgentComposer() {
+  const input = document.getElementById(COMPOSER_INPUT_ID);
+  if (!(input instanceof HTMLInputElement)) return;
+  input.focus({ preventScroll: true });
+  input.select();
+}
+
 export function useAgentComposerFocusShortcut(blocked: boolean) {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -17,10 +24,7 @@ export function useAgentComposerFocusShortcut(blocked: boolean) {
         return;
       }
       e.preventDefault();
-      const input = document.getElementById(COMPOSER_INPUT_ID);
-      if (!(input instanceof HTMLInputElement)) return;
-      input.focus({ preventScroll: true });
-      input.select();
+      focusAgentComposer();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
