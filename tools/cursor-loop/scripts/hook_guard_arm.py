@@ -68,7 +68,8 @@ def _is_arm_command(command: str) -> bool:
     cmd = command.strip()
     if not cmd:
         return False
-    return bool(_ARM_WAKE.search(cmd) or _PHASE9_NOTIFY_ARM.search(cmd) or _PREPARE_ARM.search(cmd))
+    # Do not match prepare_arm_wake.sh when it appears only as a path (e.g. git checkout).
+    return bool(_ARM_WAKE.search(cmd) or _PHASE9_NOTIFY_ARM.search(cmd))
 
 
 def _is_notify_arm_command(command: str) -> bool:
@@ -86,7 +87,7 @@ def should_deny_arm(
     enforce_notify: bool = False,
 ) -> tuple[bool, str | None]:
     cmd = command.strip()
-    if not _is_arm_command(cmd):
+    if not _is_arm_command(cmd) and not _PREPARE_EXEC.search(cmd):
         return False, None
 
     recovery = bool(_RECOVERY_FOREGROUND.search(cmd))
