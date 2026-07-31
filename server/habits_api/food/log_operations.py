@@ -5,7 +5,10 @@ from habits_api.db import TokenDB
 from habits_api.food.food_db_search import search_food_db
 from habits_api.food.parser import fuzzy_match_food, parse_meal_description
 from habits_api.food.row_log_ops import delete_log_row, update_log_row
-from habits_api.food.sheet_log import find_next_log_row, load_food_db, write_log_row
+from habits_api.food.sheet_log import (
+    append_log_row,
+    load_food_db,
+)
 from habits_api.food.today_summary import get_today_summary, log_success_message
 
 __all__ = [
@@ -30,10 +33,11 @@ async def log_food_item(
     if not matched:
         raise ValueError(f"Food '{food_name}' not found in Nutritional Data API tab")
 
-    entry = next(e for e in db_entries if e.name == matched)
+    entry = next((e for e in db_entries if e.name == matched), None)
+    if entry is None:
+        raise ValueError(f"Food '{food_name}' not found in Nutritional Data API tab")
     macros = entry.scale(quantity_g)
-    row_idx = await find_next_log_row(settings, db)
-    await write_log_row(settings, db, row_idx, entry.name, quantity_g, macros)
+    await append_log_row(settings, db, entry.name, quantity_g, macros)
 
     summary = await get_today_summary(settings, db)
     return {
@@ -62,14 +66,13 @@ async def log_food_with_macros(
     if not name:
         raise ValueError("Food name is required")
 
-    row_idx = await find_next_log_row(settings, db)
     macros = {
         "calories": round(calories, 2),
         "carbs": round(carbs, 4),
         "protein": round(protein, 4),
         "fat": round(fat, 4),
     }
-    await write_log_row(settings, db, row_idx, name, quantity_g, macros)
+    await append_log_row(settings, db, name, quantity_g, macros)
 
     summary = await get_today_summary(settings, db)
     return {

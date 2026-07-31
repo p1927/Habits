@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     minimax_api_key: str = ""
     minimax_base_url: str = "https://api.minimax.io/v1"
     minimax_model: str = "MiniMax-M2.7"
+    minimax_image_model: str = "image-01"
 
     livekit_url: str = "ws://localhost:7880"
     livekit_api_key: str = "devkey"

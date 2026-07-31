@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import uuid
 from typing import Any
 
 import httpx
@@ -23,6 +24,26 @@ def _build_user_message(message: str, image_base64: str | None) -> dict[str, Any
             {"type": "image_url", "image_url": {"url": data_uri}},
         ],
     }
+
+
+def _ensure_tool_call_ids(tool_calls: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Guarantee each tool_call has a unique id (model may omit them).
+
+    Pydantic-style providers require that the assistant tool_call id match the
+    subsequent tool message's tool_call_id exactly. Without an id we synthesize
+    a fresh UUID per call (not per round) so concurrent calls in a single
+    round stay distinct.
+    """
+    if not tool_calls:
+        return tool_calls
+    seen: set[str] = set()
+    for tc in tool_calls:
+        tid = tc.get("id") or ""
+        if not tid or tid in seen:
+            tid = f"call_{uuid.uuid4().hex[:24]}"
+            tc["id"] = tid
+        seen.add(tid)
+    return tool_calls
 
 
 async def chat(
@@ -67,7 +88,7 @@ async def chat(
         choice = (data.get("choices") or [{}])[0]
         msg = choice.get("message") or {}
         reply = msg.get("content") or msg.get("text") or ""
-        tool_calls = msg.get("tool_calls") or []
+        tool_calls = _ensure_tool_call_ids(msg.get("tool_calls") or [])
 
         if not tool_calls:
             break
@@ -84,7 +105,7 @@ async def chat(
             tool_results.append({"tool": name, "args": args, "result": result})
             messages.append({
                 "role": "tool",
-                "tool_call_id": tc.get("id", name),
+                "tool_call_id": tc["id"],
                 "content": json.dumps(result),
             })
 
@@ -203,7 +224,7 @@ async def chat_stream(
             break
 
         reply = assistant_msg.get("content") or assistant_msg.get("text") or ""
-        tool_calls = assistant_msg.get("tool_calls") or []
+        tool_calls = _ensure_tool_call_ids(assistant_msg.get("tool_calls") or [])
         if not tool_calls:
             break
 
@@ -223,7 +244,7 @@ async def chat_stream(
             tool_results.append({"tool": name, "args": args, "result": result})
             messages.append({
                 "role": "tool",
-                "tool_call_id": tc.get("id", name),
+                "tool_call_id": tc["id"],
                 "content": json.dumps(result),
             })
 
