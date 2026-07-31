@@ -19,6 +19,7 @@ export function HomeDashboardMetricsPanels({
   calorieTrend,
   habitsTrend,
   onOpenLogType,
+  onOpenLogScan,
 }: HomeDashboardMetricsProps) {
   return (
     <>
@@ -39,6 +40,7 @@ export function HomeDashboardMetricsPanels({
         habitsPct={habitPct}
         burn={burn}
         onShare={() => void handleShareRings()}
+        onOpenLogScan={onOpenLogScan}
       />
 
       <HomeSummaryTiles

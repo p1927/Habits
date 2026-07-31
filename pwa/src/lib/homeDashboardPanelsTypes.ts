@@ -5,6 +5,7 @@ export type HomeDashboardPanelsProps = Pick<
   | 'serverOnline'
   | 'onOpenLogHistory'
   | 'onOpenLogType'
+  | 'onOpenLogScan'
   | 'onOpenLogRecipes'
   | 'onOpenFutureSelf'
   | 'exporting'
@@ -49,6 +50,7 @@ export type HomeDashboardMetricsProps = Pick<
   | 'calorieTrend'
   | 'habitsTrend'
   | 'onOpenLogType'
+  | 'onOpenLogScan'
 >;
 
 export type HomeDashboardFeedProps = Pick<
@@ -56,6 +58,7 @@ export type HomeDashboardFeedProps = Pick<
   | 'serverOnline'
   | 'onOpenLogHistory'
   | 'onOpenLogType'
+  | 'onOpenLogScan'
   | 'onOpenLogRecipes'
   | 'onOpenFutureSelf'
   | 'setFood'

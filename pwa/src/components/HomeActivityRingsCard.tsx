@@ -12,6 +12,7 @@ export interface HomeActivityRingsCardProps {
   habitsPct: number;
   burn: number;
   onShare: () => void;
+  onOpenLogScan?: () => void;
 }
 
 export function HomeActivityRingsCard({
@@ -25,7 +26,11 @@ export function HomeActivityRingsCard({
   habitsPct,
   burn,
   onShare,
+  onOpenLogScan,
 }: HomeActivityRingsCardProps) {
+  const showFirstMealCta =
+    calories === 0 && protein === 0 && Boolean(onOpenLogScan) && !(loading && serverOnline);
+
   return (
     <Card className="home-rings-card home-rings-card--health">
       <p className="section-eyebrow">Summary</p>
@@ -49,6 +54,11 @@ export function HomeActivityRingsCard({
           habits={{ value: habitsPct, max: 100 }}
         />
       )}
+      {showFirstMealCta ? (
+        <button type="button" className="btn-pill btn-primary home-rings-first-meal" onClick={onOpenLogScan}>
+          Log your first meal
+        </button>
+      ) : null}
       <p className="home-burn muted">Est. active burn: {burn} kcal (from work + read hours)</p>
     </Card>
   );

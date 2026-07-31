@@ -22,13 +22,13 @@
 | last_wake | `2026-07-28T13:37:19Z` |
 | next_action | `relay-216 next` |
 | phase | `9-arm` |
-| review_status | `skipped` |
-| review_diff_range | `none` |
-| code_changed | `no` |
-| review_round | `74` |
+| review_status | `pending` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
+| review_round | `76` |
 | last_reviewed_round | `74` |
 | worktree_status | `none` |
-| review_fingerprint | `—` |
+| review_fingerprint | `200ad4fd6855abfe` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -40,7 +40,7 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `Recovery nested wake; relay-216 deferred to next tick` |
-| review_changed_files | `—` |
+| review_changed_files | `pwa/package-lock.json pwa/src/components/AppTabContent.tsx pwa/src/components/HomeActivityRingsCard.tsx pwa/src/components/HomeDashboardMetricsPanels.tsx pwa/src/hooks/useAppShell.ts pwa/src/hooks/useAppShellNavigation.ts pwa/src/hooks/useHomeSection.ts pwa/src/lib/homeDashboardPanelsTypes.ts pwa/src/sections/Home.tsx` |
 
 ## IN_PROGRESS
 

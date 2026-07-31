@@ -62,6 +62,11 @@ export function useAppShellNavigation({
     handleTabChange('log');
   }, [handleTabChange, setOpenLogType]);
 
+  const navigateLogScan = useCallback(() => {
+    preloadAppTabChunk('log');
+    handleTabChange('log');
+  }, [handleTabChange]);
+
   const navigateLogRecipes = useCallback(() => {
     preloadAppTabChunk('log');
     setOpenLogRecipes(true);
@@ -91,6 +96,7 @@ export function useAppShellNavigation({
     navigateMealPlanSyncSource,
     navigateLogHistory,
     navigateLogType,
+    navigateLogScan,
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,

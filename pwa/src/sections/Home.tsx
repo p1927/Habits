@@ -12,6 +12,7 @@ interface HomeProps {
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   onOpenLogHistory?: () => void;
   onOpenLogType?: () => void;
+  onOpenLogScan?: () => void;
   onOpenLogRecipes?: () => void;
   onOpenFutureSelf?: () => void;
   scrollToMealPlanQueue?: number;

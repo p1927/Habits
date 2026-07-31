@@ -24,6 +24,7 @@ type AppTabContentProps = Pick<
   | 'navigateMealPlanSyncSource'
   | 'navigateLogHistory'
   | 'navigateLogType'
+  | 'navigateLogScan'
   | 'navigateLogRecipes'
   | 'navigateAgentPrompt'
   | 'navigateFutureSelf'
@@ -51,6 +52,7 @@ export function AppTabContent({
   navigateMealPlanSyncSource,
   navigateLogHistory,
   navigateLogType,
+  navigateLogScan,
   navigateLogRecipes,
   navigateAgentPrompt,
   navigateFutureSelf,
@@ -67,6 +69,7 @@ export function AppTabContent({
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           onOpenLogHistory={navigateLogHistory}
           onOpenLogType={navigateLogType}
+          onOpenLogScan={navigateLogScan}
           onOpenLogRecipes={navigateLogRecipes}
           onOpenFutureSelf={navigateFutureSelf}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
