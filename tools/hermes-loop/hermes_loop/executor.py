@@ -59,7 +59,7 @@ def build_argv(
     inner = (
         f"cd {shlex.quote(str(repo_root))} && "
         f"{shlex.quote(bin_path)} chat "
-        f"--quiet --no-restore-cwd --max-turns 60 "
+        f"--quiet --no-restore-cwd --max-turns {cfg.effective_max_turns()} "
         f"-q {quoted_bundle}"
     )
     argv = ["/bin/bash", "-lc", inner]
@@ -80,10 +80,21 @@ def run(
     *,
     bundle_path: Path,
     repo_root: Path,
-    timeout_seconds: int = 900,
+    timeout_seconds: int | None = None,
 ) -> subprocess.CompletedProcess:
-    """Invoke the executor and return the CompletedProcess."""
+    """Invoke the executor and return the CompletedProcess.
+
+    `timeout_seconds` (None → use cfg.effective_timeout()):
+
+    * hermes chat has its own ``--max-turns`` cap inside the command argv.
+    * The outer subprocess.run uses this timeout as a hard ceiling so a
+      runaway tick doesn't burn the whole 24h window on one item.
+    * 30 min is the new default; supervisors default to 5 min; per-worker
+      override via the JSON config or env var HERMES_LOOP_TICK_TIMEOUT.
+    """
     argv, env = build_argv(cfg, bundle_path=bundle_path, repo_root=repo_root)
+    if timeout_seconds is None:
+        timeout_seconds = cfg.effective_timeout()
     return subprocess.run(
         argv,
         cwd=str(repo_root),

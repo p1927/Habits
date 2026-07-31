@@ -44,6 +44,15 @@ class WorktreeConfig:
     branch_prefix: str
 
 
+# Default per-worker tick timeout (seconds). Real LLM ticks need ~10–30
+# minutes; 15min was too short. Supervisors get a separate default because
+# they only emit digests and should finish fast.
+DEFAULT_TICK_TIMEOUT = 1800   # 30 min
+DEFAULT_SUPERVISOR_TIMEOUT = 300  # 5 min
+MIN_TICK_TIMEOUT = 30
+MAX_TICK_TIMEOUT = 7200  # 2 hours
+
+
 @dataclass(frozen=True)
 class WorkerConfig:
     id: str
@@ -57,11 +66,41 @@ class WorkerConfig:
     heartbeat: str
     worktree: WorktreeConfig
     source_path: Path
+    tick_timeout_seconds: int | None = None
+    max_turns: int | None = None
 
     @property
     def loop_id(self) -> str:
         # Aliases in the existing cursor-loop code; keep both spellings safe.
         return self.id
+
+    def effective_timeout(self) -> int:
+        """Resolve the tick timeout in seconds.
+
+        Precedence (highest first):
+          1. HERMES_LOOP_TICK_TIMEOUT env var (escape hatch for one-off
+             extension when the LLM is working on a tough backlog item).
+          2. Per-worker `tick_timeout_seconds` (defaults below).
+          3. Default — supervisor gets 5 min, others get 30 min.
+        """
+        import os as _os
+        env = _os.environ.get("HERMES_LOOP_TICK_TIMEOUT")
+        if env and env.strip().isdigit():
+            v = int(env.strip())
+            return max(MIN_TICK_TIMEOUT, min(MAX_TICK_TIMEOUT, v))
+        if self.tick_timeout_seconds is not None:
+            return max(MIN_TICK_TIMEOUT, min(MAX_TICK_TIMEOUT, int(self.tick_timeout_seconds)))
+        if self.id == "supervisor":
+            return DEFAULT_SUPERVISOR_TIMEOUT
+        return DEFAULT_TICK_TIMEOUT
+
+    def effective_max_turns(self) -> int:
+        """Resolve LLM-side max-turns cap (passed as --max-turns to hermes)."""
+        if self.max_turns is not None and self.max_turns > 0:
+            return int(self.max_turns)
+        # Derive from timeout so a longer tick budget gets more turns.
+        # 1 turn ≈ 20–30s of agent work; cap at 200 to avoid runaway.
+        return min(200, max(40, self.effective_timeout() // 30))
 
 
 class ConfigError(ValueError):
@@ -110,6 +149,14 @@ def load(path: Path) -> WorkerConfig:
             heartbeat=str(raw["heartbeat"]),
             worktree=_parse_worktree(raw.get("worktree", {}), path),
             source_path=path,
+            tick_timeout_seconds=(
+                int(raw["tick_timeout_seconds"])
+                if "tick_timeout_seconds" in raw and raw["tick_timeout_seconds"] is not None
+                else None
+            ),
+            max_turns=(
+                int(raw["max_turns"]) if "max_turns" in raw and raw["max_turns"] is not None else None
+            ),
         )
     except (TypeError, ValueError) as exc:
         raise ConfigError(f"{path}: bad value: {exc}") from exc

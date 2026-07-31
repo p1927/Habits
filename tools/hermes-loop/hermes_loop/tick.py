@@ -15,6 +15,7 @@ For both, we:
 
 from __future__ import annotations
 
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -41,7 +42,7 @@ def run_one(
     *,
     dry_run: bool,
     repo_root: Path | None = None,
-    timeout_seconds: int = 900,
+    timeout_seconds: int | None = None,
 ) -> int:
     repo_root = repo_root or _find_repo_root(Path.cwd())
 
@@ -50,6 +51,14 @@ def run_one(
 
     scratch_path = repo_root / cfg.scratchpad
     heartbeat_path = repo_root / cfg.heartbeat
+
+    # Resolve the effective timeout now — used in two places (scratchpad log,
+    # subprocess.run) so capture once.
+    effective_timeout = (
+        timeout_seconds
+        if timeout_seconds is not None
+        else cfg.effective_timeout()
+    )
 
     if dry_run:
         scratchpad.append(
@@ -85,16 +94,19 @@ def run_one(
             scratchpad.append(
                 scratch_path,
                 kind="tick-start",
-                payload=f"executor=hermes bundle={bundle_path.relative_to(repo_root)}",
+                payload=(
+                    f"executor=hermes bundle={bundle_path.relative_to(repo_root)} "
+                    f"timeout={effective_timeout}s max_turns={cfg.effective_max_turns()}"
+                ),
             )
-            print(f"[hermes-loop] tick start worker={cfg.id} bundle={bundle_path.relative_to(repo_root)}")
+            print(f"[hermes-loop] tick start worker={cfg.id} bundle={bundle_path.relative_to(repo_root)} timeout={effective_timeout}s")
 
             t0 = time.monotonic()
             proc = hermes_run(
                 cfg,
                 bundle_path=bundle_path,
                 repo_root=repo_root,
-                timeout_seconds=timeout_seconds,
+                timeout_seconds=effective_timeout,
             )
             elapsed = time.monotonic() - t0
 
@@ -125,6 +137,32 @@ def run_one(
                 file=sys.stderr,
             )
             return 1
+        except subprocess.TimeoutExpired:
+            elapsed = time.monotonic() - t0
+            scratchpad.append(
+                scratch_path,
+                kind="error",
+                payload=(
+                    f"executor=hermes timed out after {effective_timeout}s "
+                    f"(max_turns={cfg.effective_max_turns()}); this means the LLM "
+                    f"needed more than the configured budget. Set "
+                    f"HERMES_LOOP_TICK_TIMEOUT env var or tick_timeout_seconds in "
+                    f"the worker JSON to give it more room, or break the backlog "
+                    f"item into smaller ones."
+                ),
+            )
+            scratchpad.touch_heartbeat(
+                heartbeat_path,
+                note=f"timeout after {effective_timeout}s elapsed={elapsed:.1f}s",
+            )
+            print(
+                f"[hermes-loop] tick TIMEOUT worker={cfg.id} "
+                f"elapsed={elapsed:.1f}s budget={effective_timeout}s — set "
+                f"HERMES_LOOP_TICK_TIMEOUT higher or add tick_timeout_seconds "
+                f"to the worker config.",
+                file=sys.stderr,
+            )
+            return 5
         except FileNotFoundError as exc:
             scratchpad.append(
                 scratch_path,
