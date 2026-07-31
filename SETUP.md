@@ -91,9 +91,33 @@ cd pwa && npm install && npm run dev
 # http://localhost:5174/Habits/
 ```
 
+## 7. Hermes Loop (autonomous workers)
+
+Hermes Loop turns each `docs/window-instances/<id>/` into a scheduled tick driven by an external scheduler (cron / `hermes_loop` cron registry). Slice A ships the read-only MVP; Slice B wires a real LLM executor + cron entries for all five windows.
+
+```bash
+# one-off dry-run, no LLM cost
+PYTHONPATH=tools/hermes-loop python -m hermes_loop tick worker-relay --dry-run
+
+# status + per-worker heartbeat
+PYTHONPATH=tools/hermes-loop python -m hermes_loop status
+
+# tail a worker's scratchpad
+PYTHONPATH=tools/hermes-loop python -m hermes_loop logs worker-relay --tail 20
+
+# print cron entry for a worker (Slice B will automate this)
+PYTHONPATH=tools/hermes-loop python -m hermes_loop install worker-relay
+
+# doctor: non-zero exit if any heartbeat is stale
+PYTHONPATH=tools/hermes-loop python -m hermes_loop doctor
+```
+
+See [docs/hermes-loop/PLAN.md](docs/hermes-loop/PLAN.md) and [tools/hermes-loop/README.md](tools/hermes-loop/README.md) for scope and Slice B/C plans. The legacy `tools/cursor-loop/` keeps working in parallel during the migration.
+
 ## Verification
 
 - [ ] `GET https://api.*/healthz` returns `{"ok":true}` (after Access login in browser)
 - [ ] PWA shows green status with bearer saved
 - [ ] Google connect works; food log writes to Nutrition sheet
 - [ ] Cloudflare Access blocks strangers before app loads
+- [ ] `python -m hermes_loop status` (after Slice A deployment) lists all configured workers with fresh heartbeats

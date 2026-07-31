@@ -1,0 +1,16 @@
+{
+  "id": "worker-relay",
+  "contract_dir": "docs/window-instances/worker-relay",
+  "state_file": "docs/window-instances/worker-relay/STATE.md",
+  "executor": "none",
+  "cadence_minutes": 30,
+  "stop_phrases": ["stop worker-relay", "halt worker-relay"],
+  "delivery": {"mode": "local"},
+  "scratchpad": "tools/hermes-loop/logs/worker-relay.log",
+  "heartbeat": "tools/hermes-loop/state/worker-relay.heartbeat",
+  "worktree": {
+    "enabled": true,
+    "path": ".worktrees/worker-relay",
+    "branch_prefix": "loop/worker-relay/"
+  }
+}

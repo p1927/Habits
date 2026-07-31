@@ -30,3 +30,8 @@ docs/window-instances/*/STATE.hot.json
 deploy/cloudflare/.env
 deploy/cloudflare/.provision-state.json
 ./cursor/skills/ui-ux-pro-max
+
+# hermes-loop scratch / build artifacts
+tools/hermes-loop/logs/
+tools/hermes-loop/state/
+tools/hermes-loop/bundles/
