@@ -1,0 +1,16 @@
+{
+  "id": "supervisor",
+  "contract_dir": "docs/window-instances/supervisor",
+  "state_file": "docs/window-instances/supervisor/STATE.md",
+  "executor": "hermes",
+  "cadence_minutes": 120,
+  "stop_phrases": ["stop supervisor", "halt supervisor"],
+  "delivery": {"mode": "local"},
+  "scratchpad": "tools/hermes-loop/logs/supervisor.log",
+  "heartbeat": "tools/hermes-loop/state/supervisor.heartbeat",
+  "worktree": {
+    "enabled": false,
+    "path": ".worktrees/supervisor",
+    "branch_prefix": "loop/supervisor/"
+  }
+}

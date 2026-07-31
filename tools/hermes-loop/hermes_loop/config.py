@@ -1,12 +1,14 @@
 """Worker config loader and validator.
 
-Slice A: workers are JSON files in ``tools/hermes-loop/workers/``.
+Slice B-fix: workers are JSON files in ``tools/hermes-loop/workers/``.
 Locked keys:
 
     id                unique worker id (matches loop_id)
     contract_dir      docs/window-instances/<id>  (bundled into the prompt)
     state_file        path under repo root
-    executor          "none" | "<command-string>"
+    executor          "hermes" | "none"
+                      ("hermes" invokes the real `hermes chat` agent; "none"
+                      writes the bundle only and is useful for review)
     cadence_minutes   integer >= 1
     stop_phrases      list[str]
     delivery          dict (mode: local | telegram:<chat_id>:<topic> | cli-session)

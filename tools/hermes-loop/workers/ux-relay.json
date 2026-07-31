@@ -2,7 +2,7 @@
   "id": "ux-relay",
   "contract_dir": "docs/window-instances/ux-relay",
   "state_file": "docs/window-instances/ux-relay/STATE.md",
-  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "executor": "hermes",
   "cadence_minutes": 30,
   "stop_phrases": ["stop ux-relay", "halt ux-relay"],
   "delivery": {"mode": "local"},

@@ -2,7 +2,7 @@
   "id": "worker-relay",
   "contract_dir": "docs/window-instances/worker-relay",
   "state_file": "docs/window-instances/worker-relay/STATE.md",
-  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "executor": "hermes",
   "cadence_minutes": 30,
   "stop_phrases": ["stop worker-relay", "halt worker-relay"],
   "delivery": {"mode": "local"},

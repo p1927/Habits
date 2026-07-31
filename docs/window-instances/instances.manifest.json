@@ -108,6 +108,27 @@
       "handoffs_in": [
         "po-relay"
       ]
+    },
+    {
+      "loop_id": "supervisor",
+      "archetype": "observer",
+      "bundle": "docs/window-instances/supervisor",
+      "contract_doc": "docs/window-instances/supervisor/INSTANCE.md",
+      "state_file": "docs/window-instances/supervisor/STATE.md",
+      "sentinel": "AGENT_LOOP_TICK_SUPERVISOR",
+      "wake_sentinel": "AGENT_LOOP_WAKE_SUPERVISOR",
+      "interval_sec": 7200,
+      "backlog_sections": [
+        "DIGEST"
+      ],
+      "handoffs_out": [],
+      "handoffs_in": [
+        "worker-relay",
+        "ux-relay",
+        "code-health",
+        "ux-critic",
+        "po-relay"
+      ]
     }
   ]
 }

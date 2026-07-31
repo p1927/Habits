@@ -2,7 +2,7 @@
   "id": "po-relay",
   "contract_dir": "docs/window-instances/po-relay",
   "state_file": "docs/window-instances/po-relay/STATE.md",
-  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "executor": "hermes",
   "cadence_minutes": 60,
   "stop_phrases": ["stop po-relay", "halt po-relay"],
   "delivery": {"mode": "local"},

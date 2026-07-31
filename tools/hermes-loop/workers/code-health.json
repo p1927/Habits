@@ -2,7 +2,7 @@
   "id": "code-health",
   "contract_dir": "docs/window-instances/code-health",
   "state_file": "docs/window-instances/code-health/STATE.md",
-  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "executor": "hermes",
   "cadence_minutes": 45,
   "stop_phrases": ["stop code-health", "halt code-health"],
   "delivery": {"mode": "local"},
