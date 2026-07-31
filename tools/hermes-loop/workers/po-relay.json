@@ -1,0 +1,16 @@
+{
+  "id": "po-relay",
+  "contract_dir": "docs/window-instances/po-relay",
+  "state_file": "docs/window-instances/po-relay/STATE.md",
+  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "cadence_minutes": 60,
+  "stop_phrases": ["stop po-relay", "halt po-relay"],
+  "delivery": {"mode": "local"},
+  "scratchpad": "tools/hermes-loop/logs/po-relay.log",
+  "heartbeat": "tools/hermes-loop/state/po-relay.heartbeat",
+  "worktree": {
+    "enabled": false,
+    "path": ".worktrees/po-relay",
+    "branch_prefix": "loop/po-relay/"
+  }
+}

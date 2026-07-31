@@ -9,4 +9,4 @@ is reviewable without spending LLM tokens. Slice B wires real executor(s)
 and cron entries; see docs/hermes-loop/PLAN.md.
 """
 
-__version__ = "0.1.0-slice-A"
+__version__ = "0.2.0-slice-B"

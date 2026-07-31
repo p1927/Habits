@@ -1,0 +1,16 @@
+{
+  "id": "ux-critic",
+  "contract_dir": "docs/window-instances/ux-critic",
+  "state_file": "docs/window-instances/ux-critic/STATE.md",
+  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "cadence_minutes": 60,
+  "stop_phrases": ["stop ux-critic", "halt ux-critic"],
+  "delivery": {"mode": "local"},
+  "scratchpad": "tools/hermes-loop/logs/ux-critic.log",
+  "heartbeat": "tools/hermes-loop/state/ux-critic.heartbeat",
+  "worktree": {
+    "enabled": false,
+    "path": ".worktrees/ux-critic",
+    "branch_prefix": "loop/ux-critic/"
+  }
+}

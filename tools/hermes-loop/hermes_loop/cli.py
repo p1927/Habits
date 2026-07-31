@@ -1,17 +1,9 @@
 """Command-line entry point for Hermes Loop.
 
-Usage::
-
-    python -m hermes_loop --help
-    python -m hermes_loop tick <worker_id> [--dry-run]
-    python -m hermes_loop status
-    python -m hermes_loop logs <worker_id> [--tail N]
-    python -m hermes_loop install <worker_id>        # Slice B
-    python -m hermes_loop stop <worker_id>
-    python -m hermes_loop doctor
-
-Runs from anywhere: it walks up looking for a repo with docs/window-instances/
-+ pwa/. Each subcommand exits 0 on success, non-zero otherwise.
+Slice A: tick (--dry-run), status, logs, install (print-only), stop,
+         doctor.
+Slice B: install / install --all / uninstall / list — talk to launchd
+         via the manager module.
 """
 
 from __future__ import annotations
@@ -21,15 +13,11 @@ import os
 import sys
 from pathlib import Path
 
-from . import __version__, scratchpad
+from . import __version__, launchd, scratchpad
 from .config import ConfigError, WorkerConfig, discover, find
 
 
-WORKERS_DIR_DEFAULT = Path("tools/hermes-loop/workers")
-
-
 def _pkg_root() -> Path:
-    """Path containing workers/ and bundles/."""
     return Path(__file__).resolve().parent.parent
 
 
@@ -55,10 +43,20 @@ def _resolve_relative(repo_root: Path, p: str) -> Path:
     return repo_root / p
 
 
+def _iter_targets(args: argparse.Namespace) -> tuple[list[WorkerConfig], bool]:
+    """Return (worker configs, all_workers)."""
+    if getattr(args, "all", False):
+        repo_root = _repo_root(Path.cwd())
+        cfgs = discover(_resolve_workers_dir(repo_root))
+        return cfgs, True
+    repo_root = _repo_root(Path.cwd())
+    cfg = find(_resolve_workers_dir(repo_root), args.worker_id)
+    return [cfg], False
+
+
 def cmd_tick(args: argparse.Namespace) -> int:
     repo_root = _repo_root(Path.cwd())
     cfg = find(_resolve_workers_dir(repo_root), args.worker_id)
-    # Build the bundle in the right place too, but stay in the right context.
     from .tick import run_one
 
     return run_one(cfg, dry_run=args.dry_run, repo_root=repo_root)
@@ -75,7 +73,7 @@ def cmd_status(args: argparse.Namespace) -> int:
         print("[hermes-loop] no worker configs found")
         return 0
 
-    print(f"Hermes Loop — Slice A — v{__version__}")
+    print(f"Hermes Loop — v{__version__}")
     print(f"repo_root: {repo_root}")
     print(f"workers:   {len(cfgs)}")
     print()
@@ -95,6 +93,10 @@ def cmd_status(args: argparse.Namespace) -> int:
         print(f"    scratchpad lines: {scratch_lines}")
         print(f"    state_file      : {cfg.state_file}")
         print(f"    worktree        : {cfg.worktree.path} ({'on' if cfg.worktree.enabled else 'off'})")
+        # report whether the launchd agent is registered
+        layout = launchd.build_layout(cfg, repo_root=repo_root)
+        loaded = launchd._is_loaded(layout.label)
+        print(f"    launchd label   : {layout.label} ({'loaded' if loaded else 'not loaded'})")
     return 0
 
 
@@ -107,19 +109,46 @@ def cmd_logs(args: argparse.Namespace) -> int:
 
 
 def cmd_install(args: argparse.Namespace) -> int:
+    cfgs, _ = _iter_targets(args)
     repo_root = _repo_root(Path.cwd())
-    cfg = find(_resolve_workers_dir(repo_root), args.worker_id)
-    cadence = cfg.cadence_minutes
-    print(
-        f"# {cfg.id}\n"
-        f"# Add to your crontab (or Hermes cron registry in Slice B):\n"
-        f"*/{cadence} * * * * cd {repo_root} && "
-        f"python -m hermes_loop tick {cfg.id} >> {cfg.scratchpad} 2>&1\n"
-    )
-    print(
-        f"# Or one-shot for first verification:\n"
-        f"cd {repo_root} && python -m hermes_loop tick {cfg.id} --dry-run\n"
-    )
+    rc_total = 0
+    for cfg in cfgs:
+        scratch = _resolve_relative(repo_root, cfg.scratchpad)
+        rc, msg = launchd.install(
+            cfg,
+            repo_root=repo_root,
+            scratch=scratch if not args.dry_run else None,
+            dry_run=args.dry_run,
+        )
+        print(msg)
+        rc_total = max(rc_total, rc)
+    return rc_total
+
+
+def cmd_uninstall(args: argparse.Namespace) -> int:
+    cfgs, _ = _iter_targets(args)
+    repo_root = _repo_root(Path.cwd())
+    rc_total = 0
+    for cfg in cfgs:
+        scratch = _resolve_relative(repo_root, cfg.scratchpad)
+        rc, msg = launchd.uninstall(
+            cfg,
+            repo_root=repo_root,
+            scratch=scratch if not args.dry_run else None,
+            dry_run=args.dry_run,
+        )
+        print(msg)
+        rc_total = max(rc_total, rc)
+    return rc_total
+
+
+def cmd_list(args: argparse.Namespace) -> int:
+    cfgs = launchd.list_installed()
+    if not cfgs:
+        print("[hermes-loop] no installed hermes-loop launchd agents")
+        return 0
+    for label in cfgs:
+        print(label)
     return 0
 
 
@@ -132,16 +161,20 @@ def cmd_stop(args: argparse.Namespace) -> int:
         kind="stopped",
         payload=f"reason='{args.reason}' via 'python -m hermes_loop stop'",
     )
+    layout = launchd.build_layout(cfg, repo_root=repo_root)
+    loaded = launchd._is_loaded(layout.label)
     print(
         f"[hermes-loop] {cfg.id} marked stopped in scratchpad. "
-        f"Reminder: Slice B will offer a one-shot 'stop_scheduler' that "
-        f"removes the cron entry. For now, kill any cron yourself."
+        + (
+            f"To stop the scheduler: 'python -m hermes_loop uninstall {cfg.id}'"
+            if loaded
+            else f"No launchd agent loaded for {layout.label}."
+        )
     )
     return 0
 
 
 def cmd_doctor(args: argparse.Namespace) -> int:
-    """Return non-zero if any heartbeat is older than 2 * cadence_minutes."""
     repo_root = _repo_root(Path.cwd())
     cfgs = discover(_resolve_workers_dir(repo_root))
     rc = 0
@@ -165,8 +198,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="python -m hermes_loop",
         description=(
             "Hermes Loop — drive multiple Hermes sub-agents as window instances. "
-            "Slice A is the read-only MVP; bundles are written for review without "
-            "actually spawning an LLM."
+            "Slice A: read-only tick; Slice B: real executor + launchd integration."
         ),
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -174,7 +206,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_tick = sub.add_parser("tick", help="Run one tick of a worker")
     p_tick.add_argument("worker_id")
-    p_tick.add_argument("--dry-run", action="store_true", help="build + write the bundle only")
+    p_tick.add_argument("--dry-run", action="store_true")
     p_tick.set_defaults(func=cmd_tick)
 
     p_status = sub.add_parser("status", help="Show last heartbeat + scratchpad size per worker")
@@ -185,11 +217,30 @@ def build_parser() -> argparse.ArgumentParser:
     p_logs.add_argument("--tail", type=int, default=20)
     p_logs.set_defaults(func=cmd_logs)
 
-    p_install = sub.add_parser("install", help="Print cron/launchd instructions for a worker")
-    p_install.add_argument("worker_id")
+    p_install = sub.add_parser(
+        "install",
+        help="Register a worker's launchd plist and load it (use --all for every worker)",
+    )
+    p_install.add_argument("worker_id", nargs="?")
+    p_install.add_argument("--all", action="store_true", help="register every worker")
+    p_install.add_argument("--dry-run", action="store_true", help="write plist only; do not launchctl load")
     p_install.set_defaults(func=cmd_install)
 
-    p_stop = sub.add_parser("stop", help="Mark a worker stopped (Slice A: log-only)")
+    p_uninstall = sub.add_parser(
+        "uninstall",
+        help="Unregister a worker's launchd plist (use --all for every worker)",
+    )
+    p_uninstall.add_argument("worker_id", nargs="?")
+    p_uninstall.add_argument("--all", action="store_true")
+    p_uninstall.add_argument("--dry-run", action="store_true")
+    p_uninstall.set_defaults(func=cmd_uninstall)
+
+    p_list = sub.add_parser(
+        "list", help="List installed launchd agents owned by hermes-loop"
+    )
+    p_list.set_defaults(func=cmd_list)
+
+    p_stop = sub.add_parser("stop", help="Mark a worker stopped (logs only)")
     p_stop.add_argument("worker_id")
     p_stop.add_argument("--reason", default="manual")
     p_stop.set_defaults(func=cmd_stop)

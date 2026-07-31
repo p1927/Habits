@@ -1,0 +1,16 @@
+{
+  "id": "code-health",
+  "contract_dir": "docs/window-instances/code-health",
+  "state_file": "docs/window-instances/code-health/STATE.md",
+  "executor": "bash tools/hermes-loop/scripts/run_subagent.sh --bundle {bundle} --worker-id {worker_id}",
+  "cadence_minutes": 45,
+  "stop_phrases": ["stop code-health", "halt code-health"],
+  "delivery": {"mode": "local"},
+  "scratchpad": "tools/hermes-loop/logs/code-health.log",
+  "heartbeat": "tools/hermes-loop/state/code-health.heartbeat",
+  "worktree": {
+    "enabled": true,
+    "path": ".worktrees/code-health",
+    "branch_prefix": "loop/code-health/"
+  }
+}

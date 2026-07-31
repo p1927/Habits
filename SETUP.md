@@ -93,26 +93,38 @@ cd pwa && npm install && npm run dev
 
 ## 7. Hermes Loop (autonomous workers)
 
-Hermes Loop turns each `docs/window-instances/<id>/` into a scheduled tick driven by an external scheduler (cron / `hermes_loop` cron registry). Slice A ships the read-only MVP; Slice B wires a real LLM executor + cron entries for all five windows.
+Hermes Loop turns each `docs/window-instances/<id>/` into a scheduled tick driven by macOS launchd (or cron, if you wire it manually). Slice A shipped the read-only MVP; Slice B wires a real executor + plist registration for all five windows.
 
 ```bash
-# one-off dry-run, no LLM cost
+# one-off dry-run, no executor cost
 PYTHONPATH=tools/hermes-loop python -m hermes_loop tick worker-relay --dry-run
 
-# status + per-worker heartbeat
+# real tick — invokes executor (default: scripts/run_subagent.sh simulator)
+PYTHONPATH=tools/hermes-loop python -m hermes_loop tick worker-relay
+
+# status + per-worker heartbeat + launchd load state
 PYTHONPATH=tools/hermes-loop python -m hermes_loop status
 
 # tail a worker's scratchpad
 PYTHONPATH=tools/hermes-loop python -m hermes_loop logs worker-relay --tail 20
 
-# print cron entry for a worker (Slice B will automate this)
-PYTHONPATH=tools/hermes-loop python -m hermes_loop install worker-relay
+# write ~/.hermes/launchd/ai.habits.hermes-loop.<id>.plist + launchctl load -w
+PYTHONPATH=tools/hermes-loop python -m hermes_loop install ux-relay
+
+# bulk install / uninstall
+PYTHONPATH=tools/hermes-loop python -m hermes_loop install --all
+PYTHONPATH=tools/hermes-loop python -m hermes_loop uninstall --all
+
+# list loaded labels
+PYTHONPATH=tools/hermes-loop python -m hermes_loop list
 
 # doctor: non-zero exit if any heartbeat is stale
 PYTHONPATH=tools/hermes-loop python -m hermes_loop doctor
 ```
 
-See [docs/hermes-loop/PLAN.md](docs/hermes-loop/PLAN.md) and [tools/hermes-loop/README.md](tools/hermes-loop/README.md) for scope and Slice B/C plans. The legacy `tools/cursor-loop/` keeps working in parallel during the migration.
+The default executor (`tools/hermes-loop/scripts/run_subagent.sh`) is a simulator that prints what a real tick *would* invoke and exits 0. Slice C replaces this with a real Hermes launcher (one-line edit per worker config in `tools/hermes-loop/workers/*.json`).
+
+See [docs/hermes-loop/PLAN.md](docs/hermes-loop/PLAN.md), [docs/hermes-loop/DECISIONS-SLICE-B.md](docs/hermes-loop/DECISIONS-SLICE-B.md), and [tools/hermes-loop/README.md](tools/hermes-loop/README.md). The legacy `tools/cursor-loop/` keeps working in parallel during the migration.
 
 ## Verification
 
@@ -120,4 +132,5 @@ See [docs/hermes-loop/PLAN.md](docs/hermes-loop/PLAN.md) and [tools/hermes-loop/
 - [ ] PWA shows green status with bearer saved
 - [ ] Google connect works; food log writes to Nutrition sheet
 - [ ] Cloudflare Access blocks strangers before app loads
-- [ ] `python -m hermes_loop status` (after Slice A deployment) lists all configured workers with fresh heartbeats
+- [ ] `python -m hermes_loop status` lists all five workers with fresh heartbeats
+- [ ] `python -m hermes_loop install --all` registers five launchd plists without error
