@@ -34,6 +34,12 @@ export function useAgentContext(serverOnline: boolean, active: boolean) {
   });
 
   const refreshInFlightRef = useRef<Promise<void> | null>(null);
+  // Keep the latest serverOnline inside the refresh closure without making
+  // the callback identity change on every flip — that would tear down and
+  // recreate the polling interval and the data-refresh subscription on
+  // every connect/disconnect transition.
+  const serverOnlineRef = useRef(serverOnline);
+  serverOnlineRef.current = serverOnline;
 
   const refresh = useCallback(async () => {
     if (refreshInFlightRef.current) {
@@ -41,7 +47,7 @@ export function useAgentContext(serverOnline: boolean, active: boolean) {
     }
 
     const run = (async () => {
-      if (!serverOnline) {
+      if (!serverOnlineRef.current) {
         setState((s) => ({ ...s, loading: false, error: 'habits-api offline' }));
         return;
       }
@@ -83,7 +89,7 @@ export function useAgentContext(serverOnline: boolean, active: boolean) {
         refreshInFlightRef.current = null;
       }
     }
-  }, [serverOnline]);
+  }, []);
 
   useEffect(() => {
     if (!active) return;
@@ -93,6 +99,17 @@ export function useAgentContext(serverOnline: boolean, active: boolean) {
   }, [active, refresh]);
 
   useEffect(() => { if (!active) return undefined; return onAgentDataRefresh(() => { void refresh(); }); }, [active, refresh]);
+
+  // React explicitly to serverOnline flips so we stop hammering the API when
+  // it goes down and pick up immediately when it returns.
+  useEffect(() => {
+    if (!active) return;
+    if (serverOnline) {
+      void refresh();
+    } else {
+      setState((s) => ({ ...s, loading: false, error: 'habits-api offline' }));
+    }
+  }, [active, serverOnline, refresh]);
 
   return { ...state, refresh };
 }

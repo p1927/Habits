@@ -73,7 +73,18 @@ export async function agentChatStream(
         if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
         const parsed = parseSseBlock(block.trim());
         if (!parsed) continue;
-        const payload = JSON.parse(parsed.data) as Record<string, unknown>;
+        let payload: Record<string, unknown>;
+        try {
+          payload = JSON.parse(parsed.data) as Record<string, unknown>;
+        } catch (err) {
+          // A non-JSON chunk in the stream — skip it instead of killing the
+          // whole stream with a cryptic "Unexpected token" message. The
+          // server's error events still surface via the 'error' branch below.
+          if (typeof console !== 'undefined') {
+            console.warn('agentChatStream: dropped malformed SSE block', err);
+          }
+          continue;
+        }
         if (parsed.event === 'token' && typeof payload.text === 'string') {
           handlers.onToken(payload.text);
         } else if (parsed.event === 'tool_start' && typeof payload.tool === 'string') {

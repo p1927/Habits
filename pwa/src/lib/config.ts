@@ -11,14 +11,19 @@ declare global {
   }
 }
 
+/**
+ * Resolve a config value, preferring a build-time env var over a runtime
+ * override. Runtime overrides are accepted in all environments — including
+ * LAN IPs (e.g. http://192.168.1.42:8787) — because we explicitly trust the
+ * deployer to set a sane URL via runtime-config.js. We do not block loopback
+ * URLs here; that was previously a misguided guard that also banned legit
+ * LAN addresses from builds with no env var.
+ */
 function envOrRuntime(key: 'apiUrl' | 'voiceUiUrl'): string {
   const envKey = key === 'apiUrl' ? 'VITE_HABITS_API_URL' : 'VITE_VOICE_UI_URL';
   const fromEnv = import.meta.env[envKey]?.trim();
   if (fromEnv) return fromEnv;
   const fromRuntime = window.HABITS_CONFIG?.[key]?.trim();
-  if (fromRuntime && !fromRuntime.includes('127.0.0.1') && !fromRuntime.includes('localhost')) {
-    return fromRuntime;
-  }
   return fromRuntime || '';
 }
 

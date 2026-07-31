@@ -3,12 +3,11 @@ from __future__ import annotations
 from habits_api.config import Settings
 from habits_api.db import TokenDB
 from habits_api.food.models import FoodDbEntry, FoodLogItem, is_placeholder_food, parse_float
+from habits_api.google.sheet_io import _write_lock_for, read_range, update_range
 from habits_api.google.sheets import (
     DAILY_LOG_DATA_START_ROW,
     FOOD_DB_DATA_START_ROW,
     read_key_value_block,
-    read_range,
-    update_range,
 )
 
 
@@ -80,7 +79,11 @@ async def load_daily_log(settings: Settings, db: TokenDB) -> list[FoodLogItem]:
     return items
 
 
-async def find_next_log_row(settings: Settings, db: TokenDB) -> int:
+async def _find_next_log_row_unsafe(
+    settings: Settings,
+    db: TokenDB,
+) -> int:
+    """Return the row index to write to. Caller MUST hold the log-tab write lock."""
     rows = await read_range(
         settings,
         db,
@@ -104,6 +107,7 @@ async def write_log_row(
     quantity_g: float,
     macros: dict[str, float],
 ) -> None:
+    """Backward-compatible single-row update. Use append_log_row for new entries."""
     await update_range(
         settings,
         db,
@@ -112,6 +116,35 @@ async def write_log_row(
         f"A{row_idx}:F{row_idx}",
         [[name, quantity_g, macros["calories"], macros["carbs"], macros["protein"], macros["fat"]]],
     )
+
+
+async def append_log_row(
+    settings: Settings,
+    db: TokenDB,
+    name: str,
+    quantity_g: float,
+    macros: dict[str, float],
+) -> int:
+    """Atomically find a free row and write a new food log entry.
+
+    Holds the per-tab write lock for the duration of read-then-write so two
+    concurrent callers cannot land on the same row. Returns the row index
+    written.
+    """
+    sid = settings.habits_sheet_nutrition
+    tab = settings.habits_tab_food_log
+    lock = await _write_lock_for(sid, tab)
+    async with lock:
+        row_idx = await _find_next_log_row_unsafe(settings, db)
+        await update_range(
+            settings,
+            db,
+            sid,
+            tab,
+            f"A{row_idx}:F{row_idx}",
+            [[name, quantity_g, macros["calories"], macros["carbs"], macros["protein"], macros["fat"]]],
+        )
+        return row_idx
 
 
 async def get_protein_target(settings: Settings, db: TokenDB) -> float | None:

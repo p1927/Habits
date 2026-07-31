@@ -10,6 +10,9 @@ dist/
 *.sqlite
 *.sqlite3
 .habits/
+.habits/dev-logs/
+.graphcoder/
+.wrangler/
 pwa/dev-dist/
 .server-data/
 .agents/*

@@ -14,7 +14,7 @@ async def generate_body_image(settings: Settings, prompt: str) -> str | None:
         "Content-Type": "application/json",
     }
     payload = {
-        "model": "image-01",
+        "model": settings.minimax_image_model,
         "prompt": prompt,
         "aspect_ratio": "3:4",
         "response_format": "url",
