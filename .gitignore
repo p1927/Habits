@@ -34,4 +34,5 @@ deploy/cloudflare/.provision-state.json
 # hermes-loop scratch / build artifacts
 tools/hermes-loop/logs/
 tools/hermes-loop/state/
-tools/hermes-loop/bundles/
+tools/hermes-loop/bundles/tools/tools/
+# sentinel — auto-generated tool exploration scratch (rooted)

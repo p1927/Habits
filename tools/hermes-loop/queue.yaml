@@ -1,0 +1,28 @@
+{
+  "_comment": "Hermes Loop queue dispatch config. Rotation order is the queue; one tick runs at a time.",
+  "rotation": [
+    "worker-relay",
+    "ux-relay",
+    "code-health",
+    "ux-critic",
+    "po-relay",
+    "supervisor",
+    "worker-relay",
+    "ux-relay",
+    "code-health",
+    "ux-critic",
+    "po-relay",
+    "worker-relay",
+    "ux-relay",
+    "code-health",
+    "po-relay",
+    "supervisor"
+  ],
+  "supervisor_every_n": 6,
+  "pause_file": "tools/hermes-loop/state/PAUSE",
+  "busy_file": "tools/hermes-loop/state/BUSY",
+  "queue_state_file": "tools/hermes-loop/state/queue.json",
+  "tick_log_tail_lines": 50,
+  "max_runtime_seconds": 1200,
+  "min_gap_seconds": 5
+}
