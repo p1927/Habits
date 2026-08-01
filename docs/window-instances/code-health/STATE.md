@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:30:00Z |
-| where_we_are | ch-142 useSwipeStack split shipped (184→107); queue useLogSection 138 |
-| confirmed_next | ch-144 — useLogSection.ts split (138 lines) |
+| reviewed_at | 2026-08-01T20:40:00Z |
+| where_we_are | ch-151 AgentChatComposer split shipped (164→83 + 5 children); main at c5e101d; r22 zero bugs |
+| confirmed_next | ch-145 — logTabPanelsPropsBuilder (132) split (post ch-151 scan) |
 
 ---
 
@@ -18,10 +18,10 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-144` |
+| confirmed_next | `ch-145` |
 | phase | `9-arm` |
 | current_item_id | `—` |
-| last_wake | `2026-07-28T13:30:00Z` |
+| last_wake | `2026-08-01T20:40:00Z` |
 | code_changed | `yes` |
 | review_status | `done` |
 | review_round | `22` |
@@ -31,23 +31,24 @@
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/code-health/STATE.md pwa/src/components/AgentChatComposer.tsx` |
-| review_fingerprint | `2bad273d012ef6f3` |
-| review_diff_range | `uncommitted` |
+| review_fingerprint | `c5e101d5b2f10964` |
+| review_diff_range | `committed` |
 | review_skip_reason | `—` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; build + lint green; r21 zero bugs` |
+| brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; c5e101d ff-merge to main; r22 zero bugs` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `b2c3c5c` |
+| commit_hash | `c5e101d` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
-| merge_done | `no` |
-| review_tick_applied_at | `2026-07-28T00:57:26+00:00` |
+| merge_done | `yes` |
+| review_tick_applied_at | `2026-08-01T20:40:00+00:00` |
 | refactor_subphase | `execute` |
 | refactor_plan_id | `ch-151` |
 | refactor_step_n | `1` |
+| worktree_cleanup_deferred | `yes — user denied git worktree remove / branch -D; main already merged at c5e101d (ff-only)` |
 
 ## IN_PROGRESS
 
@@ -67,8 +68,9 @@
 - [x] ch-141 | line scan — post ch-140 targets | structure | top: useSwipeStack 184, useLogSection 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #140
 - [x] ch-142 | `useSwipeStack.ts` (184) split | structure | gesture lib + exit hook; 184→107; r20 offset-reset fix | done tick #142
 - [x] ch-143 | line scan — post ch-142 targets | structure | top: useLogSection 138, SwipeStack 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #142
-- [ ] ch-144 | `useLogSection.ts` (138) split | structure | extract section data + tab wiring hook |
-
+- [x] ch-144 | `useLogSection.ts` (138) split | structure | useLogSectionDismiss hook (dismiss concern); composition 138→139 + 18-new; deps tightened; r21 zero bugs | done tick #144
+- [x] ch-151 | `AgentChatComposer.tsx` (164) split | structure | 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); 164→83; r22 zero bugs; c5e101d merged | done tick #145
+- [ ] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
 
 ## BUG_BACKLOG
@@ -156,6 +158,8 @@
 | `pwa/src/components/MealPlanQueuePanel.tsx` | 2026-07-28 tick #138 | ch-138: hook + types; 133→68 |
 | `pwa/src/sections/Settings.tsx` | 2026-07-28 tick #137 | ch-137: chrome + cards + footer + effects; 136→55 |
 | `pwa/src/components/*` + hooks + lib | 2026-07-28 tick #140 | ch-141 scan: useSwipeStack 184, useLogSection 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 |
+| `pwa/src/components/AgentChatComposer.tsx` | 2026-08-01 tick #145 | ch-151 split: 164→83 + 5 child components; r22 zero bugs; c5e101d merged |
+| `pwa/src/hooks/*` + `pwa/src/sections/*` | 2026-08-01 tick #145 | post ch-151 scan: logTabPanelsPropsBuilder 132 (top), useLogSection 139, useHomeDashboardActions 131, useSettingsSectionData 125 |
 
 ---
 | `pwa/src/hooks/useLogTabPanelsProps.ts` | 2026-07-27 tick #76 | ch-097: builder + swipe handler; 162→36 |
@@ -187,6 +191,13 @@
 ## REVIEW_FINDINGS
 
 
+
+| id | severity | finding | source | action | backlog_ref | status |
+|----|----------|---------|--------|--------|-------------|--------|
+| ch-r22-001 | low | AgentChatComposer.tsx:55 — extract preserves DOM order, form send/mic conditional, attach preview, status chip dedup, voice nudge, disclaimer text, kbd shortcut, and aria-keyshortcuts verbatim. useCallback canSend logic moved to bar.tsx with identical inputs. The shell now adds `&& onDismissVoiceNudge` to the voice-nudge guard so the child only renders when both flags hold — defensive, equivalent or stricter than the pre-split behavior. | round-22 /code-review | closed | — | closed |
+| ch-r22-002 | low | statusChips.tsx:14-19 — dedup logic uses `labels.includes` (O(n²) but n is small) which is identical to the original `seen.has` Set approach semantically. Same output ordering, no regressions. | round-22 /code-review | closed | — | closed |
+| ch-r22-003 | low | bar.tsx:31 — `canSend` is recomputed on every render (no useMemo). Original composer had the same pattern, so this is parity, not a regression. Memoization deferred (ch-151 deferred items already in commit body). | round-22 /code-review | closed | — | closed |
+| ch-r22-000 | low | Bugbot: ch-151 AgentChatComposer extraction — ZERO FINDINGS. Region extraction preserves aria attributes, role values, kbd shortcut text, send/mic conditional, form submit guard, and DOM order verbatim. VoiceNudge onDismiss guard made explicit at the shell boundary, no behavior change. Build (vite + tsc) and lint (oxlint 0 errors) green. | round-22 bugbot | closed | — | closed |
 
 
 
@@ -310,6 +321,8 @@
 | Timestamp | Item | Outcome | Verified | Commit |
 | 2026-07-28 | ch-142 | useSwipeStack split | build | pwa/src/hooks/useSwipeStack.ts |
 |-----------|------|---------|----------|--------|
+| 2026-08-01 | ch-151 | AgentChatComposer split — 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); main 164→83; npm lint + tsc + vite build green; r22 zero bugs; ff-merge c5e101d; worktree cleanup deferred per user | build | c5e101d |
+| 2026-08-01 | tick #145 | post ch-151 line scan; queue ch-145 logTabPanelsPropsBuilder (132); useLogSection 139, useHomeDashboardActions 131, useSettingsSectionData 125 still in backlog | scan | — |
 | 2026-07-28 | ch-140 | DayScheduleGrid split (hook + all-day + body); 176→32 | build | ada97df |
 | 2026-07-28 | ch-141 | Post-ch-140 line scan; queue ch-142 useSwipeStack | scan | — |
 | 2026-07-28 | ch-139 | Post-ch-138 line scan; queue ch-140 DayScheduleGrid | scan | — |
