@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { useLogSectionData } from './useLogSectionData';
+import { useLogSectionDismiss } from './useLogSectionDismiss';
 import { useLogSectionFoodStack } from './useLogSectionFoodStack';
 import { useLogStatusShellProps } from './useLogStatusShellProps';
 import { useLogTabPanelsProps } from './useLogTabPanelsProps';
@@ -88,11 +89,11 @@ export function useLogSection({
     onFoodUpdated: sectionData.setData,
   });
 
-  const dismissFoodLogQueue = useCallback(() => {
-    if (!window.confirm(`Discard ${foodLog.queuedCount} queued food log${foodLog.queuedCount === 1 ? '' : 's'}? They will not sync.`)) return;
-    foodLog.dismissAllQueued();
-    setSuccess('Offline food log queue cleared');
-  }, [foodLog, setSuccess]);
+  const dismissFoodLogQueue = useLogSectionDismiss({
+    queuedCount: foodLog.queuedCount,
+    dismissAllQueued: foodLog.dismissAllQueued,
+    setSuccess,
+  });
 
   const tabPanels = useLogTabPanelsProps({
     loading,
