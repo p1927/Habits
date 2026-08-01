@@ -2,6 +2,7 @@ import { BarcodeScanner } from './BarcodeScanner';
 import { LogManualEntryForm } from './LogManualEntryForm';
 import { LogOffProductCard } from './LogOffProductCard';
 import { LogTypeTodayList } from './LogTypeTodayList';
+import { LogTypeTodayTotalsStrip } from './LogTypeTodayTotalsStrip';
 import { LogVoiceQuickForm } from './LogVoiceQuickForm';
 import { Card } from './ui/Card';
 import { MealPlanQuickAddBar } from './MealPlanQuickAddBar';
@@ -118,6 +119,8 @@ export function LogTypeTabPanel({
         onQuantityChange={onQuantityChange}
         onManualLog={onManualLog}
       />
+
+      <LogTypeTodayTotalsStrip data={data} serverOnline={serverOnline} />
 
       <LogTypeTodayList
         pending={pending}

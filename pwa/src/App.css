@@ -3587,6 +3587,31 @@ form.log-type-card {
   margin-top: 0.25rem;
 }
 
+.log-type-totals-strip {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.log-type-totals-strip .progress-bar {
+  margin-bottom: 0.75rem;
+}
+
+.log-type-totals-strip .progress-bar--thin {
+  height: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.log-type-totals-strip__protein {
+  margin-top: 0.25rem;
+}
+
+.log-type-totals-strip__footer {
+  margin: 0;
+}
+
 .day-manage-card .manage-quad h3 {
   font-size: var(--font-size-sm);
   font-weight: 600;
