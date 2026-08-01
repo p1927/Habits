@@ -56,12 +56,12 @@ export function LogTypeTodayTotalsStrip({ data, calorieTarget }: LogTypeTodayTot
         {hasCalorieTarget && remaining != null ? (
           <>
             {formatKcal(remaining)} kcal remaining
-            {data?.protein_g != null && data.protein_target_g != null ? (
-              <span aria-hidden="true"> · </span>
+            {proteinTarget != null ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                {formatGrams(protein)}g protein today
+              </>
             ) : null}
-            {data?.protein_g != null && data.protein_target_g != null
-              ? `${formatGrams(protein)}g protein today`
-              : null}
           </>
         ) : data?.calories != null ? (
           `${formatKcal(data.calories)} kcal today`
