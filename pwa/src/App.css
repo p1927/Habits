@@ -3276,6 +3276,14 @@ button:disabled {
   column-gap: 0.75rem;
 }
 
+.cards-search-hit {
+  background: color-mix(in srgb, var(--accent, #f59e0b) 22%, transparent);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
 .keep-card--pinned {
   break-inside: avoid;
   margin-bottom: 0.75rem;

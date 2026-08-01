@@ -99,7 +99,12 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
       )}
 
       <div role="tabpanel" id="cards-filter-panel" aria-labelledby={`cards-filter-${filter}`}>
-        <CardsKeepGrid cards={filtered} onDelete={(card) => void handleDelete(card)} />
+        <CardsKeepGrid
+          cards={filtered}
+          onDelete={(card) => void handleDelete(card)}
+          search={search}
+          totalCount={cards.length}
+        />
       </div>
 
       <button type="button" className="fab fab--keep" onClick={() => setFabOpen(true)} aria-label="Add note">

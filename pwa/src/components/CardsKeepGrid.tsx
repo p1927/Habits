@@ -1,10 +1,12 @@
 import { Card } from './ui/Card';
 import type { KeepCard } from '../lib/api';
-import { KEEP_CARD_VARIANTS } from '../lib/cardsSectionShared';
+import { highlightSearchMatch, KEEP_CARD_VARIANTS } from '../lib/cardsSectionShared';
 
 interface CardsKeepGridProps {
   cards: KeepCard[];
   onDelete: (card: KeepCard) => void;
+  search?: string;
+  totalCount?: number;
 }
 
 const KEEP_CHIP_CLASS: Record<string, string> = {
@@ -13,8 +15,19 @@ const KEEP_CHIP_CLASS: Record<string, string> = {
   strategy: 'keep-chip keep-chip--green',
 };
 
-export function CardsKeepGrid({ cards, onDelete }: CardsKeepGridProps) {
-  if (!cards.length) {
+export function CardsKeepGrid({ cards, onDelete, search = '', totalCount }: CardsKeepGridProps) {
+  const trimmed = search.trim();
+  const total = totalCount ?? cards.length;
+  const hasResults = cards.length > 0;
+
+  if (!hasResults) {
+    if (trimmed && total > 0) {
+      return (
+        <div className="cards-empty-keep" role="status" aria-live="polite">
+          <p>No matches for &ldquo;{trimmed}&rdquo;.</p>
+        </div>
+      );
+    }
     return (
       <div className="cards-empty-keep">
         <p>No notes yet — tap + to capture.</p>
@@ -46,8 +59,8 @@ export function CardsKeepGrid({ cards, onDelete }: CardsKeepGridProps) {
               ×
             </button>
           </div>
-          <h3>{card.title}</h3>
-          {card.body && <p>{card.body}</p>}
+          <h3>{highlightSearchMatch(card.title, trimmed)}</h3>
+          {card.body && <p>{highlightSearchMatch(card.body, trimmed)}</p>}
         </Card>
       ))}
     </div>
