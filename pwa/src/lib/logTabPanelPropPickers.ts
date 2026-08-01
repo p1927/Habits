@@ -38,6 +38,7 @@ export function pickLogTypeTabPanelProps(p: LogTabPanelsProps): LogTypeTabPanelP
     searchResults: p.searchResults,
     pending: p.pending,
     data: p.data,
+    calorieTarget: p.calorieTarget,
     mealPlan: p.mealPlan,
     loggingMealKey: p.loggingMealKey,
     onLogMealPlanEntry: p.onLogMealPlanEntry,

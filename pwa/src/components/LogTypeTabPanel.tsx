@@ -2,6 +2,7 @@ import { BarcodeScanner } from './BarcodeScanner';
 import { LogManualEntryForm } from './LogManualEntryForm';
 import { LogOffProductCard } from './LogOffProductCard';
 import { LogTypeTodayList } from './LogTypeTodayList';
+import { LogTypeTodayTotalsStrip } from './LogTypeTodayTotalsStrip';
 import { LogVoiceQuickForm } from './LogVoiceQuickForm';
 import { Card } from './ui/Card';
 import { MealPlanQuickAddBar } from './MealPlanQuickAddBar';
@@ -22,6 +23,7 @@ export interface LogTypeTabPanelProps {
   searchResults: FoodSearchResult[];
   pending: OptimisticFoodEntry[];
   data: FoodTodayResponse | null;
+  calorieTarget: number | null;
   mealPlan: MealPlanEntry[];
   loggingMealKey: string | null;
   onLogMealPlanEntry: (entry: MealPlanEntry) => void;
@@ -53,6 +55,7 @@ export function LogTypeTabPanel({
   searchResults,
   pending,
   data,
+  calorieTarget,
   mealPlan,
   loggingMealKey,
   onLogMealPlanEntry,
@@ -118,6 +121,8 @@ export function LogTypeTabPanel({
         onQuantityChange={onQuantityChange}
         onManualLog={onManualLog}
       />
+
+      <LogTypeTodayTotalsStrip data={data} calorieTarget={calorieTarget} />
 
       <LogTypeTodayList
         pending={pending}

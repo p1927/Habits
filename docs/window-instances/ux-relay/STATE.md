@@ -22,19 +22,19 @@
 | next_mode | `C` |
 | current_item_id | `ui-065` |
 | phase | `9-arm` |
-| review_status | `complete` |
+| review_status | `pending` |
 | review_skip_reason | `—` |
-| review_round | `23` |
+| review_round | `24` |
 | last_reviewed_round | `23` |
-| review_diff_range | `main...9447113` |
-| code_changed | `no` |
+| review_diff_range | `uncommitted` |
+| code_changed | `yes` |
 | confirmed_next | `ui-066 crit-002 tool status chips next` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/AgentToolsSheet.tsx,pwa/src/components/AgentSectionOverlays.tsx,pwa/src/sections/Agent.tsx,pwa/src/components/AgentChatComposer.tsx,pwa/src/styles/agent-gemini.css` |
-| review_fingerprint | `9447113-ui-065` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/LogTypeTabPanel.tsx pwa/src/hooks/useLogSectionData.ts pwa/src/lib/logTabPanelPropPickers.ts pwa/src/lib/logTabPanelsProps.ts pwa/src/lib/logTabPanelsPropsBuilder.ts` |
+| review_fingerprint | `2e3c9db1b23ba777` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ui-065 — crit-034 sendPrompt on tool tap; crit-002 agreed ui-066` |

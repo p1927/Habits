@@ -59,7 +59,7 @@ export function buildLogTabPanelsProps({
   onRecipeScanSwipe,
 }: AssembledLogTabPanelsPropsInput): Omit<LogTabPanelsProps, 'tab' | 'serverOnline'> {
   const { pending, logItem, retry, dismiss } = foodLog;
-  const { data, mealPlan, history } = sectionData;
+  const { data, mealPlan, history, calorieTarget } = sectionData;
 
   return {
     loading,
@@ -85,6 +85,7 @@ export function buildLogTabPanelsProps({
     searchResults: typeTab.searchResults,
     pending,
     data,
+    calorieTarget,
     mealPlan,
     loggingMealKey: mealPlanShell.loggingMealKey,
     loggingMeals: mealPlanShell.loggingMeals,

@@ -33,6 +33,7 @@ export interface LogTabPanelsProps {
   searchResults: FoodSearchResult[];
   pending: OptimisticFoodEntry[];
   data: FoodTodayResponse | null;
+  calorieTarget: number | null;
   mealPlan: MealPlanEntry[];
   loggingMealKey: string | null;
   loggingMeals: boolean;

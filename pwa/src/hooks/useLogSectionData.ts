@@ -42,14 +42,20 @@ export function useLogSectionData({
 }: UseLogSectionDataOptions) {
   const [data, setData] = useState<FoodTodayResponse | null>(null);
   const [history, setHistory] = useState<{ days: { date: string; calories: number; protein: number }[] } | null>(null);
+  const [calorieTarget, setCalorieTarget] = useState<number | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>(() => getCachedMealPlan());
 
   const refresh = useCallback(async () => {
     if (!serverOnline) return;
     try {
-      const [today, hist] = await Promise.all([api.getFoodToday(), api.getFoodHistory(14)]);
+      const [today, hist, targets] = await Promise.all([
+        api.getFoodToday(),
+        api.getFoodHistory(14),
+        api.getFoodTargets(),
+      ]);
       setData(today);
       setHistory(hist);
+      setCalorieTarget(targets?.calorie_target ?? null);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) return;
     }
@@ -115,6 +121,7 @@ export function useLogSectionData({
     setData,
     history,
     mealPlan,
+    calorieTarget,
     refresh,
     loadMealPlan,
   };

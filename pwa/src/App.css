@@ -1894,6 +1894,40 @@ button:disabled {
   margin-bottom: 0.35rem;
 }
 
+.log-type-totals-strip {
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.log-type-totals-strip .section-eyebrow {
+  margin-bottom: 0;
+}
+
+.log-type-totals-strip .progress-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.8125rem;
+}
+
+.log-type-totals-strip .progress-bar {
+  height: 6px;
+}
+
+.log-type-totals-strip .progress-bar--thin {
+  height: 4px;
+}
+
+.log-type-totals-strip__protein {
+  margin-top: 0.25rem;
+  margin-bottom: 0.15rem;
+}
+
+.log-type-totals-strip__footer {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+}
+
 .home-export-row {
   display: flex;
   align-items: center;
