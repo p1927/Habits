@@ -22,30 +22,33 @@
 | phase | `9-arm` |
 | current_item_id | `—` |
 | last_wake | `2026-07-28T13:30:00Z` |
-| code_changed | `no` |
-| review_status | `complete` |
-| review_round | `20` |
-| last_reviewed_round | `20` |
+| code_changed | `yes` |
+| review_status | `done` |
+| review_round | `22` |
+| last_reviewed_round | `22` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md` |
-| review_fingerprint | `2b91e7074ac58d73` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md pwa/src/components/AgentChatComposer.tsx` |
+| review_fingerprint | `2bad273d012ef6f3` |
 | review_diff_range | `uncommitted` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
+| review_skip_reason | `—` |
 | ritual_step | `9-arm` |
-| brainstorm_done | `no` |
-| brainstorm_outcome | `—` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; build + lint green; r21 zero bugs` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `0cbf0f8` |
+| commit_hash | `b2c3c5c` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
-| merge_done | `yes` |
+| merge_done | `no` |
 | review_tick_applied_at | `2026-07-28T00:57:26+00:00` |
 
+| refactor_subphase | `execute` |
+| refactor_plan_id | `ch-151` |
+| refactor_step_n | `1` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -192,8 +195,24 @@
 
 
 
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r21-b000 | low | Bugbot parity: build green, lint 0 errors, ARIA roles/labels preserved, DOM order preserved, canSend identical, dedup output identical, all callback signatures unchanged. Agent.tsx consumer untouched at lines 64-81. | round-21 bugbot | closed | — | closed |
+| ch-r21-007 | low | Fresh-eye: statusChips.tsx uses loading prop only for the loading ? [Working…] : [] fallback branch inside the component. Shell already gates the entire component on loading. Passing loading is redundant — but harmless and keeps the component self-contained for future use outside the loading path. Acceptable. | round-21 /code-review | closed | — | closed |
+| ch-r21-006 | low | AgentChatComposer.tsx:74-76 — disclaimer visibility still gated on showDisclaimer prop; Agent.tsx caller unchanged. | round-21 /code-review | closed | — | closed |
+| ch-r21-005 | low | bar.tsx:33-43 — input placeholder logic, disabled gating, aria-keyshortcuts, and sr-only label all moved as a unit. No behavioral drift vs monolith. | round-21 /code-review | closed | — | closed |
+| ch-r21-004 | low | statusChips.tsx:8 + bar.tsx:1 + disclaimer.tsx:2 — three child files now import from ../../lib/... (relative path with ../..). Original shell used ../lib/.... Consistent with hooks/ subdir convention; not a defect. | round-21 /code-review | closed | — | closed |
+| ch-r21-003 | low | AgentChatComposer.tsx:50 — showVoiceNudge render gate tightened to also require onDismissVoiceNudge. Original would render an interactive button with undefined onClick (console warning). New behavior prevents broken state. Strictly safer. | round-21 /code-review | closed | — | closed |
+| ch-r21-002 | low | statusChips.tsx:13 — dedup switched from Set<string> to labels.includes(label). O(n) per tool but typical n≤3 activeTools per poll; perf immaterial. Same output, more readable. | round-21 /code-review | closed | — | closed |
+| ch-r21-001 | low | AgentChatComposer.tsx:1-3 — 5 child component imports vs 2 inline lib imports before split; import block is now the longest section. Acceptable: each child component is independently testable and replaces inlined JSX. | round-21 /code-review | closed | — | closed |
 | ch-r20-007 | low | resetExit unused if timer cleared mid-animation | round-20 /code-review | pushback | — | closed |
 | ch-r20-006 | low | handleStart does not reset offset until first move | round-20 /code-review | pushback | — | closed |
 | ch-r20-005 | low | Double RAF inner frame not cancelled on teardown | round-20 /code-review | pushback | — | closed |
@@ -493,6 +512,14 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
+
+
+
+
+
 
 
 
