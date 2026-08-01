@@ -208,6 +208,54 @@ def is_installed(worker_id: str) -> bool:
     return f"{_LABEL_PREFIX}.{worker_id}" in list_installed()
 
 
+def _install_one(
+    *,
+    name: str,
+    schedule: str,
+    prompt: str,
+    repo_root: Path,
+    workdir: Path,
+    delivery: dict,
+    dry_run: bool = False,
+) -> tuple[int, str]:
+    if dry_run:
+        return 0, f"(dry-run) would register cron job: name={name!r}"
+    argv = [
+        "create",
+        "--name",
+        name,
+        schedule,
+        prompt,
+        "--workdir",
+        str(workdir),
+        "--deliver",
+        "local",
+    ]
+    try:
+        proc = _call_hermes_cron(*argv)
+    except FileNotFoundError as exc:
+        return 4, f"install failed: {exc}"
+    if proc.returncode != 0:
+        return proc.returncode, (
+            f"hermes cron create failed rc={proc.returncode} "
+            f"stderr={(proc.stderr or '')[-300:]}"
+        )
+    return 0, f"installed {name} schedule={schedule}"
+
+
+def uninstall_by_name(name: str, *, repo_root: Path) -> tuple[int, str]:
+    try:
+        proc = _call_hermes_cron("remove", name)
+    except FileNotFoundError as exc:
+        return 4, f"uninstall failed: {exc}"
+    if proc.returncode != 0:
+        return proc.returncode, (
+            f"hermes cron remove failed rc={proc.returncode} "
+            f"stderr={(proc.stderr or '')[-300:]}"
+        )
+    return 0, f"removed {name}"
+
+
 __all__ = [
     "JobSpec",
     "build_job_spec",
@@ -215,4 +263,6 @@ __all__ = [
     "uninstall",
     "list_installed",
     "is_installed",
-]
+    "_install_one",
+    "uninstall_by_name",
+]  # noqa: E501

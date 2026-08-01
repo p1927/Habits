@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -197,6 +198,86 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return rc
 
 
+def _repo_root_from_argv(args: argparse.Namespace) -> Path:
+    repo_root = _repo_root(Path.cwd())
+    return repo_root
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    """Foreground continuous loop. Use for dev sessions.
+
+    Run in your own terminal (no daemon involvement). Press Ctrl-C to stop.
+    Sets state/RUNNING so other invocations (cron) stay out of the way.
+    """
+    repo_root = _repo_root_from_argv(args)
+    import os as _os
+    _os.environ.pop("HERMES_LOOP_INTERVAL", None)
+    cmd = [
+        "/bin/bash",
+        str(repo_root / "tools/hermes-loop/scripts/loop.sh"),
+        "foreground",
+    ]
+    print("[hermes-loop] run: spawning", " ".join(cmd))
+    os.execvp(cmd[0], cmd)
+    return 0  # unreachable
+
+
+def cmd_tick_loop(args: argparse.Namespace) -> int:
+    """Single-tick idempotent entry. Cron fires this every 1 minute.
+
+    The shell script self-replicates as a singleton (state/RUNNING). If the
+    foreground loop is already running, this exits 0 immediately — no double
+    firing. If not, this run starts the loop and returns 0; the next cron
+    tick will be a no-op.
+    """
+    repo_root = _repo_root_from_argv(args)
+    cmd = [
+        "/bin/bash",
+        str(repo_root / "tools/hermes-loop/scripts/loop.sh"),
+        "once",
+    ]
+    rc = 0
+    try:
+        rc = subprocess.run(cmd, capture_output=True, text=True, timeout=300).returncode
+    except Exception as exc:
+        print(f"[hermes-loop] tick-loop failed: {exc}", file=sys.stderr)
+        rc = 5
+    return rc
+
+
+def cmd_install_loop(args: argparse.Namespace) -> int:
+    """Register a `every 1m` cron job that runs `tick-loop`."""
+    repo_root = _repo_root_from_argv(args)
+    script = repo_root / "tools/hermes-loop/scripts/loop.sh"
+    cmd_text = (
+        "Run a single hermes-loop tick (self-replicates into a long-running "
+        "loop). Use only ONE command and no analysis:\n\n"
+        f"bash {script}"
+    )
+    if args.dry_run:
+        print(f"(dry-run) would create cron job 'hermes-loop.tick-loop' every 1m")
+        print(f"          prompt: {cmd_text[:100]}...")
+        return 0
+    name = "hermes-loop.tick-loop"
+    rc, msg = scheduler._install_one(
+        name=name,
+        schedule="every 1m",
+        prompt=cmd_text,
+        repo_root=repo_root,
+        workdir=repo_root,
+        delivery={"mode": "local"},
+    )
+    print(msg)
+    return rc
+
+
+def cmd_uninstall_loop(args: argparse.Namespace) -> int:
+    repo_root = _repo_root_from_argv(args)
+    rc, msg = scheduler.uninstall_by_name("hermes-loop.tick-loop", repo_root=repo_root)
+    print(msg)
+    return rc
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m hermes_loop",
@@ -249,6 +330,31 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_doc = sub.add_parser("doctor", help="Check heartbeats; non-zero exit if any are stale")
     p_doc.set_defaults(func=cmd_doctor)
+
+    p_run = sub.add_parser(
+        "run",
+        help="Forever loop: tick workers back-to-back (foreground)",
+    )
+    p_run.set_defaults(func=cmd_run)
+
+    p_tick_loop = sub.add_parser(
+        "tick-loop",
+        help="Single-tick entrypoint for the cron daemon (idempotent)",
+    )
+    p_tick_loop.set_defaults(func=cmd_tick_loop)
+
+    p_install_loop = sub.add_parser(
+        "install-loop",
+        help="Register the cron daemon entry that drives the loop",
+    )
+    p_install_loop.add_argument("--dry-run", action="store_true")
+    p_install_loop.set_defaults(func=cmd_install_loop)
+
+    p_uninstall_loop = sub.add_parser(
+        "uninstall-loop",
+        help="Remove the cron daemon entry that drives the loop",
+    )
+    p_uninstall_loop.set_defaults(func=cmd_uninstall_loop)
 
     return parser
 
