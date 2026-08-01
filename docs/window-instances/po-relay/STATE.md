@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T09:52:00Z |
-| where_we_are | relay-208/209/210 seeded in worker BACKLOG; ch-138 shipped; maint-004 P1 open; UX ui-060 await verify-close |
-| confirmed_next | Worker relay-208+; Code maint-004/ch-139; UX ui-060 verify-close |
+| reviewed_at | 2026-08-01T21:30:00Z |
+| where_we_are | po-tick-020 stale-tick recovery + 3-lens (UX/PO/Business) + Code ch-152/153/154 seed + Round 29 product review |
+| confirmed_next | Worker relay-218 next; Code ch-145 → ch-152/153/154; UX idle |
 
 ---
 
@@ -18,17 +18,17 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T09:52:00Z` |
-| current_item_id | `po-tick-018` |
-| phase | `9-arm` |
-| review_status | `done` |
-| review_skip_reason | `—` |
-| review_round | `27` |
-| last_reviewed_round | `27` |
+| last_wake | `2026-08-01T21:30:00Z` |
+| current_item_id | `po-tick-020` |
+| phase | `8-close` |
+| review_status | `skipped` |
+| review_skip_reason | `PO docs-only tick; only edits STATE.md; no app code changes` |
+| review_round | `29` |
+| last_reviewed_round | `28` |
 | review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| confirmed_next | `Worker relay-208+; Code maint-004/ch-139; UX ui-060 verify-close` |
-| loops | `ARMED pid=pending notify=yes` |
+| code_changed | `no` |
+| confirmed_next | `Worker relay-218 next; Code ch-145 → ch-152/153/154; UX ui-060 verify-close` |
+| loops | `ARMED pid=33419 notify=yes` |
 | ritual_step | `9-arm` |
 | worktree_status | `none` |
 | worktree_path | `—` |
@@ -37,7 +37,7 @@
 | review_changed_files | `docs/window-instances/po-relay/STATE.md` |
 | review_fingerprint | `e2e702f4e8ee2fa3` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `Session #36 — stale tick recovery; ch-137/ch-138 + ui-060 sync; Round 23 review` |
+| brainstorm_outcome | `po-tick-020 stale-tick recovery + 3-lens + Code ch-152/153/154 seed + Round 29 review` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
@@ -125,7 +125,8 @@
 
 ---
 
-## BRAINSTORM_LOG (newest first)
+## BRAINSTORM_LOG
+ (newest first)
 
 ### 2026-07-28 — Session #36 stale-tick recovery (PO tick po-tick-018)
 
@@ -340,7 +341,15 @@
 *(Older sessions preserved — see git history of STATE.md before split)*
 
 ---
+### 2026-08-01 — Session #37 stale-tick recovery (PO tick po-tick-020)
 
+**UX lens (ux-heuristics):** Worker **relay-218 WIP** — LogTypeTodayTotalsStrip.tsx + lib/logTypeTotals.ts visible in Worker worktree untracked. Sticky totals strip matches Apple Health density pattern (kcal + protein + remaining). UX idle — 8 ux-gaps all po-agreed, 0 ui_polish_open. **maint-004 P1** still open; relay-214 closed it on Worker side but PWA App.css dead CSS not yet fully cleared.
+
+**PO lens (define-prioritization-framework):** Stale-tick recovery — chat missed wakes since 14:12Z. State at 8-close from po-tick-019, ritually re-advanced to 9-arm for this recovery. **Worker 3 open** (relay-218 active in worktree + relay-219/220 queued); below 5 threshold. **Code 1 open** (ch-145) — **hard-gate triggered, seeded 3 ch-items**: ch-152 (post-145 line scan, P1: AgentChatPanel 125 + Cards 130 + AppTabContent 126 + AppTabBar 130), ch-153 (server route scan, P2: food.py 106 + food_extensions.py 101 + api.py 100), ch-154 (test coverage for new Log totals strip, P2: mirror ch-124 test pattern). Code now at 4 open — gate cleared.
+
+**Business lens (jobs-to-be-done):** Log today totals strip = daily nutritional feedback loop (Trigger: opened Log Type; Action: read kcal/protein fractions; Variable Reward: progress fill; Investment: log another meal to push closer to target). Internal trigger migration target = 'I wonder if I'm on track today' emotion. Server route scan is process hygiene not customer-facing. RICE top: ch-145 (forces next structural refactor) > ch-152 (carries forward structural debt).
+
+Round 29 product review logged: pr-r29-000/001/003 closed; pr-r29-002 backlog=relay-218 (Worker WIP file check).
 ## SCAN_COVERAGE
 
 | Area | Last scanned | Bugs found |
@@ -362,8 +371,14 @@
 
 
 
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| pr-r29-003 | low | docs/window-instances/po-relay/STATE.md — Code handoff refreshed ch-152/153/154; refactor_open=4; hard-gate cleared | round-29 /code-review | closed | — | closed |
+| pr-r29-001 | low | docs/window-instances/po-relay/STATE.md — po-tick-020 stale-tick recovery; confirmed_next aligned relay-218 + ch-145/ch-152-154; BRAINSTORM_LOG Session #37 appended | round-29 /code-review | closed | — | closed |
+| pr-r29-000 | low | Bugbot skipped — PO doc diff only; no executable logic in STATE.md edits | round-29 bugbot | closed | — | closed |
 | pr-r27-001 | low | docs/window-instances/po-relay/STATE.md — loops pid sync after re-arm follow-up | round-27 /code-review | closed | — | closed |
 | pr-r27-000 | low | Bugbot skipped — STATE loops pid sync diff only | round-27 bugbot | closed | — | closed |
 | pr-r26-002 | low | docs/window-instances/instances.manifest.json:32 — ux-relay interval_sec 300→120 | round-26 /code-review | closed | — | closed |
@@ -521,9 +536,11 @@
 | pr-r24-002 | low | docs/window-instances/instances.manifest.json — unchanged in diff scope | round-24 /code-review | closed | — | closed |
 
 ---
-## HISTORY (PO / brainstorm)
+## HISTORY
+ (PO / brainstorm)
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
+| — | po-tick-020 | 8-close | Session #37 stale-tick recovery — 3-lens + ch-152/153/154 quality seed + Round 29 product review; relay-218 next Worker; ui-060 verify-close | po-tick-020-state-sync |
 |-----------|------|------|---------|----------|--------|
 | 2026-07-28 | PO | po-tick-018 | Session #36 stale-tick recovery + ch-138/ui-060 sync + Round 23 review | brainstorm | — |
 | 2026-07-28 | PO | po-tick-017 | Session #35 + relay-204 sync + ui-060 + Round 22 review | brainstorm | — |
@@ -558,6 +575,10 @@
 - UX-originated gaps → UX writes [`ux-relay/STATE.md`](../ux-relay/STATE.md) `UX_GAPS`; PO promotes to `UI_PROPOSALS` on next PO tick
 - Quality/refactor items → tag **Code window** in QUALITY_BACKLOG
 - Open conflicts → `DESIGN_DECISIONS` (both windows must check before shipping)
+
+
+
+
 
 
 

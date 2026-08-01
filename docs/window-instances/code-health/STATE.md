@@ -21,9 +21,9 @@
 | confirmed_next | `ch-145` |
 | phase | `9-arm` |
 | current_item_id | `—` |
-| last_wake | `2026-08-01T20:40:00Z` |
-| code_changed | `yes` |
-| review_status | `done` |
+| last_wake | `2026-08-01T20:52:00Z` |
+| code_changed | `no` |
+| review_status | `skipped` |
 | review_round | `22` |
 | last_reviewed_round | `22` |
 | worktree_status | `none` |
@@ -31,16 +31,16 @@
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/code-health/STATE.md pwa/src/components/AgentChatComposer.tsx` |
-| review_fingerprint | `c5e101d5b2f10964` |
+| review_fingerprint | `d83b414400be2f98` |
 | review_diff_range | `committed` |
-| review_skip_reason | `—` |
+| review_skip_reason | `ch-151 closed; next tick ch-145 will re-prepare with code_changed=yes` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; c5e101d ff-merge to main; r22 zero bugs` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `c5e101d` |
+| commit_hash | `d83b414` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -58,8 +58,9 @@
 
 ## REFACTOR_BACKLOG
 
-- [x] ch-134 | Line scan — post api split targets | structure | api 39; top: AgentActionFeed 138, Settings 133 | done tick #134
-- [x] ch-135 | `AgentActionFeed.tsx` (138) split | structure | hook + poll lib + types; main 138→28 | done tick #135
+
+
+
 - [x] ch-136 | line scan — post ch-135 targets | structure | top: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 | done tick #136
 - [x] ch-137 | `Settings.tsx` (136) split | structure | chrome + cards + footer + effects; 136→55 | done tick #137
 - [x] ch-138 | `MealPlanQueuePanel.tsx` (133) split | structure | hook + types; 133→68; phase9 notify arm | done tick #138
@@ -72,7 +73,9 @@
 - [x] ch-151 | `AgentChatComposer.tsx` (164) split | structure | 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); 164→83; r22 zero bugs; c5e101d merged | done tick #145
 - [ ] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
-
+- [ ] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
+- [ ] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
+- [ ] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
 ## BUG_BACKLOG
 
 *(empty — scan as refactor uncovers bugs)*
@@ -525,6 +528,9 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
 
 
 
