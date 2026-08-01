@@ -45,10 +45,10 @@
 | commit_done | `yes` |
 | merge_done | `no` |
 | review_tick_applied_at | `2026-07-28T00:57:26+00:00` |
-
 | refactor_subphase | `execute` |
 | refactor_plan_id | `ch-151` |
 | refactor_step_n | `1` |
+
 ## IN_PROGRESS
 
 *(empty)*
