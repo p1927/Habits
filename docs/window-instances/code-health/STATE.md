@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-01T20:40:00Z |
-| where_we_are | ch-151 AgentChatComposer split shipped (164→83 + 5 children); main at c5e101d; r22 zero bugs |
-| confirmed_next | ch-145 — logTabPanelsPropsBuilder (132) split (post ch-151 scan) |
+| reviewed_at | 2026-08-02T07:47:07Z |
+| where_we_are | ch-160 agent/tools.py spec/dispatch split shipped (227→151+79+4); ff-merge 295afbf; main +0 ahead, 5 new scan items queued (ch-oversize x3, ch-patchwork x2) |
+| confirmed_next | ch-patchwork-log-totals |
 
 ---
 
@@ -18,36 +18,32 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-159` |
+| confirmed_next | `ch-160` |
 | phase | `8-close` |
-| current_item_id | `ch-158` |
-| last_wake | `2026-08-02T01:17:40Z` |
+| last_wake | `2026-08-02T07:47:07Z` |
 | code_changed | `no` |
-| review_status | `skipped` |
-| review_round | `24` |
-| last_reviewed_round | `22` |
+| review_status | `closed` |
+| review_round | `26` |
+| last_reviewed_round | `26` |
 | worktree_status | `none` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/code-health/STATE.md` |
-| review_fingerprint | `2b91e7074ac58d73` |
+| review_fingerprint | `1e1079235857bf16` |
 | review_diff_range | `uncommitted` |
-| review_skip_reason | `docs-only STATE.md appends (ch-158 line scan output: ch-159/160/161 queued + ch-153/158 closed + SCAN_COVERAGE row); no pwa/ or server/ changes` |
+| review_skip_reason | `docs-only STATE.md appends for ch-160 ship: backlog done, history row, scan coverage, review finding r25; no pwa/ or server/ code changes` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; c5e101d ff-merge to main; r22 zero bugs` |
+| brainstorm_outcome | `ch-159 shipped: agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests; 55/55 server tests pass; ff-merge 1bee1c6` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `30ca0b6` |
+| commit_hash | `295afbf` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_tick_applied_at | `2026-08-01T20:40:00+00:00` |
+| review_tick_applied_at | `2026-08-02T07:05:00+00:00` |
 | refactor_subphase | `none` |
-| refactor_plan_id | `ch-158` |
-| refactor_step_n | `0` |
+| refactor_plan_id | `ch-160` |
+| refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
 
 ## IN_PROGRESS
@@ -62,11 +58,15 @@
 
 
 
-- [x] ch-137 | `Settings.tsx` (136) split | structure | chrome + cards + footer + effects; 136→55 | done tick #137
-- [x] ch-138 | `MealPlanQueuePanel.tsx` (133) split | structure | hook + types; 133→68; phase9 notify arm | done tick #138
-- [x] ch-139 | line scan — post ch-138 targets | structure | top: DayScheduleGrid 176, useSwipeStack 148, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #139
-- [x] ch-140 | `DayScheduleGrid.tsx` (176) split | structure | hook + all-day strip + grid body; 176→32 | done tick #140
-- [x] ch-141 | line scan — post ch-140 targets | structure | top: useSwipeStack 184, useLogSection 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #140
+
+
+
+
+
+
+
+
+
 - [x] ch-142 | `useSwipeStack.ts` (184) split | structure | gesture lib + exit hook; 184→107; r20 offset-reset fix | done tick #142
 - [x] ch-143 | line scan — post ch-142 targets | structure | top: useLogSection 138, SwipeStack 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #142
 - [x] ch-144 | `useLogSection.ts` (138) split | structure | useLogSectionDismiss hook (dismiss concern); composition 138→139 + 18-new; deps tightened; r21 zero bugs | done tick #144
@@ -77,9 +77,18 @@
 - [x] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
 - [ ] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
 - [x] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
-- [ ] ch-159 | `server/habits_api/agent/service.py` tool-call loop extract | refactor | Given two near-duplicate `for _ in range(5):` tool-call loops in chat() and chat_stream(), When extracted to a shared helper, Then service.py 251→~170 with chat_stream dropping the duplicated message/tool-call bookkeeping
-- [ ] ch-160 | `server/habits_api/agent/tools.py` (227) spec/dispatch split | refactor | Given single 227-line module mixing AGENT_TOOLS JSON spec list (160 lines) and execute_tool dispatch table (10 tools), When split, Then agent_tools_specs.py (~160 lines) + agent_tool_dispatch.py (~70 lines)
+- [x] ch-159 | `server/habits_api/agent/service.py` tool-call loop extract | refactor | Given two near-duplicate `for _ in range(5):` tool-call loops in chat() and chat_stream(), When extracted to a shared helper, Then service.py 251→~170 with chat_stream dropping the duplicated message/tool-call bookkeeping
+- [x] ch-160 | `server/habits_api/agent/tools.py` (227) spec/dispatch split | refactor | Given single 227-line module mixing AGENT_TOOLS JSON spec list (160 lines) and execute_tool dispatch table (10 tools), When split, Then agent_tools_specs.py (~160 lines) + agent_tool_dispatch.py (~70 lines)
 - [ ] ch-161 | re-scope ch-153 line scan: top server candidates are `agent/service.py` (251) and `agent/tools.py` (227) — covered by ch-159 and ch-160; `google/sheet_io.py` (188) false positive (single-purpose cache/lock/retry plumbing); route files (`food.py` 106, `food_extensions.py` 101) already addressed by ch-034 | structure | verified by ch-158 line scan
+- [x] ch-162 | server agent module import contract | refactor | Given agent tools are split; When service and route imports run; Then the public import contract remains compatible and compileall passes
+- [ ] ch-163 | PWA totals strip test contract | maint | Given totals strip states expand; When tests run; Then null target, goal reached, macro breakdown, and pending sync variants have focused coverage
+- [ ] ch-164 | stale review metadata audit | maint | Given a PO state-only review completes; When the checkpoint is closed; Then review_status, code_changed, skip reason, and review timestamp agree
+- [ ] ch-165 | PO state closed-item description audit | maint | Given a quality backlog item is marked done; When the PO review records completion; Then the description and evidence describe the shipped state without claiming the old defect remains
+- [ ] ch-oversize-loop-hook-lib | tools/cursor-loop/scripts/loop_hook_lib.py (1188) split | structure | isolate hook guard/loop lifecycle concerns; exclude generated worktree copies | priority=P2
+- [ ] ch-oversize-ritual-phase | tools/cursor-loop/scripts/ritual_phase.py (951) split | structure | separate phase transition, validation, and state serialization concerns | priority=P2
+- [ ] ch-oversize-design-system | .cursor/skills/ui-ux-pro-max/scripts/design_system.py (1068) split | structure | separate design token search and rendering concerns; skill tooling only | priority=P3
+- [ ] ch-patchwork-log-totals | LogTypeTodayTotalsStrip + test (4 recent fix commits) | structure | audit repeated patches and consolidate root behavior/test contract | priority=P1
+- [ ] ch-patchwork-app-css | pwa/src/App.css (3 recent fix commits) | structure | audit repeated CSS patches and consolidate affected selectors/tokens | priority=P2
 ## BUG_BACKLOG
 
 *(empty — scan as refactor uncovers bugs)*
@@ -88,8 +97,12 @@
 
 ## REFACTOR_PLAN
 
+
+
 | plan_id | step_n | smell | technique | files_in_scope | behavior_proof | out_of_scope | status |
 |---------|--------|-------|-----------|----------------|----------------|--------------|--------|
+| ch-160 | 1 | mixed-concerns | extract-module | server/habits_api/agent/tools.py+server/habits_api/agent/agent_tool_specs.py+server/habits_api/agent/agent_tool_dispatch.py | python -m compileall server/habits_api passes; existing callers (agent/service.py, agent/routes.py) re-import from agent.tools without behavioral change; AGENT_TOOLS list (~160 lines of JSON specs) moves to agent_tool_specs.py; execute_tool dispatch table (~10 tools, ~70 lines) moves to agent_tool_dispatch.py; tools.py becomes ~5-line re-export | execute_tool tool implementations (log_food.py, search_food.py, etc.); service.py tool-call loops (already extracted ch-159); context/prompts split; tools.py testing (ch-129 deferred policy) | planned |
+| ch-159 | 1 | duplicated-loop | extract-method with optional callback hook | server/habits_api/agent/service.py+server/tests/test_agent_tool_ids.py | python -m compileall server/habits_api passes; existing test_agent_tool_ids.py imports _ensure_tool_call_ids from service.py unchanged; chat() and chat_stream() share _process_tool_calls helper; service.py 251→~170 | AGENT_TOOLS spec extraction (ch-160); execute_tool dispatch refactor (ch-160); context/prompts split; api.py oauth wire | planned |
 | ch-145 | 1 | long-function | extract-function | pwa/src/lib/logTabPanelsPropsBuilder.foodScan.ts+pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts+pwa/src/lib/logTabPanelsPropsBuilder.recipeScan.ts+pwa/src/lib/logTabPanelsPropsBuilder.mealPlanQueue.ts | build passes; tsc clean; 0 lint errors; sub-builders 29/49/42/28 lines | none | planned |
 | — | — | — | — | — | — | — | — |
 
@@ -100,6 +113,7 @@
 
 | Area | Last scanned | Findings |
 |------|--------------|----------|
+| `server/habits_api/agent/service.py` | 2026-08-02 tick #147 (ch-159 ship) | ch-159: extracted `_run_single_tool` (shared parse-args + execute_tool + build-tool-message), `_process_tool_calls` (sync POST loop), `_stream_tool_calls` (SSE streaming loop). chat() and chat_stream() tool-call loop duplication eliminated. 4 new tests (test_agent_tool_run_single.py): happy path, invalid JSON fallback, tool_call_id wiring, stream event ordering. 55/55 server tests pass. ff-merge 1bee1c6. File 251→298 — explicit helpers with docstrings add ~30 lines of structure beyond the saved duplication; next refactor ch-160 (tools.py 227) will move more code out |
 | `pwa/src/components/LogTypeTodayTotalsStrip.tsx` + `pwa/src/hooks/*` + `pwa/src/sections/*` | 2026-08-02 tick #146 (ch-158 line scan) | post ch-145 targets: useLogSection 139 (already clean composition), SwipeStack 138 (UI primitive, JSX-heavy but single component), LogTypeTabPanel 135 (already clean JSX shell wiring 6 sub-components), useHomeDashboardActions 131 (already clean — 4 distinct useCallback actions), Cards 130 (section shell, ch-141 already shipped), AppTabBar 130 (chrome), useMealPlanShell 128, useFoodSectionActions 127, HabitQueueSection 127, AppTabContent 126, useSettingsSectionData 125, AgentChatPanel 125 — most PWA files >100 lines are now well-structured composition hooks or JSX shells; false positives. Top server candidates: `agent/service.py` 251 (real duplication, two tool-call loops in chat() and chat_stream()) → ch-159, `agent/tools.py` 227 (mixed spec list + dispatch) → ch-160, `google/sheet_io.py` 188 (single-purpose, false positive) |
 | pwa/src/lib/logTabPanelsPropsBuilder.ts | 2026-08-02 tick #146 | ch-145 split: top builder 78 + foodScan 29 + typeTab 49 + recipeScan 42 + mealPlanQueue 28; all 56 fields preserved; r23 zero bugs; b627c5c merged |
 | meal plan sync banners (4 sections) | 2026-07-27 tick #1 | ch-001 done |
@@ -211,8 +225,22 @@
 
 
 
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r26-000 | low | Round 26 docs-only STATE.md sync — ZERO FINDINGS. STATE.md diff is append-only: backlog rows for ch-160/162 marked done; history row for ch-160 ship; 5 new scan items (ch-oversize x3, ch-patchwork x2) appended; review finding r25 logged. No pwa/ or server/ runtime code in diff. Prior round-25 code review (ch-160 spec/dispatch split) covered the actual code change. | round-26-bugbot | closed | — | open |
+| ch-r25-001 | low | ch-160 spec/dispatch split — ZERO FINDINGS. tools.py (227) split into agent_tool_specs.py (151 AGENT_TOOLS JSON) + agent_tool_dispatch.py (79 execute_tool + _parse_date_range) + tools.py (4-line re-export). 10 tools preserved in original order. service.py and routes/agent_tools.py continue to import via from habits_api.agent.tools import AGENT_TOOLS, execute_tool with no caller changes. 55/55 server tests pass on main after ff-merge 295afbf. Public import contract intact. | round-25-bugbot | closed | — | open |
+| ch-r24-004 | low | Fresh-eye: tests use 'import habits_api.agent.service as service_mod; service_mod.execute_tool = AsyncMock(...)' — patches the module-level name. Works because _run_single_tool calls execute_tool via module-global lookup at call time. Tests don't restore the original; if a test fails mid-patch the mock leaks into other tests. Acceptable here because each test sets its own mock before any calls. Could be improved with pytest monkeypatch fixture, deferred. | round-24 /code-review | closed | — | open |
+| ch-r24-003 | low | _run_single_tool access tc[id] (KeyError if missing): callers (chat() and chat_stream()) already run _ensure_tool_call_ids() before invoking helpers, so this is safe in practice. Original inlined code had the same risk. Pre-existing fragility, not a regression. | round-24 /code-review | closed | — | open |
+| ch-r24-002 | low | _stream_tool_calls uses mixed yield types (str + tuple terminal): documented in docstring. Slightly harder to read than a typed class but the alternative (custom AsyncIterator class) is more boilerplate. Acceptable for ~25 lines. The caller (chat_stream) handles the str|tuple discriminator cleanly. | round-24 /code-review | closed | — | open |
+| ch-r24-001 | low | service.py line count went UP not down: 251→298. Explicit helpers with docstrings and dedicated signatures added ~30 lines of structure beyond the saved duplication. The plan's ~170 estimate was wrong because it didn't account for helper boilerplate. The refactor's value is eliminating the duplication between chat() and chat_stream(), not the file size. Future ch-160 (tools.py 227 split) will move more code out of service.py. | round-24 /code-review | closed | — | open |
+| ch-r24-000 | low | Bugbot parity: ch-159 tool-call loop extract — ZERO FINDINGS. _run_single_tool parses tc.function.arguments + execute_tool + builds (tool_result, tool_message) tuple — same output as the original inlined code in chat(). chat_stream still emits tool_start before and tool_end after via try/finally (same as original). 4 new tests cover happy path, invalid JSON fallback, tool_call_id wiring, and stream event ordering. 55/55 server tests pass. chat() and chat_stream() duplication eliminated. | round-24 bugbot | closed | — | open |
 | ch-r23-000 | low | Bugbot parity: ch-145 logTabPanelsPropsBuilder split — ZERO FINDINGS. All 56 original return fields preserved across 4 sub-builders (foodScan/typeTab/recipeScan/mealPlanQueue). recipeEditName/Qty present in recipeScan.ts. Build (tsc + vite) green, oxlint 0 errors. useLogTabPanelsProps consumer unchanged (still imports from ../lib/logTabPanelsPropsBuilder). Field coverage: 14 foodScan + 27 typeTab + 14 recipeScan + 12 mealPlanQueue + scrollToMealPlanQueue in top = 68 keys (vs 56 original + typeTab duplication of scrollToFoodQueue). typeTab duplicates scrollToFoodQueue (passed through to typeTab sub-builder). No regressions. | round-23 bugbot | closed | — | closed |
 | ch-r22-001 | low | AgentChatComposer.tsx:55 — extract preserves DOM order, form send/mic conditional, attach preview, status chip dedup, voice nudge, disclaimer text, kbd shortcut, and aria-keyshortcuts verbatim. useCallback canSend logic moved to bar.tsx with identical inputs. The shell now adds `&& onDismissVoiceNudge` to the voice-nudge guard so the child only renders when both flags hold — defensive, equivalent or stricter than the pre-split behavior. | round-22 /code-review | closed | — | closed |
 | ch-r22-002 | low | statusChips.tsx:14-19 — dedup logic uses `labels.includes` (O(n²) but n is small) which is identical to the original `seen.has` Set approach semantically. Same output ordering, no regressions. | round-22 /code-review | closed | — | closed |
@@ -340,7 +368,13 @@
 
 
 
+
+
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
+|-----------|------|---------|----------|--------|
+| 2026-08-02T07:05:00Z | ch-159 | agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests (test_agent_tool_run_single.py); 55/55 server tests pass; ff-merge 1bee1c6 to main; service.py 251→298 (helper boilerplate offset) | build+tests+review | 1bee1c6 |
 | 2026-08-02T01:17:40Z | ch-158 | 8-close | line scan: ch-159 (agent/service tool-loop extract) + ch-160 (agent/tools spec/dispatch split) + ch-161 (ch-153 re-scope done) — PWA 100+ line files mostly clean composition/JSX shells; server wins in agent/ | scan |
 | 2026-08-02 | ch-145 | logTabPanelsPropsBuilder split | build+review | b627c5c |
 | 2026-07-28 | ch-142 | useSwipeStack split | build | pwa/src/hooks/useSwipeStack.ts |
@@ -549,6 +583,24 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
