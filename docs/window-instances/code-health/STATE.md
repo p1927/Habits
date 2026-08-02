@@ -21,13 +21,13 @@
 | confirmed_next | `ch-160` |
 | phase | `8-close` |
 | last_wake | `2026-08-02T07:47:07Z` |
-| code_changed | `no` |
-| review_status | `closed` |
-| review_round | `26` |
+| code_changed | `yes` |
+| review_status | `pending` |
+| review_round | `27` |
 | last_reviewed_round | `26` |
 | worktree_status | `none` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md` |
-| review_fingerprint | `1e1079235857bf16` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md tools/cursor-loop/scripts/audit_review.py` |
+| review_fingerprint | `9573f72f886fe5dd` |
 | review_diff_range | `uncommitted` |
 | review_skip_reason | `docs-only STATE.md appends for ch-160 ship: backlog done, history row, scan coverage, review finding r25; no pwa/ or server/ code changes` |
 | ritual_step | `9-arm` |
@@ -232,8 +232,14 @@
 
 
 
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r27-fresh-001 | low | fresh-eye: ch-164 module structure fits audit_review.py conventions (issues.append pattern matches existing audit_state). _parse_iso module-level placement is correct (used internally + testable). Duplicate gate logic with ritual_phase.py:870-887 is intentional (audit runs anytime; ritual_phase gates at arm only) — different lifecycle, acceptable. | round-27 fresh-eye | closed | ch-164 | closed |
+| ch-r27-000 | low | Bugbot parity: ch-164 stale review metadata audit — ZERO FINDINGS after fix. check_state_only_review_consistency() guards all 4 conditions: skipped+code_changed=yes contradiction, code_changed=no+pending close drift (gated on last_wake), skipped+no-skip_reason, skipped+missing/stale applied_at. 7/7 unit cases pass including new bare_checkpoint_no_false_positive regression test. | round-27 bugbot | closed | ch-164 | closed |
+| ch-r27-bugbot-001 | high | audit_review.py:153 — unconditional pending+code_changed=no check fires on bare checkpoints (e.g. read-only windows without CHECKPOINT). Fix: gate on last_wake being set. Verified: 7/7 unit cases pass; supervisor no longer false-positives. | round-27 bugbot | fix-now | ch-164 | closed |
 | ch-r26-000 | low | Round 26 docs-only STATE.md sync — ZERO FINDINGS. STATE.md diff is append-only: backlog rows for ch-160/162 marked done; history row for ch-160 ship; 5 new scan items (ch-oversize x3, ch-patchwork x2) appended; review finding r25 logged. No pwa/ or server/ runtime code in diff. Prior round-25 code review (ch-160 spec/dispatch split) covered the actual code change. | round-26-bugbot | closed | — | open |
 | ch-r25-001 | low | ch-160 spec/dispatch split — ZERO FINDINGS. tools.py (227) split into agent_tool_specs.py (151 AGENT_TOOLS JSON) + agent_tool_dispatch.py (79 execute_tool + _parse_date_range) + tools.py (4-line re-export). 10 tools preserved in original order. service.py and routes/agent_tools.py continue to import via from habits_api.agent.tools import AGENT_TOOLS, execute_tool with no caller changes. 55/55 server tests pass on main after ff-merge 295afbf. Public import contract intact. | round-25-bugbot | closed | — | open |
 | ch-r24-004 | low | Fresh-eye: tests use 'import habits_api.agent.service as service_mod; service_mod.execute_tool = AsyncMock(...)' — patches the module-level name. Works because _run_single_tool calls execute_tool via module-global lookup at call time. Tests don't restore the original; if a test fails mid-patch the mock leaks into other tests. Acceptable here because each test sets its own mock before any calls. Could be improved with pytest monkeypatch fixture, deferred. | round-24 /code-review | closed | — | open |
@@ -583,6 +589,9 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
 
 
 

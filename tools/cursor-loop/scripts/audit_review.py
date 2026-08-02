@@ -101,7 +101,119 @@ def audit_state(
             "(Phase 6 /code-review not completed)"
         )
 
+    issues.extend(
+        check_state_only_review_consistency(
+            checkpoint=checkpoint,
+            code_changed=code_changed,
+            review_status=review_status,
+            last_wake=last_wake,
+        )
+    )
+
     return issues
+
+
+def check_state_only_review_consistency(
+    *,
+    checkpoint: dict[str, str],
+    code_changed: bool,
+    review_status: str,
+    last_wake: str,
+) -> list[str]:
+    """ch-164: when a state-only review completes, four metadata fields must agree.
+
+    The four fields under audit:
+      1. review_status     — must be 'skipped' (or 'done') for state-only closes
+      2. code_changed      — must be 'no' (state-only means no runtime diff)
+      3. review_skip_reason — non-empty whenever review_status='skipped'
+      4. review_tick_applied_at — must be present and within window of last_wake
+
+    Returns a list of issue strings (empty when consistent).
+    """
+    issues: list[str] = []
+
+    def _clean(value: str) -> str:
+        return (value or "").strip().strip("`")
+
+    skip_reason = _clean(checkpoint.get("review_skip_reason", ""))
+    applied_at = _clean(checkpoint.get("review_tick_applied_at", ""))
+
+    # State-only closes are characterised by code_changed=no. If the agent
+    # logged review_status=skipped but flipped code_changed=yes, the four
+    # fields contradict each other.
+    if review_status == "skipped" and code_changed:
+        issues.append(
+            "review_status=skipped contradicts code_changed=yes "
+            "(a state-only close cannot ship with runtime diff)"
+        )
+
+    # The reverse: code_changed=no but review_status still pending means the
+    # agent closed the tick without flipping the gate. ritual_phase.py catches
+    # this at arm-time, but auditing it surfaces drift earlier.
+    #
+    # Gate on evidence that this is a closeable window: a last_wake timestamp
+    # or any review-metadata field is set. Bare checkpoints (e.g. read-only
+    # windows without a CHECKPOINT table) are not state-only closes and must
+    # not be flagged.
+    if (
+        not code_changed
+        and review_status == "pending"
+        and last_wake
+    ):
+        issues.append(
+            "code_changed=no but review_status=pending "
+            "(close should set review_status=skipped or done)"
+        )
+
+    # review_status=skipped without a reason leaves audit logs with no
+    # explanation. Surface this so the gap is visible before arm.
+    if review_status == "skipped" and not skip_reason:
+        issues.append(
+            "review_status=skipped without review_skip_reason "
+            "(add non-empty review_skip_reason to CHECKPOINT)"
+        )
+
+    # Stale applied_at: the timestamp should be fresh relative to the most
+    # recent wake. If applied_at is empty or older than last_wake by more than
+    # 6 hours, the skip was applied in a prior window and drifted.
+    if review_status == "skipped" and not applied_at:
+        issues.append(
+            "review_status=skipped without review_tick_applied_at "
+            "(run prepare_review_tick.sh --apply to record the skip timestamp)"
+        )
+    elif (
+        review_status == "skipped"
+        and applied_at
+        and last_wake
+    ):
+        applied_dt = _parse_iso(applied_at)
+        wake_dt = _parse_iso(last_wake)
+        if applied_dt is not None and wake_dt is not None:
+            delta_sec = (applied_dt - wake_dt).total_seconds()
+            if delta_sec < -6 * 3600:
+                issues.append(
+                    f"review_tick_applied_at={applied_at} is stale "
+                    f"(last_wake={last_wake}; skip predates last wake by more than 6h) "
+                    "— re-run prepare_review_tick.sh --apply"
+                )
+
+    return issues
+
+
+def _parse_iso(value: str):
+    """Best-effort ISO 8601 parse; returns None when the string is malformed."""
+    from datetime import datetime
+
+    candidate = value.strip()
+    if not candidate:
+        return None
+    # Tolerate trailing 'Z' as UTC.
+    if candidate.endswith("Z"):
+        candidate = candidate[:-1] + "+00:00"
+    try:
+        return datetime.fromisoformat(candidate)
+    except ValueError:
+        return None
 
 
 def load_instances(project_root: Path) -> list[dict]:
