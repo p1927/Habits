@@ -28,7 +28,8 @@ function nextUpcomingEvent(events: DayCalendarEvent[]): DayCalendarEvent | null 
 function buildCoachPrompt(event: DayCalendarEvent | null): string {
   if (!event) return HANDOFF_PROMPT_PREFIX + ' my day';
   const time = formatEventTime(event.start);
-  return `${HANDOFF_PROMPT_PREFIX} ${JSON.stringify(event.summary)} at ${time}`;
+  const summary = (event.summary ?? '').trim() || 'my next event';
+  return `${HANDOFF_PROMPT_PREFIX} ${summary} at ${time}`;
 }
 
 export function DayCheckinHandoffBar({ events, onAskCoach, onReviewRings }: DayCheckinHandoffBarProps) {
