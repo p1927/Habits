@@ -18,29 +18,29 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-145` |
-| phase | `9-arm` |
-| current_item_id | `ch-145` |
+| confirmed_next | `ch-158` |
+| phase | `8-close` |
+| current_item_id | `ch-158` |
 | last_wake | `2026-08-01T20:52:00Z` |
-| code_changed | `yes` |
-| review_status | `pending` |
+| code_changed | `no` |
+| review_status | `skipped` |
 | review_round | `23` |
 | last_reviewed_round | `22` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/lib/logTabPanelsPropsBuilder.foodScan.ts pwa/src/lib/logTabPanelsPropsBuilder.mealPlanQueue.ts pwa/src/lib/logTabPanelsPropsBuilder.recipeScan.ts pwa/src/lib/logTabPanelsPropsBuilder.ts pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts` |
-| review_fingerprint | `7b382e136ec7159c` |
-| review_diff_range | `uncommitted` |
-| review_skip_reason | `ch-151 closed; next tick ch-145 will re-prepare with code_changed=yes` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| review_diff_range | `none` |
+| review_skip_reason | `ch-145 merged at b627c5c; next is ch-158 line scan` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; c5e101d ff-merge to main; r22 zero bugs` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `d83b414` |
+| commit_hash | `b627c5c` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -61,7 +61,7 @@
 
 
 
-- [x] ch-136 | line scan — post ch-135 targets | structure | top: Settings 136, MealPlanQueuePanel 133, logTabPanelsPropsBuilder 132 | done tick #136
+
 - [x] ch-137 | `Settings.tsx` (136) split | structure | chrome + cards + footer + effects; 136→55 | done tick #137
 - [x] ch-138 | `MealPlanQueuePanel.tsx` (133) split | structure | hook + types; 133→68; phase9 notify arm | done tick #138
 - [x] ch-139 | line scan — post ch-138 targets | structure | top: DayScheduleGrid 176, useSwipeStack 148, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #139
@@ -71,11 +71,12 @@
 - [x] ch-143 | line scan — post ch-142 targets | structure | top: useLogSection 138, SwipeStack 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #142
 - [x] ch-144 | `useLogSection.ts` (138) split | structure | useLogSectionDismiss hook (dismiss concern); composition 138→139 + 18-new; deps tightened; r21 zero bugs | done tick #144
 - [x] ch-151 | `AgentChatComposer.tsx` (164) split | structure | 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); 164→83; r22 zero bugs; c5e101d merged | done tick #145
-- [ ] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
+- [x] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
 - [ ] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
 - [ ] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
 - [ ] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
+- [ ] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
 ## BUG_BACKLOG
 
 *(empty — scan as refactor uncovers bugs)*
@@ -92,8 +93,10 @@
 ---
 ## SCAN_COVERAGE
 
+
 | Area | Last scanned | Findings |
 |------|--------------|----------|
+| pwa/src/lib/logTabPanelsPropsBuilder.ts | 2026-08-02 tick #146 | ch-145 split: top builder 78 + foodScan 29 + typeTab 49 + recipeScan 42 + mealPlanQueue 28; all 56 fields preserved; r23 zero bugs; b627c5c merged |
 | meal plan sync banners (4 sections) | 2026-07-27 tick #1 | ch-001 done |
 | `pwa/src/hooks/useMealPlanQueueRemoteSync` | 2026-07-27 tick #3 | ch-004 done |
 | `pwa/src/hooks/useMealPlanQueueRemoteSync` | 2026-07-27 tick #14 | re-export from store (ch-017) |
@@ -190,7 +193,6 @@
 | `pwa/src/sections/*` | 2026-07-27 tick #46 | scan: Log 367, Home 242, useLogRecipeScan 215, useMealPlanQueueSync 213 |
 
 ---
-
 ## COMMIT_PATCHWORK_LOG
 
 | Commits | Symptom | Root cause | Refactor |
@@ -331,7 +333,9 @@
 ## HISTORY
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-08-02 | ch-145 | logTabPanelsPropsBuilder split | build+review | b627c5c |
 | 2026-07-28 | ch-142 | useSwipeStack split | build | pwa/src/hooks/useSwipeStack.ts |
 |-----------|------|---------|----------|--------|
 | 2026-08-01 | ch-151 | AgentChatComposer split — 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); main 164→83; npm lint + tsc + vite build green; r22 zero bugs; ff-merge c5e101d; worktree cleanup deferred per user | build | c5e101d |
@@ -538,6 +542,8 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
 
 
 
