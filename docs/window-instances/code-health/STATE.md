@@ -20,19 +20,19 @@
 |-------|-------|
 | confirmed_next | `ch-145` |
 | phase | `9-arm` |
-| current_item_id | `—` |
+| current_item_id | `ch-145` |
 | last_wake | `2026-08-01T20:52:00Z` |
-| code_changed | `no` |
-| review_status | `skipped` |
-| review_round | `22` |
+| code_changed | `yes` |
+| review_status | `pending` |
+| review_round | `23` |
 | last_reviewed_round | `22` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md pwa/src/components/AgentChatComposer.tsx` |
-| review_fingerprint | `d83b414400be2f98` |
-| review_diff_range | `committed` |
+| review_changed_files | `pwa/src/lib/logTabPanelsPropsBuilder.foodScan.ts pwa/src/lib/logTabPanelsPropsBuilder.mealPlanQueue.ts pwa/src/lib/logTabPanelsPropsBuilder.recipeScan.ts pwa/src/lib/logTabPanelsPropsBuilder.ts pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts` |
+| review_fingerprint | `7b382e136ec7159c` |
+| review_diff_range | `uncommitted` |
 | review_skip_reason | `ch-151 closed; next tick ch-145 will re-prepare with code_changed=yes` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
@@ -46,7 +46,7 @@
 | merge_done | `yes` |
 | review_tick_applied_at | `2026-08-01T20:40:00+00:00` |
 | refactor_subphase | `execute` |
-| refactor_plan_id | `ch-151` |
+| refactor_plan_id | `ch-145` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `yes — user denied git worktree remove / branch -D; main already merged at c5e101d (ff-only)` |
 
@@ -82,6 +82,14 @@
 
 ---
 
+## REFACTOR_PLAN
+
+| plan_id | step_n | smell | technique | files_in_scope | behavior_proof | out_of_scope | status |
+|---------|--------|-------|-----------|----------------|----------------|--------------|--------|
+| ch-145 | 1 | long-function | extract-function | pwa/src/lib/logTabPanelsPropsBuilder.foodScan.ts+pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts+pwa/src/lib/logTabPanelsPropsBuilder.recipeScan.ts+pwa/src/lib/logTabPanelsPropsBuilder.mealPlanQueue.ts | build passes; tsc clean; 0 lint errors; sub-builders 29/49/42/28 lines | none | planned |
+| — | — | — | — | — | — | — | — |
+
+---
 ## SCAN_COVERAGE
 
 | Area | Last scanned | Findings |
@@ -195,8 +203,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r23-000 | low | Bugbot parity: ch-145 logTabPanelsPropsBuilder split — ZERO FINDINGS. All 56 original return fields preserved across 4 sub-builders (foodScan/typeTab/recipeScan/mealPlanQueue). recipeEditName/Qty present in recipeScan.ts. Build (tsc + vite) green, oxlint 0 errors. useLogTabPanelsProps consumer unchanged (still imports from ../lib/logTabPanelsPropsBuilder). Field coverage: 14 foodScan + 27 typeTab + 14 recipeScan + 12 mealPlanQueue + scrollToMealPlanQueue in top = 68 keys (vs 56 original + typeTab duplication of scrollToFoodQueue). typeTab duplicates scrollToFoodQueue (passed through to typeTab sub-builder). No regressions. | round-23 bugbot | closed | — | closed |
 | ch-r22-001 | low | AgentChatComposer.tsx:55 — extract preserves DOM order, form send/mic conditional, attach preview, status chip dedup, voice nudge, disclaimer text, kbd shortcut, and aria-keyshortcuts verbatim. useCallback canSend logic moved to bar.tsx with identical inputs. The shell now adds `&& onDismissVoiceNudge` to the voice-nudge guard so the child only renders when both flags hold — defensive, equivalent or stricter than the pre-split behavior. | round-22 /code-review | closed | — | closed |
 | ch-r22-002 | low | statusChips.tsx:14-19 — dedup logic uses `labels.includes` (O(n²) but n is small) which is identical to the original `seen.has` Set approach semantically. Same output ordering, no regressions. | round-22 /code-review | closed | — | closed |
 | ch-r22-003 | low | bar.tsx:31 — `canSend` is recomputed on every render (no useMemo). Original composer had the same pattern, so this is parity, not a regression. Memoization deferred (ch-151 deferred items already in commit body). | round-22 /code-review | closed | — | closed |
@@ -528,6 +538,8 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
 
 
 
