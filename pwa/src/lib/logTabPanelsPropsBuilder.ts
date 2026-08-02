@@ -8,6 +8,10 @@ import type { useMealPlanShell } from '../hooks/useMealPlanShell';
 import type { useLogSectionData } from '../hooks/useLogSectionData';
 import type { useOptimisticFoodLog } from '../hooks/useOptimisticFoodLog';
 import type { SwipeDirection } from '../components/ui/SwipeStack';
+import { buildFoodScanProps } from './logTabPanelsPropsBuilder.foodScan';
+import { buildTypeTabProps } from './logTabPanelsPropsBuilder.typeTab';
+import { buildRecipeScanProps } from './logTabPanelsPropsBuilder.recipeScan';
+import { buildMealPlanQueueProps } from './logTabPanelsPropsBuilder.mealPlanQueue';
 
 export type FoodScan = ReturnType<typeof useLogFoodScan>;
 export type RecipeScan = ReturnType<typeof useLogRecipeScan>;
@@ -58,78 +62,17 @@ export function buildLogTabPanelsProps({
   offerUndo,
   onRecipeScanSwipe,
 }: AssembledLogTabPanelsPropsInput): Omit<LogTabPanelsProps, 'tab' | 'serverOnline'> {
-  const { pending, logItem, retry, dismiss } = foodLog;
-  const { data, mealPlan, history } = sectionData;
-
   return {
-    loading,
+    ...buildFoodScanProps({ foodScan, loading, scrollToFoodQueue }),
+    ...buildTypeTabProps({
+      typeTab,
+      sectionData,
+      foodLog,
+      mealPlanShell,
+      scrollToFoodQueue,
+    }),
+    ...buildRecipeScanProps({ recipeScan, foodLog, offerUndo, onRecipeScanSwipe }),
     scrollToMealPlanQueue,
-    scrollToFoodQueue,
-    scanPreviewUrl: foodScan.scanPreviewUrl,
-    scanResult: foodScan.scanResult,
-    scanHistory: foodScan.scanHistory,
-    editName: foodScan.editName,
-    editQty: foodScan.editQty,
-    onCapture: (url) => void foodScan.handleCapture(url),
-    onClearScan: foodScan.clearScanFlow,
-    onRestoreScan: foodScan.restoreScanFromHistory,
-    onClearScanHistory: foodScan.handleClearScanHistory,
-    onEditOpen: () => foodScan.setEditOpen(true),
-    onLogScan: (name, qty) => void foodScan.logScan(name, qty),
-    offProduct: typeTab.offProduct,
-    offQuantity: typeTab.offQuantity,
-    description: typeTab.description,
-    mealType: typeTab.mealType,
-    foodName: typeTab.foodName,
-    quantity: typeTab.quantity,
-    searchResults: typeTab.searchResults,
-    pending,
-    data,
-    mealPlan,
-    loggingMealKey: mealPlanShell.loggingMealKey,
-    loggingMeals: mealPlanShell.loggingMeals,
-    onLogMealPlanEntry: mealPlanShell.logMealPlanEntry,
-    onBarcodeScan: (code) => void typeTab.handleBarcode(code),
-    onOffQuantityChange: typeTab.setOffQuantity,
-    onLogOffProduct: () => void typeTab.handleLogOffProduct(),
-    onVoiceLog: typeTab.handleVoiceLog,
-    onDescriptionChange: typeTab.setDescription,
-    onMealTypeChange: typeTab.setMealType,
-    onManualLog: typeTab.handleManualLog,
-    onFoodNameChange: typeTab.setFoodName,
-    onSelectSearchResult: typeTab.selectSearchResult,
-    onQuantityChange: typeTab.setQuantity,
-    onRetryPending: retry,
-    onDismissPending: dismiss,
-    onDeleteItem: (row) => void typeTab.handleDelete(row),
-    recipeLoading: recipeScan.recipeLoading,
-    recipeScanning: recipeScan.recipeScanning,
-    recipePhoto: recipeScan.recipePhoto,
-    recipeScanResult: recipeScan.recipeScanResult,
-    recipe: recipeScan.recipe,
-    recipeSheetsConnected: recipeScan.recipeSheetsConnected,
-    recipeEditName: recipeScan.recipeEditName,
-    recipeEditQty: recipeScan.recipeEditQty,
-    onRecipePhotoCapture: (url) => void recipeScan.handleRecipePhoto(url),
-    onRecipeScanSwipe,
-    onRecipeEditOpen: () => recipeScan.setRecipeEditOpen(true),
-    onRefreshRecipe: () => void recipeScan.loadSavedRecipe(),
-    onLogRecipeItem: (food, quantityG) =>
-      void logItem(food, quantityG, (summary) => {
-        offerUndo(summary, food, quantityG);
-      }),
-    onLogEntireRecipe: () => void recipeScan.logEntireSavedRecipe(),
-    mealPlanQueue: mealPlanShell.mealPlanQueue,
-    syncingMealPlanQueue: mealPlanShell.syncingMealPlanQueue,
-    mealPlanSyncProgress: mealPlanShell.mealPlanSyncProgress,
-    failedMealPlanIds: mealPlanShell.failedMealPlanIds,
-    retryingMealPlanId: mealPlanShell.retryingMealPlanId,
-    onSyncAll: () => void mealPlanShell.flushMealPlanQueue(),
-    onRetryFailed: () => void mealPlanShell.retryFailedMealPlanQueue(),
-    onRetry: (item) => void mealPlanShell.retryMealPlanItem(item),
-    onDismissItem: mealPlanShell.dismissMealPlanItem,
-    onClearAll: mealPlanShell.clearMealPlanQueue,
-    onLogAll: mealPlanShell.logAllMealPlan,
-    historyDays: history?.days ?? [],
+    ...buildMealPlanQueueProps({ mealPlanShell, sectionData }),
   };
 }
