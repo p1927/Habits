@@ -52,14 +52,23 @@ describe('LogTypeTodayTotalsStrip — totals aggregation', () => {
   });
 
   it('renders zero totals when data is null (no-data case)', () => {
-    render(<LogTypeTodayTotalsStrip data={null} serverOnline={false} />);
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={null} serverOnline={false} />,
+    );
 
-    // Initial synchronous render with calorieTarget=null and data=null:
-    // footer shows em-dash placeholder, not "remaining"
+    // relay-225: data=null + no calorie target = empty state. Footer carries
+    // the explicit message instead of an em-dash placeholder; progress bars
+    // are suppressed so the strip doesn't read as "fill me toward a goal."
     expect(screen.getByText('Calories')).toBeTruthy();
     expect(screen.getByText('Protein')).toBeTruthy();
-    expect(screen.getByText('—')).toBeTruthy();
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      'No meals logged yet',
+    );
     expect(screen.queryByText(/kcal remaining/)).toBeNull();
+    // No progress bars in empty state
+    expect(container.querySelector('.log-type-totals-strip .progress-bar')).toBeNull();
+    // No Show macros toggle in empty state
+    expect(container.querySelector('.log-type-totals-strip__expand')).toBeNull();
   });
 
   it('shows consumed only (no target denominator) when calorie_target is 0', async () => {
@@ -102,6 +111,11 @@ describe('LogTypeTodayTotalsStrip — totals aggregation', () => {
   });
 
   it('handles zero consumption with target set (2000 kcal remaining)', async () => {
+    // relay-225: zero consumption + zero items = empty state. The empty-state
+    // footer takes precedence over "X kcal remaining" because the user hasn't
+    // actually eaten anything yet — we don't want to claim remaining calories
+    // toward a target. The arithmetic case (consumed < target, items present)
+    // is covered by view-model tests.
     vi.mocked(api.getFoodTargets).mockResolvedValue({
       calorie_target: 2000,
       protein_target_g: 120,
@@ -116,9 +130,13 @@ describe('LogTypeTodayTotalsStrip — totals aggregation', () => {
     );
 
     await waitFor(() => {
-      expect(getStripText(container)).toContain('0 kcal / 2000');
+      expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+        'No meals logged yet',
+      );
     });
-    expect(screen.getByText('2000 kcal remaining')).toBeTruthy();
+    expect(screen.queryByText('2000 kcal remaining')).toBeNull();
+    // Progress bars are suppressed in empty state
+    expect(container.querySelectorAll('.log-type-totals-strip .progress-bar').length).toBe(0);
   });
 
   it('targets unload on 401 (no target, no remaining text)', async () => {
@@ -458,6 +476,10 @@ describe('LogTypeTodayTotalsStrip — pending sync badge (relay-223)', () => {
   });
 
   it('keeps the kcal footer intact when the pending badge is present', () => {
+    // relay-225: items=[] + consumed=0 = empty state, so the primary line is
+    // "No meals logged yet" (overridding the "X kcal today" copy). The
+    // pending badge stays attached after the middot in both cases; the key
+    // invariant here is "badge does NOT replace the footer line".
     const { container } = render(
       <LogTypeTodayTotalsStrip
         data={{ ...baseData, calories: 0 }}
@@ -467,8 +489,9 @@ describe('LogTypeTodayTotalsStrip — pending sync badge (relay-223)', () => {
     );
     const footer = container.querySelector('.log-type-totals-strip__footer');
     expect(footer).not.toBeNull();
-    // Footer keeps its primary kcal line and appends the badge after a middot
-    expect(footer?.textContent).toContain('0 kcal today');
+    // Empty-state footer line (relay-225) keeps the pending badge appended
+    // after a middot.
+    expect(footer?.textContent).toContain('No meals logged yet');
     expect(footer?.textContent).toContain('2 meals pending sync');
   });
 
@@ -511,5 +534,150 @@ describe('LogTypeTodayTotalsStrip — pending sync badge (relay-223)', () => {
     expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toContain(
       '1250 kcal remaining',
     );
+  });
+});
+
+describe('LogTypeTodayTotalsStrip — empty-state fallback (relay-225)', () => {
+  beforeEach(() => {
+    vi.mocked(api.getFoodTargets).mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // data={null} is the strictest empty state — no payload at all.
+  // The strip must still render without progress bars and must announce
+  // the explicit message.
+  it('renders the empty-state footer when data is null (no payload)', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={null} serverOnline={false} />,
+    );
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      'No meals logged yet',
+    );
+    // No progress bars in empty state (avoids "0% toward target" framing)
+    expect(container.querySelectorAll('.log-type-totals-strip .progress-bar').length).toBe(0);
+    // No Show macros toggle in empty state
+    expect(container.querySelector('.log-type-totals-strip__expand')).toBeNull();
+    // aria-live carries the explicit message
+    expect(getLiveRegion(container)?.textContent).toContain('No meals logged yet');
+  });
+
+  // Empty items array + zero calories is the "tracked the day, nothing
+  // logged" case. Same treatment as data={null}.
+  it('renders the empty-state footer when items=[] and calories=0', () => {
+    const emptyDay: FoodTodayResponse = {
+      ...baseData,
+      calories: 0,
+      protein_g: 0,
+      items: [],
+    };
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={emptyDay} serverOnline={false} />,
+    );
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      'No meals logged yet',
+    );
+    expect(container.querySelectorAll('.log-type-totals-strip .progress-bar').length).toBe(0);
+    expect(container.querySelector('.log-type-totals-strip__expand')).toBeNull();
+  });
+
+  // Even when calorie_target is loaded, zero meals = empty state: no
+  // progress bar is drawn and the footer stays the empty message.
+  it('suppresses progress bars even when a calorie target is configured', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+    const emptyDay: FoodTodayResponse = {
+      ...baseData,
+      calories: 0,
+      protein_g: 0,
+      items: [],
+    };
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={emptyDay} serverOnline={true} />,
+    );
+    await waitFor(() => {
+      expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+        'No meals logged yet',
+      );
+    });
+    expect(container.querySelectorAll('.log-type-totals-strip .progress-bar').length).toBe(0);
+    // aria-live announces the explicit empty message instead of "X remaining"
+    const live = getLiveRegion(container);
+    expect(live?.textContent).toContain('No meals logged yet');
+    expect(live?.textContent).not.toContain('remaining');
+    expect(live?.textContent).not.toContain('Goal reached');
+  });
+
+  // Even if the backend coincidentally returns non-null macros on an empty
+  // day, the strip must NOT surface the Show macros toggle — there is
+  // nothing to drill down into.
+  it('suppresses Show macros button in empty state even when macros are non-null', () => {
+    const emptyDayWithMacros: FoodTodayResponse = {
+      ...baseData,
+      calories: 0,
+      protein_g: 0,
+      carbs: 0,
+      fat: 0,
+      items: [],
+    };
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={emptyDayWithMacros} serverOnline={false} />,
+    );
+    expect(container.querySelector('.log-type-totals-strip__expand')).toBeNull();
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      'No meals logged yet',
+    );
+  });
+
+  // Leaving empty state: the moment any meal item is logged (or any
+  // calorie consumed), the bar/footer/toggle flow returns to its
+  // non-empty shape.
+  it('leaves the empty state once a meal is logged', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+    const withMeal: FoodTodayResponse = {
+      ...baseData,
+      calories: 200,
+      protein_g: 8,
+      items: [
+        { row: 1, food: 'apple', quantity_g: 100, calories: 200, carbs: 40, protein: 8, fat: 1 },
+      ],
+    };
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={withMeal} serverOnline={true} />,
+    );
+    await waitFor(() => {
+      expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toContain(
+        'kcal remaining',
+      );
+    });
+    // Progress bars are back on
+    expect(container.querySelector('.log-type-totals-strip .progress-bar')).not.toBeNull();
+    // Show macros toggle is back on (because backend also returned macros)
+    expect(container.querySelector('.log-type-totals-strip__expand')).not.toBeNull();
+  });
+
+  // Zero meals logged + pending optimistic entries: footer stays the
+  // empty message (the user's today isn't logged yet) but the pending
+  // badge still surfaces the queued count.
+  it('keeps the pending badge visible in the empty state', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={null} serverOnline={false} pendingCount={2} />,
+    );
+    const footer = container.querySelector('.log-type-totals-strip__footer');
+    expect(footer?.textContent).toContain('No meals logged yet');
+    expect(footer?.textContent).toContain('2 meals pending sync');
+    const badge = container.querySelector(
+      '[data-testid="log-type-totals-strip-pending-badge"]',
+    );
+    expect(badge?.textContent).toContain('2 meals pending sync');
   });
 });

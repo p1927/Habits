@@ -56,6 +56,7 @@ export function LogTypeTodayTotalsStrip({
     goalReached,
     hasCalorieTarget,
     hasMacros,
+    hasNoMealsLogged,
     kcalPct,
     pendingBadgeText,
     proteinPct,
@@ -75,19 +76,32 @@ export function LogTypeTodayTotalsStrip({
         <span>Calories</span>
         <span>{calorieText}</span>
       </div>
-      <div className="progress-bar" aria-hidden="true">
-        <div
-          className={`progress-fill${goalReached ? ' progress-fill--goal-reached' : ''}`}
-          style={{ width: hasCalorieTarget ? `${kcalPct}%` : '0%' }}
-        />
-      </div>
-      <p className="progress-label log-type-totals-strip__protein">
-        <span>Protein</span>
-        <span>{proteinText}</span>
-      </p>
-      <div className="progress-bar progress-bar--thin" aria-hidden="true">
-        <div className="progress-fill" style={{ width: `${proteinPct}%` }} />
-      </div>
+      {/* relay-225: when no meals are logged yet the strip should not imply
+          "progress toward a target" by rendering a 0% progress bar. Hide both
+          kcal and protein bars in the empty state and let the footer carry
+          the explicit "No meals logged yet" message. */}
+      {!hasNoMealsLogged ? (
+        <>
+          <div className="progress-bar" aria-hidden="true">
+            <div
+              className={`progress-fill${goalReached ? ' progress-fill--goal-reached' : ''}`}
+              style={{ width: hasCalorieTarget ? `${kcalPct}%` : '0%' }}
+            />
+          </div>
+          <p className="progress-label log-type-totals-strip__protein">
+            <span>Protein</span>
+            <span>{proteinText}</span>
+          </p>
+          <div className="progress-bar progress-bar--thin" aria-hidden="true">
+            <div className="progress-fill" style={{ width: `${proteinPct}%` }} />
+          </div>
+        </>
+      ) : (
+        <p className="progress-label log-type-totals-strip__protein">
+          <span>Protein</span>
+          <span>{proteinText}</span>
+        </p>
+      )}
       {hasMacros ? (
         <button
           type="button"

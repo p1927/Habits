@@ -31,6 +31,7 @@ describe('buildLogTypeTotalsViewModel', () => {
         '750 of 2000 kilocalories. 45.0 of 120.0 grams protein. 1250 kilocalories remaining',
       footerText: '1250 kcal remaining',
       pendingBadgeText: null,
+      hasNoMealsLogged: false,
     });
   });
 
@@ -41,9 +42,10 @@ describe('buildLogTypeTotalsViewModel', () => {
       hasCalorieTarget: false,
       goalReached: false,
       hasMacros: false,
-      announceText: '0 kilocalories. 0.0 grams protein',
-      footerText: '—',
+      announceText: '0 kilocalories. 0.0 grams protein. No meals logged yet',
+      footerText: 'No meals logged yet',
       pendingBadgeText: null,
+      hasNoMealsLogged: true,
     });
   });
 
@@ -55,6 +57,7 @@ describe('buildLogTypeTotalsViewModel', () => {
         '2500 of 2000 kilocalories. 45.0 of 120.0 grams protein. Goal reached',
       footerText: 'Goal reached',
       pendingBadgeText: null,
+      hasNoMealsLogged: false,
     });
   });
 
@@ -77,6 +80,51 @@ describe('buildLogTypeTotalsViewModel', () => {
   it('keeps pendingBadgeText null when pendingCount is zero', () => {
     expect(buildLogTypeTotalsViewModel(data, 2000, 0)).toMatchObject({
       pendingBadgeText: null,
+    });
+  });
+
+  // relay-225: empty-state fallback — calories=0 AND items.length=0
+  // (or null data). The footer says "No meals logged yet" instead of "0 kcal
+  // today"/"—", progress is dropped from the announce path, and macros are
+  // not surfaced even if the backend coincidentally returns them.
+  it('enters the empty state when items array is empty and calories are zero', () => {
+    const emptyDay: FoodTodayResponse = {
+      ...data,
+      calories: 0,
+      protein_g: 0,
+      carbs: 80,
+      fat: 25,
+      items: [],
+    };
+    expect(buildLogTypeTotalsViewModel(emptyDay, 2000)).toMatchObject({
+      consumed: 0,
+      protein: 0,
+      hasCalorieTarget: true,
+      goalReached: false,
+      hasMacros: false, // overridden in empty state
+      announceText:
+        '0 of 2000 kilocalories. 0.0 of 120.0 grams protein. No meals logged yet',
+      footerText: 'No meals logged yet',
+      pendingBadgeText: null,
+      hasNoMealsLogged: true,
+    });
+  });
+
+  it('leaves the empty state once a single meal item is logged', () => {
+    const withMeal: FoodTodayResponse = {
+      ...data,
+      calories: 120,
+      protein_g: 5,
+      items: [
+        { row: 1, food: 'apple', quantity_g: 100, calories: 120, carbs: 25, protein: 5, fat: 1 },
+      ],
+    };
+    expect(buildLogTypeTotalsViewModel(withMeal, 2000)).toMatchObject({
+      hasNoMealsLogged: false,
+      hasMacros: true,
+      footerText: '1880 kcal remaining',
+      announceText:
+        '120 of 2000 kilocalories. 5.0 of 120.0 grams protein. 1880 kilocalories remaining',
     });
   });
 });
