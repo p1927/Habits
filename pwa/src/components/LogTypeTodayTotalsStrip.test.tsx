@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LogTypeTodayTotalsStrip } from './LogTypeTodayTotalsStrip';
 import type { FoodTodayResponse } from '../lib/api';
@@ -305,5 +305,112 @@ describe('LogTypeTodayTotalsStrip — goal-reached state', () => {
       expect(text).toContain('Goal reached');
       expect(text).not.toContain('remaining');
     });
+  });
+});
+
+describe('LogTypeTodayTotalsStrip — macros expansion (relay-222)', () => {
+  beforeEach(() => {
+    vi.mocked(api.getFoodTargets).mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders an expand button with aria-expanded=false when macros are present', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} />,
+    );
+    const button = container.querySelector('.log-type-totals-strip__expand');
+    expect(button).not.toBeNull();
+    expect(button?.getAttribute('aria-expanded')).toBe('false');
+    expect(button?.getAttribute('aria-controls')).toBe('log-type-totals-strip-macros');
+    expect(button?.textContent).toBe('Show macros');
+    // Panel is hidden until clicked
+    expect(container.querySelector('[data-testid="log-type-totals-strip-macros"]')).toBeNull();
+  });
+
+  it('does not render an expand button when macros are null (backend contract change)', () => {
+    const partialData = { ...baseData, carbs: null, fat: null } as unknown as FoodTodayResponse;
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={partialData} serverOnline={false} />,
+    );
+    expect(container.querySelector('.log-type-totals-strip__expand')).toBeNull();
+    expect(container.querySelector('[data-testid="log-type-totals-strip-macros"]')).toBeNull();
+  });
+
+  it('expanding the panel reveals carbs and fat lines below protein', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={true} />,
+    );
+
+    await waitFor(() => {
+      expect(getStripText(container)).toContain('750 kcal / 2000');
+    });
+
+    const button = container.querySelector(
+      '.log-type-totals-strip__expand',
+    ) as HTMLButtonElement;
+    expect(button).not.toBeNull();
+    fireEvent.click(button);
+
+    const panel = container.querySelector('[data-testid="log-type-totals-strip-macros"]');
+    expect(panel).not.toBeNull();
+    // Carbs row: 80g from baseData, formatted with one decimal place
+    expect(panel?.textContent).toContain('Carbs');
+    expect(panel?.textContent).toContain('80.0g');
+    // Fat row: 25g from baseData
+    expect(panel?.textContent).toContain('Fat');
+    expect(panel?.textContent).toContain('25.0g');
+    // After expansion the button text flips to "Hide macros"
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    expect(button.textContent).toBe('Hide macros');
+  });
+
+  it('tapping the expand button again collapses the panel', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} />,
+    );
+    const button = container.querySelector(
+      '.log-type-totals-strip__expand',
+    ) as HTMLButtonElement;
+    fireEvent.click(button);
+    expect(
+      container.querySelector('[data-testid="log-type-totals-strip-macros"]'),
+    ).not.toBeNull();
+    fireEvent.click(button);
+    expect(container.querySelector('[data-testid="log-type-totals-strip-macros"]')).toBeNull();
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(button.textContent).toBe('Show macros');
+  });
+
+  it('expanded panel sits below the protein row and above the footer', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} />,
+    );
+    const button = container.querySelector(
+      '.log-type-totals-strip__expand',
+    ) as HTMLButtonElement;
+    fireEvent.click(button);
+    const strip = container.querySelector('.log-type-totals-strip') as HTMLElement;
+    const children = Array.from(strip.children) as HTMLElement[];
+    const proteinIdx = children.findIndex((el) =>
+      el.classList.contains('log-type-totals-strip__protein'),
+    );
+    const panelIdx = children.findIndex((el) =>
+      el.matches('[data-testid="log-type-totals-strip-macros"]'),
+    );
+    const footerIdx = children.findIndex((el) =>
+      el.classList.contains('log-type-totals-strip__footer'),
+    );
+    expect(proteinIdx).toBeGreaterThanOrEqual(0);
+    expect(panelIdx).toBeGreaterThan(proteinIdx);
+    expect(footerIdx).toBeGreaterThan(panelIdx);
   });
 });

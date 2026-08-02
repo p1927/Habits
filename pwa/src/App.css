@@ -3621,6 +3621,38 @@ form.log-type-card {
   margin: 0;
 }
 
+.log-type-totals-strip__expand {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0.25rem 0 0.5rem;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.log-type-totals-strip__expand:focus-visible {
+  outline: 2px solid var(--focus-ring, currentColor);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.log-type-totals-strip__macros {
+  margin-top: 0.25rem;
+}
+
+.log-type-totals-strip__macro {
+  margin: 0.25rem 0 0;
+}
+
+.log-type-totals-strip__macros .progress-bar--thin {
+  margin-bottom: 0.35rem;
+}
+
 .day-manage-card .manage-quad h3 {
   font-size: var(--font-size-sm);
   font-weight: 600;
