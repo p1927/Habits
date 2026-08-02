@@ -3621,6 +3621,12 @@ form.log-type-card {
   margin: 0;
 }
 
+.log-type-totals-strip__pending-badge {
+  margin-left: 0.25rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
 .log-type-totals-strip__expand {
   appearance: none;
   background: transparent;

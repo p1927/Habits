@@ -120,7 +120,11 @@ export function LogTypeTabPanel({
         onManualLog={onManualLog}
       />
 
-      <LogTypeTodayTotalsStrip data={data} serverOnline={serverOnline} />
+      <LogTypeTodayTotalsStrip
+        data={data}
+        serverOnline={serverOnline}
+        pendingCount={pending.filter((p) => p.status === 'queued').length}
+      />
 
       <LogTypeTodayList
         pending={pending}

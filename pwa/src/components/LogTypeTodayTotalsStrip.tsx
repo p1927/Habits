@@ -7,9 +7,17 @@ import { proteinProgressPct } from '../lib/foodSectionShared';
 export interface LogTypeTodayTotalsStripProps {
   data: FoodTodayResponse | null;
   serverOnline: boolean;
+  // Number of optimistic food entries still queued locally and waiting to
+  // sync to the backend (relay-223). Surfaced in the footer as a muted badge
+  // so users know their totals are not yet the final picture.
+  pendingCount?: number;
 }
 
-export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTotalsStripProps) {
+export function LogTypeTodayTotalsStrip({
+  data,
+  serverOnline,
+  pendingCount = 0,
+}: LogTypeTodayTotalsStripProps) {
   const [calorieTarget, setCalorieTarget] = useState<number | null>(null);
   // Expanded panel state for the carbs/fat breakdown (relay-222).
   // Persists across renders but resets when the strip unmounts — appropriate
@@ -77,7 +85,14 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
       : hasCalorieTarget && remaining != null
         ? `${formatKcal(remaining)} kilocalories remaining`
         : '';
-    return [kcalPart, proteinPart, remainingPart].filter(Boolean).join('. ');
+    // relay-223: announce queued sync count so SR users learn the totals
+    // are still in flight. We only mention it when > 0 to keep the resting
+    // announcement short and stable.
+    const pendingPart =
+      pendingCount > 0
+        ? `${pendingCount} ${pendingCount === 1 ? 'meal' : 'meals'} pending sync`
+        : '';
+    return [kcalPart, proteinPart, remainingPart, pendingPart].filter(Boolean).join('. ');
   })();
 
   return (
@@ -151,6 +166,16 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
             : data?.calories != null
               ? `${formatKcal(data.calories)} kcal today`
               : '—'}
+        {pendingCount > 0 ? (
+          <span
+            className="log-type-totals-strip__pending-badge"
+            data-testid="log-type-totals-strip-pending-badge"
+            aria-label={`${pendingCount} ${pendingCount === 1 ? 'meal' : 'meals'} pending sync`}
+          >
+            {' · '}
+            {pendingCount} {pendingCount === 1 ? 'meal' : 'meals'} pending sync
+          </span>
+        ) : null}
       </p>
     </Card>
   );

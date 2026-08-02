@@ -414,3 +414,102 @@ describe('LogTypeTodayTotalsStrip — macros expansion (relay-222)', () => {
     expect(footerIdx).toBeGreaterThan(panelIdx);
   });
 });
+
+describe('LogTypeTodayTotalsStrip — pending sync badge (relay-223)', () => {
+  beforeEach(() => {
+    vi.mocked(api.getFoodTargets).mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('does not render the pending badge when pendingCount is 0 (default)', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} />,
+    );
+    expect(
+      container.querySelector('[data-testid="log-type-totals-strip-pending-badge"]'),
+    ).toBeNull();
+  });
+
+  it('renders singular "1 meal pending sync" beside the footer when one entry is queued', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} pendingCount={1} />,
+    );
+    const badge = container.querySelector(
+      '[data-testid="log-type-totals-strip-pending-badge"]',
+    );
+    expect(badge).not.toBeNull();
+    expect(badge?.textContent).toContain('1 meal pending sync');
+    expect(badge?.textContent).not.toContain('meals');
+    expect(badge?.getAttribute('aria-label')).toBe('1 meal pending sync');
+  });
+
+  it('renders plural "3 meals pending sync" when multiple entries are queued', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} pendingCount={3} />,
+    );
+    const badge = container.querySelector(
+      '[data-testid="log-type-totals-strip-pending-badge"]',
+    );
+    expect(badge?.textContent).toContain('3 meals pending sync');
+    expect(badge?.getAttribute('aria-label')).toBe('3 meals pending sync');
+  });
+
+  it('keeps the kcal footer intact when the pending badge is present', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip
+        data={{ ...baseData, calories: 0 }}
+        serverOnline={false}
+        pendingCount={2}
+      />,
+    );
+    const footer = container.querySelector('.log-type-totals-strip__footer');
+    expect(footer).not.toBeNull();
+    // Footer keeps its primary kcal line and appends the badge after a middot
+    expect(footer?.textContent).toContain('0 kcal today');
+    expect(footer?.textContent).toContain('2 meals pending sync');
+  });
+
+  it('aria-live announcement includes the pending count when > 0', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} pendingCount={2} />,
+    );
+    const live = getLiveRegion(container);
+    const text = live?.textContent ?? '';
+    expect(text).toContain('750 kilocalories');
+    expect(text).toContain('2 meals pending sync');
+  });
+
+  it('aria-live announcement stays quiet about pending when count is 0', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} />,
+    );
+    const live = getLiveRegion(container);
+    const text = live?.textContent ?? '';
+    expect(text).not.toContain('pending sync');
+  });
+
+  it('renders the singular badge text for exactly one queued entry even alongside target state', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={true} pendingCount={1} />,
+    );
+    await waitFor(() => {
+      expect(getStripText(container)).toContain('750 kcal / 2000');
+    });
+    const badge = container.querySelector(
+      '[data-testid="log-type-totals-strip-pending-badge"]',
+    );
+    expect(badge?.textContent).toContain('1 meal pending sync');
+    // "remaining" line is preserved next to the badge
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toContain(
+      '1250 kcal remaining',
+    );
+  });
+});
