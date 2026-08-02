@@ -4,6 +4,16 @@ export const CARDS_FILTERS = ['all', 'sickness', 'notes', 'strategy'] as const;
 
 export const CARDS_SHORTCUT_HINT_KEY = 'habits-cards-shortcuts-hint-seen';
 
+/** Long-press duration (ms) required to enter bulk-select mode on a card. */
+export const CARDS_BULK_LONG_PRESS_MS = 600;
+
+/** Pointer movement (px) beyond which a long-press is cancelled as a drag/scroll. */
+export const CARDS_BULK_LONG_PRESS_MOVE_PX = 10;
+
+/** Card-type options surfaced in the bulk "Change type" sheet. */
+export const CARD_TYPE_OPTIONS = ['notes', 'sickness', 'strategy'] as const;
+export type CardTypeOption = (typeof CARD_TYPE_OPTIONS)[number];
+
 export type CardsFilter = (typeof CARDS_FILTERS)[number];
 
 export const KEEP_CARD_VARIANTS: Record<string, 'keep-yellow' | 'keep-blue' | 'keep-green' | 'keep-pink' | 'keep-purple'> = {
