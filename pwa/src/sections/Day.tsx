@@ -6,7 +6,7 @@ import { DayWeekStrip } from '../components/DayWeekStrip';
 import { useDaySection } from '../hooks/useDaySection';
 import type { DaySectionProps } from '../lib/daySectionTypes';
 
-export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPlanQueue, onAgentSchedulePrompt }: DaySectionProps) {
+export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPlanQueue, onAgentSchedulePrompt, onNavigateHome }: DaySectionProps) {
   const section = useDaySection({ serverOnline });
 
   return (
@@ -40,6 +40,7 @@ export function Day({ serverOnline, onNavigateMealPlanSyncSource, scrollToMealPl
         streak={section.streak}
         metricLabel={section.metricLabel}
         onAgentSchedulePrompt={onAgentSchedulePrompt}
+        onNavigateHome={onNavigateHome}
       />
 
       <DaySectionAlerts

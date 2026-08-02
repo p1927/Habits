@@ -28,6 +28,7 @@ type AppTabContentProps = Pick<
   | 'navigateLogRecipes'
   | 'navigateAgentPrompt'
   | 'navigateFutureSelf'
+  | 'navigateHome'
   | 'foodQueueFocusToken'
   | 'navigateFoodQueuePending'
   | 'agentPrompt'
@@ -56,6 +57,7 @@ export function AppTabContent({
   navigateLogRecipes,
   navigateAgentPrompt,
   navigateFutureSelf,
+  navigateHome,
   foodQueueFocusToken,
   navigateFoodQueuePending,
   agentPrompt,
@@ -98,7 +100,8 @@ export function AppTabContent({
           serverOnline={serverOnline}
           onNavigateMealPlanSyncSource={navigateMealPlanSyncSource}
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
-          onAgentSchedulePrompt={() => navigateAgentPrompt(AGENT_SCHEDULE_TODAY_PROMPT)}
+          onAgentSchedulePrompt={(prompt) => navigateAgentPrompt(prompt ?? AGENT_SCHEDULE_TODAY_PROMPT)}
+          onNavigateHome={navigateHome}
         />
       )}
       {tab === 'cards' && (

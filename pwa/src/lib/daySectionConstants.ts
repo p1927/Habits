@@ -4,6 +4,7 @@ export const STREAK_LEGEND_SEEN_KEY = 'habits-streak-legend-seen';
 export const STREAK_LEGEND_COLLAPSED_KEY = 'habits-streak-legend-collapsed';
 
 export const DAY_SHORTCUT_HINT_KEY = 'habits-day-shortcuts-hint-seen';
+export const DAY_CHECKIN_HANDOFF_DISMISS_PREFIX = 'habits-day-checkin-handoff-dismissed:';
 
 export type DayScheduleView = 'agenda' | 'day';
 

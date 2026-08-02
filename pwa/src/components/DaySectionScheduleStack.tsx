@@ -1,3 +1,4 @@
+import { DayCheckinHandoffBar } from './DayCheckinHandoffBar';
 import { DayHabitHoursCard } from './DayHabitHoursCard';
 import { DayManageDayCard } from './DayManageDayCard';
 import { DayTimelineCard } from './DayTimelineCard';
@@ -12,9 +13,18 @@ export function DaySectionScheduleStack({
   streak,
   metricLabel,
   onAgentSchedulePrompt,
+  onNavigateHome,
 }: DaySectionScheduleStackProps) {
   return (
     <>
+      {events.length > 0 && onAgentSchedulePrompt && onNavigateHome && (
+        <DayCheckinHandoffBar
+          events={events}
+          onAskCoach={onAgentSchedulePrompt}
+          onReviewRings={onNavigateHome}
+        />
+      )}
+
       <DayTimelineCard events={events} onAgentSchedulePrompt={onAgentSchedulePrompt} />
 
       <DayHabitHoursCard

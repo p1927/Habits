@@ -1,5 +1,5 @@
 interface DayScheduleEmptyPanelProps {
-  onAgentSchedulePrompt?: () => void;
+  onAgentSchedulePrompt?: (prompt?: string) => void;
 }
 
 export function DayScheduleEmptyPanel({ onAgentSchedulePrompt }: DayScheduleEmptyPanelProps) {
@@ -12,7 +12,7 @@ export function DayScheduleEmptyPanel({ onAgentSchedulePrompt }: DayScheduleEmpt
         <button
           type="button"
           className="btn-pill btn-pill-outline day-schedule-empty__cta"
-          onClick={onAgentSchedulePrompt}
+          onClick={() => onAgentSchedulePrompt?.()}
         >
           Add with Coach
         </button>

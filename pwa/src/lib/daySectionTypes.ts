@@ -5,7 +5,8 @@ export interface DaySectionProps {
   serverOnline: boolean;
   onNavigateMealPlanSyncSource?: (source: MealPlanSyncSource) => void;
   scrollToMealPlanQueue?: number;
-  onAgentSchedulePrompt?: () => void;
+  onAgentSchedulePrompt?: (prompt?: string) => void;
+  onNavigateHome?: () => void;
 }
 
 export type DaySectionViewModel = UseDaySectionResult;
@@ -29,7 +30,8 @@ export interface DaySectionScheduleStackProps {
   habitLog: DaySectionViewModel['habitLog'];
   streak: DaySectionViewModel['streak'];
   metricLabel: DaySectionViewModel['metricLabel'];
-  onAgentSchedulePrompt?: () => void;
+  onAgentSchedulePrompt?: (prompt?: string) => void;
+  onNavigateHome?: () => void;
 }
 
 export interface DaySectionAlertsProps {

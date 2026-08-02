@@ -12,7 +12,7 @@ export type { DayScheduleView };
 
 export interface DayTimelineCardProps {
   events: DayCalendarEvent[];
-  onAgentSchedulePrompt?: () => void;
+  onAgentSchedulePrompt?: (prompt?: string) => void;
 }
 
 export function DayTimelineCard({ events, onAgentSchedulePrompt }: DayTimelineCardProps) {

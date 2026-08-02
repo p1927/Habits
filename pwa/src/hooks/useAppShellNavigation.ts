@@ -82,6 +82,10 @@ export function useAppShellNavigation({
     [handleTabChange, setAgentPrompt],
   );
 
+  const navigateHome = useCallback(() => {
+    handleTabChange('home');
+  }, [handleTabChange]);
+
   const navigateFutureSelf = useCallback(() => {
     preloadAppTabChunk('futureself');
     handleTabChange('futureself');
@@ -100,6 +104,7 @@ export function useAppShellNavigation({
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
+    navigateHome,
     foodQueueFocusToken,
     navigateFoodQueuePending,
   };

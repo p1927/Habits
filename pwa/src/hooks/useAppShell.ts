@@ -29,6 +29,7 @@ export function useAppShell() {
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
+    navigateHome,
     foodQueueFocusToken,
     navigateFoodQueuePending,
   } = useAppShellNavigation({
@@ -105,6 +106,7 @@ export function useAppShell() {
     navigateLogRecipes,
     navigateAgentPrompt,
     navigateFutureSelf,
+    navigateHome,
     foodQueueFocusToken,
     navigateFoodQueuePending,
     agentPrompt,
