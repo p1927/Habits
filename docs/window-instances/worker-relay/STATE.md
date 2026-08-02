@@ -22,13 +22,13 @@
 | last_wake | `2026-07-28T13:37:19Z` |
 | next_action | `relay-216 next` |
 | phase | `9-arm` |
-| review_status | `done` |
+| review_status | `pending` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| review_round | `76` |
+| review_round | `77` |
 | last_reviewed_round | `76` |
 | worktree_status | `none` |
-| review_fingerprint | `200ad4fd6855abfe` |
+| review_fingerprint | `15f3af590dcb3504` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
@@ -40,7 +40,7 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `Recovery nested wake; relay-216 deferred to next tick` |
-| review_changed_files | `pwa/package-lock.json pwa/src/components/AppTabContent.tsx pwa/src/components/HomeActivityRingsCard.tsx pwa/src/components/HomeDashboardMetricsPanels.tsx pwa/src/hooks/useAppShell.ts pwa/src/hooks/useAppShellNavigation.ts pwa/src/hooks/useHomeSection.ts pwa/src/lib/homeDashboardPanelsTypes.ts pwa/src/sections/Home.tsx` |
+| review_changed_files | `docs/window-instances/worker-relay/STATE.md pwa/src/App.css pwa/src/components/LogTypeTabPanel.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx` |
 
 ## IN_PROGRESS
 
@@ -131,8 +131,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r81-000 | low | — | — | — | — | open |
 | rf-r76-000 | low | Independent review: no logic, security, regression, or AC issues in relay-216; focused tests and build pass | round-76 bugbot | closed | — | closed |
 | rf-r75-000 | low | Recovery wake idle; relay-216 next tick | round-75 /code-review | closed | — | closed |
 | rf-r74-003 | medium | tool_end not emitted when execute_tool throws | round-74 /code-review | fix-now | — | closed |
@@ -329,6 +331,7 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
 
 
 
