@@ -38,8 +38,8 @@ def resolve_next_step(
     checkpoint: dict[str, str],
     archetype: str,
 ) -> str | None:
-    """Find next non-skippable step."""
-    candidate = rs.next_step(current, archetype)
+    """Find next non-skippable step, cycling a completed tick back to wake."""
+    candidate = rs.step_line_for(archetype)[0] if current == "9-arm" else rs.next_step(current, archetype)
     visited: set[str] = {current}
     while candidate and rs.steps_skippable(candidate, checkpoint, archetype):
         if candidate in visited:
@@ -123,7 +123,8 @@ def main() -> int:
             directive.emit()
             return 0
 
-        ok, msg = rs.validate_step_transition(current, next_step, archetype)
+        is_new_tick = current == "9-arm" and next_step == "1-wake"
+        ok, msg = (True, "") if is_new_tick else rs.validate_step_transition(current, next_step, archetype)
         if not ok:
             directive = AgentDirective(
                 ritual_step=current,
