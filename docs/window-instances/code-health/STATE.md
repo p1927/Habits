@@ -18,22 +18,22 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-158` |
+| confirmed_next | `ch-159` |
 | phase | `8-close` |
 | current_item_id | `ch-158` |
-| last_wake | `2026-08-01T20:52:00Z` |
+| last_wake | `2026-08-02T01:17:40Z` |
 | code_changed | `no` |
 | review_status | `skipped` |
-| review_round | `23` |
+| review_round | `24` |
 | last_reviewed_round | `22` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
-| review_diff_range | `none` |
-| review_skip_reason | `ch-145 merged at b627c5c; next is ch-158 line scan` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md` |
+| review_fingerprint | `2b91e7074ac58d73` |
+| review_diff_range | `uncommitted` |
+| review_skip_reason | `docs-only STATE.md appends (ch-158 line scan output: ch-159/160/161 queued + ch-153/158 closed + SCAN_COVERAGE row); no pwa/ or server/ changes` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-151 shipped: AgentChatComposer 164→83 + 5 child components; c5e101d ff-merge to main; r22 zero bugs` |
@@ -45,10 +45,10 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_tick_applied_at | `2026-08-01T20:40:00+00:00` |
-| refactor_subphase | `execute` |
-| refactor_plan_id | `ch-145` |
-| refactor_step_n | `1` |
-| worktree_cleanup_deferred | `yes — user denied git worktree remove / branch -D; main already merged at c5e101d (ff-only)` |
+| refactor_subphase | `none` |
+| refactor_plan_id | `ch-158` |
+| refactor_step_n | `0` |
+| worktree_cleanup_deferred | `no — cleanup done this tick` |
 
 ## IN_PROGRESS
 
@@ -57,6 +57,8 @@
 ---
 
 ## REFACTOR_BACKLOG
+
+
 
 
 
@@ -74,9 +76,12 @@
 - [x] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
 - [ ] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
-- [ ] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
+- [x] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
 - [ ] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
-- [ ] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
+- [x] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
+- [ ] ch-159 | `server/habits_api/agent/service.py` tool-call loop extract | refactor | Given two near-duplicate `for _ in range(5):` tool-call loops in chat() and chat_stream(), When extracted to a shared helper, Then service.py 251→~170 with chat_stream dropping the duplicated message/tool-call bookkeeping
+- [ ] ch-160 | `server/habits_api/agent/tools.py` (227) spec/dispatch split | refactor | Given single 227-line module mixing AGENT_TOOLS JSON spec list (160 lines) and execute_tool dispatch table (10 tools), When split, Then agent_tools_specs.py (~160 lines) + agent_tool_dispatch.py (~70 lines)
+- [ ] ch-161 | re-scope ch-153 line scan: top server candidates are `agent/service.py` (251) and `agent/tools.py` (227) — covered by ch-159 and ch-160; `google/sheet_io.py` (188) false positive (single-purpose cache/lock/retry plumbing); route files (`food.py` 106, `food_extensions.py` 101) already addressed by ch-034 | structure | verified by ch-158 line scan
 ## BUG_BACKLOG
 
 *(empty — scan as refactor uncovers bugs)*
@@ -94,8 +99,10 @@
 ## SCAN_COVERAGE
 
 
+
 | Area | Last scanned | Findings |
 |------|--------------|----------|
+| `pwa/src/components/LogTypeTodayTotalsStrip.tsx` + `pwa/src/hooks/*` + `pwa/src/sections/*` | 2026-08-02 tick #146 (ch-158 line scan) | post ch-145 targets: useLogSection 139 (already clean composition), SwipeStack 138 (UI primitive, JSX-heavy but single component), LogTypeTabPanel 135 (already clean JSX shell wiring 6 sub-components), useHomeDashboardActions 131 (already clean — 4 distinct useCallback actions), Cards 130 (section shell, ch-141 already shipped), AppTabBar 130 (chrome), useMealPlanShell 128, useFoodSectionActions 127, HabitQueueSection 127, AppTabContent 126, useSettingsSectionData 125, AgentChatPanel 125 — most PWA files >100 lines are now well-structured composition hooks or JSX shells; false positives. Top server candidates: `agent/service.py` 251 (real duplication, two tool-call loops in chat() and chat_stream()) → ch-159, `agent/tools.py` 227 (mixed spec list + dispatch) → ch-160, `google/sheet_io.py` 188 (single-purpose, false positive) |
 | pwa/src/lib/logTabPanelsPropsBuilder.ts | 2026-08-02 tick #146 | ch-145 split: top builder 78 + foodScan 29 + typeTab 49 + recipeScan 42 + mealPlanQueue 28; all 56 fields preserved; r23 zero bugs; b627c5c merged |
 | meal plan sync banners (4 sections) | 2026-07-27 tick #1 | ch-001 done |
 | `pwa/src/hooks/useMealPlanQueueRemoteSync` | 2026-07-27 tick #3 | ch-004 done |
@@ -334,7 +341,9 @@
 
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-08-02T01:17:40Z | ch-158 | 8-close | line scan: ch-159 (agent/service tool-loop extract) + ch-160 (agent/tools spec/dispatch split) + ch-161 (ch-153 re-scope done) — PWA 100+ line files mostly clean composition/JSX shells; server wins in agent/ | scan |
 | 2026-08-02 | ch-145 | logTabPanelsPropsBuilder split | build+review | b627c5c |
 | 2026-07-28 | ch-142 | useSwipeStack split | build | pwa/src/hooks/useSwipeStack.ts |
 |-----------|------|---------|----------|--------|
@@ -542,6 +551,10 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
+
 
 
 
