@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T13:37:19Z |
-| where_we_are | relay-215 shipped (612e3cd); relay-216 next |
-| confirmed_next | relay-216 |
-| brainstorm_notes | Tool status chips via SSE tool_start/tool_end |
+| reviewed_at | 2026-08-02T12:16:00Z |
+| where_we_are | relay-223 shipped (ada4813); next: relay-225 (empty-state fallback) — comes before 226/227 (no target / keyboard) and 228 (day-over-day) since the empty-state AC explicitly pairs with zero meals + visible strip |
+| confirmed_next | relay-225 |
+| brainstorm_notes | Empty-state fallback: when no meals logged today and strip is visible, show zeroed kcal/protein with 'No meals logged yet' message and keep readable without progress implication. Strip already covers target-unset + calorie-only case so empty-state needs to also render zeroed without progress bar |
 
 ---
 
@@ -19,28 +19,29 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T13:37:19Z` |
-| next_action | `relay-216 next` |
-| phase | `9-arm` |
-| review_status | `pending` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| review_round | `77` |
-| last_reviewed_round | `76` |
+| last_wake | `2026-08-02T12:16:00Z` |
+| next_action | `select-next-relay-225-or-226` |
+| phase | `8-close` |
+| review_status | `skipped` |
+| code_changed | `no` |
+| review_round | `82` |
+| last_reviewed_round | `81` |
 | worktree_status | `none` |
-| review_fingerprint | `15f3af590dcb3504` |
-| ritual_step | `9-arm` |
-| brainstorm_done | `no` |
-| brainstorm_outcome | `—` |
+| ritual_step | `8-close` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `relay-223: pass pending count from LogTypeTabPanel to totals strip footer; muted badge reads N meals pending sync; filter queued only; include in aria-live announcement` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `bc22e9c` |
+| commit_hash | `ada4813` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_skip_reason | `Recovery nested wake; relay-216 deferred to next tick` |
-| review_changed_files | `docs/window-instances/worker-relay/STATE.md pwa/src/App.css pwa/src/components/LogTypeTabPanel.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx` |
+| idle_mode_triggered | `no` |
+| idle_rescue_done | `yes` |
+| current_item_id | `relay-223` |
+| finalize_status | `success` |
+| review_skip_reason | `relay-223 review round-81 complete; diff landed in main; no pending review work` |
 
 ## IN_PROGRESS
 
@@ -54,6 +55,27 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  (priority ordered)
 
 
@@ -61,17 +83,24 @@
 
 
 
-- [x] relay-206 | Agent empty chat min-height stable when greeting toggles | polish | Avoid layout jump when greeting hides for attach preview
-- [x] relay-207 | Food queue banner tap → focus pending queue row | polish | Given queued food logs and banner visible on Home/Log, When user taps banner body (not Dismiss), Then navigate to Log if needed and scroll/focus first pending offline queue entry
-- [x] relay-208 | Queued food row :focus-visible ring | a11y | Given relay-207 tap focuses queue row, When row has keyboard focus, Then row shows :focus-visible ring matching design system focus style
-- [x] relay-209 | Focused queue li aria-label | a11y | Given Log tab food queue list, When pending offline queue entry rendered, Then li has descriptive aria-label (e.g. "Pending: <food name>")
-- [x] relay-210 | Food queue focus helpers unit tests | quality | Given useFoodQueuePendingFocus hook, When focus-token lifecycle and re-run guard paths run, Then unit tests cover all state transitions
-- [x] relay-211 | Food queue ul role=list + aria-label | ux | Given food queue list on Log tab; When rendered; Then outer ul has role=list and aria-label Pending offline food entries per WCAG 1.3.1
-- [x] relay-212 | Home macros card tap → Log Type sub-tab drill-down | feature | Given Home macros summary tile visible; When user taps tile; Then app navigates to Log tab Type sub-tab (crit-032)
-- [x] relay-213 | Agent tools row tap auto-send to chat | feature | Given Agent Tools sheet open; When user taps a tool row; Then sheet closes and tool name message auto-sends to chat (crit-034)
-- [x] relay-214 | Remove dead legacy .card/.card-placeholder/.btn-decline CSS | quality | Given App.css legacy selectors unused in pwa/src, When build runs, Then dead rules removed per maint-004
 - [x] relay-215 | Agent composer tool status chips during streaming | feature | Given Agent loading with tool_results pending, When streaming, Then status chips above composer per crit-002
-- [ ] relay-216 | Home empty rings Log first meal CTA | feature | Given zero food logged today, When Home rings visible, Then primary CTA opens Log Scan per crit-001
+- [x] relay-216 | Home empty rings Log first meal CTA | feature | Given zero food logged today, When Home rings visible, Then primary CTA opens Log Scan per crit-001
+- [x] relay-218 | Log today kcal + protein totals strip | feature | Given Log tab Type sub-tab visible; When Today's log card renders; Then sticky totals strip above list shows kcal/total-target and protein/target-g with progress fraction
+- [x] relay-219 | Log today totals strip aggregation tests | refactor | Given FoodTodayResponse totals + pending optimistic entries; When totals strip computes kcal/protein; Then unit tests cover totals+pending, no data, and target-null cases
+- [x] relay-220 | Log today totals strip aria-live | ux | Given totals strip above Log Today's list; When totals change (log saved, pending clears); Then aria-live=polite announces kcal + protein updates
+- [x] relay-221 | Log today totals strip goal-reached state | feature | Given totals strip kcal progress bar; When consumed >= calorieTarget and target is set; Then bar fills to 100% with goal-reached variant (green fill, footer reads "Goal reached" instead of remaining)
+- [x] relay-222 | Log today totals strip macro breakdown | feature | Given totals strip above today's list; When user taps the strip; Then expanded panel shows carbs/total-g and fat/total-g progress lines below protein (only renders if backend returns non-null macros)
+- [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
+- [ ] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
+- [ ] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
+- [ ] relay-225 | Log today totals strip empty-state fallback | feature | Given no meals are logged today and the totals strip is visible; When the Log Type tab opens; Then the strip shows zeroed kcal/protein values, a clear ‘No meals logged yet’ message, and remains readable without implying progress
+- [ ] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
+- [x] relay-230 | Totals strip pending-sync count accuracy | feature | Given optimistic food entries are pending sync; When the totals strip renders; Then show the exact pending meal count and update it after sync or failure without hiding the underlying totals
+- [ ] relay-232 | Log totals strip Ask Coach handoff | feature | Given the totals strip has today nutrition totals; When the user activates Ask Coach; Then Agent opens with a plain-text kcal protein and macro summary prefilled once, focus lands in the composer, and no message sends without confirmation
+- [ ] relay-231 | Log today totals strip stale-data timestamp | feature | Given totals are loaded from a delayed or offline response; When the totals strip renders; Then show a concise last-updated indicator and preserve the existing totals instead of presenting stale data as current
+- [ ] relay-233 | Log macro contribution drill-down | feature | Given the totals strip shows protein carbs and fat; When the user activates one macro; Then today food rows reveal the top contributing meals for that macro, expose a clear-filter action, and announce the filtered result count accessibly
+- [ ] relay-234 | Log seven-day nutrition trend drill-down | feature | Given at least two days of nutrition history; When the user opens the totals trend; Then show seven-day kcal and protein trends, mark missing days, provide an accessible text summary, and allow return to Today
+- [x] relay-223 | Log today totals strip pending sync badge | feature | Given optimistic food entries are pending or queued locally; When the Log Type totals strip renders; Then its footer shows the exact pending meal count beside confirmed totals and updates after success or failure
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -132,9 +161,27 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
-| rf-r81-000 | low | — | — | — | — | open |
+| rf-r80-fresh-001 | low | Fresh-eye: progress-fill width 0% in expanded panel renders an empty bar track next to carbs/fat grams. This is honest (no macro target denominator exists) but visually reads as 0%. Acceptable per deferred-items note in commit body; future macro-target support will swap style.width to a real fraction. No defect. | round-80 /code-review | closed | — | closed |
+| rf-r80-000 | low | Bugbot subagent skipped — review-bugbot skill not present locally (matches rf-r78-000 pattern). Window-lens review only: relay-222 AC satisfied — Show/Hide macros button with real button + aria-expanded + aria-controls; panel only renders when carbs and fat are non-null (explicit null guard); sits below protein row, above footer; 18/18 vitest pass on totals strip (5 new) + 56/56 full suite; build + lint clean; commit b54be8d; deferred: macro target denominators (no backend carbs_target_g/fat_target_g today — panel renders consumed grams only), aria-live non-update on toggle (intentional — user-driven disclosure) | round-80 bugbot | closed | — | closed |
+| rf-r79-fresh-002 | low | Fresh-eye: 'does NOT show goal-reached when target is unset' test changed from screen.queryByText (which matched stale sr-only 'Goal reached' text across test containers) to container-scoped footer textContent assertion — strengthens the negative case and avoids the documented screen-bleed pitfall | round-79 /code-review | closed | — | closed |
+| rf-r79-fresh-001 | low | Fresh-eye: getLiveRegion helper hoisted to module scope to avoid duplicate definition across describe blocks (the prior scope-inside-describe pattern would have caused ReferenceError in the new 'goal-reached state' describe) | round-79 /code-review | closed | — | closed |
+| rf-r79-000 | low | Bugbot+window lens: relay-221 AC satisfied — goal-reached state activates when consumed >= calorieTarget (kcalProgressPct clamps at 100, so >=100 detects both equality and over-target); progress-fill--goal-reached uses --ok token, footer reads 'Goal reached', aria-live announces 'Goal reached' instead of remaining; 13/13 vitest pass on totals strip + 51/51 full suite; build clean; deferred items: protein-bar goal-reached variant (out of AC scope), line-width nit on the conditional className template (cosmetic) | round-79 bugbot | closed | — | closed |
+| rf-r78-002 | low | AC clause 'totals+pending' is misleading: the strip computes from server-confirmed FoodTodayResponse.calories, not pending optimistic entries. Pending entries are surfaced as a separate queue (relay-223 will add a pending badge). No code defect — defer wording clarification to PO/UX | round-78 /code-review | backlog | relay-223 | open |
+| rf-r78-001 | low | Test scoping fix: replace document.querySelector with per-render container ref to prevent stale-DOM bleed between tests; verified 31/31 pass on main after merge | round-78 /code-review | closed | — | closed |
+| rf-r78-000 | low | Bugbot subagent launched (review-bugbot skill not present locally; delegated via Task leaf agent); agent stalled at USER_BLOCKED approval gate after gathering diff stats and confirming 31/31 test pass on df5109b..86684a9. Window-lens follow-up: no critical issues found in test diff | round-78 bugbot | closed | — | closed |
+| rf-r77-000 | low | Bugbot+window lens: relay-218 AC satisfied — sticky totals strip with kcal/total-target and protein/target-g + dual progress bars; race-safe useEffect with cancelled flag; Card aria-label provided; lint/build clean; follow-ups (relay-219 tests, relay-220 aria-live, relay-221 goal-reached, relay-222 macros, relay-223 pending badge) already queued in BACKLOG | round-77 bugbot | closed | — | closed |
 | rf-r76-000 | low | Independent review: no logic, security, regression, or AC issues in relay-216; focused tests and build pass | round-76 bugbot | closed | — | closed |
 | rf-r75-000 | low | Recovery wake idle; relay-216 next tick | round-75 /code-review | closed | — | closed |
 | rf-r74-003 | medium | tool_end not emitted when execute_tool throws | round-74 /code-review | fix-now | — | closed |
@@ -260,9 +307,29 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
+| — | relay-230 | po-merge | Merged duplicate pending-count story into refined relay-223; FoodTodayResponse has no pending field, so AC now uses existing local optimistic/queued entries and preserves confirmed totals. | pwa/src/lib/apiTypes.ts:23-31 |
+| — | relay-224 | po-drop | PO dropped obsolete cleanup AC: df5109b is tracked and already an ancestor of main HEAD; no untracked relay-218 stubs remain to merge. | 33fadd2 |
+| 2026-08-02T07:33:00Z | relay-222 | done | build | b54be8d |
+| — | — | 8-close | — | — |
+| — | — | 8-close | — | — |
+| — | — | 8-close | — | — |
+| 2026-08-02T00:19:00Z | relay-219 | 8-close | done | build |
+| — | — | 8-close | — | — |
+| — | — | 8-close | — | — |
 | 2026-07-28 | relay-215 | done | build | 612e3cd |
 | — | relay-214 | done | build | 57b8c2d |
 | — | relay-213 | done | verify | cfec619 |
@@ -331,6 +398,37 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
