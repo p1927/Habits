@@ -19,15 +19,15 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-08-02T12:16:00Z` |
+| last_wake | `2026-08-02T13:34:00Z` |
 | next_action | `select-next-relay-225-or-226` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | code_changed | `no` |
 | review_round | `82` |
 | last_reviewed_round | `81` |
 | worktree_status | `none` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `relay-223: pass pending count from LogTypeTabPanel to totals strip footer; muted badge reads N meals pending sync; filter queued only; include in aria-live announcement` |
 | execute_started | `yes` |
@@ -41,7 +41,10 @@
 | idle_rescue_done | `yes` |
 | current_item_id | `relay-223` |
 | finalize_status | `success` |
-| review_skip_reason | `relay-223 review round-81 complete; diff landed in main; no pending review work` |
+| review_skip_reason | `relay-223 review round-82 closed; close-out tick no product diff; state synced for next wake` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 
 ## IN_PROGRESS
 
