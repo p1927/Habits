@@ -132,3 +132,78 @@ describe('LogTypeTodayTotalsStrip — totals aggregation', () => {
     );
   });
 });
+
+describe('LogTypeTodayTotalsStrip — aria-live announcements', () => {
+  beforeEach(() => {
+    vi.mocked(api.getFoodTargets).mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function getLiveRegion(container: HTMLElement): HTMLElement | null {
+    return container.querySelector('[aria-live="polite"]');
+  }
+
+  it('renders an aria-live=polite region inside the strip', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={null} serverOnline={false} />,
+    );
+    const live = getLiveRegion(container);
+    expect(live).not.toBeNull();
+    expect(live?.getAttribute('aria-atomic')).toBe('true');
+  });
+
+  it('announces consumed kcal + protein with target denominator when set', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={true} />,
+    );
+
+    await waitFor(() => {
+      const live = getLiveRegion(container);
+      const text = live?.textContent ?? '';
+      expect(text).toContain('750 of 2000 kilocalories');
+      expect(text).toContain('45.0 of 120.0 grams protein');
+      expect(text).toContain('1250 kilocalories remaining');
+    });
+  });
+
+  it('announces "today" framing and drops denominator when target is null', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={false} />,
+    );
+    const live = getLiveRegion(container);
+    const text = live?.textContent ?? '';
+    expect(text).toContain('750 kilocalories');
+    expect(text).toContain('45.0 of 120.0 grams protein');
+    expect(text).not.toContain('remaining');
+    expect(text).not.toContain('of 2000');
+  });
+
+  it('announces "X kilocalories logged today" when target is set to 0', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 0,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+
+    const { container } = render(
+      <LogTypeTodayTotalsStrip data={baseData} serverOnline={true} />,
+    );
+
+    await waitFor(() => {
+      const live = getLiveRegion(container);
+      expect(live?.textContent ?? '').toContain('750 kilocalories');
+    });
+    const live = getLiveRegion(container);
+    expect(live?.textContent ?? '').not.toContain('remaining');
+    expect(live?.textContent ?? '').not.toContain('of 0');
+  });
+});

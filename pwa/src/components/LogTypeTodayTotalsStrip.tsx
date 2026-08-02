@@ -42,11 +42,32 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
   const remaining = kcalRemaining(consumed, calorieTarget);
   const hasCalorieTarget = calorieTarget != null && calorieTarget > 0;
 
+  // Build the spoken announcement once so screen readers get a clean summary
+  // on every change. We compute it eagerly (rather than as a memo) because
+  // `consumed`, `protein`, and the target-derived strings are all primitives.
+  const announceText = (() => {
+    const kcalPart = hasCalorieTarget
+      ? `${formatKcal(consumed)} of ${formatKcal(calorieTarget)} kilocalories`
+      : `${formatKcal(consumed)} kilocalories`;
+    const proteinPart =
+      proteinTarget != null
+        ? `${formatGrams(protein)} of ${formatGrams(proteinTarget)} grams protein`
+        : `${formatGrams(protein)} grams protein`;
+    const remainingPart =
+      hasCalorieTarget && remaining != null
+        ? `${formatKcal(remaining)} kilocalories remaining`
+        : '';
+    return [kcalPart, proteinPart, remainingPart].filter(Boolean).join('. ');
+  })();
+
   return (
     <Card
       className="log-type-totals-strip home-export-card--health"
       ariaLabel="Today's calorie and protein totals"
     >
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {announceText}
+      </div>
       <p className="section-eyebrow">Today</p>
       <div className="progress-label">
         <span>Calories</span>
