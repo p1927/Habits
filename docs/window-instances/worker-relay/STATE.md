@@ -20,28 +20,30 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-07-28T13:37:19Z` |
-| next_action | `relay-216 next` |
+| next_action | `relay-221 next (Log today totals strip goal-reached state)` |
 | phase | `9-arm` |
 | review_status | `done` |
-| review_diff_range | `uncommitted` |
+| review_diff_range | `committed` |
 | code_changed | `yes` |
-| review_round | `76` |
+| review_round | `77` |
 | last_reviewed_round | `76` |
-| worktree_status | `none` |
-| review_fingerprint | `200ad4fd6855abfe` |
+| worktree_status | `active` |
+| review_fingerprint | `ffe9305` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `no` |
 | brainstorm_outcome | `—` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `bc22e9c` |
+| commit_hash | `ffe9305` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_skip_reason | `Recovery nested wake; relay-216 deferred to next tick` |
-| review_changed_files | `pwa/package-lock.json pwa/src/components/AppTabContent.tsx pwa/src/components/HomeActivityRingsCard.tsx pwa/src/components/HomeDashboardMetricsPanels.tsx pwa/src/hooks/useAppShell.ts pwa/src/hooks/useAppShellNavigation.ts pwa/src/hooks/useHomeSection.ts pwa/src/lib/homeDashboardPanelsTypes.ts pwa/src/sections/Home.tsx` |
+| review_changed_files | `pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx` |
 
+| current_item_id | `relay-220` |
+| finalize_status | `success` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -131,8 +133,12 @@
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r77-000 | low | round-77 bugbot: bugbot skipped (review-bugbot skill not present locally); window-lens review only | round-77 bugbot | closed | — | closed |
+| rf-r77-001 | low | No critical issues in relay-220 aria-live diff: role=status + aria-live=polite + aria-atomic=true on .sr-only div matches SwipeStack precedent; announceText IIFE builds clean kcal/protein/remaining summary; 4 new tests cover null/target-set/target-null/target=0; lint 0 errors on changed files; build clean | round-77 window-lens | closed | — | closed |
 | rf-r76-000 | low | Independent review: no logic, security, regression, or AC issues in relay-216; focused tests and build pass | round-76 bugbot | closed | — | closed |
 | rf-r75-000 | low | Recovery wake idle; relay-216 next tick | round-75 /code-review | closed | — | closed |
 | rf-r74-003 | medium | tool_end not emitted when execute_tool throws | round-74 /code-review | fix-now | — | closed |
@@ -258,9 +264,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
 | 2026-07-28 | relay-215 | done | build | 612e3cd |
 | — | relay-214 | done | build | 57b8c2d |
 | — | relay-213 | done | verify | cfec619 |
@@ -329,6 +337,8 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
 
 
 
