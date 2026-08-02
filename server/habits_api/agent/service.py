@@ -46,6 +46,72 @@ def _ensure_tool_call_ids(tool_calls: list[dict[str, Any]]) -> list[dict[str, An
     return tool_calls
 
 
+async def _run_single_tool(
+    tc: dict[str, Any],
+    settings: Settings,
+    db: TokenDB,
+) -> tuple[dict, dict[str, Any]]:
+    """Parse one tool_call and execute it; return (tool_result, tool_message).
+
+    Shared by the sync POST loop (chat) and the SSE streaming loop (chat_stream).
+    """
+    fn = tc.get("function") or {}
+    name = fn.get("name", "")
+    try:
+        args = json.loads(fn.get("arguments") or "{}")
+    except json.JSONDecodeError:
+        args = {}
+    result = await execute_tool(settings, db, name, args)
+    return (
+        {"tool": name, "args": args, "result": result},
+        {
+            "role": "tool",
+            "tool_call_id": tc["id"],
+            "content": json.dumps(result),
+        },
+    )
+
+
+async def _process_tool_calls(
+    tool_calls: list[dict[str, Any]],
+    settings: Settings,
+    db: TokenDB,
+) -> tuple[list[dict], list[dict[str, Any]]]:
+    """Run ``_run_single_tool`` over each call. Sync POST loop variant."""
+    results: list[dict] = []
+    messages: list[dict[str, Any]] = []
+    for tc in tool_calls:
+        tr, tm = await _run_single_tool(tc, settings, db)
+        results.append(tr)
+        messages.append(tm)
+    return results, messages
+
+
+async def _stream_tool_calls(
+    tool_calls: list[dict[str, Any]],
+    settings: Settings,
+    db: TokenDB,
+):
+    """Yield ``tool_start`` / ``tool_end`` SSE events around each tool run.
+
+    Last yield is a ``("done", results, messages)`` tuple the caller appends
+    to the conversation.
+    """
+    results: list[dict] = []
+    messages: list[dict[str, Any]] = []
+    for tc in tool_calls:
+        fn = tc.get("function") or {}
+        name = fn.get("name", "")
+        yield _sse_event("tool_start", {"tool": name})
+        try:
+            tr, tm = await _run_single_tool(tc, settings, db)
+        finally:
+            yield _sse_event("tool_end", {"tool": name})
+        results.append(tr)
+        messages.append(tm)
+    yield ("done", results, messages)
+
+
 async def chat(
     settings: Settings,
     db: TokenDB,
@@ -94,20 +160,11 @@ async def chat(
             break
 
         messages.append(msg)
-        for tc in tool_calls:
-            fn = tc.get("function") or {}
-            name = fn.get("name", "")
-            try:
-                args = json.loads(fn.get("arguments") or "{}")
-            except json.JSONDecodeError:
-                args = {}
-            result = await execute_tool(settings, db, name, args)
-            tool_results.append({"tool": name, "args": args, "result": result})
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tc["id"],
-                "content": json.dumps(result),
-            })
+        round_results, round_messages = await _process_tool_calls(
+            tool_calls, settings, db,
+        )
+        tool_results.extend(round_results)
+        messages.extend(round_messages)
 
     return {"reply": reply, "tool_results": tool_results, "context": context}
 
@@ -229,23 +286,13 @@ async def chat_stream(
             break
 
         messages.append(assistant_msg)
-        for tc in tool_calls:
-            fn = tc.get("function") or {}
-            name = fn.get("name", "")
-            try:
-                args = json.loads(fn.get("arguments") or "{}")
-            except json.JSONDecodeError:
-                args = {}
-            yield _sse_event("tool_start", {"tool": name})
-            try:
-                result = await execute_tool(settings, db, name, args)
-            finally:
-                yield _sse_event("tool_end", {"tool": name})
-            tool_results.append({"tool": name, "args": args, "result": result})
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tc["id"],
-                "content": json.dumps(result),
-            })
+
+        async for item in _stream_tool_calls(tool_calls, settings, db):
+            if isinstance(item, str):
+                yield item
+                continue
+            _, round_results, round_messages = item
+            tool_results.extend(round_results)
+            messages.extend(round_messages)
 
     yield _sse_event("done", {"reply": reply or "Done.", "tool_results": tool_results})
