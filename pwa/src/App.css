@@ -3604,6 +3604,15 @@ form.log-type-card {
   margin-bottom: 0.5rem;
 }
 
+.log-type-totals-strip .progress-fill--goal-reached {
+  background: var(--ok);
+}
+
+.log-type-totals-strip__footer--goal-reached {
+  color: var(--ok);
+  font-weight: 600;
+}
+
 .log-type-totals-strip__protein {
   margin-top: 0.25rem;
 }

@@ -41,6 +41,11 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
   const proteinPct = proteinProgressPct(protein, proteinTarget);
   const remaining = kcalRemaining(consumed, calorieTarget);
   const hasCalorieTarget = calorieTarget != null && calorieTarget > 0;
+  // kcalProgressPct already clamps at 100 — reuse it to detect goal reached
+  // (consumed >= target when target is set). At 100% we promote the strip to a
+  // "goal reached" variant: green fill and a footer that no longer talks about
+  // remaining calories.
+  const goalReached = hasCalorieTarget && kcalPct >= 100;
 
   // Build the spoken announcement once so screen readers get a clean summary
   // on every change. We compute it eagerly (rather than as a memo) because
@@ -53,8 +58,9 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
       proteinTarget != null
         ? `${formatGrams(protein)} of ${formatGrams(proteinTarget)} grams protein`
         : `${formatGrams(protein)} grams protein`;
-    const remainingPart =
-      hasCalorieTarget && remaining != null
+    const remainingPart = goalReached
+      ? 'Goal reached'
+      : hasCalorieTarget && remaining != null
         ? `${formatKcal(remaining)} kilocalories remaining`
         : '';
     return [kcalPart, proteinPart, remainingPart].filter(Boolean).join('. ');
@@ -77,7 +83,7 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
       </div>
       <div className="progress-bar" aria-hidden="true">
         <div
-          className="progress-fill"
+          className={`progress-fill${goalReached ? ' progress-fill--goal-reached' : ''}`}
           style={{ width: hasCalorieTarget ? `${kcalPct}%` : '0%' }}
         />
       </div>
@@ -90,12 +96,14 @@ export function LogTypeTodayTotalsStrip({ data, serverOnline }: LogTypeTodayTota
       <div className="progress-bar progress-bar--thin" aria-hidden="true">
         <div className="progress-fill" style={{ width: `${proteinPct}%` }} />
       </div>
-      <p className="muted macro-line log-type-totals-strip__footer">
-        {hasCalorieTarget && remaining != null
-          ? `${formatKcal(remaining)} kcal remaining`
-          : data?.calories != null
-            ? `${formatKcal(data.calories)} kcal today`
-            : '—'}
+      <p className={`muted macro-line log-type-totals-strip__footer${goalReached ? ' log-type-totals-strip__footer--goal-reached' : ''}`}>
+        {goalReached
+          ? 'Goal reached'
+          : hasCalorieTarget && remaining != null
+            ? `${formatKcal(remaining)} kcal remaining`
+            : data?.calories != null
+              ? `${formatKcal(data.calories)} kcal today`
+              : '—'}
       </p>
     </Card>
   );

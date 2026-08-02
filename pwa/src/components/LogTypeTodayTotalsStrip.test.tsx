@@ -35,6 +35,13 @@ function getStripText(container: HTMLElement) {
   return strip ? strip.textContent || '' : '';
 }
 
+// Resolve the first aria-live region inside THIS container — not the global
+// screen, which can hold leftover nodes from earlier test renders and return
+// stale textContent.
+function getLiveRegion(container: HTMLElement): HTMLElement | null {
+  return container.querySelector('[aria-live="polite"]');
+}
+
 describe('LogTypeTodayTotalsStrip — totals aggregation', () => {
   beforeEach(() => {
     vi.mocked(api.getFoodTargets).mockReset();
@@ -142,10 +149,6 @@ describe('LogTypeTodayTotalsStrip — aria-live announcements', () => {
     vi.clearAllMocks();
   });
 
-  function getLiveRegion(container: HTMLElement): HTMLElement | null {
-    return container.querySelector('[aria-live="polite"]');
-  }
-
   it('renders an aria-live=polite region inside the strip', () => {
     const { container } = render(
       <LogTypeTodayTotalsStrip data={null} serverOnline={false} />,
@@ -205,5 +208,102 @@ describe('LogTypeTodayTotalsStrip — aria-live announcements', () => {
     const live = getLiveRegion(container);
     expect(live?.textContent ?? '').not.toContain('remaining');
     expect(live?.textContent ?? '').not.toContain('of 0');
+  });
+});
+
+describe('LogTypeTodayTotalsStrip — goal-reached state', () => {
+  beforeEach(() => {
+    vi.mocked(api.getFoodTargets).mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('applies goal-reached fill class and "Goal reached" footer when consumption meets target', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+
+    const { container } = render(
+      <LogTypeTodayTotalsStrip
+        data={{ ...baseData, calories: 2000 }}
+        serverOnline={true}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getStripText(container)).toContain('2000 kcal / 2000');
+    });
+    const fill = container.querySelector('.progress-fill--goal-reached');
+    expect(fill).not.toBeNull();
+    expect((fill as HTMLElement).style.width).toBe('100%');
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      'Goal reached',
+    );
+    expect(container.querySelector('.log-type-totals-strip__footer--goal-reached')).not.toBeNull();
+  });
+
+  it('clamps fill to 100% and switches to goal-reached when consumption exceeds target', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+
+    const { container } = render(
+      <LogTypeTodayTotalsStrip
+        data={{ ...baseData, calories: 2500 }}
+        serverOnline={true}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getStripText(container)).toContain('2500 kcal / 2000');
+    });
+    const fill = container.querySelector('.progress-fill--goal-reached');
+    expect(fill).not.toBeNull();
+    expect((fill as HTMLElement).style.width).toBe('100%');
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      'Goal reached',
+    );
+  });
+
+  it('does NOT show goal-reached when target is unset, even with high consumption', () => {
+    const { container } = render(
+      <LogTypeTodayTotalsStrip
+        data={{ ...baseData, calories: 5000 }}
+        serverOnline={false}
+      />,
+    );
+    expect(container.querySelector('.progress-fill--goal-reached')).toBeNull();
+    expect(container.querySelector('.log-type-totals-strip__footer')?.textContent).toBe(
+      '5000 kcal today',
+    );
+  });
+
+  it('aria-live announces "Goal reached" instead of remaining when target is met', async () => {
+    vi.mocked(api.getFoodTargets).mockResolvedValue({
+      calorie_target: 2000,
+      protein_target_g: 120,
+      sheets_connected: true,
+    });
+
+    const { container } = render(
+      <LogTypeTodayTotalsStrip
+        data={{ ...baseData, calories: 2000 }}
+        serverOnline={true}
+      />,
+    );
+
+    await waitFor(() => {
+      const live = getLiveRegion(container);
+      const text = live?.textContent ?? '';
+      expect(text).toContain('2000 of 2000 kilocalories');
+      expect(text).toContain('Goal reached');
+      expect(text).not.toContain('remaining');
+    });
   });
 });
