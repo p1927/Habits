@@ -1,5 +1,5 @@
 import { get, request } from './apiClient';
-import type { HealthResponse, SettingsResponse } from './apiTypes';
+import type { GoogleStatusResponse, HealthResponse, SettingsResponse } from './apiTypes';
 
 export const settingsApi = {
   health: () => get<HealthResponse>('/healthz'),
@@ -9,6 +9,7 @@ export const settingsApi = {
       method: 'PUT',
       body: JSON.stringify(payload),
     }),
+  getGoogleStatus: () => get<GoogleStatusResponse>('/auth/google/status'),
   disconnectGoogle: () =>
     request<{ ok: boolean }>('/auth/google', { method: 'DELETE' }),
 };

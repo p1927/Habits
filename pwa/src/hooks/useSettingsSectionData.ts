@@ -14,6 +14,7 @@ export function useSettingsSectionData({
   const [error, setError] = useState('');
   const [disconnectSuccess, setDisconnectSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [googleScopes, setGoogleScopes] = useState<string[]>([]);
 
   useEffect(() => {
     if (!serverOnline || !getBearer()) return;
@@ -26,6 +27,20 @@ export function useSettingsSectionData({
         setDisconnectSuccess(false);
         setError(e.message);
       });
+  }, [serverOnline, googleConnected]);
+
+  // ui-069: re-fetch granted OAuth scopes whenever the connection state
+  // flips (post-OAuth return, post-disconnect). The list is what powers the
+  // "Not granted" pills on the Google card.
+  useEffect(() => {
+    if (!serverOnline || !getBearer()) {
+      setGoogleScopes([]);
+      return;
+    }
+    api
+      .getGoogleStatus()
+      .then((s) => setGoogleScopes(s.google_scopes ?? []))
+      .catch(() => setGoogleScopes([]));
   }, [serverOnline, googleConnected]);
 
   const saveBearer = useCallback(async () => {
@@ -67,6 +82,7 @@ export function useSettingsSectionData({
       onBearerSaved?.();
       setSettings((s) => (s ? { ...s, sheets_connected: false } : s));
       setError('');
+      setGoogleScopes([]);
       setDisconnectSuccess(true);
     } catch (e) {
       setDisconnectSuccess(false);
@@ -113,6 +129,7 @@ export function useSettingsSectionData({
     disconnectSuccess,
     dismissDisconnectSuccess,
     saving,
+    googleScopes,
     saveBearer,
     saveSettings,
     disconnectGoogle,

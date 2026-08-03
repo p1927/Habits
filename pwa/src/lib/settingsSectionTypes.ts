@@ -26,6 +26,7 @@ export interface SettingsSectionCardsProps {
   remindersEnabled: boolean;
   notifyPermission: NotificationPermission | 'unsupported';
   authUrl: string | null;
+  googleScopes: string[];
   saveBearer: () => Promise<void>;
   saveSettings: () => Promise<void>;
   disconnectGoogle: () => Promise<void>;
