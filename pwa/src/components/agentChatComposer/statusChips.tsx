@@ -21,10 +21,20 @@ export function AgentComposerStatusChips({
   const chips = toolLabels.length > 0 ? toolLabels : loading ? ['Working…'] : [];
   if (chips.length === 0) return null;
   return (
-    <div className="agent-tool-status" role="status" aria-live="polite" aria-label="Coach activity">
+    <div
+      className="agent-tool-status"
+      role="status"
+      aria-live="polite"
+      aria-busy={loading}
+      aria-label="Coach activity"
+    >
       {chips.map((label, i) => (
-        <span key={`${label}-${i}`} className="agent-tool-status__chip">
-          {label}
+        <span
+          key={`${label}-${i}`}
+          className={`agent-tool-status__chip${loading ? ' agent-tool-status__chip--active' : ''}`}
+        >
+          <span className="agent-tool-status__dot" aria-hidden="true" />
+          <span className="agent-tool-status__label">{label}</span>
         </span>
       ))}
     </div>
