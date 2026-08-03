@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-07-28T15:05:00Z |
-| where_we_are | ui-065 shipped — Agent tools auto-send (crit-034) |
-| confirmed_next | ui-066 crit-002 tool status chips; crit backlog triage |
+| reviewed_at | 2026-08-03T09:30:00Z |
+| where_we_are | ui-066 shipped — composer dock tool status chips (aria-busy + pulse dot, Bugbot r24 fixes) |
+| confirmed_next | ui-067 integration test (Bugbot r24-003 deferred) |
 
 ---
 
@@ -18,36 +18,36 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-07-28T15:05:00Z` |
+| last_wake | `2026-08-03T09:30:00Z` |
 | next_mode | `C` |
-| current_item_id | `ui-065` |
+| current_item_id | `ui-066` |
 | phase | `9-arm` |
-| review_status | `pending` |
+| review_status | `done` |
 | review_skip_reason | `—` |
 | review_round | `24` |
-| last_reviewed_round | `23` |
-| review_diff_range | `uncommitted` |
+| last_reviewed_round | `24` |
+| review_diff_range | `main...f0d06f9` |
 | code_changed | `yes` |
-| confirmed_next | `ui-066 crit-002 tool status chips next` |
+| confirmed_next | `ui-067 integration test next` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/agentChatComposer/statusChips.tsx pwa/src/styles/agent-gemini.css` |
-| review_fingerprint | `b2f32cec339cfa51` |
+| review_changed_files | `pwa/src/components/agentChatComposer/statusChips.tsx,pwa/src/styles/agent-gemini.css,pwa/src/components/agentChatComposer/statusChips.test.tsx` |
+| review_fingerprint | `f0d06f9-ui-066` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ui-065 — crit-034 sendPrompt on tool tap; crit-002 agreed ui-066` |
+| brainstorm_outcome | `ui-066 crit-002 aria-busy + pulse dot; Bugbot r24 1 fix-now + 2 fix-now + 1 backlog; ui-067 queued` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `cfec619` |
+| commit_hash | `f0d06f9` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `sendPrompt on tool row tap + disabled rows loading/offline/scanning` |
-| design_mitigations | `Tools button enabled offline; offline banner in sheet; mirror greeting disable matrix` |
+| design_chosen_approach | `aria-busy={loading} + .agent-tool-status__chip--active gates pulse animation; wrapper aria-live=polite announces joined chip text` |
+| design_mitigations | `Pulse only animates while loading=true; reduced-motion disables animation; chips without --active class retain static dot at opacity 0.85` |
 
 ## IN_PROGRESS
 
@@ -66,6 +66,7 @@
 | ui-063 | Log swipe fly-off | A: CSS-only exit class; B: hook exit state + rAF two-frame commit; C: spring library | B: minimal deps, works for drag+buttons, promotes pseudo-stack | B rAF exit + SWIPE_EXIT_TRANSFORMS | reduced-motion instant; disable circles while exiting | Tinder dev.to gone class + CodeFronts deck |
 | ui-064 | Log swipe velocity + aria-live | A: velocity only; B: velocity + aria-live onCommit; C: full dev.to pointer history | B: meets crit-020 AC; reuses commit path; sr-only live region | B SWIPE_VELOCITY_COMMIT + onCommit callback | announce at commit start not onSwipe delay | dev.to flick velocity 0.6px/ms |
 | ui-065 | Agent Tools auto-send | A: sendPrompt in sheet only; B: sendPrompt + disable loading/offline/scanning; C: keep setInput + Send CTA | B: matches ui-062 greeting + crit-034 AC; minimal diff; offline browse | B sendPrompt on row tap + rowsDisabled matrix | toolsLoading includes scanning; offline banner in sheet | Gemini Tools actionable rows |
+| ui-066 | Agent tool status chips | A: aria-busy + animated dot per chip + per-chip aria-label; B: aria-busy + dot only on .agent-tool-status__chip--active (loading=true) + wrapper aria-live announces joined text; C: leave static chips | B: matches crit-002 AC, animation gated to loading only, AT-friendly (wrapper live region > generic span aria-label) | B aria-busy + .agent-tool-status__chip--active gating + wrapper aria-live | Bugbot r24-001/002 fixed; prefers-reduced-motion disables pulse; stale toolStatusLabels render without --active | Gemini Tools status strip 9to5google 2025-09-15 |
 
 ---
 
@@ -120,7 +121,7 @@
 | crit-058 | proposed | element-only | returning user | 4 | Day (schedule grid) → Day (event sheet) | Timed events on Day grid render full-width absolute blocks — overlapping meetings stack with clipped titles; zero overlap/conflict detection in day code | layoutOverlappingEvents assigns column index + count; DayScheduleGridBody renders side-by-side columns with width/left %; optional Overlaps chip on agenda rows; min 44px tap width at 390px; overlap intervals use eventDurationMinutes 60min default when end absent | Given returning user on Day grid at 390px with two events 10:00–11:00 overlapping, When grid renders, Then both event titles visible in side-by-side columns within 1s. Given three overlapping events, When grid renders, Then each column ≥33% width and tappable. Given user taps overlapped block, When sheet opens, Then correct event detail shown. Given same conflict on Schedule agenda, When list renders, Then Overlaps chip visible on conflicting rows. Given timed event without end ISO, When overlap calc runs, Then duration defaults to 60min per dayCalendarUtils L27 | pwa/src/components/DayScheduleGridBody.tsx L74-105; pwa/src/lib/dayCalendarUtils.ts L14-28; pwa/src/App.css L4083-4086; pwa/src/components/DayTimelineAgendaPanel.tsx L24-44; support.google.com/calendar/answer/6110849 | complements crit-003 crit-036 crit-048 ui-061 | — |
 | crit-057 | proposed | journey-capture-thought | knowledge worker | 4 | Cards (filter tab) → Cards (capture sheet) | User on Strategy filter tab taps FAB but CardsCreateSheet opens with Notes type pre-selected — filter and newType state disconnected; user must change dropdown before save then crit-042 filter sync fires | openFab syncs newType from active filter when !== all; type chip row with Saving as {Type} context replaces dropdown; All tab uses sessionStorage lastCardsCaptureType; persist lastCardsCaptureType on handleCreate success; type inherits at FAB open only (no re-sync if filter changes while sheet open) | Given knowledge worker on Cards at 390px with Strategy filter active, When user taps FAB, Then create sheet shows Strategy type pre-selected within 300ms without manual dropdown change. Given Sickness filter active, When sheet opens, Then Saving as Sickness context visible and type chip selected. Given All filter and prior Strategy save, When FAB opens, Then last used type Strategy pre-selected from sessionStorage. Given user saves any note type, When handleCreate succeeds, Then sessionStorage lastCardsCaptureType updates to saved type. Given create sheet open, When user switches filter tab without closing sheet, Then newType unchanged until sheet closes and FAB reopens | pwa/src/sections/Cards.tsx L19 L22 L52-64 L105-107; pwa/src/components/CardsCreateSheet.tsx L31-37; pwa/src/components/CardsFilterBar.tsx L46-63; support.google.com/keep/answer/16914649 label inherit | complements crit-010 crit-042 | — |
 | crit-001 | proposed | journey-first-log | first-week user | 4 | Home → Log (Scan) → Home | Home shows empty Activity rings at 0 kcal/0g protein with Share PNG only; no path to first log from Home | Empty rings panel with Revolut-style "Log your first meal" CTA opening Log Scan; on return Home after first log, rings animate fill + aria-live "Calorie ring updated" | Given first-week user on Home at 390px with zero food logged today, When rings card visible, Then primary CTA "Log your first meal" appears below rings within 2s and opens Log Scan tab. Given user completes first swipe-log on Scan, When navigating to Home, Then calorie ring shows non-zero progress and aria-live announces update within 1s | pwa/src/components/HomeActivityRingsCard.tsx L29-51; pwa/src/hooks/useAppShellNavigation.ts L44-54; 9to5mac Apple Health iOS 26.4 unified daily logging | — | — |
-| crit-002 | agreed | element-only | returning user | 4 | Agent (composer dock) | Coach streaming shows StreamingDots in chat scroll only; tool_results arrive on SSE done; AgentActionFeed lives below fold — no Gemini-style live status above composer | Horizontal tool-status chip strip inside agent-composer-dock during loading (e.g. "Logging food…", "Checking calendar…"); chips clear on stream done; aria-live polite | Given user sends Agent message at 390px, When coach is streaming or executing tools, Then ≥1 status chip visible above composer bar within 1s without scrolling. Given stream completes, When done event fires, Then chips dismiss within 500ms and tool outcomes remain in AgentActionFeed | pwa/src/components/AgentChatComposer.tsx L39-115; pwa/src/lib/agentChatStream.ts L75-78; 9to5google.com/2025/09/15/gemini-tools-redesign | relay-* SSE tool_start events (optional v2) | agreed → ui-066 |
+| crit-002 | shipped | element-only | returning user | 4 | Agent (composer dock) | Coach streaming shows StreamingDots in chat scroll only; tool_results arrive on SSE done; AgentActionFeed lives below fold — no Gemini-style live status above composer | Horizontal tool-status chip strip inside agent-composer-dock during loading (e.g. "Logging food…", "Checking calendar…"); chips clear on stream done; aria-live polite | Given user sends Agent message at 390px, When coach is streaming or executing tools, Then ≥1 status chip visible above composer bar within 1s without scrolling. Given stream completes, When done event fires, Then chips dismiss within 500ms and tool outcomes remain in AgentActionFeed | pwa/src/components/AgentChatComposer.tsx L39-115; pwa/src/lib/agentChatStream.ts L75-78; 9to5google.com/2025/09/15/gemini-tools-redesign | relay-* SSE tool_start events (optional v2) | shipped ui-066 |
 | crit-006 | proposed | journey-daily-checkin | returning user | 4 | Home → Day → Agent | Morning Home shows rings/macros only — fetchHomeDashboardData excludes calendar; no next-event preview; Coach nudge exists only on Day empty panel | Home "Today" strip below rings: next event time+title OR "Nothing scheduled" + "Open Day" pill + "Ask Coach" chip (prefill AGENT_SCHEDULE_TODAY_PROMPT) | Given returning user opens Home at 390px after login, When dashboard loaded, Then Today strip shows next calendar event OR empty copy within 2s without switching tabs. Given empty schedule strip, When user taps Ask Coach, Then Agent tab opens with schedule prompt prefilled | pwa/src/lib/homeDashboardFetch.ts L29-38; pwa/src/components/AppTabContent.tsx L54-62; support.google.com/gemini/answer/17077455 Daily Brief | relay-* calendar on Home fetch (or extend homeDashboardFetch) | — |
 | crit-003 | shipped | element-only | returning user | 4 | Day (schedule grid) | Day grid renders now line (ui-028) inside capped scroll container but never scrolls to it; user lands at 6am top when opening afternoon; DayWeekStrip pills are non-interactive divs | On Day grid mount, scroll .schedule-grid-scroll so now line is centered; show floating "Jump to now" chip when user scrolls away and now line leaves viewport | Given user opens Day tab at 390px with day grid view during business hours, When grid renders, Then current-time indicator is visible within 1s without manual scroll. Given user scrolls away from now line, When now line off-screen, Then "Jump to now" control appears and recenters on tap | pwa/src/components/DayScheduleGrid.tsx; support.google.com/calendar/answer/6076199 | — | shipped ui-061 |
 | crit-007 | proposed | journey-scan-quick | busy professional | 4 | Log (scan overlay) → Log (undo toast) | Scan inline overlay clears photo on swipe-log before undo window; undo restores scanResult only — user returns to card-only confirm without captured image | Persist scanPreviewUrl in undo entry; on Undo restore full ScanInlineOverlay state; optionally defer clearScanFlow until toast dismisses | Given user captures food at 390px and swipes Log by mistake, When Undo tapped within 5s, Then inline photo overlay with OCR card reappears (same as pre-log). Given undo toast visible, When user has not dismissed, Then captured photo remains in DOM until timeout or undo | pwa/src/hooks/useLogFoodScan.ts L88-98; pwa/src/hooks/useLogFoodUndoRestore.ts L35-42; pwa/src/components/UndoToast.tsx L11-16; timgraf.com forgiveness 5s undo toast | — | — |
@@ -195,6 +196,7 @@
 | ux-gap-044 | po-agreed | Global nav | Main tab ⌘1–5 shortcuts + dismissible hint (ui-057) | Gemini keyboard hints | shipped ui-057 |
 | ux-gap-045 | po-agreed | Settings | Disconnect success banner + aria-live on Settings error (prop-ui-044) | Revolut Settings | shipped ui-058 |
 | ux-gap-046 | po-agreed | Agent | relay-200 restored 2x2 greeting grid (supersedes ui-059 wrap pills) — compact card density, hover/disabled affordance, Gemini subline at 390px | Gemini Android Nov2025 | prop-ui-046 refined → ui-060 |
+| ux-gap-047 | po-agreed | Agent | crit-002 composer dock tool status chips — aria-busy + pulse dot shipped (ui-066); integration test deferred to ui-067 | Gemini Tools 9to5google 2025-09-15 | shipped ui-066 |
 
 **Status values:** `ux-proposed` → PO reviews | `po-agreed` → PO added `UI_PROPOSALS` row | `po-rejected` → reason in `po_response`
 
@@ -204,7 +206,6 @@
 
 ## UI_POLISH_BACKLOG (Mode C — agreed items only)
 
-- [x] ui-056 | **Home pull-refresh + Day empty:** UIRefreshControl ring indicator + Revolut empty schedule panel | P3 | done 2026-07-27 — Round 11 ring SVG + empty panel
 - [x] ui-057 | **App tab shortcuts:** ⌘1–5 nav + localStorage hint + conditional aria-keyshortcuts | P3 | done 2026-07-27 — prop-ui-042 logic verified
 - [x] ui-058 | **Settings OAuth UX:** disconnect success banner + aria-live error banner (prop-ui-044 / ux-gap-045) | P3 | done 2026-07-27
 - [x] ui-059 | **Agent starter chips:** Gemini wrap pills above composer, compact greeting (prop-ui-045) — superseded on main by relay-200 greeting grid; follow-up ux-gap-046 | P2 | done 2026-07-28
@@ -214,7 +215,8 @@
 - [x] ui-063 | **Log swipe fly-off:** Tinder commit animation before onSwipe (crit-005) | P2 | done 2026-07-28
 - [x] ui-064 | **Log swipe velocity + aria-live:** flick commit + screen reader announce (crit-020) | P2 | done 2026-07-28
 - [x] ui-065 | **Agent Tools auto-send:** sendPrompt on tool row tap (crit-034) | P2 | done 2026-07-28
-- [ ] ui-066 | **Agent tool status chips:** composer dock streaming status (crit-002) | P2 | agreed
+- [x] ui-066 | **Agent tool status chips:** composer dock streaming status + aria-busy + pulse dot (crit-002 / Bugbot r24) | P2 | done 2026-08-03
+- [ ] ui-067 | **Tool status chips integration test:** cover crit-002 lifecycle (dock render on loading → clear on onDone/onError/finally) — deferred from Bugbot r24-003 | P3 | backlog
 
 ---
 
@@ -230,6 +232,10 @@
 | ux-r23-005 | low | Duplicate offline banners section + sheet — acceptable | round-23 /code-review | closed | ui-065 | closed |
 | ux-r23-006 | low | sendPrompt orphan attachImage after tool send (pre-existing ux-r20-007) | round-23 /code-review | backlog | ui-062 | closed |
 | ux-r23-007 | low | Tool sheet close lacks composer focus return | round-23 /code-review | backlog | ui-065 | closed |
+| ux-r24-000 | low | Bugbot: aria-label on plain span + stale active class + missing integration coverage noted; aria-busy + pulse dot shipped at pwa/src/components/agentChatComposer/statusChips.tsx:24-29, pwa/src/styles/agent-gemini.css:332-376 | round-24 bugbot | closed | ui-066 | closed |
+| ux-r24-001 | medium | aria-label on plain <span> not reliably announced across SRs at pwa/src/components/agentChatComposer/statusChips.tsx:31-39 — dropped per-chip label, rely on wrapper aria-live | round-24 bugbot | fix-now | ui-066 | closed |
+| ux-r24-002 | low | Chip can render with stale toolStatusLabels + active class when loading=false at pwa/src/components/agentChatComposer/statusChips.tsx:31-39 — gated on loading=true via .agent-tool-status__chip--active at pwa/src/styles/agent-gemini.css:346-376 | round-24 bugbot | fix-now | ui-066 | closed |
+| ux-r24-003 | low | No integration test for crit-002 lifecycle (dock render + clear on stream done) at pwa/src/components/agentChatComposer/statusChips.test.tsx:10-92 — deferred to ui-067 | round-24 bugbot | backlog | ui-067 | open |
 | ux-r22-000 | low | Bugbot: no issues — velocity + aria-live pattern clean | round-22 bugbot | closed | ui-064 | closed |
 | ux-r22-001 | low | ui-064: SWIPE_VELOCITY_COMMIT 0.6 + aria-live onCommit; build pass | round-22 /code-review | closed | ui-064 | closed |
 | ux-r21-000 | low | Bugbot: no issues — fly-off commit pattern clean | round-21 bugbot | closed | ui-063 | closed |
@@ -301,6 +307,7 @@
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
 |-----------|------|------|---------|----------|--------|
+| 2026-08-03 | C | ui-066 | crit-002 — aria-busy={loading} + pulse dot (.agent-tool-status__chip--active); Bugbot r24 fixed aria-label span + stale active class; integration test deferred to ui-067 | build + 119 tests | f0d06f9 |
 | 2026-07-28 | C | ui-065 | crit-034 — tools sendPrompt on tap + disabled loading/offline/scanning | build | 9447113 |
 | 2026-07-28 | C | ui-064 | crit-020 — velocity flick commit + aria-live Log/Edit/Skip | build | 3c39376 |
 | 2026-07-28 | C | ui-063 | crit-005 — swipe fly-off 250ms spring + stack promote | build | f64d650 |
