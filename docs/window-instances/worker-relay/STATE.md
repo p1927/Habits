@@ -20,19 +20,19 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-03T09:34:15Z` |
-| next_action | `close-relay-225` |
-| phase | `8-close` |
+| next_action | `prepare-relay-225` |
+| phase | `3-select` |
 | review_status | `skipped` |
 | code_changed | `no` |
 | review_round | `83` |
 | last_reviewed_round | `83` |
 | worktree_status | `none` |
-| ritual_step | `9-arm` |
+| ritual_step | `3.3-worktree` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `relay-223: pass pending count from LogTypeTabPanel to totals strip footer; muted badge reads N meals pending sync; filter queued only; include in aria-live announcement` |
+| brainstorm_outcome | `relay-225 (empty-state fallback): verified retroactive — ch-patchwork-log-totals b2c4ee6 owns the implementation; classifyTotalsState() returns "empty" branch + viewmodel footerText carries "No meals` |
 | execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `b2c4ee6` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
