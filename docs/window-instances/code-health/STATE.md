@@ -22,14 +22,14 @@
 | phase | `8-close` |
 | last_wake | `2026-08-03T08:27:49Z` |
 | code_changed | `no` |
-| review_status | `triaged` |
+| review_status | `skipped` |
 | review_round | `30` |
 | last_reviewed_round | `30` |
 | worktree_status | `none` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md` |
-| review_fingerprint | `2b91e7074ac58d73` |
-| review_diff_range | `uncommitted` |
-| review_skip_reason | `ch-patchwork-log-totals state-classifier extract (main..HEAD diff = 2 files / 187 net new lines); 9 new tests; vitest 130/130; tsc/oxlint/vite green` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| review_diff_range | `none` |
+| review_skip_reason | `docs-only STATE sync; commit 21f502f captures all review rows (r27-window-001/002/003 + r30-000/001); vitest 135/135; vite green; oxlint 0 errors; no runtime diff in pwa/ server/ tools/cursor-loop/` |
 | ritual_step | `9` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-159 shipped: agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests; 55/55 server tests pass; ff-merge 1bee1c6` |
