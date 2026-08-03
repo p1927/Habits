@@ -85,9 +85,12 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    // ui-068 — body-first capture: require body, not title. The server derives
+    // a title from the first body line when title is empty/whitespace.
+    const body = newBody.trim();
+    if (!body) return;
     try {
-      const res = await api.createCard(newType, newTitle.trim(), newBody.trim());
+      const res = await api.createCard(newType, newTitle.trim(), body);
       setCards(res.cards);
       setFabOpen(false);
       setNewTitle('');

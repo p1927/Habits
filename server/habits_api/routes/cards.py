@@ -15,8 +15,8 @@ router = APIRouter()
 
 class CreateCardRequest(BaseModel):
     card_type: str = Field(pattern="^(sickness|notes|strategy)$")
-    title: str = Field(min_length=1)
-    body: str = ""
+    title: str = ""
+    body: str = Field(min_length=1)
 
 
 @router.get("/api/cards/sickness/timeline", dependencies=[Depends(require_bearer)])

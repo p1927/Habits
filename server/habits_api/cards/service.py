@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from habits_api.cards.derive_title import derive_card_title
 from habits_api.config import Settings
 from habits_api.db import TokenDB
 from habits_api.cards.sheet_loaders import (
@@ -42,13 +43,17 @@ async def create_card(
     title: str,
     body: str,
 ) -> dict:
+    # Body-first capture (ui-068 / crit-075 / prop-ui-048): delegate to a
+    # shared helper so PWA preview and the server agree on derived titles.
+    effective_title = derive_card_title(title, body)
+
     if card_type == "sickness":
         await append_rows(
             settings,
             db,
             settings.habits_sheet_nutrition,
             settings.habits_tab_sickness,
-            [[title, "", body, ""]],
+            [[effective_title, "", body, ""]],
         )
     elif card_type == "notes":
         await append_rows(
@@ -56,7 +61,7 @@ async def create_card(
             db,
             settings.habits_sheet_life,
             settings.habits_tab_notes,
-            [[title, "", body]],
+            [[effective_title, "", body]],
         )
     elif card_type == "strategy":
         await append_rows(
@@ -64,7 +69,7 @@ async def create_card(
             db,
             settings.habits_sheet_life,
             settings.habits_tab_strategy,
-            [[title, "", "", "", body, "", "", "", "", ""]],
+            [[effective_title, "", "", "", body, "", "", "", "", ""]],
         )
     else:
         raise ValueError(f"Unknown card type: {card_type}")
