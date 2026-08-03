@@ -44,10 +44,10 @@
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/AppTabContent.tsx pwa/src/components/LogTypeTabPanel.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/hooks/useLogSection.ts pwa/src/hooks/useLogTabPanelsProps.ts pwa/src/lib/logTabPanelsPropsBuilder.ts pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts pwa/src/lib/logTotalsCoachPrompt.test.ts pwa/src/lib/logTotalsCoachPrompt.ts pwa/src/lib/logTypeTotalsViewModel.ts pwa/src/lib/logTabPanelsProps.ts pwa/src/lib/logTabPanelPropPickers.ts pwa/src/sections/Agent.tsx pwa/src/sections/Log.tsx` |
-| review_fingerprint | `1f6cff36d0b10d4c` |
-| review_diff_range | `uncommitted` |
-| review_skip_reason | `Code shipped at d9bbda6; relay-231 closed; review_round=87 done (window-lens, no bugbot skill locally)` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| review_diff_range | `none` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
 
 ## IN_PROGRESS
 
