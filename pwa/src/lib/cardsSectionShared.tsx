@@ -4,6 +4,13 @@ export const CARDS_FILTERS = ['all', 'sickness', 'notes', 'strategy'] as const;
 
 export const CARDS_SHORTCUT_HINT_KEY = 'habits-cards-shortcuts-hint-seen';
 
+/**
+ * localStorage key for "dismissed" state of the bulk-select first-visit hint
+ * (ui-070 / crit-079). Mirrors CARDS_SHORTCUT_HINT_KEY so the same UX pattern
+ * (hint → dismiss → never show again) is used for both keyboard hints.
+ */
+export const CARDS_BULK_HINT_KEY = 'habits-cards-bulk-hint-seen';
+
 /** Long-press duration (ms) required to enter bulk-select mode on a card. */
 export const CARDS_BULK_LONG_PRESS_MS = 600;
 

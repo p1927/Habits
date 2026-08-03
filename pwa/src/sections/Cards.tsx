@@ -8,10 +8,12 @@ import { MealPlanSyncAwarenessSlot } from '../components/MealPlanSyncAwarenessSl
 import { UndoToast } from '../components/UndoToast';
 import { api, ApiError, type KeepCard, type SicknessTimelineEvent } from '../lib/api';
 import {
+  CARDS_BULK_HINT_KEY,
   filterCardsBySearch,
   type CardsFilter,
   type CardTypeOption,
 } from '../lib/cardsSectionShared';
+import { useCardsBulkShortcut } from '../hooks/useCardsBulkShortcut';
 import { useCardsFilterShortcuts } from '../hooks/useCardsFilterShortcuts';
 import type { MealPlanSyncSource } from '../lib/mealPlanQueue';
 
@@ -45,6 +47,23 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
   const [undoing, setUndoing] = useState(false);
 
   const { showShortcutHint, dismissShortcutHint } = useCardsFilterShortcuts(setFilter, fabOpen);
+
+  // ui-070 — bulk-select first-visit hint (mirrors useCardsFilterShortcuts pattern).
+  const [showBulkHint, setShowBulkHint] = useState(
+    () => localStorage.getItem(CARDS_BULK_HINT_KEY) !== '1',
+  );
+  const dismissBulkHint = useCallback(() => {
+    localStorage.setItem(CARDS_BULK_HINT_KEY, '1');
+    setShowBulkHint(false);
+  }, []);
+
+  const enterSelection = useCallback(() => {
+    setSelectionMode(true);
+    dismissBulkHint();
+  }, [dismissBulkHint]);
+
+  // ⌘/Ctrl+Shift+A enters selection; Escape exits (ui-070 / crit-079).
+  useCardsBulkShortcut(selectionMode, setSelectionMode, fabOpen);
 
   const exitSelection = useCallback(() => {
     setSelectionMode(false);
@@ -110,10 +129,14 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
     }
   }
 
-  const enterSelectionWith = useCallback((card: KeepCard) => {
-    setSelectionMode(true);
-    setSelectedIds(new Set([card.id]));
-  }, []);
+  const enterSelectionWith = useCallback(
+    (card: KeepCard) => {
+      setSelectionMode(true);
+      setSelectedIds(new Set([card.id]));
+      dismissBulkHint();
+    },
+    [dismissBulkHint],
+  );
 
   const toggleSelect = useCallback((card: KeepCard) => {
     setSelectedIds((prev) => {
@@ -244,6 +267,11 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
           onFilterChange={handleFilterChange}
           showShortcutHint={showShortcutHint}
           onDismissShortcutHint={dismissShortcutHint}
+          selectionMode={selectionMode}
+          hasCards={filtered.length > 0}
+          onEnterSelection={enterSelection}
+          showBulkHint={showBulkHint}
+          onDismissBulkHint={dismissBulkHint}
         />
       )}
 
