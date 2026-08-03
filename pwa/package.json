@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:journey": "vitest run src/__journey__/core-checkin.journey.test.tsx",
+    "test:all": "npm run test:journey && npm test"
   },
   "dependencies": {
     "@livekit/components-react": "^2.9.23",

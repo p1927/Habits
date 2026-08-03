@@ -42,6 +42,24 @@ bash tools/cursor-loop/scripts/prepare_review_tick.sh . \
   --apply
 ```
 
+**Journey test (mandatory for any `feat:` or `ui-` commit):**
+Run the end-to-end check-in journey so we know the user can actually
+get from Home through every main tab without crashing.
+
+```bash
+cd pwa && npm run test:journey
+```
+
+The journey test mounts `<App />` under jsdom, stubs the network,
+polyfills `matchMedia`, and walks Home -> Log -> Day -> Cards -> Home.
+A `feat:`/`ui-` commit that breaks this test is a regression even if
+every unit test still passes. Attach the journey-run output to the
+commit body in the form:
+
+```
+test:journey: 2 passed, 1.05s
+```
+
 Apply script output: set `code_changed`, increment `review_round` if yes, set `review_status=pending`, record `review_diff_range`.
 
 **API (if server touched):**
