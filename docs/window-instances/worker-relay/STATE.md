@@ -20,33 +20,34 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-02T13:34:00Z` |
-| next_action | `merge-worktree` |
-| phase | `9-arm` |
-| review_status | `pending` |
-| code_changed | `yes` |
+| next_action | `arm-relay-228` |
+| phase | `8-close` |
+| review_status | `skipped` |
+| code_changed | `no` |
 | review_round | `83` |
-| last_reviewed_round | `81` |
-| worktree_status | `active` |
+| last_reviewed_round | `83` |
+| worktree_status | `none` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `relay-223: pass pending count from LogTypeTabPanel to totals strip footer; muted badge reads N meals pending sync; filter queued only; include in aria-live announcement` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `ada4813` |
+| commit_hash | `b016797` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | idle_mode_triggered | `no` |
 | idle_rescue_done | `yes` |
-| current_item_id | `relay-226` |
+| current_item_id | `relay-227` |
 | finalize_status | `success` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-226` |
-| worktree_item_id | `relay-226` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 | review_changed_files | `pwa/src/App.css pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/components/ui/Card.tsx` |
-| review_fingerprint | `1512001654f5a397` |
-| review_diff_range | `uncommitted` |
+| review_fingerprint | `b016797` |
+| review_diff_range | `ff-merged` |
+| review_skip_reason | `relay-227 shipped (b016797); zero-finding review round-83 closed; ready for relay-228` |
 
 ## IN_PROGRESS
 
@@ -88,7 +89,6 @@
 
 
 
-- [x] relay-215 | Agent composer tool status chips during streaming | feature | Given Agent loading with tool_results pending, When streaming, Then status chips above composer per crit-002
 - [x] relay-216 | Home empty rings Log first meal CTA | feature | Given zero food logged today, When Home rings visible, Then primary CTA opens Log Scan per crit-001
 - [x] relay-218 | Log today kcal + protein totals strip | feature | Given Log tab Type sub-tab visible; When Today's log card renders; Then sticky totals strip above list shows kcal/total-target and protein/target-g with progress fraction
 - [x] relay-219 | Log today totals strip aggregation tests | refactor | Given FoodTodayResponse totals + pending optimistic entries; When totals strip computes kcal/protein; Then unit tests cover totals+pending, no data, and target-null cases
@@ -97,7 +97,7 @@
 - [x] relay-222 | Log today totals strip macro breakdown | feature | Given totals strip above today's list; When user taps the strip; Then expanded panel shows carbs/total-g and fat/total-g progress lines below protein (only renders if backend returns non-null macros)
 - [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
 - [ ] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
-- [ ] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
+- [x] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
 - [ ] relay-225 | Log today totals strip empty-state fallback | feature | Given no meals are logged today and the totals strip is visible; When the Log Type tab opens; Then the strip shows zeroed kcal/protein values, a clear ‘No meals logged yet’ message, and remains readable without implying progress
 - [ ] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
 - [x] relay-230 | Totals strip pending-sync count accuracy | feature | Given optimistic food entries are pending sync; When the totals strip renders; Then show the exact pending meal count and update it after sync or failure without hiding the underlying totals
@@ -329,9 +329,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
 | — | relay-230 | po-merge | Merged duplicate pending-count story into refined relay-223; FoodTodayResponse has no pending field, so AC now uses existing local optimistic/queued entries and preserves confirmed totals. | pwa/src/lib/apiTypes.ts:23-31 |
 | — | relay-224 | po-drop | PO dropped obsolete cleanup AC: df5109b is tracked and already an ancestor of main HEAD; no untracked relay-218 stubs remain to merge. | 33fadd2 |
