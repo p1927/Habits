@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 
 import { api } from '../lib/api';
-import type { FoodTodayResponse } from '../lib/api';
+import type { FoodHistoryDay, FoodTodayResponse } from '../lib/api';
 
 /**
  * Shared fixtures and helpers for the totals-strip test suite.
@@ -91,7 +91,63 @@ export async function mockTargetsUnauthorized(): Promise<void> {
 
 /** Reset all mocks — paired with `clearAllMocks` in afterEach. */
 export function resetTargetsMock(): void {
+  // restore the default mockResolvedValue so a test that runs after
+  // mockReset but before mockTargets(...) still renders cleanly.
   vi.mocked(api.getFoodTargets).mockReset();
+  vi.mocked(api.getFoodTargets).mockResolvedValue({
+    ...DEFAULT_TARGETS,
+  });
+}
+
+// -- food history mock helpers (relay-228) ---------------------------------
+
+/** A single history row with sensible defaults. */
+export interface FoodHistoryRow {
+  date: string;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+}
+
+/** Default response for getFoodHistory — empty history (yesterday missing). */
+const DEFAULT_HISTORY: { days: FoodHistoryDay[]; sheets_connected: boolean } = {
+  days: [],
+  sheets_connected: true,
+};
+
+/**
+ * Configure `api.getFoodHistory` to resolve with the supplied rows. The
+ * component filters out today's date locally; pass rows in any order —
+ * `today` is computed at test runtime so callers do not need to align.
+ */
+export function mockHistory(rows: FoodHistoryRow[]): void {
+  vi.mocked(api.getFoodHistory).mockResolvedValue({
+    days: rows.map((r) => ({
+      date: r.date,
+      calories: r.calories ?? 0,
+      carbs: r.carbs ?? 0,
+      protein: r.protein ?? 0,
+      fat: r.fat ?? 0,
+    })),
+    sheets_connected: true,
+  });
+}
+
+/** Configure `api.getFoodHistory` to reject with a 401 ApiError. */
+export async function mockHistoryUnauthorized(): Promise<void> {
+  const { ApiError } = await import('../lib/api');
+  vi.mocked(api.getFoodHistory).mockRejectedValue(new ApiError(401, 'unauthorized'));
+}
+
+/**
+ * Reset the getFoodHistory mock and restore its default "no history"
+ * response so subsequent renders still produce a clean comparison line
+ * (without a real network call).
+ */
+export function resetHistoryMock(): void {
+  vi.mocked(api.getFoodHistory).mockReset();
+  vi.mocked(api.getFoodHistory).mockResolvedValue(DEFAULT_HISTORY);
 }
 
 // -- DOM query helpers -----------------------------------------------------
@@ -156,4 +212,26 @@ export function getPendingBadge(container: HTMLElement): HTMLElement | null {
 /** Resolve the macros panel (or null). */
 export function getMacrosPanel(container: HTMLElement): HTMLElement | null {
   return container.querySelector('[data-testid="log-type-totals-strip-macros"]');
+}
+
+/** Resolve the day-over-day comparison line (or null). */
+export function getComparisonLine(container: HTMLElement): HTMLElement | null {
+  return container.querySelector('[data-testid="log-type-totals-strip-comparison"]');
+}
+
+/** Resolve the kcal delta span (or null). */
+export function getComparisonKcal(container: HTMLElement): HTMLElement | null {
+  return container.querySelector('[data-testid="log-type-totals-strip-comparison-kcal"]');
+}
+
+/** Resolve the protein delta span (or null). */
+export function getComparisonProtein(container: HTMLElement): HTMLElement | null {
+  return container.querySelector('[data-testid="log-type-totals-strip-comparison-protein"]');
+}
+
+/** Resolve the unavailable span (or null). */
+export function getComparisonUnavailable(container: HTMLElement): HTMLElement | null {
+  return container.querySelector(
+    '[data-testid="log-type-totals-strip-comparison-unavailable"]',
+  );
 }

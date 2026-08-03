@@ -47,10 +47,63 @@ export function LogTypeTodayTotalsStrip({
     };
   }, [serverOnline]);
 
+  // relay-228: yesterday's totals for the day-over-day comparison line.
+  // Fetched once when the server is reachable; the component never
+  // re-fetches on data/pending changes because yesterday's totals are a
+  // point-in-time lookback (a new meal logged today shouldn't refresh
+  // yesterday's numbers). When the server is offline or the call fails
+  // we leave the slots as null and the viewmodel emits the unavailable
+  // message — the AC explicitly requires "an explicit unavailable state
+  // when yesterday data is missing."
+  //
+  // Bugbot Round 85 finding #1: the prior implementation selected the
+  // first row whose date was simply NOT today. That mislabelled any older
+  // logged day as "yesterday" when yesterday itself was absent, and
+  // could match a future-dated row. Now we filter on the exact yesterday
+  // date (computed at fetch time, not render time, so a long-mounted
+  // strip across midnight stays consistent with its fetch).
+  const [yesterdayKcal, setYesterdayKcal] = useState<number | null>(null);
+  const [yesterdayProtein, setYesterdayProtein] = useState<number | null>(null);
+  useEffect(() => {
+    if (!serverOnline) {
+      setYesterdayKcal(null);
+      setYesterdayProtein(null);
+      return;
+    }
+    let cancelled = false;
+    // Compute yesterday as YYYY-MM-DD using the same UTC slice the server
+    // emits (server history_sheet.py stores isoformat() date strings).
+    // Computing here once (not in the resolve handler) keeps the
+    // comparison anchored to fetch time so the line doesn't drift if the
+    // user keeps the tab open across local midnight.
+    const yesterdayDate = new Date();
+    yesterdayDate.setUTCDate(yesterdayDate.getUTCDate() - 1);
+    const yesterdayIso = yesterdayDate.toISOString().slice(0, 10);
+    api
+      .getFoodHistory(2)
+      .then((res) => {
+        if (cancelled) return;
+        const prior =
+          (res.days ?? []).find((d) => d.date === yesterdayIso) ?? null;
+        setYesterdayKcal(prior ? prior.calories : null);
+        setYesterdayProtein(prior ? prior.protein : null);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        if (err instanceof ApiError && err.status === 401) return;
+        setYesterdayKcal(null);
+        setYesterdayProtein(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [serverOnline]);
+
   const {
     announceText,
     calorieText,
     carbs,
+    comparison,
     fat,
     footerText,
     goalReached,
@@ -62,7 +115,13 @@ export function LogTypeTodayTotalsStrip({
     proteinPct,
     proteinText,
     setupHint,
-  } = buildLogTypeTotalsViewModel(data, calorieTarget, pendingCount);
+  } = buildLogTypeTotalsViewModel(
+    data,
+    calorieTarget,
+    pendingCount,
+    yesterdayKcal,
+    yesterdayProtein,
+  );
 
   // relay-226: progress bars are only meaningful when there IS a target to
   // measure against. Without a calorie target a 0% bar reads as "you have
@@ -206,6 +265,38 @@ export function LogTypeTodayTotalsStrip({
           data-testid="log-type-totals-strip-setup-hint"
         >
           {setupHint}
+        </p>
+      ) : null}
+      {/* relay-228: day-over-day comparison line(s). Suppressed in the empty
+          state (relay-225's "No meals logged yet" owns the message and a
+          delta from yesterday is misleading on a zero-meal day). When
+          yesterday totals are known the line shows two muted fragments
+          joined by a middot; when unknown it surfaces the concise
+          unavailable message so the user is never left wondering whether
+          a delta of zero means "same" or "missing data". The line is
+          deliberately not part of the aria-live region — it updates only
+          on server state changes (mount / refresh) and re-announcing on
+          each render would be noisy for screen reader users. */}
+      {!hasNoMealsLogged && comparison ? (
+        <p
+          className="muted log-type-totals-strip__comparison"
+          data-testid="log-type-totals-strip-comparison"
+        >
+          {comparison.hasYesterday ? (
+            <>
+              <span data-testid="log-type-totals-strip-comparison-kcal">
+                {comparison.kcalDeltaText}
+              </span>
+              {' · '}
+              <span data-testid="log-type-totals-strip-comparison-protein">
+                {comparison.proteinDeltaText}
+              </span>
+            </>
+          ) : (
+            <span data-testid="log-type-totals-strip-comparison-unavailable">
+              {comparison.unavailableText}
+            </span>
+          )}
         </p>
       ) : null}
     </Card>

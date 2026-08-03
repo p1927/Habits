@@ -3833,6 +3833,17 @@ form.log-type-card {
   color: var(--muted);
 }
 
+/* relay-228: day-over-day comparison line. Sits below the footer (and
+   below the setup hint when both render). Same muted treatment as the
+   setup hint so the strip reads as a coherent visual stack; the font
+   stays the same size as the footer copy so the eye flows from "X kcal
+   remaining" down to the delta without the line feeling like an
+   afterthought. */
+.log-type-totals-strip__comparison {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
 .log-type-totals-strip__expand-hint {
   margin: 0.25rem 0 0.5rem;
   font-size: var(--font-size-sm);

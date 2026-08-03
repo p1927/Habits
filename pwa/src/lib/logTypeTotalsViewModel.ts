@@ -1,6 +1,13 @@
 import type { FoodTodayResponse } from './api';
 import { proteinProgressPct } from './foodSectionShared';
-import { formatGrams, formatKcal, kcalProgressPct, kcalRemaining } from './logTypeTotals';
+import {
+  buildDayOverDayComparison,
+  formatGrams,
+  formatKcal,
+  kcalProgressPct,
+  kcalRemaining,
+  type DayOverDayComparison,
+} from './logTypeTotals';
 
 // TotalsState — single classification for the LogTypeTodayTotalsStrip.
 //
@@ -76,6 +83,14 @@ export interface LogTypeTotalsViewModel {
   // can branch on a single value instead of recomputing the flag combination.
   // Defaults are not allowed — every code path sets this explicitly.
   state: TotalsState;
+  // relay-228: day-over-day comparison. Always populated — when yesterday
+  // totals are unknown the comparison block reports `hasYesterday=false` and
+  // an `unavailableText` instead of fabricating a zero delta. The component
+  // renders one muted line under the footer with kcal + protein deltas (or
+  // the unavailable message). Suppressed in the empty state by the
+  // component, not here — the viewmodel exposes the truth so tests can
+  // exercise the comparison block independently of the display layer.
+  comparison: DayOverDayComparison;
 }
 
 const SETUP_HINT_TEXT = 'Set a daily calorie target in Settings to track progress.';
@@ -84,6 +99,13 @@ export function buildLogTypeTotalsViewModel(
   data: FoodTodayResponse | null,
   calorieTarget: number | null,
   pendingCount: number = 0,
+  // relay-228: yesterday's totals, when known. Both null together means
+  // "no comparison available" (the function builds the unavailable
+  // message). The component fetches these once per mount from
+  // api.getFoodHistory(2) and passes them in; the viewmodel never touches
+  // the network.
+  yesterdayKcal: number | null = null,
+  yesterdayProtein: number | null = null,
 ): LogTypeTotalsViewModel {
   const consumed = data?.calories ?? 0;
   const protein = data?.protein_g ?? 0;
@@ -142,6 +164,37 @@ export function buildLogTypeTotalsViewModel(
   const pendingBadgeText = pendingCount > 0 ? `${pendingCount} ${pendingWord} pending sync` : null;
   const pendingAnnouncePart = pendingCount > 0 ? `${pendingCount} ${pendingWord} pending sync` : '';
 
+  // relay-228: day-over-day comparison. Always populated so the component
+  // can render unconditionally — the comparison block self-describes the
+  // unavailable state via hasYesterday=false. We do NOT gate the block on
+  // the empty state here; the component decides whether to show it (per the
+  // AC: "when the user opens the Log Type sub-tab" — the empty state has
+  // its own message and suppresses the comparison line, but the viewmodel
+  // still produces the data so tests can verify the math regardless of the
+  // display state).
+  const comparison = buildDayOverDayComparison(
+    consumed,
+    protein,
+    yesterdayKcal,
+    yesterdayProtein,
+  );
+
+  // Bugbot Round 85 finding #2: the empty state suppresses the visual
+  // comparison line but the announce path still appended the delta —
+  // a screen reader would hear "No meals logged yet … -600 kcal vs
+  // yesterday" which contradicts the suppression rationale. Gate the
+  // announce contribution on a non-empty state so the aria-live region
+  // only carries comparison copy when the line itself is visible.
+  const comparisonAnnouncePart =
+    comparison.hasYesterday && !hasNoMealsLogged
+      ? [
+          comparison.kcalDeltaText,
+          comparison.proteinDeltaText,
+        ]
+          .filter(Boolean)
+          .join('. ')
+      : '';
+
   return {
     consumed,
     protein,
@@ -158,11 +211,12 @@ export function buildLogTypeTotalsViewModel(
     hasMacros: hasMacros && !hasNoMealsLogged,
     carbs: data?.carbs ?? 0,
     fat: data?.fat ?? 0,
-    announceText: [kcalPart, proteinPart, remainingPart, pendingAnnouncePart].filter(Boolean).join('. '),
+    announceText: [kcalPart, proteinPart, remainingPart, pendingAnnouncePart, comparisonAnnouncePart].filter(Boolean).join('. '),
     footerText,
     pendingBadgeText,
     hasNoMealsLogged,
     setupHint,
     state,
+    comparison,
   };
 }

@@ -265,3 +265,82 @@ describe('buildLogTypeTotalsViewModel exposes state classifier', () => {
     expect(buildLogTypeTotalsViewModel(withMeal, null).state).toBe('target-unset');
   });
 });
+
+// relay-228: day-over-day comparison wired into the viewmodel. The
+// viewmodel always populates `comparison`; the component decides whether
+// to render it (suppressed in the empty state). The math is identical to
+// the helpers, so this block focuses on the integration: announce path
+// includes deltas when present, does not pollute announce when yesterday
+// is missing.
+describe('buildLogTypeTotalsViewModel — day-over-day comparison (relay-228)', () => {
+  it('populates comparison.hasYesterday=false by default (no args)', () => {
+    const vm = buildLogTypeTotalsViewModel(data, 2000);
+    expect(vm.comparison.hasYesterday).toBe(false);
+    expect(vm.comparison.kcalDeltaText).toBeNull();
+    expect(vm.comparison.proteinDeltaText).toBeNull();
+    expect(vm.comparison.unavailableText).toBe('Yesterday totals unavailable');
+  });
+
+  it('emits kcal + protein deltas when yesterday values are provided', () => {
+    const vm = buildLogTypeTotalsViewModel(data, 2000, 0, 600, 50);
+    // today = 750 kcal / 45g protein ; yesterday = 600 kcal / 50g protein
+    expect(vm.comparison.hasYesterday).toBe(true);
+    expect(vm.comparison.kcalDelta).toBe(150);
+    expect(vm.comparison.proteinDelta).toBe(-5);
+    expect(vm.comparison.kcalDeltaText).toBe('+150 kcal vs yesterday');
+    expect(vm.comparison.proteinDeltaText).toBe('-5.0g protein vs yesterday');
+  });
+
+  it('keeps the announce path quiet when yesterday is missing', () => {
+    const vm = buildLogTypeTotalsViewModel(data, 2000);
+    expect(vm.announceText).not.toContain('vs yesterday');
+    expect(vm.announceText).not.toContain('unavailable');
+  });
+
+  it('appends deltas to the announce path when yesterday is known', () => {
+    const vm = buildLogTypeTotalsViewModel(data, 2000, 0, 500, 30);
+    expect(vm.announceText).toContain('+250 kcal vs yesterday');
+    expect(vm.announceText).toContain('+15.0g protein vs yesterday');
+  });
+
+  it('does not invent deltas when both yesterday values are null', () => {
+    const vm = buildLogTypeTotalsViewModel(data, 2000, 0, null, null);
+    expect(vm.comparison.hasYesterday).toBe(false);
+    expect(vm.announceText).not.toContain('vs yesterday');
+  });
+
+  it('still surfaces comparison when goal-reached (delta is meaningful vs goal-reached frame)', () => {
+    // goal-reached is the right primary message; the delta adds context
+    // for users who want to know how much they went over vs yesterday.
+    const vm = buildLogTypeTotalsViewModel(
+      { ...data, calories: 2500 },
+      2000,
+      0,
+      1800,
+      40,
+    );
+    expect(vm.state).toBe('goal-reached');
+    expect(vm.comparison.hasYesterday).toBe(true);
+    expect(vm.comparison.kcalDelta).toBe(700);
+  });
+
+  it('comparison data is independent of empty state (component decides to hide)', () => {
+    // The empty state should NOT fabricate a delta from yesterday's zero
+    // kcal: today=0, yesterday=0 → delta=0 → "Same as yesterday". The
+    // helper still produces that (hasYesterday=true); the component
+    // suppresses the line because hasNoMealsLogged=true. The viewmodel
+    // leaves the data exposed so tests can pin this contract.
+    const emptyToday: FoodTodayResponse = {
+      ...data,
+      calories: 0,
+      protein_g: 0,
+      items: [],
+    };
+    const vm = buildLogTypeTotalsViewModel(emptyToday, 2000, 0, 0, 0);
+    expect(vm.state).toBe('empty');
+    expect(vm.hasNoMealsLogged).toBe(true);
+    expect(vm.comparison.hasYesterday).toBe(true);
+    expect(vm.comparison.kcalDelta).toBe(0);
+    expect(vm.comparison.kcalDeltaText).toBe('Same as yesterday');
+  });
+});
