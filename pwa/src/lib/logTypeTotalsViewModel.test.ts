@@ -32,6 +32,7 @@ describe('buildLogTypeTotalsViewModel', () => {
       footerText: '1250 kcal remaining',
       pendingBadgeText: null,
       hasNoMealsLogged: false,
+      setupHint: null,
     });
   });
 
@@ -46,6 +47,7 @@ describe('buildLogTypeTotalsViewModel', () => {
       footerText: 'No meals logged yet',
       pendingBadgeText: null,
       hasNoMealsLogged: true,
+      setupHint: null,
     });
   });
 
@@ -58,6 +60,7 @@ describe('buildLogTypeTotalsViewModel', () => {
       footerText: 'Goal reached',
       pendingBadgeText: null,
       hasNoMealsLogged: false,
+      setupHint: null,
     });
   });
 
@@ -125,6 +128,65 @@ describe('buildLogTypeTotalsViewModel', () => {
       footerText: '1880 kcal remaining',
       announceText:
         '120 of 2000 kilocalories. 5.0 of 120.0 grams protein. 1880 kilocalories remaining',
+    });
+  });
+
+  // relay-226: when meals have been logged but no calorie target is
+  // configured, the view model exposes hasNoCalorieTarget=true and a
+  // setupHint the component renders below the footer. Footer stays on
+  // "X kcal today" (no "remaining" claim). Empty-state path keeps setupHint
+  // null because relay-225's "No meals logged yet" is the right message
+  // when there is nothing to plot.
+  it('emits a setup hint when meals are logged but no calorie target is set', () => {
+    expect(
+      buildLogTypeTotalsViewModel(
+        { ...data, calories: 0, protein_g: 0, items: [] },
+        null,
+      ),
+    ).toMatchObject({
+      hasNoMealsLogged: true,
+      hasCalorieTarget: false,
+      setupHint: null, // empty state owns the message
+    });
+
+    const withMealNoTarget = {
+      ...data,
+      calories: 750,
+      protein_g: 45,
+      items: [
+        { row: 1, food: 'oatmeal', quantity_g: 80, calories: 380, carbs: 60, protein: 12, fat: 6 },
+        { row: 2, food: 'berries', quantity_g: 100, calories: 60, carbs: 14, protein: 1, fat: 0 },
+        { row: 3, food: 'yogurt', quantity_g: 200, calories: 310, carbs: 6, protein: 32, fat: 19 },
+      ],
+    } as FoodTodayResponse;
+    expect(buildLogTypeTotalsViewModel(withMealNoTarget, null)).toMatchObject({
+      hasNoMealsLogged: false,
+      hasCalorieTarget: false,
+      goalReached: false,
+      setupHint: 'Set a daily calorie target in Settings to track progress.',
+      footerText: '750 kcal today',
+      announceText: '750 kilocalories. 45.0 of 120.0 grams protein',
+    });
+  });
+
+  it('suppresses the setup hint when a target is set (no nagging once tracking is on)', () => {
+    expect(buildLogTypeTotalsViewModel(data, 2000)).toMatchObject({
+      hasCalorieTarget: true,
+      setupHint: null,
+    });
+  });
+
+  it('treats calorieTarget=0 as no target for setup-hint purposes', () => {
+    const withMeal = {
+      ...data,
+      items: [
+        { row: 1, food: 'apple', quantity_g: 100, calories: 120, carbs: 25, protein: 5, fat: 1 },
+      ],
+    } as FoodTodayResponse;
+    expect(buildLogTypeTotalsViewModel(withMeal, 0)).toMatchObject({
+      hasCalorieTarget: false,
+      setupHint: 'Set a daily calorie target in Settings to track progress.',
+      footerText: '750 kcal today',
     });
   });
 });

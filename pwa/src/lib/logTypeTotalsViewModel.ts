@@ -27,6 +27,15 @@ export interface LogTypeTotalsViewModel {
   // kcal/protein as progress toward a target (no progress bars, no
   // "remaining"/"Goal reached" copy, no Show macros toggle).
   hasNoMealsLogged: boolean;
+  // relay-226: target-unset state. When non-null, the strip has no calorie
+  // target configured but the user has logged at least one meal today. The
+  // progress bars are suppressed (a 0% bar reads as "you have progress to
+  // make" even when there's no target to make progress toward), the footer
+  // carries "<consumed> kcal today" copy without a "remaining" claim, and a
+  // concise `setupHint` explains how to set a target. Suppressed in the
+  // empty state (relay-225 owns that message) and when the user has logged
+  // zero meals — we don't want to nag before they've even started.
+  setupHint: string | null;
 }
 
 export function buildLogTypeTotalsViewModel(
@@ -79,6 +88,17 @@ export function buildLogTypeTotalsViewModel(
           ? `${formatKcal(data.calories)} kcal today`
           : '—';
 
+  // relay-226: setup hint. Only when (a) the user has logged at least one
+  // meal today and (b) there is no calorie target configured. The empty
+  // state (relay-225's "No meals logged yet") is the right message when
+  // there is nothing to plot; nudging the user to configure a target
+  // before they have any data is noise.
+  const hasNoCalorieTarget = !hasCalorieTarget;
+  const setupHint =
+    !hasNoMealsLogged && hasNoCalorieTarget
+      ? 'Set a daily calorie target in Settings to track progress.'
+      : null;
+
   const pendingWord = pendingCount === 1 ? 'meal' : 'meals';
   const pendingBadgeText = pendingCount > 0 ? `${pendingCount} ${pendingWord} pending sync` : null;
   const pendingAnnouncePart = pendingCount > 0 ? `${pendingCount} ${pendingWord} pending sync` : '';
@@ -103,5 +123,6 @@ export function buildLogTypeTotalsViewModel(
     footerText,
     pendingBadgeText,
     hasNoMealsLogged,
+    setupHint,
   };
 }

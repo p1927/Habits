@@ -3820,6 +3820,13 @@ form.log-type-card {
   margin: 0;
 }
 
+.log-type-totals-strip__setup-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
 .log-type-totals-strip__pending-badge {
   margin-left: 0.25rem;
   font-weight: 500;
