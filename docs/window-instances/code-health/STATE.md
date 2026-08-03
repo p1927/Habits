@@ -21,14 +21,14 @@
 | confirmed_next | `ch-patchwork-app-css` |
 | phase | `8-close` |
 | last_wake | `2026-08-03T08:27:49Z` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_status | `triaged` |
-| review_round | `27` |
-| last_reviewed_round | `28` |
-| worktree_status | `active` |
-| review_changed_files | `pwa/src/lib/logTypeTotalsViewModel.ts pwa/src/lib/logTypeTotalsViewModel.test.ts` |
-| review_fingerprint | `f783cca` |
-| review_diff_range | `committed` |
+| review_round | `30` |
+| last_reviewed_round | `30` |
+| worktree_status | `none` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md` |
+| review_fingerprint | `2b91e7074ac58d73` |
+| review_diff_range | `uncommitted` |
 | review_skip_reason | `ch-patchwork-log-totals state-classifier extract (main..HEAD diff = 2 files / 187 net new lines); 9 new tests; vitest 130/130; tsc/oxlint/vite green` |
 | ritual_step | `9` |
 | brainstorm_done | `yes` |
@@ -45,10 +45,6 @@
 | refactor_plan_id | `ch-160` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
-| worktree_branch | `loop/code-health/ch-patchwork-log-totals` |
-| worktree_item_id | `ch-patchwork-log-totals` |
-| current_item_id | `ch-patchwork-log-totals` |
 
 ## IN_PROGRESS
 
@@ -238,8 +234,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r30-001 | low | docs/window-instances/code-health/STATE.md:255-258 — round 27/29 review rows logged with path:line citations to pwa/src/lib/logTypeTotalsViewModel.ts:78, :22, :142-143 and pwa/src/lib/logTypeTotalsViewModel.test.ts:25, :222-238, :245-267. r27-window-001/002/003 backed by hand-read of patch diff (foodSectionShared/logTypeTotals imports unchanged; totals export lines unchanged in callers). Final values match build/test output. | round-30 /code-review | closed | — | closed |
+| ch-r30-000 | low | Round 30 docs-only review: STATE.md diff (42+/2-) appends round 27 + round 29 review rows for ch-patchwork-log-totals view-model extraction (ch-patchwork-log-totals STATE sync). No pwa/ or server/ runtime code in diff; diff is bounded to the window own STATE.md (review findings table + checkpoint); references r27-window-001/002/003 with path:line citations to pwa/src/lib/logTypeTotalsViewModel.ts:78, :22, :142-143 and pwa/src/lib/logTypeTotalsViewModel.test.ts:25, :222-238, :245-267 | round-30 /code-review | closed | — | closed |
+| ch-r29-000 | low | Round 29 closure: ch-patchwork-log-totals view-model diff (2 files / 187 net new lines) reviewed — three findings logged with path:line citations; vitest 135/135; vite build green; oxlint 0 errors; tsc clean; bugbot phase skipped (no Cursor Task runtime in Hermes tick, window lens covered findings) | round-29 /code-review | closed | — | closed |
+| ch-r29-003 | low | pwa/src/lib/logTypeTotalsViewModel.ts:142-143 — pendingBadgeText and pendingAnnouncePart duplicate noun construction; deferred (trivially small, pushback) | round-29 /code-review | pushback | — | closed |
+| ch-r29-002 | low | pwa/src/lib/logTypeTotalsViewModel.test.ts:25 toMatchObject relaxes field coverage; buildLogTypeTotalsViewModel state cross-check covers :245-267; classifier table covers classifyTotalsState directly at :222-238 | round-29 /code-review | closed | — | closed |
+| ch-r29-001 | low | pwa/src/lib/logTypeTotalsViewModel.ts:78 + :22 — new state field + classifyTotalsState() exported but LogTypeTodayTotalsStrip.tsx:55-64 consumer still reads old flag booleans; classifier is parallel API not driving UI yet (refactor layering, accepted) | round-29 /code-review | closed | ch-166 | closed |
+| ch-r27-000b | low | Round 27 closure: ch-patchwork-log-totals view-model diff (2 files / 187 net new lines) reviewed — three window-lens findings logged with path:line citations; vitest 135/135; vite build green; oxlint 0 errors; tsc clean | round-27 /code-review | closed | — | closed |
+| ch-r27-window-003 | low | pwa/src/lib/logTypeTotalsViewModel.ts:142-143 — pendingBadgeText and pendingAnnouncePart duplicate noun construction; deferred (trivially small) | round-27 /code-review | pushback | — | closed |
+| ch-r27-window-002 | low | pwa/src/lib/logTypeTotalsViewModel.test.ts:25 toMatchObject relaxes field coverage on the main suite; buildLogTypeTotalsViewModel state cross-check covers :245-267; classifier table covers classifyTotalsState directly | round-27 /code-review | closed | — | closed |
+| ch-r27-window-001 | low | pwa/src/lib/logTypeTotalsViewModel.ts:78 + :22 — new state field + classifyTotalsState() exported but LogTypeTodayTotalsStrip.tsx:55-64 consumer still reads old flag booleans; classifier is parallel API not driving UI yet (accepted for refactor layering) | round-27 /code-review | closed | ch-166 | closed |
 | ch-r27-fresh-001 | low | fresh-eye: ch-164 module structure fits audit_review.py conventions (issues.append pattern matches existing audit_state). _parse_iso module-level placement is correct (used internally + testable). Duplicate gate logic with ritual_phase.py:870-887 is intentional (audit runs anytime; ritual_phase gates at arm only) — different lifecycle, acceptable. | round-27 fresh-eye | closed | ch-164 | closed |
 | ch-r27-000 | low | Bugbot parity: ch-164 stale review metadata audit — ZERO FINDINGS after fix. check_state_only_review_consistency() guards all 4 conditions: skipped+code_changed=yes contradiction, code_changed=no+pending close drift (gated on last_wake), skipped+no-skip_reason, skipped+missing/stale applied_at. 7/7 unit cases pass including new bare_checkpoint_no_false_positive regression test. | round-27 bugbot | closed | ch-164 | closed |
 | ch-r27-bugbot-001 | high | audit_review.py:153 — unconditional pending+code_changed=no check fires on bare checkpoints (e.g. read-only windows without CHECKPOINT). Fix: gate on last_wake being set. Verified: 7/7 unit cases pass; supervisor no longer false-positives. | round-27 bugbot | fix-now | ch-164 | closed |
@@ -381,7 +405,9 @@
 
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | ch-patchwork-log-totals | review | round-27 review-closure: 3 window-lens findings (r27-window-001/002/003 with path:line citations) + round-30 docs-only STATE sync closure | ch-r27-window-001..003 + ch-r30-000/001 in REVIEW_FINDINGS; vitest 135/135; vite build green; oxlint 0 errors |
 | — | ch-patchwork-log-totals | 8-close | classifyTotalsState single state enum — TotalsState (empty/goal-reached/target-unset/tracking) extracted from buildLogTypeTotalsViewModel; 9 new tests; 130/130 pass; tsc+oxlint+vite green | f783cca; vitest 130/130; tsc clean; oxlint 0 errors; vite build clean |
 | — | — | 8-close | — | — |
 |-----------|------|---------|----------|--------|
@@ -594,6 +620,24 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
