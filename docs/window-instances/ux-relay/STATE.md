@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T16:05:00Z |
-| where_we_are | ui-069 shipped — Settings OAuth scopes checklist + authenticated status endpoint |
-| confirmed_next | ui-070 Cards bulk selection discoverability |
+| reviewed_at | 2026-08-04T04:34:00Z |
+| where_we_are | ui-071 implemented and committed in worktree; review Round 29 zero product findings |
+| confirmed_next | ui-072 Cards sickness timeline related-notes handoff (depends on crit-004 + crit-070) |
 
 ---
 
@@ -20,34 +20,34 @@
 |-------|-------|
 | last_wake | `2026-08-03T09:30:00Z` |
 | next_mode | `C` |
-| current_item_id | `ui-070` |
+| current_item_id | `ui-071` |
 | phase | `9-arm` |
 | review_status | `skipped` |
-| review_skip_reason | `No uncommitted app diff after ui-069 merge; Round 27 review complete` |
-| review_round | `27` |
-| last_reviewed_round | `27` |
-| review_diff_range | `main...dfa4a3e` |
+| review_skip_reason | `Round 29 reviewed and merged commit 2a5d068; code_changed reset after worktree merge/close for steady-state arm.` |
+| review_round | `29` |
+| last_reviewed_round | `29` |
+| review_diff_range | `uncommitted` |
 | code_changed | `no` |
-| confirmed_next | `ui-070 Cards bulk selection discoverability` |
+| confirmed_next | `ui-072 Cards sickness timeline related-notes handoff` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/SettingsGoogleCard.test.tsx pwa/src/components/SettingsGoogleCard.tsx pwa/src/components/SettingsSectionCards.tsx pwa/src/hooks/useSettingsSection.ts pwa/src/hooks/useSettingsSectionData.ts pwa/src/lib/apiSettings.ts pwa/src/lib/apiTypes.ts pwa/src/lib/settingsSectionShared.ts pwa/src/lib/settingsSectionTypes.ts pwa/src/sections/Settings.tsx server/habits_api/google/oauth_service.py server/habits_api/routes/api.py server/tests/test_google_status.py` |
-| review_fingerprint | `dfa4a3e-ui069` |
+| review_changed_files | `pwa/src/hooks/useCardsBulkShortcut.test.tsx pwa/src/hooks/useCardsBulkShortcut.ts pwa/src/sections/Cards.tsx` |
+| review_fingerprint | `d7ce05564ab4cd39` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ui-066 crit-002 aria-busy + pulse dot; Bugbot r24 1 fix-now + 2 fix-now + 1 backlog; ui-067 queued` |
+| brainstorm_outcome | `ui-071: preserve the current Cards bulk-select DOM and behavior; implement the four low-risk review followups as test-first maintenance (idempotency coverage, shared hint dismissal, direct setter call` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `dfa4a3e` |
+| commit_hash | `2a5d068` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `aria-busy={loading} + .agent-tool-status__chip--active gates pulse animation; wrapper aria-live=polite announces joined chip text` |
-| design_mitigations | `Pulse only animates while loading=true; reduced-motion disables animation; chips without --active class retain static dot at opacity 0.85` |
+| design_chosen_approach | `Test-first behavior-preserving cleanup: explicit shortcut idempotency guard; one parameterized selection-entry callback; retain cards-filter-row outside tablist for valid tab semantics` |
+| design_mitigations | `No visual changes; wrapper retained to keep Select button outside role=tablist; keyboard typing/blocked/Escape gates unchanged; 21st lookup failed due unavailable network; web search backend unavailable` |
 | execute_done | `yes` |
 | refactor_subphase | `none` |
 
@@ -71,9 +71,12 @@
 | ui-064 | Log swipe velocity + aria-live | A: velocity only; B: velocity + aria-live onCommit; C: full dev.to pointer history | B: meets crit-020 AC; reuses commit path; sr-only live region | B SWIPE_VELOCITY_COMMIT + onCommit callback | announce at commit start not onSwipe delay | dev.to flick velocity 0.6px/ms |
 | ui-065 | Agent Tools auto-send | A: sendPrompt in sheet only; B: sendPrompt + disable loading/offline/scanning; C: keep setInput + Send CTA | B: matches ui-062 greeting + crit-034 AC; minimal diff; offline browse | B sendPrompt on row tap + rowsDisabled matrix | toolsLoading includes scanning; offline banner in sheet | Gemini Tools actionable rows |
 | ui-066 | Agent tool status chips | A: aria-busy + animated dot per chip + per-chip aria-label; B: aria-busy + dot only on .agent-tool-status__chip--active (loading=true) + wrapper aria-live announces joined text; C: leave static chips | B: matches crit-002 AC, animation gated to loading only, AT-friendly (wrapper live region > generic span aria-label) | B aria-busy + .agent-tool-status__chip--active gating + wrapper aria-live | Bugbot r24-001/002 fixed; prefers-reduced-motion disables pulse; stale toolStatusLabels render without --active | Gemini Tools status strip 9to5google 2025-09-15 |
+| ui-070 | Cards bulk-select discoverability | A: visible Select chip only; B: Cmd/Ctrl+Shift+A + visible chip + dismissible first-visit hint; C: long-press only + onboarding toast | B: matches crit-079 AC literally (chip + chord + Esc + aria-keyshortcuts + hint), desktop power-user parity, reuses cardsSectionShared dismiss pattern (no drift) | B chip + useCardsBulkShortcut chord + CARDS_BULK_HINT_KEY + auto-dismiss on chip/chord/long-press entry | Chip gates on !selectionMode AND hasCards>0; chord blocks while FAB open; typing-target suppression; Esc exits only when selectionMode=true (no Escape hijack outside Cards); reduced-motion not affected | Google Keep "Select" overflow + Android Material 3 keyboard shortcut discoverability |
 
 ---
 ## CRITIQUE_BACKLOG
+
+
 
 
 
@@ -104,8 +107,9 @@
 
 | id | status | journey_ref | persona | impact | touchpoints | before_state | after_state | acceptance_criteria | evidence | depends_on | ux_response |
 |----|--------|-------------|---------|--------|-------------|--------------|-------------|---------------------|----------|------------|-------------|
+| crit-081 | agreed | element-only | returning user | 4 | Cards (sickness timeline card) → Cards (sickness grid) | Sickness timeline event bars expose only a title tooltip and do not open related notes, forcing manual filter/search work. | Tapping a sickness event opens the sickness filter, pre-fills search with the event label, scrolls the matching grid into view, highlights matching text, and announces the related-notes action. | Given a 90-day sickness timeline with an event bar; When the bar is activated; Then Cards selects sickness, pre-fills the event label, scrolls the grid into view, and matching notes expose mark.cards-search-hit. Given keyboard or assistive-technology focus; When the bar is focused; Then its aria-label says Open related sickness notes. | pwa/src/components/SicknessTimeline.tsx L31-58 currently title-only aria-hidden bar; pwa/src/components/CardsSicknessTimelineCard.tsx L9-17 has no onEventSelect; server/habits_api/cards/sickness_sheet.py L23-55 supplies event label/start/end. Rejected hover-only and inline-note-card alternatives. | depends_on crit-004,crit-070 | agreed 2026-08-04 → ui-072; queue behind detail-sheet and search-highlight dependencies |
 | crit-080 | proposed | element-only | returning user | 4 | Day (habit hours card) → Day (failed sync list) | Failed habit syncs list shows per-row Retry only; no Retry all bulk action, no per-row error reason copy, no retry progress feedback, no aria-live announcement on retry success/failure — useOptimisticHabitLog.ts retryAllFailed already defined but never wired to UI | Retry all chip in DayHabitHoursCard header when failedCount>0 wiring useOptimisticHabitLog retryAllFailed; per-row error reason via entry.lastError field set in optimisticHabitLog.ts catch L114-120; per-row spinner during retry using saving state; aria-live polite announce via habitSyncMessage banner in DaySectionAlerts; optional Dismiss all failed chip; respect serverOnline; ESC dismiss | pwa/src/components/DayHabitFailedSyncList.tsx L9-37; pwa/src/hooks/useOptimisticHabitLog.ts L95-108; pwa/src/lib/optimisticHabitLog.ts L109-120; pwa/src/components/DaySectionAlerts.tsx L17-20; pwa/src/components/DaySectionScheduleStack.tsx L37-39 | crit-047,crit-068 | — |
-| crit-079 | proposed | journey-capture-thought | knowledge worker | 4 | Cards (filter bar) → Cards (grid) → Cards (bulk bar) | visible Select chip in cards-bulk-bar pre-selection, Cmd/Ctrl+Shift+A shortcut to enter selection, Esc to exit, aria-keyshortcuts mirror, dismissible first-visit hint per cardsSectionShared pattern | Bulk select via long-press only — desktop has no mouse path, no keyboard shortcut, no first-visit hint; cards grid has no overflow Select entry | pwa/src/components/CardsBulkActionBar.tsx L31-77; pwa/src/components/CardsKeepGrid.tsx L98-105 L113-141; pwa/src/hooks/useCardsFilterShortcuts.ts; pwa/src/hooks/useLongPress.ts; pwa/src/sections/Cards.tsx L110-126 L215-245 | crit-070,crit-010,crit-004,crit-018,crit-028 | — | agreed 2026-08-03 → ui-070 (Select chip + Cmd/Ctrl+Shift+A + Esc + aria-keyshortcuts + first-visit hint; queue behind ui-068 / ui-069) |
+| crit-079 | shipped | journey-capture-thought | knowledge worker | 4 | Cards (filter bar) → Cards (grid) → Cards (bulk bar) | visible Select chip in cards-bulk-bar pre-selection, Cmd/Ctrl+Shift+A shortcut to enter selection, Esc to exit, aria-keyshortcuts mirror, dismissible first-visit hint per cardsSectionShared pattern | Bulk select via long-press only — desktop has no mouse path, no keyboard shortcut, no first-visit hint; cards grid has no overflow Select entry | pwa/src/components/CardsBulkActionBar.tsx L31-77; pwa/src/components/CardsKeepGrid.tsx L98-105 L113-141; pwa/src/hooks/useCardsFilterShortcuts.ts; pwa/src/hooks/useLongPress.ts; pwa/src/sections/Cards.tsx L110-126 L215-245 | crit-070,crit-010,crit-004,crit-018,crit-028 | — | shipped ui-070 2026-08-04 (commit 83e72ec) |
 | crit-077 | proposed | journey-settings-trust | privacy-conscious | 5 | Settings (Google card) → Settings (scope audit) | Connected pill only — server stores OAuth scopes in token_db but PWA never receives them; user cannot audit Calendar vs Sheets access or open Google permissions page from Habits | SettingsGrantedScopesPanel — expose google_scopes from API; human-label checklist on SettingsGoogleCard; partial grant Re-connect; Manage on Google Account link; disconnect retention note on banner | Given privacy-conscious user opens Settings at 390px while Google connected, When Google card renders, Then granted scope rows visible within 1s. Given Calendar scope missing from stored scopes, When panel renders, Then missing row highlighted with Re-connect pill. Given user taps Manage on Google, When link opens, Then myaccount.google.com/permissions in new tab. Given user disconnects, When success banner shows, Then copy notes Google stops future access but Sheets copy may remain | pwa/src/components/SettingsGoogleCard.tsx L12-26; server/habits_api/db/token_db.py L53-67; server/habits_api/routes/api.py L47; server/habits_api/google/oauth_service.py L61 | crit-011,crit-029 | agreed 2026-08-03 → ui-069 (scope: server exposes google_scopes first; PWA awaits; v1 ships scope checklist + manage link; defer disconnect retention note) |
 | crit-076 | proposed | element-only | returning user | 4 | Agent (chat panel) → Agent (assistant bubble) | Coach assistant replies render as plain text — bullet lists bold and code from LLM show literal markdown syntax unreadable at 390px | AgentCoachMarkdownRender — react-markdown remark-gfm rehype-sanitize for assistant role only; scoped .agent-coach-markdown in agent-gemini.css + App.css; Copy uses raw m.content; composes with crit-073 tool steps; streaming via useAgentChatStream token append | Given returning user receives Coach reply with bullet list at 390px, When bubble renders, Then list items display as formatted bullets not literal asterisks within 1s. Given reply contains raw HTML or javascript link, When rendered, Then no script execution and unsafe links stripped. Given user taps Copy, When clipboard writes, Then raw markdown source copied. Given partial list mid-stream, When token appends, Then at most one line-height flicker until block closes. Given crit-073 tool steps visible, When first token arrives, Then steps hide and markdown owns bubble body | pwa/src/components/AgentChatPanel.tsx L84-86; pwa/src/hooks/useAgentChatStream.ts L43-50; pwa/src/styles/agent-gemini.css L653-674; pwa/src/App.css L4464-4534 | crit-066,crit-073 | — |
 | crit-075 | proposed | journey-capture-thought | knowledge worker | 4 | Cards (capture sheet) → Cards (grid search) | CardsCreateSheet requires title and handleCreate blocks empty title; CreateCardRequest min_length=1 rejects empty title — user cannot save body-only quick thought; Keep body-first text note pattern missing | CardsBodyFirstCapture — remove title required; deriveCardTitle from first body line max 80 chars client + server; autofocus body textarea on sheet open; Save when body non-empty; optional title placeholder | Given knowledge worker on Cards at 390px opens FAB, When body textarea focused and user types thought without title, Then Save enabled within 300ms. Given user taps Save with body only, When createCard succeeds, Then card appears in grid with auto-title from first line within 1s. Given title provided, When save succeeds, Then explicit title used not derived. Given empty body and empty title, When Save tapped, Then validation prevents submit | pwa/src/components/CardsCreateSheet.tsx L39-45; pwa/src/sections/Cards.tsx L52-54 L105-119; server/habits_api/routes/cards.py L18 | crit-010,crit-057 | agreed 2026-08-03 → ui-068 |
@@ -214,10 +218,10 @@
 ## UI_POLISH_BACKLOG
 
 
+
+
  (Mode C — agreed items only)
 
-- [x] ui-060 | **Agent greeting grid:** Gemini density + hover/focus/disabled + subline (prop-ui-046 / ux-gap-046) | P2 | done 2026-07-28
-- [x] ui-061 | **Day jump to now:** auto-scroll grid to now line + floating chip (crit-003) | P2 | done 2026-07-28
 - [x] ui-062 | **Agent greeting auto-send + voice bridge:** chip sends on tap, voice coach lede (crit-009) | P2 | done 2026-07-28
 - [x] ui-063 | **Log swipe fly-off:** Tinder commit animation before onSwipe (crit-005) | P2 | done 2026-07-28
 - [x] ui-064 | **Log swipe velocity + aria-live:** flick commit + screen reader announce (crit-020) | P2 | done 2026-07-28
@@ -228,8 +232,21 @@
 ---
 - [x] ui-068 | **Cards body-first capture:** prop-ui-048 / crit-075 — autofocus body textarea, derive title from first body line (80 chars cap), Save enabled when body non-empty (not title), backward-compat title explicit override, server CreateCardRequest min_length relaxed to body | P3 | done 2026-08-03
 - [x] ui-069 | **Settings OAuth scopes panel:** prop-ui-047 / crit-077 — server exposes google_scopes, human-label checklist on SettingsGoogleCard, partial grant Re-connect pill, Manage on Google Account link (account.google.com/permissions in new tab, rel=noopener), disconnect retention note | P3 | backlog
-- [ ] ui-070 | **Cards bulk selection discoverability:** crit-079 — visible Select chip on CardsFilterBar (entry point) + Cmd/Ctrl+Shift+A shortcut (mirroring useCardsFilterShortcuts pattern) + Esc to exit + aria-keyshortcuts on filter chips + dismissible first-visit hint (cardsSectionShared pattern). Queue behind ui-068 / ui-069 | P3 | backlog
+- [x] ui-070 | **Cards bulk selection discoverability:** crit-079 — visible Select chip on CardsFilterBar (entry point) + Cmd/Ctrl+Shift+A shortcut (mirroring useCardsFilterShortcuts pattern) + Esc to exit + aria-keyshortcuts on filter chips + dismissible first-visit hint (cardsSectionShared pattern). Queue behind ui-068 / ui-069 | P3 | done 2026-08-04
+- [x] ui-071 | **Cards bulk-select polish (Round 28 followups):** add useCardsBulkShortcut idempotency test (Cmd+Shift+A while selectionMode=true), consider merging .cards-filter-row wrapper into existing .sub-tabs parent, extract shared dismissBulkHint helper across enterSelection + enterSelectionWith, remove redundant enter/exit useCallback wrappers in useCardsBulkShortcut | P4 | backlog
+- [ ] ui-072 | **Cards sickness timeline → related notes handoff:** crit-081 — activate sickness event bars with keyboard/AT label, snap Cards to Sickness, prefill event search, scroll grid, and highlight matching notes; depends on crit-004 + crit-070 | P3 | agreed, queued
 ## REVIEW_FINDINGS
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -242,6 +259,12 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r29-000 | low | Bugbot skill unavailable at .cursor/skills-cursor/review-bugbot/SKILL.md; manual window-lens review covered all changed files. No correctness, accessibility, security, or regression issues found. Idempotency is explicit at useCardsBulkShortcut.ts:34-36 and covered at useCardsBulkShortcut.test.tsx:69-83; Cards.tsx:60-64 consolidates selection entry without changing UI. | round-29 bugbot-unavailable /code-review | closed | — | closed |
+| ux-r28-004 | low | useCardsBulkShortcut L19-20: enter/exit useCallback wrappers are cosmetic — could pass setSelectionMode directly to useEffect dep and inline. Works correctly; minor smell. | round-28 /code-review | backlog | ui-071 | open |
+| ux-r28-003 | low | Cards.tsx L60-63 + L132-139: dismissBulkHint is called from two callbacks (enterSelection chip path + enterSelectionWith long-press path). Could extract a single helper. Acceptable duplication for two entry points. | round-28 /code-review | backlog | ui-071 | open |
+| ux-r28-002 | low | CardsFilterBar L60: new cards-filter-row wrapper div adds extra DOM node just for layout — could be applied to the existing parent or merged with .sub-tabs CSS. Acceptable for layout clarity; backlog improvement. | round-28 /code-review | backlog | ui-071 | open |
+| ux-r28-001 | low | useCardsBulkShortcut: hook claims 'idempotent — safe to re-fire while in mode' but no test covers pressing Cmd+Shift+A while selectionMode=true (current 9 tests cover enter/exit/no-op but not re-entry). Backlog: add idempotency test. | round-28 /code-review | backlog | ui-071 | open |
+| ux-r28-000 | low | Window-lens review: ui-070 / crit-079 Cards bulk-select discoverability shipped — visible Select chip in CardsFilterBar, Cmd/Ctrl+Shift+A keyboard shortcut + Esc exit via new useCardsBulkShortcut hook, dismissible first-visit hint persisted via CARDS_BULK_HINT_KEY, all gated correctly (no selectionMode, has cards, not in FAB). 23 new tests (9 hook + 9 FilterBar + 5 unchanged CardsBulkActionBar). Full PWA suite 238 pass + 1 skip; build + lint + test:journey 2 passed 1.04s clean. Bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present locally (matches ux-r24-000/ux-r25-000/ux-r26-001/ux-r27-001 pattern). | round-28 bugbot | closed | — | closed |
 | ux-r27-001 | low | Bugbot-equivalent reviewer unavailable: delegated review call returned HTTP 404 after three retries; manual window-lens review completed instead. No product finding is inferred from the unavailable tool. | round-27 bugbot | closed | — | closed |
 | ux-r27-000 | low | Window-lens review: ui-069 Settings OAuth scopes checklist plus authenticated google status endpoint are covered by 6 PWA tests and 5 server tests; build, lint, journey, and server helper tests pass. No blocking correctness or security issue found in the committed diff. | round-27 /code-review | closed | — | closed |
 | ux-r26-004 | low | Cards.tsx L86-100 handleCreate catch variable rename (e → err) was incidental fix of pre-existing latent bug — outer catch was shadowing inner e reference. Build clean, no behavior change for callers | round-26 /code-review | closed | ui-068 | closed |
@@ -332,9 +355,15 @@
 ## HISTORY
 
 
+
+
+
  (UX / polish)
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
+| 2026-08-04 | ui-071 | 8-close | Cards bulk-select Round 28 followups: explicit Cmd/Ctrl+Shift+A idempotency guard + test; removed cosmetic enter/exit wrappers; consolidated chip and long-press entry through one hint-dismiss callback; retained cards-filter-row to keep Select outside role=tablist. | 239 pass + 1 skip; lint 0 errors; build pass; journey 2 pass 1.03s; review Round 29 zero findings |
+| 2026-08-04 | ui-071 | 2-orient | Phase 2 orient: triaged crit-081 as agreed and queued ui-072 with dependencies; PO proposals prop-ui-047/048 already reflected as shipped ui-069/ui-068 | state_api handoff + crit-081→ui-072 |
+| 2026-08-04 | ui-070 | ui-070 | crit-079 — Cards bulk-select discoverability: visible Select chip in CardsFilterBar (gated: !selectionMode AND hasCards), Cmd/Ctrl+Shift+A keyboard shortcut + Esc exit via new useCardsBulkShortcut hook (chord avoids Cmd+1..4 collision; typing-target + blocked-while-FAB-open gates), dismissible first-visit hint via new CARDS_BULK_HINT_KEY localStorage key (auto-dismiss on chip/keyboard/long-press entry). 23 new tests added (9 hook + 9 FilterBar + 5 unchanged BulkActionBar); full PWA suite 238 pass + 1 skip; build + lint clean; test:journey 2 passed 1.04s. Round 28 window-lens review: 1 zero-finding sentinel + 4 low backlog findings (idempotency test, DOM wrapper, dismissBulkHint dedup, useCallback wrappers) consolidated into ui-071. Bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present locally (matches ux-r24-000/ux-r25-000/ux-r26-001/ux-r27-001 pattern) | 83e72ec |
 | 2026-08-03T16:08:00Z | ui-069 | ui-069 | crit-077 / prop-ui-047 — Settings OAuth scopes checklist with human-labeled Calendar/Sheets grants, partial-grant Re-connect, Manage on Google Account new-tab link, and authenticated /auth/google/status endpoint; disconnect retention note remains deferred per agreed scope | PWA: build + lint + journey; 6 component tests; server: 5 status tests passed |
 | 2026-08-03 | C | ui-068 | crit-075 / prop-ui-048 — Cards body-first capture. server derive_card_title helper extracted; CreateCardRequest title min_length=1 relaxed to body min_length=1; CardsCreateSheet autofocuses body textarea on open; title preview placeholder shows live 'Title: {derived}'; Save gated on body.trim(); 8 PWA tests + 10 server tests added; incidental catch(e)→catch(err) shadow fix in Cards.tsx handleCreate. crit-079 triaged → ui-070 queued. Deferred: ux-r26-002 shared TS/Python derive_title module; ux-r26-003 Title: prefix on explicit-title placeholder | 61 server pass; 143 PWA pass + 1 skip; journey 2 pass; build + lint 0 errors; commit 7563d60 |
 | 2026-08-03 | ui-067 | 8-close | crit-002 — AgentChatComposer status chips integration test (5 tests: dock render on loading=true with aria-busy=true; chips remove on loading=false; no chips when loading=false regardless of toolStatusLabels; Working fallback; live tool transition). Closes Bugbot r24-003 (ux-r24-003). 5/5 pass; full suite 135 pass + 1 skip; build + lint clean; agreed crit-075 → ui-068; agreed crit-077 → ui-069 | 5 new integration tests pass; test:journey 2 passed; code_changed yes review_round 25; commit 666cdd1 |
@@ -382,6 +411,21 @@ UX window ships **Mode C** (UI polish) only. Brainstorm → PO window. Bugs/qual
 2. Read `UX_GAPS` — update any awaiting PO (`po-agreed` → ensure matching `ui-*` in backlog)
 3. Ship **only** items in `UI_POLISH_BACKLOG` marked `agreed` or already in progress
 4. Log triage outcome in HISTORY (`agreed prop-ui-*`, `rejected prop-ui-*`, etc.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

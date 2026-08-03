@@ -18,17 +18,17 @@
 
 | Field | Value |
 |-------|-------|
-| phase | `8-close` |
-| ritual_step | `8-close` |
+| phase | `9-arm` |
+| ritual_step | `9-arm` |
 | review_status | `triaged` |
 | review_skip_reason | `docs-only critique tick — crit-080 validate_critique_tick OK; STATE.md/CRITIQUE_LOG only` |
-| review_round | `98` |
+| review_round | `100` |
 | last_reviewed_round | `96` |
-| last_wake | `2026-08-03T16:21:00Z` |
+| last_wake | `2026-08-04T04:05:33Z` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
 | confirmed_next | `crit-081 Cards element audit (tick 81, element mode)` |
-| tick_count | `80` |
+| tick_count | `81` |
 | tick_mode | `element` |
 | worktree_status | `none` |
 | worktree_path | `—` |
@@ -36,17 +36,17 @@
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `crit-080 DayHabitFailedSyncList recovery: A wire retryAllFailed + add Retry all chip in card header when failedCount>0 + per-row error reason tooltip from entry.lastError + per-row spinner during retry + aria-live habitSyncMessage on success/failure + dismiss all failed chip; B per-row only (rejected: retryAllFailed hook already exists but unused); C toast-only retry feedback (rejected: lost in alert stack)` |
+| brainstorm_outcome | `crit-081 SicknessTimeline tap-to-jump: A timeline row becomes button + onTapEvent callback through CardsSicknessTimelineCard → SicknessTimelineEventRow; tap scrolls Cards grid into view + filter snaps to sickness + search pre-fills with event label + matching notes highlight via mark.cards-search-hit (reuses crit-070); row height ≥44px tap target; row role=listitem not li+aria-hidden track; aria-label open related sickness notes; only on filter in (all, sickness); B hover-only (rejected: PWA mobile-first no hover at 390px); C inline related note cards (rejected: timeline becomes dense breaks at-a-glance scan)` |
 | execute_started | `yes` |
 | fix_verify_done | `no` |
-| reflect_done | `no` |
+| reflect_done | `yes` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `wire retryAllFailed to DayHabitFailedSyncList header Retry-all chip + per-row error reason via tooltip from entry.lastError + aria-live success/failure announce + spinner during retry; reuse habitSyncMessage banner in DaySectionAlerts` |
-| design_mitigations | `respect serverOnline (same guard as DaySectionHeader); coalesce rapid Retry all clicks via isRetrying ref; aria-live polite; ESC to dismiss banner per UndoToast pattern` |
+| design_chosen_approach | `wire onTapEvent prop on CardsSicknessTimelineCard → SicknessTimelineEventRow; row becomes button with role=listitem; on tap section handler does scrollToGrid + setFilter('sickness') + setSearch(event.label); reuse highlightSearchMatch from crit-070; aria-label open related sickness notes; row min-height 44px` |
+| design_mitigations | `respect currentFilter (skip route when user already on sickness); only enabled when filter in (all,sickness) — silently no-op otherwise; aria-live polite on grid scroll; back arrow from sickness grid returns to All; preserve scroll position; aria-hidden track retained for visual users` |
 | review_fingerprint | `cdade04091fcc370` |
-| current_item_id | `crit-080` |
+| current_item_id | `crit-081` |
 
 ## IN_PROGRESS
 
@@ -81,12 +81,13 @@
 |-------|-----|-----------|--------------|--------------|
 | 1 | Agent | Gemini | 2026-07-28T19:45:00Z | crit-076 |
 | 2 | Day | Google Calendar | 2026-07-28T18:22:00Z | crit-068 |
-| 3 | Cards | Google Keep | 2026-07-28T18:42:00Z | crit-070 |
+| 3 | Cards | Google Keep | 2026-08-04T04:05:33Z | crit-081 |
 | 4 | Log | Tinder | 2026-07-28T19:12:00Z | crit-072 |
 | 5 | Home | Apple Health | 2026-07-28T19:24:00Z | crit-074 |
 
 ---
 ## CRITIQUE_BACKLOG
+
 
  (local tracker — mirror to ux-relay)
 
@@ -126,6 +127,7 @@
 
 | tick_at | crit_id | mode | journey_ref | brainstorm_summary | web_citations | habits_files_read | evidence_block | rubric_avg | chosen_direction |
 |---------|---------|------|-------------|-------------------|---------------|-------------------|----------------|------------|------------------|
+| 2026-08-04T04:05:33Z | crit-081 | element | element-only | A: SicknessTimelineEventRow tap → Cards grid scrolls into view + filter snaps to sickness + search pre-fills with event label + matching notes highlight with mark.cards-search-hit (reuses crit-070 helper); add aria-label open related sickness notes; lift state via Cards section — onTapEvent callback prop drilling through CardsSicknessTimelineCard → SicknessTimelineEventRow; only when filter === all | sickness; row becomes button not li; row height ≥44px tap target at 390px; role=img wrapper split into role=list with each row a listitem for screen reader keyboard nav; aria-hidden track retained; B: hover-only affordance (rejected: PWA mobile-first hover unavailable at 390px); C: inject related note cards inside timeline row (rejected: timeline becomes dense breaks at-a-glance scan). Chosen A. competitive-teardown delta vs Apple Health Trends related records: Habits 1.6/5 timeline isolated from notes vs Apple Health 4.0/5 tap sample → linked records. | support.apple.com/guide/iphone/iph4c34a8a95 browse health records with linked sample detail; support.apple.com/guide/iphone/see-your-activity-summary tap-to-detail | pwa/src/components/SicknessTimeline.tsx, pwa/src/components/CardsSicknessTimelineCard.tsx, pwa/src/sections/Cards.tsx | Habits files: pwa/src/components/SicknessTimeline.tsx L31-58 timeline row uses li with sickness-timeline-bar inside aria-hidden track; tooltip via title attribute only (mouse-only on 390px); onSelect prop absent — zero pointer handlers; pwa/src/components/CardsSicknessTimelineCard.tsx L9-17 receives events array but no onEventSelect callback; pwa/src/sections/Cards.tsx L278-280 mounts the card only on all+sickness filter — no route for sickness → grid drill; server/habits_api/cards/sickness_sheet.py L23-55 events from Nutrition sheet have label/start/end; ui-070 bulk-select (crit-079) added long-press path on cards but no tap-to-detail; crit-004 detail sheet (open) and crit-070 search highlight (open) ship conditions; distinct from crit-050 sort and crit-018 pin by journey (timeline entry → grid exit). Gap: user on Cards at 390px scrolling sickness timeline sees flu Jan 5-8 bar — wants the related notes captured that week — must scroll past, switch filter manually, type flu — N for one-tap jump in 2s. Desktop: same dead bar at wide layout — Apple Health Trends related-records pattern missing. Rejected: B hover; C inline notes. | 4.3 | A timeline tap → grid filter+search jump |
 | 2026-07-28T19:55:00Z | crit-077 | journey | journey-settings-trust | A: SettingsGrantedScopesPanel — expose google_scopes from token_db via health or settings API; SettingsGoogleCard renders persistent Granted access checklist with human labels for Calendar and Sheets scopes; partial grant shows missing scope row + Re-connect pill; Manage on Google Account external link to myaccount.google.com/permissions; disconnect success banner adds data retention note per Google help; B: one-time post-OAuth banner only per crit-029 (rejected: no durable audit surface); C: block app until all scopes granted (rejected: crit-029 rejected hostile). Chosen A. Outcome tree: outcome verify what Habits can access after connect — opportunity persistent scope audit step in Settings investment phase. competitive-teardown delta vs Google linked apps See details: Habits 2.0/5 boolean Connected pill vs Google 4.5/5 granular scope review anytime. | support.google.com/accounts/answer/13533235 — remove access does not delete app data note; support.google.com/accounts/answer/3466521 — review permissions list before and after connect | pwa/src/components/SettingsGoogleCard.tsx, server/habits_api/db/token_db.py, server/habits_api/routes/api.py | Habits files: pwa/src/components/SettingsGoogleCard.tsx L12-26, server/habits_api/db/token_db.py L53-67, server/habits_api/google/oauth_service.py L61, server/habits_api/routes/api.py L47. Quote: SettingsGoogleCard shows Connected or Not connected pill only — zero scope rows or Manage on Google link. token_db save_google_token stores scopes string on OAuth finish L61 but health endpoint returns google_connected boolean only L47 — scopes never reach PWA. SettingsSectionChrome disconnect banner L24-30 says disconnected with no retention note. crit-011 pre-connect disclosure crit-029 post-OAuth one-time recap crit-043 in-context reconnect crit-059 OAuth error — distinct gap is durable Settings audit: privacy-conscious user returns to Settings weeks later cannot verify Calendar vs Sheets access without re-OAuth. Gap: connected user on Settings at 390px — N for see granted scopes in 1 glance within 2s. Desktop: same boolean pill — Google permissions page parity missing. Rejected: B one-time banner; C block until full grant. | 4.5 | A persistent granted-scopes panel + Manage on Google link |
 | 2026-07-28T19:45:00Z | crit-076 | element | element-only | A: AgentCoachMarkdownRender — new component with react-markdown + remark-gfm + rehype-sanitize; wrap assistant bubble content only; scoped .agent-coach-markdown styles in agent-gemini.css and App.css L4464-4534 bubble action chrome; user bubbles stay plain text; Copy keeps copyMessage(m.content) raw source; streaming tokens append via useAgentChatStream L43-50 with documented list-close flicker; composes with crit-073 tool steps hide on first token; B: bold-only regex pass (rejected: lists and numbered meal plans still broken); C: server returns HTML (rejected: streaming token chunks break HTML parse). Chosen A. competitive-teardown delta vs Gemini formatted replies: Habits 2.1/5 plain-text wall vs Gemini 4.4/5 lists bold code in bubble. | support.google.com/gemini/answer/13275745 — Gemini chats support Markdown file export and formatted responses; androidauthority.com/google-messages-text-formatting-hidden-3573107 — Gemini renders Markdown bold lists code in chat bubbles | pwa/src/components/AgentChatPanel.tsx, pwa/src/styles/agent-gemini.css, pwa/src/hooks/useAgentChatStream.ts, pwa/src/App.css | Habits files: pwa/src/components/AgentChatPanel.tsx L84-86 raw m.content text node; pwa/src/hooks/useAgentChatStream.ts L43-50 token append; pwa/src/styles/agent-gemini.css L653-674 bubble shell only; pwa/src/App.css L4464-4534 chat-bubble-actions. Quote: no react-markdown in pwa/package.json — net-new dep. Copy L31-34 L104 already writes raw content. crit-014 stop crit-024 edit crit-046 scroll crit-066 follow-up crit-073 tool steps — distinct gap is reply readability. Security AC: rehype-sanitize skip raw HTML. Gap: macro breakdown with bullets at 390px — N for formatted list in 1 glance. Desktop: same plain text — Gemini markdown missing. Rejected: B regex; C server HTML. | 4.4 | A safe markdown render in assistant bubbles |
 | 2026-07-28T19:30:00Z | crit-075 | journey | journey-capture-thought | A: body-first capture — remove title required on CardsCreateSheet; deriveCardTitle from first body line max 80 chars; autofocus body textarea on open; title field optional with Title optional placeholder; Save enabled when body.trim non-empty; server CreateCardRequest derive or min_length relax; B: FAB long-press type menu like Keep widget (rejected: crit-010 covers capture surface not type variety); C: voice memo capture row (rejected: no audio API scope). Chosen A. Outcome tree: outcome capture fleeting thought before context lost — opportunity reduce title friction at capture step before label and find. competitive-teardown delta vs Keep text notes by default: Habits 2.0/5 capture speed vs Keep 4.3/5 blank text note ready for body input. | chromeunboxed.com/a-new-google-keep-update-makes-quick-text-notes-an-absolute-breeze — text notes by default single tap blank note; support.google.com/keep/answer/2888263 — quick capture search find later | pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx, server/habits_api/routes/cards.py | Habits files: pwa/src/sections/Cards.tsx, pwa/src/components/CardsCreateSheet.tsx, server/habits_api/routes/cards.py. Quote: CardsCreateSheet L39-41 Title input has required attribute — blocks HTML5 submit with empty title. L43-45 body textarea optional rows=3. Cards.tsx L52-54 handleCreate returns early if !newTitle.trim — body-only thoughts discarded even when body filled. L105 FAB opens sheet with newTitle empty — no autofocus body. routes/cards.py L18 CreateCardRequest title Field min_length=1 — API rejects empty title even if client fixed; sheet_loaders.py L40 title or Note is read-path display fallback only not create acceptance. crit-010 inline composer; crit-027 post-save find toast; crit-042 filter sync; crit-057 type prefill — distinct gap is capture-step friction: knowledge worker mid-meeting opens FAB wants dump thought in body first title later — must invent title before Save — breaks Keep body-first quick text pattern. Gap: user on Cards at 390px with body filled title blank — N for save in 1 tap within 2s. Desktop: same required title at wide sheet — Keep optional title missing. Rejected: B long-press menu; C voice memo. | 4.4 | A body-first capture with auto-title from first line |
@@ -336,8 +338,22 @@
 
 
 
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| uc-r100-002 | low | docs/window-instances/ux-critic/STATE.md crit-081 design_mitigations — preserve currentFilter guard prevents no-op when user already on sickness; scroll preservation on back nav; aria-live polite for grid scroll; aria-hidden track retained for sighted users — composes with existing timeline aria-label wrapper | round-100 /code-review | closed | crit-081 | closed |
+| uc-r100-001 | medium | docs/window-instances/ux-critic/STATE.md crit-081 evidence_block — SicknessTimeline L31-58 confirmed li with aria-hidden track + title tooltip only; CardsSicknessTimelineCard L9-17 no onEventSelect; Cards.tsx L278-280 mount on all|sickness only; depends_on crit-004 detail sheet and crit-070 search highlight must ship first; tap-to-jump is journey composite on top of those primitives | round-100 /code-review | closed | crit-081 | closed |
+| uc-r100-000 | low | docs/window-instances/ux-critic/STATE.md crit-081 CRITIQUE_LOG row + AUDIT_ROTATION Cards update + ux-relay mirror — gap verified SicknessTimelineEventRow has title tooltip only; no onSelect prop; CardsSicknessTimelineCard has no onEventSelect; Cards.tsx L278-280 mount-only path — distinct from crit-004 detail sheet and crit-070 search highlight by lifecycle (timeline → grid exit); validate_critique_tick OK | round-100 /code-review | closed | crit-081 | closed |
+| uc-r100-bugbot | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-100 bugbot. | round-100 bugbot | closed | — | closed |
+| uc-r99-001 | low | docs/window-instances/ux-critic/STATE.md crit-080 backlog row + CRITIQUE_LOG entry + ux-relay mirror — gap verified useOptimisticHabitLog retryAllFailed L104-108 unused; optimisticHabitLog L109-120 catch sets setError not entry.lastError; DayHabitFailedSyncList L9-37 per-row only — distinct from crit-047 emit crit-068 quick-adjust by recovery affordance surface | round-99 /code-review | closed | crit-080 | closed |
+| uc-r99-000 | low | docs/window-instances/ux-critic/STATE.md crit-080 last_wake refreshed 2026-08-04T04:05:33Z; HISTORY crit-080 row appended; review_round 99 reset to pending by prepare_review_tick.sh; docs-only diff; validate_critique_tick OK | round-99 /code-review | closed | — | closed |
+| uc-r99-bugbot | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-99 bugbot. | round-99 bugbot | closed | — | closed |
 | uc-r98-001 | low | docs/window-instances/ux-critic/STATE.md crit-080 backlog row + CRITIQUE_LOG entry + ux-relay mirror — gap verified useOptimisticHabitLog retryAllFailed L104-108 unused; optimisticHabitLog L109-120 catch sets setError not entry.lastError; DayHabitFailedSyncList L9-37 per-row only — distinct from crit-047 emit crit-068 quick-adjust by recovery affordance surface | round-98 /code-review | closed | crit-080 | closed |
 | uc-r98-bugbot | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-98 bugbot. | round-98 bugbot | closed | — | closed |
 | uc-r98-000 | low | docs/window-instances/ux-critic/STATE.md diff tick 80 crit-080 — review skipped per RITUAL.md L122 code_changed=no validate_critique_tick OK no pwa/server diff | round-98 /code-review | closed | — | closed |
@@ -770,7 +786,15 @@
 
 
 
+
+
+
+
 | completed_at | item_id | phase | outcome | evidence |
+| 2026-08-04T04:05:33Z | crit-081 | 8-close | Cards element audit → SicknessTimeline tap-to-jump to related sickness notes proposed | validate_critique_tick OK |
+| 2026-08-03T16:21:00Z | crit-080 | 8-close | Day element audit → habit sync retry-all recovery affordance proposed | validate_critique_tick OK |
+| — | — | 8-close | — | — |
+| — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
@@ -855,6 +879,14 @@
 | 2026-07-28T16:38:00Z | crit-054 | 8-close | Home element audit → dashboard freshness timestamp proposed | validate_critique_tick OK |
 | 2026-07-28T16:44:00Z | crit-055 | 8-close | journey-coach-trust re-audit → stream error recovery proposed | validate_critique_tick OK |
 | 2026-07-28T16:50:00Z | crit-056 | 8-close | Agent element audit → Activity feed drill-down proposed | validate_critique_tick OK |
+
+
+
+
+
+
+
+
 
 
 
