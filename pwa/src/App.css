@@ -5434,6 +5434,85 @@ form.log-type-card {
   gap: 0.75rem;
 }
 
+/* ui-069 — Settings OAuth scopes checklist */
+.settings-scope-list {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface2) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface2) 50%, transparent);
+}
+
+.settings-scope-lede {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+}
+
+.settings-scope-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings-scope-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--surface2) 35%, transparent);
+}
+
+.settings-scope-row:last-child {
+  border-bottom: none;
+}
+
+.settings-scope-row-icon {
+  flex: 0 0 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.settings-scope-row--granted .settings-scope-row-icon {
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+  color: #86efac;
+}
+
+.settings-scope-row--missing .settings-scope-row-icon {
+  background: color-mix(in srgb, var(--warn, #f59e0b) 25%, transparent);
+  color: var(--warn, #f59e0b);
+}
+
+.settings-scope-row-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.settings-scope-row-pill {
+  flex: 0 0 auto;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.settings-scope-reconnect {
+  margin: 0.625rem 0 0;
+  font-size: var(--font-size-sm);
+  color: color-mix(in srgb, var(--warn, #f59e0b) 65%, var(--text));
+}
+
 .settings-inline-banner {
   margin: 0.5rem 0 0;
   padding: 0.625rem 0.75rem;

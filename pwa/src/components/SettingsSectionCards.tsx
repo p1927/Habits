@@ -17,6 +17,7 @@ export function SettingsSectionCards({
   remindersEnabled,
   notifyPermission,
   authUrl,
+  googleScopes,
   saveBearer,
   saveSettings,
   disconnectGoogle,
@@ -37,6 +38,7 @@ export function SettingsSectionCards({
       <SettingsGoogleCard
         googleConnected={googleConnected}
         authUrl={authUrl}
+        googleScopes={googleScopes}
         onDisconnect={() => void disconnectGoogle()}
       />
 

@@ -40,6 +40,7 @@ export function Settings({
         remindersEnabled={section.remindersEnabled}
         notifyPermission={section.notifyPermission}
         authUrl={section.authUrl}
+        googleScopes={section.googleScopes}
         saveBearer={section.saveBearer}
         saveSettings={section.saveSettings}
         disconnectGoogle={section.disconnectGoogle}

@@ -3,6 +3,11 @@ export interface HealthResponse {
   google_connected?: boolean;
 }
 
+export interface GoogleStatusResponse {
+  google_connected: boolean;
+  google_scopes: string[];
+}
+
 export interface SettingsResponse {
   body: Record<string, string | number | null>;
   meal_plan: Record<string, Record<string, string>>;

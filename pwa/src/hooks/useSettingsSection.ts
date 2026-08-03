@@ -23,6 +23,7 @@ export function useSettingsSection(options: UseSettingsSectionOptions) {
     disconnectSuccess: data.disconnectSuccess,
     dismissDisconnectSuccess: data.dismissDisconnectSuccess,
     saving: data.saving,
+    googleScopes: data.googleScopes,
     mealDay: notifications.mealDay,
     setMealDay: notifications.setMealDay,
     remindersEnabled: notifications.remindersEnabled,

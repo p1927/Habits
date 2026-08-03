@@ -66,3 +66,21 @@ async def finish_google_oauth(settings: Settings, db: TokenDB, callback_url: str
 async def disconnect_google(db: TokenDB) -> dict:
     await db.clear_google_token()
     return {"ok": True, "google_connected": False}
+
+
+async def get_google_status(db: TokenDB) -> dict:
+    """Return connection state + granted scopes for the Settings UI.
+
+    Always returns ``google_connected``. When connected, ``google_scopes`` is
+    the list of OAuth scope URLs the user actually granted (space-split on
+    the stored token row). When disconnected, ``google_scopes`` is empty.
+
+    Pairs with ui-069 (Settings OAuth scopes panel) so the PWA can render a
+    per-scope checklist with a Re-connect pill for missing scopes.
+    """
+    row = await db.get_google_token()
+    if not row:
+        return {"google_connected": False, "google_scopes": []}
+    _, scopes_raw = row
+    scopes = [s for s in (scopes_raw or "").split(" ") if s]
+    return {"google_connected": True, "google_scopes": scopes}

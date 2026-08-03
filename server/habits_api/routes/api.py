@@ -12,6 +12,7 @@ from habits_api.db import TokenDB
 from habits_api.google.oauth_service import (
     disconnect_google,
     finish_google_oauth,
+    get_google_status,
     start_google_oauth,
 )
 from habits_api.routes.api_schemas import SettingsUpdate, oauth_http_exception
@@ -79,6 +80,17 @@ async def auth_callback(
 @router.delete("/auth/google", dependencies=[Depends(require_bearer)])
 async def auth_google_disconnect(db: TokenDB = Depends(get_db)) -> dict:
     return await disconnect_google(db)
+
+
+@router.get("/auth/google/status", dependencies=[Depends(require_bearer)])
+async def auth_google_status(db: TokenDB = Depends(get_db)) -> dict:
+    """Return current Google connection state + granted OAuth scopes.
+
+    Powers the Settings OAuth scopes checklist (ui-069) — surfaces which
+    Calendar / Sheets access the user has actually granted, so the PWA can
+    render a Re-connect pill when a previously granted scope is missing.
+    """
+    return await get_google_status(db)
 
 
 @router.get("/api/settings", dependencies=[Depends(require_bearer)])
