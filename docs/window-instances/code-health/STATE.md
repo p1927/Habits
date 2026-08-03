@@ -29,7 +29,7 @@
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |
-| review_skip_reason | `docs-only STATE sync; commit 21f502f captures all review rows (r27-window-001/002/003 + r30-000/001); vitest 135/135; vite green; oxlint 0 errors; no runtime diff in pwa/ server/ tools/cursor-loop/` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
 | ritual_step | `9` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-159 shipped: agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests; 55/55 server tests pass; ff-merge 1bee1c6` |
