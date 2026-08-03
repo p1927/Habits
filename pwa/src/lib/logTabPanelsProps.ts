@@ -76,4 +76,9 @@ export interface LogTabPanelsProps {
   onClearAll: () => void;
   onLogAll: () => void;
   historyDays: { date: string; calories: number; protein: number }[];
+  // relay-232: Ask Coach handoff from the Log Type totals strip. Routed
+  // through to LogTypeTabPanel which passes it to LogTypeTodayTotalsStrip.
+  // Optional because not every Log host wires the Agent tab (e.g. tests,
+  // future non-Log mounts); the strip hides its button when undefined.
+  onAskCoach?: (prompt: string) => void;
 }

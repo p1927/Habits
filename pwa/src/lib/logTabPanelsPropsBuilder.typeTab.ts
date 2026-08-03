@@ -6,6 +6,10 @@ export interface BuildTypeTabPropsInput {
   foodLog: FoodLog;
   mealPlanShell: MealPlan;
   scrollToFoodQueue?: number;
+  // relay-232: Ask Coach handoff. Routed through to the type panel which
+  // passes it to LogTypeTodayTotalsStrip. The caller (Log section, via
+  // useLogSection) sources this from a navigation prop on the Log tab.
+  onAskCoach?: (prompt: string) => void;
 }
 
 export function buildTypeTabProps({
@@ -14,11 +18,13 @@ export function buildTypeTabProps({
   foodLog,
   mealPlanShell,
   scrollToFoodQueue,
+  onAskCoach,
 }: BuildTypeTabPropsInput) {
   const { pending } = foodLog;
   const { data, mealPlan } = sectionData;
   return {
     scrollToFoodQueue,
+    onAskCoach,
     offProduct: typeTab.offProduct,
     offQuantity: typeTab.offQuantity,
     description: typeTab.description,

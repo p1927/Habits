@@ -30,6 +30,7 @@ export function useLogTabPanelsProps(options: BuildLogTabPanelsPropsInput) {
       options.foodLog.logItem,
       options.offerUndo,
       options.sectionData.history?.days,
+      options.onAskCoach,
     ],
   );
 }

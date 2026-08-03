@@ -43,6 +43,10 @@ export interface BuildLogTabPanelsPropsInput {
   sectionData: SectionData;
   foodLog: FoodLog;
   offerUndo: OfferUndoFn;
+  // relay-232: Ask Coach handoff. Passed into buildTypeTabProps so the
+  // type panel can render the totals-strip button. Optional because not
+  // every Log host wires the Agent tab.
+  onAskCoach?: (prompt: string) => void;
 }
 
 export interface AssembledLogTabPanelsPropsInput extends BuildLogTabPanelsPropsInput {
@@ -61,6 +65,7 @@ export function buildLogTabPanelsProps({
   foodLog,
   offerUndo,
   onRecipeScanSwipe,
+  onAskCoach,
 }: AssembledLogTabPanelsPropsInput): Omit<LogTabPanelsProps, 'tab' | 'serverOnline'> {
   return {
     ...buildFoodScanProps({ foodScan, loading, scrollToFoodQueue }),
@@ -70,6 +75,7 @@ export function buildLogTabPanelsProps({
       foodLog,
       mealPlanShell,
       scrollToFoodQueue,
+      onAskCoach,
     }),
     ...buildRecipeScanProps({ recipeScan, foodLog, offerUndo, onRecipeScanSwipe }),
     scrollToMealPlanQueue,

@@ -20,6 +20,10 @@ interface UseLogSectionOptions {
   onLogRecipesOpened?: () => void;
   scrollToMealPlanQueue?: number;
   scrollToFoodQueue?: number;
+  // relay-232: Ask Coach handoff. Forwarded into the type-tab panel so the
+  // Log totals strip can render its "Ask Coach" button. Optional so the
+  // section still mounts when the Agent tab is not available (e.g. tests).
+  onAskCoach?: (prompt: string) => void;
 }
 
 export function useLogSection({
@@ -34,6 +38,7 @@ export function useLogSection({
   onLogRecipesOpened,
   scrollToMealPlanQueue,
   scrollToFoodQueue,
+  onAskCoach,
 }: UseLogSectionOptions) {
   const [tab, setTabState] = useState<LogTab>(() => readStoredLogTab());
   const setTab = useCallback((next: LogTab) => {
@@ -106,6 +111,7 @@ export function useLogSection({
     sectionData,
     foodLog,
     offerUndo: foodUndo.offerUndo,
+    onAskCoach,
   });
 
   const statusShell = useLogStatusShellProps({

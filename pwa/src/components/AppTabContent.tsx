@@ -93,6 +93,10 @@ export function AppTabContent({
           scrollToMealPlanQueue={mealPlanQueueScrollToken}
           scrollToFoodQueue={foodQueueFocusToken}
           onNavigateFoodQueuePending={navigateFoodQueuePending}
+          // relay-232: wire the totals strip's Ask Coach button to the
+          // shared navigateAgentPrompt so the Agent tab opens with the
+          // totals summary prefilled (never auto-sent).
+          onAskCoach={(prompt) => navigateAgentPrompt(prompt)}
         />
       )}
       {tab === 'day' && (

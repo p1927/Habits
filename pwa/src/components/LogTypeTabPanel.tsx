@@ -40,6 +40,13 @@ export interface LogTypeTabPanelProps {
   onDismissPending: (id: string) => void;
   onDeleteItem: (row: number) => void;
   scrollToFoodQueue?: number;
+  // relay-232: Ask Coach handoff for the totals strip. Optional so the
+  // panel still renders (without the button) when the Agent tab is not
+  // available in the current shell. When wired, the totals strip renders
+  // an "Ask Coach" button that calls this with a plain-text prompt; the
+  // caller (AppTabContent) is expected to navigate to the Agent tab and
+  // prefill the composer — never auto-send.
+  onAskCoach?: (prompt: string) => void;
 }
 
 export function LogTypeTabPanel({
@@ -71,6 +78,7 @@ export function LogTypeTabPanel({
   onDismissPending,
   onDeleteItem,
   scrollToFoodQueue,
+  onAskCoach,
 }: LogTypeTabPanelProps) {
   return (
     <>
@@ -124,6 +132,7 @@ export function LogTypeTabPanel({
         data={data}
         serverOnline={serverOnline}
         pendingCount={pending.filter((p) => p.status === 'queued').length}
+        onAskCoach={onAskCoach}
       />
 
       <LogTypeTodayList

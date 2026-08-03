@@ -3878,6 +3878,48 @@ form.log-type-card {
   margin-bottom: 0.35rem;
 }
 
+/* relay-232: Ask Coach handoff. The button sits below the comparison line
+   (and below the macros panel when expanded) as a clear single-purpose
+   primary action. Visually it reads as a secondary text button — small,
+   right-aligned, accent-color — so it doesn't compete with the Card-level
+   macros disclosure above it. The row uses `display: flex` with `justify-
+   content: flex-end` so the button hugs the right edge of the card without
+   stretching full width (full-width would visually out-shout the disclosure
+   affordance and confuse the user about which is the primary action).
+   :focus-visible uses the shared --focus-ring tokens. Disabled state mutes
+   the colour and cursor so the offline case is unambiguous. */
+.log-type-totals-strip__coach-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.log-type-totals-strip__coach-button {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm, 8px);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.log-type-totals-strip__coach-button:hover {
+  background: var(--accent-dim);
+}
+
+.log-type-totals-strip__coach-button:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.log-type-totals-strip__coach-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .day-manage-card .manage-quad h3 {
   font-size: var(--font-size-sm);
   font-weight: 600;

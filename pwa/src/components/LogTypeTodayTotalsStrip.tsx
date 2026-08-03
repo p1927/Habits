@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card } from './ui/Card';
 import { api, ApiError, type FoodTodayResponse } from '../lib/api';
 import { formatGrams } from '../lib/logTypeTotals';
 import { buildLogTypeTotalsViewModel } from '../lib/logTypeTotalsViewModel';
+import { buildLogTotalsCoachPrompt } from '../lib/logTotalsCoachPrompt';
 
 export interface LogTypeTodayTotalsStripProps {
   data: FoodTodayResponse | null;
@@ -11,12 +12,21 @@ export interface LogTypeTodayTotalsStripProps {
   // sync to the backend (relay-223). Surfaced in the footer as a muted badge
   // so users know their totals are not yet the final picture.
   pendingCount?: number;
+  // relay-232: Ask Coach handoff. When provided, the strip renders an
+  // "Ask Coach" button that builds a plain-text prompt from the current
+  // totals viewmodel and invokes this callback with it. The callback is
+  // expected to navigate to the Agent tab and prefill (NOT auto-send) the
+  // composer — the AC explicitly forbids sending without user confirmation.
+  // Optional so existing call sites that don't wire the Agent handoff
+  // (e.g. tests, future non-Log mounts) keep working.
+  onAskCoach?: (prompt: string) => void;
 }
 
 export function LogTypeTodayTotalsStrip({
   data,
   serverOnline,
   pendingCount = 0,
+  onAskCoach,
 }: LogTypeTodayTotalsStripProps) {
   const [calorieTarget, setCalorieTarget] = useState<number | null>(null);
   // Expanded panel state for the carbs/fat breakdown (relay-222).
@@ -99,6 +109,17 @@ export function LogTypeTodayTotalsStrip({
     };
   }, [serverOnline]);
 
+  const viewModel = useMemo(
+    () =>
+      buildLogTypeTotalsViewModel(
+        data,
+        calorieTarget,
+        pendingCount,
+        yesterdayKcal,
+        yesterdayProtein,
+      ),
+    [data, calorieTarget, pendingCount, yesterdayKcal, yesterdayProtein],
+  );
   const {
     announceText,
     calorieText,
@@ -115,13 +136,7 @@ export function LogTypeTodayTotalsStrip({
     proteinPct,
     proteinText,
     setupHint,
-  } = buildLogTypeTotalsViewModel(
-    data,
-    calorieTarget,
-    pendingCount,
-    yesterdayKcal,
-    yesterdayProtein,
-  );
+  } = viewModel;
 
   // relay-226: progress bars are only meaningful when there IS a target to
   // measure against. Without a calorie target a 0% bar reads as "you have
@@ -152,6 +167,17 @@ export function LogTypeTodayTotalsStrip({
   const handleToggleDetails = () => {
     if (hasDetails) setExpanded((v) => !v);
   };
+
+  // relay-232: Ask Coach handoff. Builds the plain-text prompt from the
+  // current viewmodel and hands it to onAskCoach exactly once per click.
+  // The prompt builder is pure (no DOM, no network) so the only reason to
+  // useCallback is to give downstream consumers a stable handler identity
+  // — useful if a parent wires this through React.memo or a stable
+  // useEffect dependency.
+  const handleAskCoach = useCallback(() => {
+    if (!onAskCoach) return;
+    onAskCoach(buildLogTotalsCoachPrompt(viewModel));
+  }, [onAskCoach, viewModel]);
 
   return (
     <Card
@@ -298,6 +324,31 @@ export function LogTypeTodayTotalsStrip({
             </span>
           )}
         </p>
+      ) : null}
+      {/*
+        relay-232: Ask Coach handoff. Rendered as a real <button> (not part of
+        the Card's onClick disclosure) so the keyboard focus model stays sane:
+        the Card is the "show/hide macros" toggle, the Ask Coach button is a
+        separate, single-purpose primary action. Disabled only when the server
+        is offline — the Coach prompt relies on the totals viewmodel, which is
+        still meaningful when the server is unreachable (we keep the last-known
+        values and don't fabricate). Hidden entirely when onAskCoach is not
+        wired so consumers that don't expose the Agent tab don't see a dead
+        button. aria-label names the action in plain language for screen readers.
+      */}
+      {onAskCoach ? (
+        <div className="log-type-totals-strip__coach-row">
+          <button
+            type="button"
+            className="log-type-totals-strip__coach-button"
+            data-testid="log-type-totals-strip-coach-button"
+            aria-label="Ask Coach about today's totals"
+            onClick={handleAskCoach}
+            disabled={!serverOnline}
+          >
+            Ask Coach
+          </button>
+        </div>
       ) : null}
     </Card>
   );

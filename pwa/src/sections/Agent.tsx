@@ -3,7 +3,7 @@ import { AgentChatComposer } from '../components/AgentChatComposer';
 import { AgentSectionBody } from '../components/AgentSectionBody';
 import { AgentSectionHeader } from '../components/AgentSectionHeader';
 import { AgentSectionOverlays } from '../components/AgentSectionOverlays';
-import { useAgentComposerFocusShortcut } from '../hooks/useAgentComposerFocusShortcut';
+import { focusAgentComposer, useAgentComposerFocusShortcut } from '../hooks/useAgentComposerFocusShortcut';
 import { useAgentSection, type AgentNavigateMealPlanSyncSource } from '../hooks/useAgentSection';
 
 interface AgentProps {
@@ -16,9 +16,16 @@ export function Agent({ serverOnline, onNavigateMealPlanSyncSource, agentPrompt 
   const s = useAgentSection({ serverOnline });
   const [voiceNudgeDismissed, setVoiceNudgeDismissed] = useState(false);
 
+  // relay-232: when a handoff (Day's calendar prompt OR the Log totals
+  // strip's Ask Coach button) increments the agentPrompt token, prefill the
+  // composer AND focus it so the user can immediately edit and send. The
+  // token guards against the initial render (token === 0 / undefined) so
+  // a freshly mounted Agent does not steal focus on every visit — only on
+  // actual handoffs. The AC explicitly says "focus lands in the composer".
   useEffect(() => {
     if (!agentPrompt?.token) return;
     s.setInput(agentPrompt.text);
+    focusAgentComposer();
   }, [agentPrompt?.token, agentPrompt?.text, s.setInput]);
 
   useAgentComposerFocusShortcut(

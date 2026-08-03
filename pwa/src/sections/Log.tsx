@@ -22,6 +22,11 @@ interface LogProps {
   scrollToMealPlanQueue?: number;
   scrollToFoodQueue?: number;
   onNavigateFoodQueuePending?: () => void;
+  // relay-232: Ask Coach handoff from the totals strip. When provided, the
+  // strip renders its "Ask Coach" button; the caller is expected to
+  // navigate to the Agent tab and prefill the composer with the prompt.
+  // Mirrors the Day section's onAgentSchedulePrompt pattern.
+  onAskCoach?: (prompt: string) => void;
 }
 
 export function Log({
@@ -38,6 +43,7 @@ export function Log({
   scrollToMealPlanQueue,
   scrollToFoodQueue,
   onNavigateFoodQueuePending,
+  onAskCoach,
 }: LogProps) {
   const {
     tab,
@@ -66,6 +72,7 @@ export function Log({
     onLogRecipesOpened,
     scrollToMealPlanQueue,
     scrollToFoodQueue,
+    onAskCoach,
   });
 
   return (

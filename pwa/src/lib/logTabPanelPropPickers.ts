@@ -55,6 +55,7 @@ export function pickLogTypeTabPanelProps(p: LogTabPanelsProps): LogTypeTabPanelP
     onDismissPending: p.onDismissPending,
     onDeleteItem: p.onDeleteItem,
     scrollToFoodQueue: p.scrollToFoodQueue,
+    onAskCoach: p.onAskCoach,
   };
 }
 

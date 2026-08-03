@@ -49,6 +49,11 @@ export interface LogTypeTotalsViewModel {
   consumed: number;
   protein: number;
   proteinTarget: number | null | undefined;
+  // relay-232: calorie target echoed back so downstream helpers (e.g. the
+  // Ask Coach prompt builder) can include the denominator in their output
+  // without re-deriving it from percentages. Null/undefined when no
+  // target is configured; > 0 when the user has set one.
+  calorieTarget: number | null;
   calorieText: string;
   proteinText: string;
   kcalPct: number;
@@ -199,6 +204,7 @@ export function buildLogTypeTotalsViewModel(
     consumed,
     protein,
     proteinTarget,
+    calorieTarget,
     calorieText: `${formatKcal(consumed)} kcal${hasCalorieTarget ? ` / ${formatKcal(calorieTarget)}` : ''}`,
     proteinText: `${formatGrams(protein)}g${proteinTarget != null ? ` / ${formatGrams(proteinTarget)}g` : ''}`,
     kcalPct,
