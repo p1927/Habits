@@ -66,6 +66,22 @@ describe('useCardsBulkShortcut', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('Cmd+Shift+A is idempotent while selection mode is already active', () => {
+    const onChange = vi.fn();
+    const { getByTestId } = render(<Harness onSelectionChange={onChange} />);
+    act(() => {
+      fireEvent.keyDown(window, { key: 'A', metaKey: true, shiftKey: true });
+    });
+    expect(getByTestId('harness').getAttribute('data-mode')).toBe('on');
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      fireEvent.keyDown(window, { key: 'A', metaKey: true, shiftKey: true });
+    });
+    expect(getByTestId('harness').getAttribute('data-mode')).toBe('on');
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
   it('Esc exits selection mode when active', () => {
     const onChange = vi.fn();
     const { rerender } = render(<Harness onSelectionChange={onChange} />);

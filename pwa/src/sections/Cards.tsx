@@ -57,8 +57,9 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
     setShowBulkHint(false);
   }, []);
 
-  const enterSelection = useCallback(() => {
+  const enterSelection = useCallback((card?: KeepCard) => {
     setSelectionMode(true);
+    if (card) setSelectedIds(new Set([card.id]));
     dismissBulkHint();
   }, [dismissBulkHint]);
 
@@ -128,15 +129,6 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
       setError(err instanceof Error ? err.message : 'Delete failed');
     }
   }
-
-  const enterSelectionWith = useCallback(
-    (card: KeepCard) => {
-      setSelectionMode(true);
-      setSelectedIds(new Set([card.id]));
-      dismissBulkHint();
-    },
-    [dismissBulkHint],
-  );
 
   const toggleSelect = useCallback((card: KeepCard) => {
     setSelectedIds((prev) => {
@@ -288,7 +280,7 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
           selectionMode={selectionMode}
           selectedIds={selectedIds}
           onToggleSelect={toggleSelect}
-          onLongPressCard={enterSelectionWith}
+          onLongPressCard={enterSelection}
         />
       </div>
 

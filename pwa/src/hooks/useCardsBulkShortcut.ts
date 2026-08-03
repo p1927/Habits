@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { isTypingTarget } from '../lib/logSectionShared';
 
 /**
@@ -16,9 +16,6 @@ export function useCardsBulkShortcut(
   setSelectionMode: (next: boolean) => void,
   blocked: boolean,
 ) {
-  const enter = useCallback(() => setSelectionMode(true), [setSelectionMode]);
-  const exit = useCallback(() => setSelectionMode(false), [setSelectionMode]);
-
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (blocked) return;
@@ -27,7 +24,7 @@ export function useCardsBulkShortcut(
       // Escape — exit selection mode (no-op outside Cards selection mode).
       if (e.key === 'Escape' && selectionMode) {
         e.preventDefault();
-        exit();
+        setSelectionMode(false);
         return;
       }
 
@@ -36,10 +33,10 @@ export function useCardsBulkShortcut(
       if (!mod || !e.shiftKey || e.altKey) return;
       if (typeof e.key === 'string' && (e.key === 'A' || e.key === 'a')) {
         e.preventDefault();
-        enter();
+        if (!selectionMode) setSelectionMode(true);
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectionMode, enter, exit, blocked]);
+  }, [selectionMode, setSelectionMode, blocked]);
 }
