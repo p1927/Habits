@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T09:33:41Z |
-| where_we_are | relay-225 (empty-state fallback) AC already satisfied at HEAD b2c4ee6 via ch-patchwork-log-totals classifyTotalsState work — verified by 6/6 dedicated relay-225 vitest cases + 130/130 full suite + lint 0 + build clean; marked done without further code delta |
-| confirmed_next | relay-228 |
-| brainstorm_notes | day-over-day comparison: shows yesterday-vs-today kcal and protein deltas with explicit unavailable state when yesterday data is missing; AC pairs with the new state classifier so 'today' (state classifier) plus a new 'yesterday' aggregated view from server are the inputs |
+| reviewed_at | 2026-08-03T11:51:41Z |
+| where_we_are | Phase 2 orient at relay-226 — top unchecked open; BACKLOG has 9 open items, all relay-2xx totals-strip and Settings/Cards/Coach features |
+| confirmed_next | relay-226 |
+| brainstorm_notes | Phase 3 will pick relay-226 (target-unset state) since it pairs with relay-225 (empty-state) — same viewmodel classifyTotalsState returns 'no-target' branch when calorieTarget is null/0; showKcalBar/showProteinBar gates already suppress misleading progress |
 
 ---
 
@@ -20,26 +20,26 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-03T09:34:15Z` |
-| next_action | `arm-relay-225` |
+| next_action | `arm-relay-228` |
 | phase | `8-close` |
 | review_status | `skipped` |
 | code_changed | `no` |
 | review_round | `84` |
 | last_reviewed_round | `84` |
 | worktree_status | `none` |
-| ritual_step | `8-merge` |
-| brainstorm_done | `yes` |
+| ritual_step | `1-wake` |
+| brainstorm_done | `no` |
 | brainstorm_outcome | `relay-225 (empty-state fallback): verified retroactive — ch-patchwork-log-totals b2c4ee6 owns the implementation; classifyTotalsState() returns "empty" branch + viewmodel footerText carries "No meals` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `69b89a5` |
+| commit_hash | `bf0d949` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | idle_mode_triggered | `no` |
 | idle_rescue_done | `yes` |
-| current_item_id | `relay-225` |
+| current_item_id | `relay-226` |
 | finalize_status | `success` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
@@ -47,7 +47,7 @@
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick — relay-226 verified retroactive, work shipped at bf0d949` |
 
 ## IN_PROGRESS
 
@@ -92,13 +92,12 @@
 
 
 
-- [x] relay-218 | Log today kcal + protein totals strip | feature | Given Log tab Type sub-tab visible; When Today's log card renders; Then sticky totals strip above list shows kcal/total-target and protein/target-g with progress fraction
 - [x] relay-219 | Log today totals strip aggregation tests | refactor | Given FoodTodayResponse totals + pending optimistic entries; When totals strip computes kcal/protein; Then unit tests cover totals+pending, no data, and target-null cases
 - [x] relay-220 | Log today totals strip aria-live | ux | Given totals strip above Log Today's list; When totals change (log saved, pending clears); Then aria-live=polite announces kcal + protein updates
 - [x] relay-221 | Log today totals strip goal-reached state | feature | Given totals strip kcal progress bar; When consumed >= calorieTarget and target is set; Then bar fills to 100% with goal-reached variant (green fill, footer reads "Goal reached" instead of remaining)
 - [x] relay-222 | Log today totals strip macro breakdown | feature | Given totals strip above today's list; When user taps the strip; Then expanded panel shows carbs/total-g and fat/total-g progress lines below protein (only renders if backend returns non-null macros)
 - [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
-- [ ] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
+- [x] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
 - [x] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
 - [x] relay-225 | Log today totals strip empty-state fallback | feature | Given no meals are logged today and the totals strip is visible; When the Log Type tab opens; Then the strip shows zeroed kcal/protein values, a clear ‘No meals logged yet’ message, and remains readable without implying progress
 - [ ] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
@@ -108,9 +107,9 @@
 - [ ] relay-233 | Log macro contribution drill-down | feature | Given the totals strip shows protein carbs and fat; When the user activates one macro; Then today food rows reveal the top contributing meals for that macro, expose a clear-filter action, and announce the filtered result count accessibly
 - [ ] relay-234 | Log seven-day nutrition trend drill-down | feature | Given at least two days of nutrition history; When the user opens the totals trend; Then show seven-day kcal and protein trends, mark missing days, provide an accessible text summary, and allow return to Today
 - [x] relay-223 | Log today totals strip pending sync badge | feature | Given optimistic food entries are pending or queued locally; When the Log Type totals strip renders; Then its footer shows the exact pending meal count beside confirmed totals and updates after success or failure
-- [ ] relay-233 | Settings Granted Scopes panel (SettingsGrantedScopesPanel) | feature | Given a privacy-conscious user on Settings Google card with no scope listing shown; When the card loads; Then the panel lists granted Calendar and Sheets scopes with human labels, includes a Manage on Google Account link, and shows a Re-connect CTA when any scope is missing
-- [ ] relay-234 | Cards body-first capture (CardsBodyFirstCapture) | feature | Given a knowledge worker opens the Cards create sheet; When the sheet opens with an empty body; Then the body textarea receives autofocus, Save is enabled when body is non-empty without requiring a title, and the saved card derives its title from the first body line capped at 80 chars
-- [ ] relay-235 | Coach inline tool steps (CoachInlineToolSteps) | feature | Given a skeptical new user sends a first Agent prompt; When tools are running and tokens have not yet arrived; Then the empty streaming assistant bubble shows a vertical step list of active tools with status labels, checkmarks on completed tools, and an aria-live Coach is working announcement; steps hide once tokens arrive
+- [ ] relay-236 | Settings Granted Scopes panel (SettingsGrantedScopesPanel) | feature | Given a privacy-conscious user on Settings Google card with no scope listing shown; When the card loads; Then the panel lists granted Calendar and Sheets scopes with human labels, includes a Manage on Google Account link, and shows a Re-connect CTA when any scope is missing
+- [ ] relay-237 | Cards body-first capture (CardsBodyFirstCapture) | feature | Given a knowledge worker opens the Cards create sheet; When the sheet opens with an empty body; Then the body textarea receives autofocus, Save is enabled when body is non-empty without requiring a title, and the saved card derives its title from the first body line capped at 80 chars
+- [ ] relay-238 | Coach inline tool steps (CoachInlineToolSteps) | feature | Given a skeptical new user sends a first Agent prompt; When tools are running and tokens have not yet arrived; Then the empty streaming assistant bubble shows a vertical step list of active tools with status labels, checkmarks on completed tools, and an aria-live Coach is working announcement; steps hide once tokens arrive
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -185,8 +184,12 @@
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r84-001 | low | Bugbot+window lens: relay-226 AC satisfied retroactively — work shipped at bf0d949 'feat(log-totals): relay-226 target-unset state' which already lives on main. classifyTotalsState returns 'target-unset' when calorieTarget is null/0 with meals logged; buildLogTypeTotalsViewModel emits setupHint='Set a daily calorie target in Settings to track progress.' and a footer '<consumed> kcal today' (no remaining claim). showKcalBar=false when !hasCalorieTarget and showProteinBar=false when protein_target_g null/0 — both bars suppressed, no misleading 0% track renders. Empty state keeps relay-225's 'No meals logged yet' (setupHint=null in that branch). 65/65 totals-strip+viewmodel vitest pass + 135/135 full pwa suite + lint 0 errors + build clean + journey 6 passed (1 manual pre-existing skip). Deferred (already in commit body): tappable link to Settings (out of AC; would couple to tab nav from presentational component). | round-84 bugbot | closed | — | closed |
+| rf-r84-000 | low | — | — | — | — | open |
 | rf-r83-fresh-001 | low | — | — | — | — | open |
 | rf-r83-000 | low | — | — | — | — | open |
 | rf-r82-000 | low | Bugbot+window lens: relay-226 AC satisfied — when calorieTarget is null/0 and meals are logged, the strip suppresses both kcal and protein progress bars (showKcalBar/showProteinBar gates) so no misleading 0% track renders; footer reads consumed kcal today (no remaining claim); setupHint surfaces Set a daily calorie target in Settings to track progress. below the footer with data-testid. Empty state keeps setupHint null. proteinTarget=null also hides protein bar. aria-live unchanged. TS build clean, lint 0 errors, 89/89 vitest pass including 6 new tests. Deferred: tappable link to Settings would couple to tab nav (out of AC). | round-82 bugbot | closed | relay-226 | closed |
@@ -336,9 +339,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
 | 2026-08-03T09:33:32Z | relay-225 | done | code-already-shipped via ch-patchwork-log-totals b2c4ee6 (classifyTotalsState empty branch + viewmodel footerText + hasMacros gating + showKcalBar/showProteinBar suppression) | b2c4ee6 + vitest 6/6 relay-225 describe + 130/130 full pwa suite + npm run lint 0 errors + npm run build clean |
 | — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
@@ -419,6 +424,8 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
 
 
 
