@@ -8,8 +8,8 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T16:11:34Z |
-| where_we_are | ch-154 closed as stale: focused totals component/helper/viewmodel suites already implement all AC; exact 132/132 targeted tests + build + lint 0 errors |
+| reviewed_at | 2026-08-03T21:56:30Z |
+| where_we_are | oriented ch-161: server size scan confirms agent/service.py=298 with cohesive helpers; agent tools split; sheet_io.py=188 single-purpose; food routes=106/101 thin invoke shells |
 | confirmed_next | ch-161 |
 
 ---
@@ -26,13 +26,13 @@
 | review_round | `31` |
 | last_reviewed_round | `30` |
 | worktree_status | `none` |
-| review_changed_files | `(none)` |
+| review_changed_files | `—` |
 | review_fingerprint | `e3b0c44298fc1c14` |
 | review_diff_range | `none` |
-| review_skip_reason | `ch-154 coverage audit only: no runtime/test diff; existing targeted suites passed 132/132, build passed, lint 0 errors (50 pre-existing warnings)` |
+| review_skip_reason | `ch-161 server line-scan audit only: no app code touched; prepare_review_tick confirmed empty diff in window scope; node_modules absent in worktree so npm build/lint skipped intentionally` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ch-154 approaches: A) add another focused totals-strip test file — rejected because LogTypeTodayTotalsStrip.test.tsx (1125 lines) and logTypeTotals.test.ts already cover every AC state; B) audit existing behavior-focused tests and run the exact suites — selected to avoid duplicate coverage and close the stale item with executable evidence.` |
+| brainstorm_outcome | `ch-161 approaches: A) extract more from agent/service.py based on raw LOC; B) audit cohesion, function size, callers, and recent refactors across server candidates; selected B because service.py dupli` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
@@ -41,8 +41,8 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_tick_applied_at | `2026-08-03T08:27:49+00:00` |
-| refactor_subphase | `none` |
-| refactor_plan_id | `ch-154` |
+| refactor_subphase | `execute` |
+| refactor_plan_id | `ch-161` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
 | current_item_id | `—` |
@@ -74,7 +74,6 @@
 
 
 
-- [x] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
 - [x] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
 - [x] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
@@ -82,7 +81,7 @@
 - [x] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
 - [x] ch-159 | `server/habits_api/agent/service.py` tool-call loop extract | refactor | Given two near-duplicate `for _ in range(5):` tool-call loops in chat() and chat_stream(), When extracted to a shared helper, Then service.py 251→~170 with chat_stream dropping the duplicated message/tool-call bookkeeping
 - [x] ch-160 | `server/habits_api/agent/tools.py` (227) spec/dispatch split | refactor | Given single 227-line module mixing AGENT_TOOLS JSON spec list (160 lines) and execute_tool dispatch table (10 tools), When split, Then agent_tools_specs.py (~160 lines) + agent_tool_dispatch.py (~70 lines)
-- [ ] ch-161 | re-scope ch-153 line scan: top server candidates are `agent/service.py` (251) and `agent/tools.py` (227) — covered by ch-159 and ch-160; `google/sheet_io.py` (188) false positive (single-purpose cache/lock/retry plumbing); route files (`food.py` 106, `food_extensions.py` 101) already addressed by ch-034 | structure | verified by ch-158 line scan
+- [x] ch-161 | re-scope ch-153 line scan: top server candidates are `agent/service.py` (251) and `agent/tools.py` (227) — covered by ch-159 and ch-160; `google/sheet_io.py` (188) false positive (single-purpose cache/lock/retry plumbing); route files (`food.py` 106, `food_extensions.py` 101) already addressed by ch-034 | structure | verified by ch-158 line scan
 - [x] ch-162 | server agent module import contract | refactor | Given agent tools are split; When service and route imports run; Then the public import contract remains compatible and compileall passes
 - [ ] ch-163 | PWA totals strip test contract | maint | Given totals strip states expand; When tests run; Then null target, goal reached, macro breakdown, and pending sync variants have focused coverage
 - [ ] ch-164 | stale review metadata audit | maint | Given a PO state-only review completes; When the checkpoint is closed; Then review_status, code_changed, skip reason, and review timestamp agree
@@ -105,8 +104,10 @@
 
 
 
+
 | plan_id | step_n | smell | technique | files_in_scope | behavior_proof | out_of_scope | status |
 |---------|--------|-------|-----------|----------------|----------------|--------------|--------|
+| ch-161 | 1 | no-actionable-smell | audit-and-close | server/habits_api/** | measured LOC + longest-function + caller graph for every >100-line server file; no mixed-concerns or duplicated-loop smells remain; ch-159/160/162 already closed the only actionable items; route + sheet_io + vision files are single-purpose | pwa/, agent UI flows, .cursor tools, .agents skills | open |
 | ch-160 | 1 | mixed-concerns | extract-module | server/habits_api/agent/tools.py+server/habits_api/agent/agent_tool_specs.py+server/habits_api/agent/agent_tool_dispatch.py | python -m compileall server/habits_api passes; existing callers (agent/service.py, agent/routes.py) re-import from agent.tools without behavioral change; AGENT_TOOLS list (~160 lines of JSON specs) moves to agent_tool_specs.py; execute_tool dispatch table (~10 tools, ~70 lines) moves to agent_tool_dispatch.py; tools.py becomes ~5-line re-export | execute_tool tool implementations (log_food.py, search_food.py, etc.); service.py tool-call loops (already extracted ch-159); context/prompts split; tools.py testing (ch-129 deferred policy) | planned |
 | ch-159 | 1 | duplicated-loop | extract-method with optional callback hook | server/habits_api/agent/service.py+server/tests/test_agent_tool_ids.py | python -m compileall server/habits_api passes; existing test_agent_tool_ids.py imports _ensure_tool_call_ids from service.py unchanged; chat() and chat_stream() share _process_tool_calls helper; service.py 251→~170 | AGENT_TOOLS spec extraction (ch-160); execute_tool dispatch refactor (ch-160); context/prompts split; api.py oauth wire | planned |
 | ch-145 | 1 | long-function | extract-function | pwa/src/lib/logTabPanelsPropsBuilder.foodScan.ts+pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts+pwa/src/lib/logTabPanelsPropsBuilder.recipeScan.ts+pwa/src/lib/logTabPanelsPropsBuilder.mealPlanQueue.ts | build passes; tsc clean; 0 lint errors; sub-builders 29/49/42/28 lines | none | planned |
@@ -419,7 +420,9 @@
 
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-08-03T21:58:30Z | ch-161 | 8-close | server line-scan audit: agent/service.py 298 (ch-159 helpers add structure; chat/chat_stream duplication gone), agent/tools split 4-line re-export, food/vision 171 single parser, sheet_io 188 cache+lock+retry cluster, food routes 106/101 thin invoke shells; no actionable smell; ch-161 closed as audit-only with REFACTOR_PLAN row | ch-158 line scan + ch-159/160/162 ships |
 | 2026-08-03T16:11:34Z | ch-154 | 8-close | coverage audit closed: existing totals tests cover null target/data, goal reached, macro disclosure, pending sync, helper math, and viewmodel states; no duplicate tests added | 132/132 targeted tests; npm build green; oxlint 0 errors (50 pre-existing warnings) |
 | — | — | 8-close | — | — |
 | — | ch-patchwork-log-totals | review | round-27 review-closure: 3 window-lens findings (r27-window-001/002/003 with path:line citations) + round-30 docs-only STATE sync closure | ch-r27-window-001..003 + ch-r30-000/001 in REVIEW_FINDINGS; vitest 135/135; vite build green; oxlint 0 errors |
@@ -635,6 +638,7 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
 
 
 
