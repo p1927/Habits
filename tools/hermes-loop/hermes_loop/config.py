@@ -47,10 +47,12 @@ class WorktreeConfig:
 # Default per-worker tick timeout (seconds). Real LLM ticks need ~10–30
 # minutes; 15min was too short. Supervisors get a separate default because
 # they only emit digests and should finish fast.
-DEFAULT_TICK_TIMEOUT = 1800   # 30 min
-DEFAULT_SUPERVISOR_TIMEOUT = 300  # 5 min
-MIN_TICK_TIMEOUT = 30
-MAX_TICK_TIMEOUT = 7200  # 2 hours
+DEFAULT_TICK_TIMEOUT = 7200   # 2 hours — agents may run for as long as they need,
+# provided the dispatcher heartbeat can distinguish a healthy tick from
+# a stuck one. See scheduler.py for the stale-busy recovery.
+DEFAULT_SUPERVISOR_TIMEOUT = 600  # 10 min
+MIN_TICK_TIMEOUT = 60
+MAX_TICK_TIMEOUT = 14400  # 4 hours hard ceiling
 
 
 @dataclass(frozen=True)

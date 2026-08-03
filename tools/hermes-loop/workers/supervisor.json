@@ -4,10 +4,15 @@
   "state_file": "docs/window-instances/supervisor/STATE.md",
   "executor": "hermes",
   "cadence_minutes": 120,
-  "tick_timeout_seconds": 300,
-  "max_turns": 40,
-  "stop_phrases": ["stop supervisor", "halt supervisor"],
-  "delivery": {"mode": "local"},
+  "tick_timeout_seconds": 600,
+  "max_turns": 80,
+  "stop_phrases": [
+    "stop supervisor",
+    "halt supervisor"
+  ],
+  "delivery": {
+    "mode": "local"
+  },
   "scratchpad": "tools/hermes-loop/logs/supervisor.log",
   "heartbeat": "tools/hermes-loop/state/supervisor.heartbeat",
   "worktree": {

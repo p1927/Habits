@@ -4,10 +4,15 @@
   "state_file": "docs/window-instances/ux-relay/STATE.md",
   "executor": "hermes",
   "cadence_minutes": 30,
-  "tick_timeout_seconds": 1800,
-  "max_turns": 80,
-  "stop_phrases": ["stop ux-relay", "halt ux-relay"],
-  "delivery": {"mode": "local"},
+  "tick_timeout_seconds": 7200,
+  "max_turns": 200,
+  "stop_phrases": [
+    "stop ux-relay",
+    "halt ux-relay"
+  ],
+  "delivery": {
+    "mode": "local"
+  },
   "scratchpad": "tools/hermes-loop/logs/ux-relay.log",
   "heartbeat": "tools/hermes-loop/state/ux-relay.heartbeat",
   "worktree": {

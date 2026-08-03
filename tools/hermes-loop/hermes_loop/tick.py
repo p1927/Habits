@@ -17,7 +17,10 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import threading
 import time
+import pathlib
+from datetime import datetime, timezone
 from pathlib import Path
 
 from . import scratchpad
@@ -35,6 +38,33 @@ def _find_repo_root(start: Path) -> Path:
             break
         cur = parent
     return start.resolve()
+
+
+
+def _start_heartbeat(heartbeat_path: Path, scratch_path: Path, stop: threading.Event) -> threading.Thread:
+    """Background thread: write every 60s while a tick is in flight so the
+    loop dispatcher can distinguish a *stuck* tick (BUSY stale >90 min) from
+    a *healthy* long-running one. Without this, the dispatcher can't tell
+    the difference between "agent is making progress" and "agent is hung."
+    """
+    def _run():
+        while not stop.wait(60.0):
+            try:
+                pathlib.Path(heartbeat_path).write_text(
+                    f"tick_heartbeat pid={os.getpid()} ts={datetime.now(timezone.utc).isoformat()}\n",
+                    encoding="utf-8",
+                )
+                scratchpad.touch_heartbeat(
+                    pathlib.Path(heartbeat_path),
+                    note="tick progress heartbeat (60s)",
+                )
+            except Exception as exc:  # pragma: no cover
+                # Heartbeats must never kill the agent's tick.
+                pass
+    t = threading.Thread(target=_run, name="tick-heartbeat", daemon=True)
+    t.start()
+    return t
+
 
 
 def run_one(
@@ -100,6 +130,8 @@ def run_one(
                 ),
             )
             print(f"[hermes-loop] tick start worker={cfg.id} bundle={bundle_path.relative_to(repo_root)} timeout={effective_timeout}s")
+            _hb_stop = threading.Event()
+            _hb_thread = _start_heartbeat(heartbeat_path, scratch_path, _hb_stop)
 
             t0 = time.monotonic()
             proc = hermes_run(
@@ -108,6 +140,7 @@ def run_one(
                 repo_root=repo_root,
                 timeout_seconds=effective_timeout,
             )
+            _hb_stop.set()
             elapsed = time.monotonic() - t0
 
             stdout_tail = (proc.stdout or "")[-300:]
@@ -138,6 +171,7 @@ def run_one(
             )
             return 1
         except subprocess.TimeoutExpired:
+            _hb_stop.set()
             elapsed = time.monotonic() - t0
             scratchpad.append(
                 scratch_path,
@@ -164,6 +198,7 @@ def run_one(
             )
             return 5
         except FileNotFoundError as exc:
+            _hb_stop.set()
             scratchpad.append(
                 scratch_path,
                 kind="error",
@@ -177,6 +212,8 @@ def run_one(
             )
             return 4
         except Exception as exc:  # pragma: no cover - defensive
+            try: _hb_stop.set()
+            except Exception: pass
             scratchpad.append(
                 scratch_path,
                 kind="error",

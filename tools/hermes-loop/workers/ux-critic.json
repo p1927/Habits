@@ -4,10 +4,15 @@
   "state_file": "docs/window-instances/ux-critic/STATE.md",
   "executor": "hermes",
   "cadence_minutes": 60,
-  "tick_timeout_seconds": 1800,
-  "max_turns": 80,
-  "stop_phrases": ["stop ux-critic", "halt ux-critic"],
-  "delivery": {"mode": "local"},
+  "tick_timeout_seconds": 3600,
+  "max_turns": 120,
+  "stop_phrases": [
+    "stop ux-critic",
+    "halt ux-critic"
+  ],
+  "delivery": {
+    "mode": "local"
+  },
   "scratchpad": "tools/hermes-loop/logs/ux-critic.log",
   "heartbeat": "tools/hermes-loop/state/ux-critic.heartbeat",
   "worktree": {
