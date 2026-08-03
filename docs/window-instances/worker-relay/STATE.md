@@ -88,6 +88,9 @@
 
 
 
+
+
+
  (priority ordered)
 
 
@@ -113,6 +116,9 @@
 - [ ] relay-239 | Log totals strip reuse food history fetch (relay-228 dedupe) | refactor | Given LogTypeTodayTotalsStrip mounts and calls api.getFoodHistory(2) while useLogSectionData already calls api.getFoodHistory(14) in the containing Log section; When the Type sub-tab mounts; Then the strip should reuse the section-level history payload (lift state up) to avoid a redundant Sheets read per panel mount
 - [ ] relay-240 | AppTabContent useCallback wrap nav callbacks | refactor | Given AppTabContent wraps useAppShellNavigation callbacks (navigateAgentPrompt, navigateLogType, etc.) in inline arrows that create new identities every render; When useLogSection/useDaySection/useHomeSection pass those identities into their deps arrays; Then useMemo invalidations cascade and tab panels rebuild unnecessarily; wrap each nav callback in useCallback so identity is stable across renders
 - [x] relay-231 | Log today totals strip stale-data timestamp | feature | Given totals are loaded from a delayed or offline response; When the totals strip renders; Then show a concise last-updated indicator and preserve the existing totals instead of presenting stale data as current
+- [ ] relay-241 | Day schedule-to-log completion handoff | feature | Given a scheduled habit is completed in Day; When the user marks it done; Then the completion appears in Log with the source schedule label and a link back to the Day event
+- [ ] relay-242 | Agent coach follow-up from nutrition totals | feature | Given today totals are visible in Log; When the user selects Ask Coach; Then Agent opens with the totals context attached and the user can remove that context before sending
+- [ ] relay-243 | Cards capture-to-habit conversion | feature | Given a saved Card contains a habit idea; When the user chooses Turn into habit; Then a prefilled habit draft opens with title and first-line context and requires explicit confirmation before creation
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -465,6 +471,9 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
 
 
 
