@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-02T07:47:07Z |
-| where_we_are | ch-160 agent/tools.py spec/dispatch split shipped (227→151+79+4); ff-merge 295afbf; main +0 ahead, 5 new scan items queued (ch-oversize x3, ch-patchwork x2) |
-| confirmed_next | ch-patchwork-log-totals |
+| reviewed_at | 2026-08-03T16:11:34Z |
+| where_we_are | ch-154 closed as stale: focused totals component/helper/viewmodel suites already implement all AC; exact 132/132 targeted tests + build + lint 0 errors |
+| confirmed_next | ch-161 |
 
 ---
 
@@ -18,21 +18,21 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `(none — ch-patchwork-app-css audit closed; ch-154 queued for next tick)` |
+| confirmed_next | `ch-161` |
 | phase | `9-arm` |
 | last_wake | `2026-08-03T08:27:49Z` |
 | code_changed | `no` |
-| review_status | `closed` |
+| review_status | `skipped` |
 | review_round | `31` |
 | last_reviewed_round | `30` |
 | worktree_status | `none` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md` |
-| review_fingerprint | `2b91e7074ac58d73` |
-| review_diff_range | `uncommitted` |
-| review_skip_reason | `docs-only STATE.md sync (ch-patchwork-app-css audit + r31 closure; no pwa/ or server/ runtime code in diff)` |
-| ritual_step | `9` |
+| review_changed_files | `(none)` |
+| review_fingerprint | `e3b0c44298fc1c14` |
+| review_diff_range | `none` |
+| review_skip_reason | `ch-154 coverage audit only: no runtime/test diff; existing targeted suites passed 132/132, build passed, lint 0 errors (50 pre-existing warnings)` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ch-patchwork-app-css audit: 4 recent App.css touches (relay-222/223/226/227) are ADDITIVE feature deliveries to a single co-located component (LogTypeTodayTotalsStrip, lines 3789-3868), NOT corrective patchwork for the same defect. Detector heuristic was a misclassification — feature commits that each add a distinct selector with distinct intent (macro expand / pending-badge / setup-hint / focus-ring) are not patchwork. Selector duplicate scan: 13 selectors appear >1x but all are base rule + @media prefers-reduced-motion + @media max-width pattern (standard CSS), no real overlap. Co-location: good (totals strip block is contiguous). Token usage: shared (--ok, --muted, --text-secondary, --font-size-sm, --revolut-card-radius, --focus-ring). Component ownership: 1 file (LogTypeTodayTotalsStrip.tsx). Dead/orphan selectors: 0. Recommendation: CLOSE ch-patchwork-app-css — not a defect. The 5608-line App.css monolith is project-wide scope (intentional single cascade for shared-token design system); splitting would create CSS module interop issues. Defer with note: not a code-health one-window fix.` |
+| brainstorm_outcome | `ch-154 approaches: A) add another focused totals-strip test file — rejected because LogTypeTodayTotalsStrip.test.tsx (1125 lines) and logTypeTotals.test.ts already cover every AC state; B) audit existing behavior-focused tests and run the exact suites — selected to avoid duplicate coverage and close the stale item with executable evidence.` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
@@ -42,9 +42,13 @@
 | merge_done | `yes` |
 | review_tick_applied_at | `2026-08-03T08:27:49+00:00` |
 | refactor_subphase | `none` |
-| refactor_plan_id | `ch-160` |
+| refactor_plan_id | `ch-154` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 
 ## IN_PROGRESS
 
@@ -67,12 +71,14 @@
 
 
 
-- [x] ch-151 | `AgentChatComposer.tsx` (164) split | structure | 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); 164→83; r22 zero bugs; c5e101d merged | done tick #145
+
+
+
 - [x] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
 - [x] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
 - [x] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
-- [ ] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
+- [x] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
 - [x] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
 - [x] ch-159 | `server/habits_api/agent/service.py` tool-call loop extract | refactor | Given two near-duplicate `for _ in range(5):` tool-call loops in chat() and chat_stream(), When extracted to a shared helper, Then service.py 251→~170 with chat_stream dropping the duplicated message/tool-call bookkeeping
 - [x] ch-160 | `server/habits_api/agent/tools.py` (227) spec/dispatch split | refactor | Given single 227-line module mixing AGENT_TOOLS JSON spec list (160 lines) and execute_tool dispatch table (10 tools), When split, Then agent_tools_specs.py (~160 lines) + agent_tool_dispatch.py (~70 lines)
@@ -86,6 +92,9 @@
 - [ ] ch-oversize-design-system | .cursor/skills/ui-ux-pro-max/scripts/design_system.py (1068) split | structure | separate design token search and rendering concerns; skill tooling only | priority=P3
 - [x] ch-patchwork-log-totals | LogTypeTodayTotalsStrip + test (4 recent fix commits) | structure | audit repeated patches and consolidate root behavior/test contract | priority=P1
 - [x] ch-patchwork-app-css | pwa/src/App.css (3 recent fix commits) | structure | audit repeated CSS patches and consolidate affected selectors/tokens | priority=P2
+- [ ] ch-oversize-log-totals-test | pwa/src/components/LogTypeTodayTotalsStrip.test.tsx (1125) split | structure | separate totals states, disclosure/a11y, history comparison, and Ask Coach suites while preserving shared mock lifecycle and exact test behavior | priority=P1
+- [ ] ch-oversize-okr-cascade | .agents/skills/product-strategist/scripts/okr_cascade_generator.py (593) split | structure | separate parsing, cascade generation, and rendering concerns; skill tooling only | priority=P3
+- [ ] ch-oversize-persona-generator | .agents/skills/ux-researcher-designer/scripts/persona_generator.py (586) split | structure | separate input parsing, persona synthesis, and output rendering concerns; skill tooling only | priority=P3
 ## BUG_BACKLOG
 
 *(empty — scan as refactor uncovers bugs)*
@@ -409,7 +418,9 @@
 
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-08-03T16:11:34Z | ch-154 | 8-close | coverage audit closed: existing totals tests cover null target/data, goal reached, macro disclosure, pending sync, helper math, and viewmodel states; no duplicate tests added | 132/132 targeted tests; npm build green; oxlint 0 errors (50 pre-existing warnings) |
 | — | — | 8-close | — | — |
 | — | ch-patchwork-log-totals | review | round-27 review-closure: 3 window-lens findings (r27-window-001/002/003 with path:line citations) + round-30 docs-only STATE sync closure | ch-r27-window-001..003 + ch-r30-000/001 in REVIEW_FINDINGS; vitest 135/135; vite build green; oxlint 0 errors |
 | — | ch-patchwork-log-totals | 8-close | classifyTotalsState single state enum — TotalsState (empty/goal-reached/target-unset/tracking) extracted from buildLogTypeTotalsViewModel; 9 new tests; 130/130 pass; tsc+oxlint+vite green | f783cca; vitest 130/130; tsc clean; oxlint 0 errors; vite build clean |
