@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { FoodTodayResponse } from './api';
-import { buildLogTypeTotalsViewModel } from './logTypeTotalsViewModel';
+import {
+  buildLogTypeTotalsViewModel,
+  classifyTotalsState,
+  type TotalsState,
+} from './logTypeTotalsViewModel';
 
 const data: FoodTodayResponse = {
   protein_g: 45,
@@ -14,7 +18,11 @@ const data: FoodTodayResponse = {
 
 describe('buildLogTypeTotalsViewModel', () => {
   it('centralizes under-target display, announcement, and macro state', () => {
-    expect(buildLogTypeTotalsViewModel(data, 2000)).toEqual({
+    // ch-patchwork-log-totals: state classifier added to the view model. Use
+    // toMatchObject (not toEqual) so the test doesn't have to enumerate every
+    // future field — the per-state classifier describe block pins state
+    // explicitly below.
+    expect(buildLogTypeTotalsViewModel(data, 2000)).toMatchObject({
       consumed: 750,
       protein: 45,
       proteinTarget: 120,
@@ -33,6 +41,7 @@ describe('buildLogTypeTotalsViewModel', () => {
       pendingBadgeText: null,
       hasNoMealsLogged: false,
       setupHint: null,
+      state: 'tracking',
     });
   });
 
@@ -188,5 +197,71 @@ describe('buildLogTypeTotalsViewModel', () => {
       setupHint: 'Set a daily calorie target in Settings to track progress.',
       footerText: '750 kcal today',
     });
+  });
+});
+
+// ch-patchwork-log-totals: classifyTotalsState() collapses the four relay-N
+// display states into one discriminated value. Tests pin the priority order
+// (empty > goal-reached > target-unset > tracking) and the inputs each state
+// expects. The state field on the view model is also asserted for the same
+// cases so a future contributor who accidentally re-derives the state inside
+// buildLogTypeTotalsViewModel gets caught here.
+describe('classifyTotalsState', () => {
+  const meal: FoodTodayResponse = {
+    protein_g: 45,
+    protein_target_g: 120,
+    calories: 750,
+    carbs: 80,
+    fat: 25,
+    items: [
+      { row: 1, food: 'oatmeal', quantity_g: 80, calories: 380, carbs: 60, protein: 12, fat: 6 },
+    ],
+    sheets_connected: true,
+  };
+
+  const cases: Array<{
+    label: string;
+    data: FoodTodayResponse | null;
+    calorieTarget: number | null;
+    hasGoalReached: boolean;
+    expected: TotalsState;
+  }> = [
+    { label: 'empty (null data)', data: null, calorieTarget: 2000, hasGoalReached: false, expected: 'empty' },
+    { label: 'empty (zero calories + no items)', data: { ...meal, calories: 0, protein_g: 0, items: [] }, calorieTarget: 2000, hasGoalReached: false, expected: 'empty' },
+    { label: 'goal-reached (over target)', data: { ...meal, calories: 2500 }, calorieTarget: 2000, hasGoalReached: true, expected: 'goal-reached' },
+    { label: 'target-unset (no target, meals logged)', data: meal, calorieTarget: null, hasGoalReached: false, expected: 'target-unset' },
+    { label: 'target-unset (target=0, meals logged)', data: meal, calorieTarget: 0, hasGoalReached: false, expected: 'target-unset' },
+    { label: 'tracking (target set, under 100%)', data: meal, calorieTarget: 2000, hasGoalReached: false, expected: 'tracking' },
+    // priority: empty beats goal-reached. hasGoalReached is true but
+    // there are no meals to claim progress against.
+    { label: 'priority: empty beats goal-reached', data: null, calorieTarget: 2000, hasGoalReached: true, expected: 'empty' },
+  ];
+
+  it.each(cases)('$label → $expected', ({ data, calorieTarget, hasGoalReached, expected }) => {
+    expect(classifyTotalsState(data, calorieTarget, hasGoalReached)).toBe(expected);
+  });
+});
+
+describe('buildLogTypeTotalsViewModel exposes state classifier', () => {
+  it('reports "tracking" when meals logged and target set under 100%', () => {
+    expect(buildLogTypeTotalsViewModel(data, 2000).state).toBe('tracking');
+  });
+
+  it('reports "empty" for null data', () => {
+    expect(buildLogTypeTotalsViewModel(null, null).state).toBe('empty');
+  });
+
+  it('reports "goal-reached" when calories exceed target', () => {
+    expect(buildLogTypeTotalsViewModel({ ...data, calories: 2500 }, 2000).state).toBe('goal-reached');
+  });
+
+  it('reports "target-unset" when meals logged but no target configured', () => {
+    const withMeal = {
+      ...data,
+      items: [
+        { row: 1, food: 'oatmeal', quantity_g: 80, calories: 380, carbs: 60, protein: 12, fat: 6 },
+      ],
+    } as FoodTodayResponse;
+    expect(buildLogTypeTotalsViewModel(withMeal, null).state).toBe('target-unset');
   });
 });
