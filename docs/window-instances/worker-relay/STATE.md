@@ -82,6 +82,9 @@
 
 
 
+
+
+
  (priority ordered)
 
 
@@ -106,6 +109,9 @@
 - [ ] relay-233 | Log macro contribution drill-down | feature | Given the totals strip shows protein carbs and fat; When the user activates one macro; Then today food rows reveal the top contributing meals for that macro, expose a clear-filter action, and announce the filtered result count accessibly
 - [ ] relay-234 | Log seven-day nutrition trend drill-down | feature | Given at least two days of nutrition history; When the user opens the totals trend; Then show seven-day kcal and protein trends, mark missing days, provide an accessible text summary, and allow return to Today
 - [x] relay-223 | Log today totals strip pending sync badge | feature | Given optimistic food entries are pending or queued locally; When the Log Type totals strip renders; Then its footer shows the exact pending meal count beside confirmed totals and updates after success or failure
+- [ ] relay-233 | Settings Granted Scopes panel (SettingsGrantedScopesPanel) | feature | Given a privacy-conscious user on Settings Google card with no scope listing shown; When the card loads; Then the panel lists granted Calendar and Sheets scopes with human labels, includes a Manage on Google Account link, and shows a Re-connect CTA when any scope is missing
+- [ ] relay-234 | Cards body-first capture (CardsBodyFirstCapture) | feature | Given a knowledge worker opens the Cards create sheet; When the sheet opens with an empty body; Then the body textarea receives autofocus, Save is enabled when body is non-empty without requiring a title, and the saved card derives its title from the first body line capped at 80 chars
+- [ ] relay-235 | Coach inline tool steps (CoachInlineToolSteps) | feature | Given a skeptical new user sends a first Agent prompt; When tools are running and tokens have not yet arrived; Then the empty streaming assistant bubble shows a vertical step list of active tools with status labels, checkmarks on completed tools, and an aria-live Coach is working announcement; steps hide once tokens arrive
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -412,6 +418,9 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
 
 
 
