@@ -6,7 +6,7 @@
 
 ## LAST_REVIEW
 
-| Field | Value |
+| Field | brainstorm_notes |
 |-------|-------|
 | reviewed_at | 2026-08-03T11:51:41Z |
 | where_we_are | Phase 2 orient at relay-226 — top unchecked open; BACKLOG has 9 open items, all relay-2xx totals-strip and Settings/Cards/Coach features |
@@ -24,30 +24,30 @@
 | phase | `8-close` |
 | review_status | `skipped` |
 | code_changed | `no` |
-| review_round | `84` |
-| last_reviewed_round | `84` |
+| review_round | `86` |
+| last_reviewed_round | `86` |
 | worktree_status | `none` |
-| ritual_step | `1-wake` |
-| brainstorm_done | `no` |
-| brainstorm_outcome | `relay-225 (empty-state fallback): verified retroactive — ch-patchwork-log-totals b2c4ee6 owns the implementation; classifyTotalsState() returns "empty" branch + viewmodel footerText carries "No meals` |
+| ritual_step | `9-arm` |
+| brainstorm_done | `yes` |
+| brainstorm_outcome | `relay-228 day-over-day comparison: BuildDayOverDayComparison helper + formatKcalDelta/formatProteinDelta (sign-symmetric rounding, 'Same as yesterday' on zero); comparison field on LogTypeTotalsViewMo` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `bf0d949` |
+| commit_hash | `f160b89` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | idle_mode_triggered | `no` |
 | idle_rescue_done | `yes` |
-| current_item_id | `relay-226` |
+| current_item_id | `relay-232` |
 | finalize_status | `success` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
-| review_diff_range | `none` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick — relay-226 verified retroactive, work shipped at bf0d949` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/AppTabContent.tsx pwa/src/components/LogTypeTabPanel.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/hooks/useLogSection.ts pwa/src/hooks/useLogTabPanelsProps.ts pwa/src/lib/logTabPanelsPropsBuilder.ts pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts pwa/src/lib/logTotalsCoachPrompt.test.ts pwa/src/lib/logTotalsCoachPrompt.ts pwa/src/lib/logTypeTotalsViewModel.ts pwa/src/lib/logTabPanelsProps.ts pwa/src/lib/logTabPanelPropPickers.ts pwa/src/sections/Agent.tsx pwa/src/sections/Log.tsx` |
+| review_fingerprint | `1f6cff36d0b10d4c` |
+| review_diff_range | `uncommitted` |
+| review_skip_reason | `Code shipped at f160b89; relay-232 closed; review_round=86 done` |
 
 ## IN_PROGRESS
 
@@ -85,6 +85,8 @@
 
 
 
+
+
  (priority ordered)
 
 
@@ -92,17 +94,15 @@
 
 
 
-- [x] relay-219 | Log today totals strip aggregation tests | refactor | Given FoodTodayResponse totals + pending optimistic entries; When totals strip computes kcal/protein; Then unit tests cover totals+pending, no data, and target-null cases
-- [x] relay-220 | Log today totals strip aria-live | ux | Given totals strip above Log Today's list; When totals change (log saved, pending clears); Then aria-live=polite announces kcal + protein updates
 - [x] relay-221 | Log today totals strip goal-reached state | feature | Given totals strip kcal progress bar; When consumed >= calorieTarget and target is set; Then bar fills to 100% with goal-reached variant (green fill, footer reads "Goal reached" instead of remaining)
 - [x] relay-222 | Log today totals strip macro breakdown | feature | Given totals strip above today's list; When user taps the strip; Then expanded panel shows carbs/total-g and fat/total-g progress lines below protein (only renders if backend returns non-null macros)
 - [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
 - [x] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
 - [x] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
 - [x] relay-225 | Log today totals strip empty-state fallback | feature | Given no meals are logged today and the totals strip is visible; When the Log Type tab opens; Then the strip shows zeroed kcal/protein values, a clear ‘No meals logged yet’ message, and remains readable without implying progress
-- [ ] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
+- [x] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
 - [x] relay-230 | Totals strip pending-sync count accuracy | feature | Given optimistic food entries are pending sync; When the totals strip renders; Then show the exact pending meal count and update it after sync or failure without hiding the underlying totals
-- [ ] relay-232 | Log totals strip Ask Coach handoff | feature | Given the totals strip has today nutrition totals; When the user activates Ask Coach; Then Agent opens with a plain-text kcal protein and macro summary prefilled once, focus lands in the composer, and no message sends without confirmation
+- [x] relay-232 | Log totals strip Ask Coach handoff | feature | Given the totals strip has today nutrition totals; When the user activates Ask Coach; Then Agent opens with a plain-text kcal protein and macro summary prefilled once, focus lands in the composer, and no message sends without confirmation
 - [ ] relay-231 | Log today totals strip stale-data timestamp | feature | Given totals are loaded from a delayed or offline response; When the totals strip renders; Then show a concise last-updated indicator and preserve the existing totals instead of presenting stale data as current
 - [ ] relay-233 | Log macro contribution drill-down | feature | Given the totals strip shows protein carbs and fat; When the user activates one macro; Then today food rows reveal the top contributing meals for that macro, expose a clear-filter action, and announce the filtered result count accessibly
 - [ ] relay-234 | Log seven-day nutrition trend drill-down | feature | Given at least two days of nutrition history; When the user opens the totals trend; Then show seven-day kcal and protein trends, mark missing days, provide an accessible text summary, and allow return to Today
@@ -110,6 +110,8 @@
 - [ ] relay-236 | Settings Granted Scopes panel (SettingsGrantedScopesPanel) | feature | Given a privacy-conscious user on Settings Google card with no scope listing shown; When the card loads; Then the panel lists granted Calendar and Sheets scopes with human labels, includes a Manage on Google Account link, and shows a Re-connect CTA when any scope is missing
 - [ ] relay-237 | Cards body-first capture (CardsBodyFirstCapture) | feature | Given a knowledge worker opens the Cards create sheet; When the sheet opens with an empty body; Then the body textarea receives autofocus, Save is enabled when body is non-empty without requiring a title, and the saved card derives its title from the first body line capped at 80 chars
 - [ ] relay-238 | Coach inline tool steps (CoachInlineToolSteps) | feature | Given a skeptical new user sends a first Agent prompt; When tools are running and tokens have not yet arrived; Then the empty streaming assistant bubble shows a vertical step list of active tools with status labels, checkmarks on completed tools, and an aria-live Coach is working announcement; steps hide once tokens arrive
+- [ ] relay-239 | Log totals strip reuse food history fetch (relay-228 dedupe) | refactor | Given LogTypeTodayTotalsStrip mounts and calls api.getFoodHistory(2) while useLogSectionData already calls api.getFoodHistory(14) in the containing Log section; When the Type sub-tab mounts; Then the strip should reuse the section-level history payload (lift state up) to avoid a redundant Sheets read per panel mount
+- [ ] relay-240 | AppTabContent useCallback wrap nav callbacks | refactor | Given AppTabContent wraps useAppShellNavigation callbacks (navigateAgentPrompt, navigateLogType, etc.) in inline arrows that create new identities every render; When useLogSection/useDaySection/useHomeSection pass those identities into their deps arrays; Then useMemo invalidations cascade and tab panels rebuild unnecessarily; wrap each nav callback in useCallback so identity is stable across renders
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -186,8 +188,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r86-lens-001 | low | Window-lens per-file pass on relay-232 (every file cited, no defects): pwa/src/lib/logTotalsCoachPrompt.ts (new, 103 lines): pure helper; empty-state guard correct; hasCalorieTarget gate prevents '750 of 0 kcal'; 11 unit tests pass. pwa/src/lib/logTotalsCoachPrompt.test.ts (new, 138 lines): covers all 4 framing states + macros line + comparison line + plain-text invariant. pwa/src/lib/logTypeTotalsViewModel.ts:52-57,207: added calorieTarget field; no behavioural change to existing fields. pwa/src/components/LogTypeTodayTotalsStrip.tsx:13-19,28,112-126,167-176,341-358: onAskCoach prop + useMemo-wrapped viewModel + handleAskCoach + button JSX; button disabled when !serverOnline, hidden when onAskCoach undefined; preserves existing Card-as-button disclosure. pwa/src/components/LogTypeTodayTotalsStrip.test.tsx:56-64,1119-1254: 7 new tests cover button render/hide/disabled/click/empty/no-autosend/double-click. pwa/src/App.css:3879-3919: coach-row + coach-button + 4 states (default/hover/focus-visible/disabled) using existing --accent, --accent-dim, --focus-ring tokens; no new tokens. pwa/src/components/LogTypeTabPanel.tsx:43-49,81,135: optional onAskCoach prop forwarded. pwa/src/lib/logTabPanelsProps.ts:79-83: type extension only. pwa/src/lib/logTabPanelPropPickers.ts:58: picker pass-through. pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts:9-13,21-22,30: forwarded through builder. pwa/src/lib/logTabPanelsPropsBuilder.ts:46-50,68,78: type + builder updated. pwa/src/hooks/useLogTabPanelsProps.ts:33: dep added. pwa/src/hooks/useLogSection.ts:23-27,41,114: option forwarded. pwa/src/sections/Log.tsx:25-30,46,75: option forwarded to useLogSection. pwa/src/components/AppTabContent.tsx:96-99: wires onAskCoach to navigateAgentPrompt. pwa/src/sections/Agent.tsx:6,19-30: focusAgentComposer() added to existing useEffect; covers all handoff sources. | round-86 /code-review | closed | — | closed |
+| rf-r86-000c | low | Triage of rf-r86-000: zero-finding sentinel (bugbot skill absent locally; window-lens review clean). AC satisfied across all clauses. No deferred items from this finding. | round-86 bugbot | closed | — | closed |
+| rf-r86-fresh-001c | low | Triage of rf-r86-fresh-001: fixed in same tick. handleAskCoach identity churn resolved by wrapping buildLogTypeTotalsViewModel in useMemo (LogTypeTodayTotalsStrip.tsx:112-122). handleAskCoach identity now stable unless one of (data, calorieTarget, pendingCount, yesterdayKcal, yesterdayProtein) changes. Verified 73/73 tests still pass after the fix. | round-86 /code-review | closed | — | closed |
+| rf-r86-fresh-002c | low | Triage of rf-r86-fresh-002: matches established AppTabContent pattern (other inline nav arrows like onMealPlanOpened already use this style). Valid perf observation but deferred — see rf-r86-fresh-002b → relay-240. Original row rf-r86-fresh-002 has no action field (write-once state_api) so its 'open' status cannot be edited; this row is the audit trail. Closed by triage with backlog follow-up created. | round-86 /code-review | closed | relay-240 | closed |
+| rf-r86-fresh-002b | low | Triage follow-up: rf-r86-fresh-002 (AppTabContent inline arrow identity churn). Valid perf observation but no correctness issue and matches existing pattern across AppTabContent. Deferred to backlog relay-240 (useCallback wrap of AppTabContent's inline nav-callback arrows). Status: backlog. | round-86 /code-review | backlog | relay-240 | open |
+| rf-r86-fresh-002 | low | Fresh-eye: AppTabContent wraps navigateAgentPrompt in an inline arrow (prompt) => navigateAgentPrompt(prompt) which creates a new identity every render. This propagates to useLogSection → useLogTabPanelsProps deps and triggers extra useMemo invalidations. Matches the established pattern in AppTabContent (other inline arrows like onMealPlanOpened={() => setOpenLogMealPlan(false)}) so not a regression — but flagged as a candidate for future useCallback wrapping of the AppTabContent props. No correctness issue; deferred to follow-up to keep this PR focused on the AC. | round-86 /code-review | backlog | relay-240 | open |
+| rf-r86-fresh-001 | low | Fresh-eye: handleAskCoach was initially memoised with viewModel as a dep, but viewModel was a fresh object every render (no useMemo) — handleAskCoach identity churned every render. Fixed by wrapping buildLogTypeTotalsViewModel(...) in useMemo so viewModel is stable across renders unless one of its 5 inputs changes. Tests still 73/73 pass. Files: pwa/src/components/LogTypeTodayTotalsStrip.tsx:112-122, 173-177. | round-86 /code-review | closed | — | closed |
+| rf-r86-000 | low | Bugbot subagent skipped — review-bugbot skill not present locally (matches rf-r78-000 / rf-r80-000 / rf-r83-000 / rf-r85-000 pattern). Window-lens review of relay-232: AC satisfied — pure helper buildLogTotalsCoachPrompt covers 4 framing states (empty / goal-reached / target-unset / tracking) and emits plain-text prompt with kcal/protein/macros/comparison summary; Ask Coach button is a real <button type=button> with aria-label, disabled when serverOffline, hidden when onAskCoach unwired; useMemo on viewmodel stabilises handleAskCoach identity; onAskCoach plumbed through 4 layers (AppTabContent → Log → useLogSection → useLogTabPanelsProps → buildLogTabPanelsProps → buildTypeTabProps → pickLogTypeTabPanelProps → LogTypeTabPanel → LogTypeTodayTotalsStrip) with optional type at every step; Agent.tsx adds focusAgentComposer() to the existing useEffect that watches agentPrompt.token (benefits all handoff sources: Day calendar + Log totals strip); no auto-send anywhere. 195 vitest pass + 1 pre-existing skip + lint 0 errors + build clean + journey 2 passed. Deferred (in commit body): macro-target denominators (no backend carbs_target_g/fat_target_g today; prompt omits macros line when null) and button placement nuance (right-aligned to not out-shout Card disclosure). | round-86 bugbot | closed | — | closed |
+| rf-r85-004 | low | Bugbot Round 85 #4: Duplicate getFoodHistory call - LogTypeTodayTotalsStrip fetches history(2) while useLogSectionData already fetches history(14). Dedupe may save via dedupedGet window but a proper lift-state-up refactor is owed. Deferred to backlog relay-239. Files: pwa/src/components/LogTypeTodayTotalsStrip.tsx:60-90, pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts (mockHistory, resetHistoryMock), pwa/src/App.css (comparison CSS rule), pwa/src/lib/logTypeTotals.test.ts, pwa/src/lib/logTypeTotalsViewModel.test.ts | round-85 bugbot | backlog | relay-239 | open |
+| rf-r85-003 | low | Bugbot Round 85 #3: Half-unit negative deltas rounded to -0 by Math.round (JS asymmetry). Fixed with sign-symmetric rounding in buildDayOverDayComparison (Math.sign x Math.round(Math.abs)). Files: pwa/src/lib/logTypeTotals.ts:101-110, pwa/src/lib/logTypeTotals.test.ts:225-244 | round-85 bugbot | closed | — | closed |
+| rf-r85-002 | medium | Bugbot Round 85 #2: Empty-state comparison visually hidden but still announced via announceText. Fixed by gating comparisonAnnouncePart on !hasNoMealsLogged. Test added: empty-state aria-live does NOT contain 'vs yesterday'. Files: pwa/src/lib/logTypeTotalsViewModel.ts:182-202, pwa/src/lib/logTypeTotalsViewModel.test.ts:265-345, pwa/src/components/LogTypeTodayTotalsStrip.test.tsx:957-972 | round-85 bugbot | closed | — | closed |
+| rf-r85-001 | medium | Bugbot Round 85 #1: Older or future history rows mislabelled as yesterday - component picked first non-today row; fixed by filtering on exact yesterdayIso computed at fetch time. Tests added: older-only row unavailable; future-dated row unavailable. Files: pwa/src/components/LogTypeTodayTotalsStrip.tsx:60-90, pwa/src/components/LogTypeTodayTotalsStrip.test.tsx:925-955 | round-85 bugbot | closed | — | closed |
+| rf-r85-000 | low | Bugbot Round 85: 4 findings (2 medium + 2 low). Medium #1 #2 fixed in worktree (exact-yesterday filter, announce gate). Medium/Low #3 fixed (sign-symmetric rounding). Low #4 deferred to relay-239 (dedupe history fetch). Final: 177 vitest pass, 1 pre-existing skip; lint 0 errors; build clean; journey 2 passed. Reviewed files: pwa/src/App.css (comparison CSS, log-type-totals-strip__comparison), pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts (mockHistory + resetHistoryMock), pwa/src/components/LogTypeTodayTotalsStrip.test.tsx (8 new tests: unavailable, deltas, today-filter, same-as-yesterday, offline, empty-state suppression, error/401, footer order + 3 Bugbot-Round-85 cases), pwa/src/lib/logTypeTotals.test.ts (12 new tests: formatKcalDelta, formatProteinDelta, buildDayOverDayComparison including Bugbot #3 sign-symmetric rounding), pwa/src/lib/logTypeTotalsViewModel.test.ts (7 new tests: comparison wiring, announce path, goal-reached, empty-state). | round-85 bugbot | closed | — | closed |
 | rf-r84-001 | low | Bugbot+window lens: relay-226 AC satisfied retroactively — work shipped at bf0d949 'feat(log-totals): relay-226 target-unset state' which already lives on main. classifyTotalsState returns 'target-unset' when calorieTarget is null/0 with meals logged; buildLogTypeTotalsViewModel emits setupHint='Set a daily calorie target in Settings to track progress.' and a footer '<consumed> kcal today' (no remaining claim). showKcalBar=false when !hasCalorieTarget and showProteinBar=false when protein_target_g null/0 — both bars suppressed, no misleading 0% track renders. Empty state keeps relay-225's 'No meals logged yet' (setupHint=null in that branch). 65/65 totals-strip+viewmodel vitest pass + 135/135 full pwa suite + lint 0 errors + build clean + journey 6 passed (1 manual pre-existing skip). Deferred (already in commit body): tappable link to Settings (out of AC; would couple to tab nav from presentational component). | round-84 bugbot | closed | — | closed |
 | rf-r84-000 | low | — | — | — | — | open |
 | rf-r83-fresh-001 | low | — | — | — | — | open |
@@ -340,9 +372,13 @@
 
 
 
+
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-08-03T20:55:00Z | relay-232 | done | build | f160b89 |
+| — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
 | 2026-08-03T09:33:32Z | relay-225 | done | code-already-shipped via ch-patchwork-log-totals b2c4ee6 (classifyTotalsState empty branch + viewmodel footerText + hasMacros gating + showKcalBar/showProteinBar suppression) | b2c4ee6 + vitest 6/6 relay-225 describe + 130/130 full pwa suite + npm run lint 0 errors + npm run build clean |
 | — | — | 8-close | — | — |
@@ -424,6 +460,25 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
