@@ -235,3 +235,14 @@ export function getComparisonUnavailable(container: HTMLElement): HTMLElement | 
     '[data-testid="log-type-totals-strip-comparison-unavailable"]',
   );
 }
+
+/**
+ * Resolve the stale-data indicator line (relay-231). Returns null in the
+ * empty state (relay-225 owns the message) or when the strip is rendered
+ * with a null `data` payload. The indicator carries its own
+ * data-testid so tests can pin the exact text and the kind modifier
+ * class (fresh / stale / offline).
+ */
+export function getStaleIndicator(container: HTMLElement): HTMLElement | null {
+  return container.querySelector('[data-testid="log-type-totals-strip-stale"]');
+}

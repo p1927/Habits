@@ -344,3 +344,51 @@ describe('buildLogTypeTotalsViewModel — day-over-day comparison (relay-228)', 
     expect(vm.comparison.kcalDeltaText).toBe('Same as yesterday');
   });
 });
+
+describe('buildLogTypeTotalsViewModel — relay-231 stale-indicator field', () => {
+  const dataWithMeal: FoodTodayResponse = {
+    protein_g: 45,
+    protein_target_g: 120,
+    calories: 750,
+    carbs: 80,
+    fat: 25,
+    items: [
+      { row: 1, food: 'apple', quantity_g: 100, calories: 750, carbs: 80, protein: 45, fat: 25 },
+    ],
+    sheets_connected: true,
+  };
+
+  it('exposes a fresh indicator immediately after data arrives', () => {
+    expect(buildLogTypeTotalsViewModel(dataWithMeal, 2000, 0, null, null, 0, true).staleIndicator).toEqual({
+      kind: 'fresh',
+      text: 'Just updated',
+    });
+  });
+
+  it('exposes a stale indicator after the freshness window elapses', () => {
+    expect(buildLogTypeTotalsViewModel(dataWithMeal, 2000, 0, null, null, 90_000, true).staleIndicator).toEqual({
+      kind: 'stale',
+      text: 'Updated 1m ago',
+    });
+  });
+
+  it('exposes an offline indicator when the server is unreachable but data is still on screen', () => {
+    expect(buildLogTypeTotalsViewModel(dataWithMeal, 2000, 0, null, null, 0, false).staleIndicator).toEqual({
+      kind: 'offline',
+      text: 'Showing offline totals',
+    });
+  });
+
+  it('suppresses the indicator in the empty state (relay-225 owns the message)', () => {
+    const emptyData: FoodTodayResponse = {
+      ...dataWithMeal,
+      calories: 0,
+      protein_g: 0,
+      items: [],
+    };
+    // Even when the freshness window would normally show "Just updated",
+    // the empty state must not add a stale line — relay-225's
+    // "No meals logged yet" is the only message the user should see.
+    expect(buildLogTypeTotalsViewModel(emptyData, 2000, 0, null, null, 0, true).staleIndicator).toBeNull();
+  });
+});

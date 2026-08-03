@@ -3844,6 +3844,25 @@ form.log-type-card {
   color: var(--muted);
 }
 
+/* relay-231: stale-data indicator. Sits below the comparison line as the
+   last piece of "metadata" the strip surfaces before the Ask Coach button.
+   Same muted colour as the comparison line so the stack reads as a single
+   informational cluster; the offline variant gets a slightly stronger
+   muted colour (var(--text-secondary)) so the user can tell at a glance
+   that the totals are a snapshot from before a disconnect rather than the
+   live state. The fresh/stale variants stay at --muted because they are
+   informational, not actionable. */
+.log-type-totals-strip__stale {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.log-type-totals-strip__stale--offline {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 .log-type-totals-strip__expand-hint {
   margin: 0.25rem 0 0.5rem;
   font-size: var(--font-size-sm);

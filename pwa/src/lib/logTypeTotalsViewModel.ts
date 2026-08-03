@@ -2,11 +2,13 @@ import type { FoodTodayResponse } from './api';
 import { proteinProgressPct } from './foodSectionShared';
 import {
   buildDayOverDayComparison,
+  buildStaleIndicator,
   formatGrams,
   formatKcal,
   kcalProgressPct,
   kcalRemaining,
   type DayOverDayComparison,
+  type StaleIndicator,
 } from './logTypeTotals';
 
 // TotalsState — single classification for the LogTypeTodayTotalsStrip.
@@ -96,6 +98,12 @@ export interface LogTypeTotalsViewModel {
   // component, not here — the viewmodel exposes the truth so tests can
   // exercise the comparison block independently of the display layer.
   comparison: DayOverDayComparison;
+  // relay-231: stale-data indicator. Single muted line that names how
+  // current the rendered totals are — "Just updated" / "Updated 12s ago" /
+  // "Showing offline totals" — or null when the empty state owns the
+  // message (no data at all). The component owns the timestamp + interval;
+  // the viewmodel is a pure projection of (data, serverOnline, freshnessMs).
+  staleIndicator: StaleIndicator | null;
 }
 
 const SETUP_HINT_TEXT = 'Set a daily calorie target in Settings to track progress.';
@@ -111,6 +119,14 @@ export function buildLogTypeTotalsViewModel(
   // the network.
   yesterdayKcal: number | null = null,
   yesterdayProtein: number | null = null,
+  // relay-231: timestamp bookkeeping for the stale-data indicator. The
+  // component captures the current time the moment `data` is passed in and
+  // then ticks a relative-time recompute on a ~15s interval. The viewmodel
+  // itself does no clock work — it just projects the elapsed milliseconds
+  // onto the helper's three output kinds. Defaults to 0 so callers that do
+  // not yet wire a timestamp (e.g. tests) get the "Just updated" branch.
+  freshnessMs: number = 0,
+  serverOnline: boolean = true,
 ): LogTypeTotalsViewModel {
   const consumed = data?.calories ?? 0;
   const protein = data?.protein_g ?? 0;
@@ -200,6 +216,16 @@ export function buildLogTypeTotalsViewModel(
           .join('. ')
       : '';
 
+  // relay-231: stale-data indicator. The component renders a single muted
+  // line under the comparison block when there IS data to render — the
+  // empty state (relay-225) owns the "no totals to time-stamp" message.
+  // `dataIsStale` is the "we have something to time-stamp" predicate, not
+  // the "data is older than threshold" predicate: when no data exists we
+  // suppress entirely; when data exists we always show the indicator (the
+  // helper decides between fresh / stale / offline).
+  const dataIsStale = data != null && (data.calories > 0 || (data.items?.length ?? 0) > 0);
+  const staleIndicator = buildStaleIndicator(dataIsStale, serverOnline, freshnessMs);
+
   return {
     consumed,
     protein,
@@ -224,5 +250,6 @@ export function buildLogTypeTotalsViewModel(
     setupHint,
     state,
     comparison,
+    staleIndicator,
   };
 }

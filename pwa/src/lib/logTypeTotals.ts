@@ -122,3 +122,74 @@ export function buildDayOverDayComparison(
     unavailableText: DAY_OVER_DAY_UNAVAILABLE_TEXT,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Stale-data indicator (relay-231).
+//
+// The totals strip is rendered from the latest `FoodTodayResponse` snapshot.
+// In normal operation the snapshot is current and the user does not need a
+// timestamp — but when the network is delayed, the user is offline, or the
+// payload is older than a few seconds, the existing totals can read as
+// "current" even though they were captured minutes ago. The strip therefore
+// surfaces a single muted line that names the freshness in plain language:
+//
+//   - "Just updated"          — within the freshness window (default 60s)
+//   - "Updated <n>s ago"      — older than the freshness window while online
+//   - "Showing offline totals" — server unreachable, keeping last known data
+//   - null                    — no data (the empty state owns the message)
+//
+// The indicator is computed purely from `freshnessMs` (the elapsed time
+// between the data being received and "now") and `serverOnline`. The
+// component owns the timer (setInterval ticks every ~15s to recompute the
+// relative time) so the helper itself stays a pure function and tests can
+// drive it with a fixed `freshnessMs` value.
+// ---------------------------------------------------------------------------
+
+export type StaleIndicatorKind = 'fresh' | 'stale' | 'offline';
+
+export interface StaleIndicator {
+  kind: StaleIndicatorKind;
+  text: string;
+}
+
+/** Freshness window: data this fresh reads as "Just updated". */
+export const STALE_INDICATOR_FRESH_MS = 60_000;
+
+/** Tunable for tests — the rounding bucket for the relative time display. */
+export function formatRelativeUpdatedAt(freshnessMs: number): string {
+  if (freshnessMs < 5_000) return 'Just updated';
+  if (freshnessMs < 60_000) {
+    const seconds = Math.floor(freshnessMs / 1000);
+    return `Updated ${seconds}s ago`;
+  }
+  const minutes = Math.floor(freshnessMs / 60_000);
+  return `Updated ${minutes}m ago`;
+}
+
+/**
+ * Build the stale-data indicator for the totals strip.
+ *
+ *   - dataIsStale=false: caller has no data (empty state owns the message),
+ *     so the indicator is suppressed entirely (null).
+ *   - serverOnline=false with data present: "Showing offline totals" so the
+ *     user knows the numbers on screen are a snapshot from before the
+ *     disconnect — they should not be read as the live current state.
+ *   - serverOnline=true with data present: the relative freshness string.
+ *
+ * Kept pure (no Date.now()) so the unit tests can pin both branches
+ * deterministically.
+ */
+export function buildStaleIndicator(
+  dataIsStale: boolean,
+  serverOnline: boolean,
+  freshnessMs: number,
+): StaleIndicator | null {
+  if (!dataIsStale) return null;
+  if (!serverOnline) {
+    return { kind: 'offline', text: 'Showing offline totals' };
+  }
+  return {
+    kind: freshnessMs < STALE_INDICATOR_FRESH_MS ? 'fresh' : 'stale',
+    text: formatRelativeUpdatedAt(freshnessMs),
+  };
+}

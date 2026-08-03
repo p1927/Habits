@@ -1,9 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Card } from './ui/Card';
 import { api, ApiError, type FoodTodayResponse } from '../lib/api';
 import { formatGrams } from '../lib/logTypeTotals';
 import { buildLogTypeTotalsViewModel } from '../lib/logTypeTotalsViewModel';
 import { buildLogTotalsCoachPrompt } from '../lib/logTotalsCoachPrompt';
+
+// relay-231: the stale-data indicator ticks the relative time every 15s
+// once we have data. 15s matches the most common "sub-minute" bucket in
+// formatRelativeUpdatedAt ("Updated 12s ago") so the user sees the seconds
+// count move naturally instead of jumping in larger steps. Lower bounds
+// would burn CPU without changing what the user can see.
+const STALE_TICK_MS = 15_000;
 
 export interface LogTypeTodayTotalsStripProps {
   data: FoodTodayResponse | null;
@@ -34,6 +41,41 @@ export function LogTypeTodayTotalsStrip({
   // because the strip lives above the today list and is not a sticky
   // navigation surface.
   const [expanded, setExpanded] = useState(false);
+
+  // relay-231: track the wall-clock timestamp the moment `data` is
+  // received so the stale-data indicator can render "Updated 12s ago".
+  // We use a ref (mutable storage) that captures Date.now() the first
+  // time each new `data` identity is observed during render. Updating
+  // a ref during render is safe when the new value is computed
+  // deterministically from props (React documents this pattern in the
+  // FAQ for derived state — see "You Might Not Need an Effect").
+  // We compare against a separate dataIdentityRef so we only re-stamp
+  // when the parent actually hands us a NEW payload (not on every
+  // re-render with the same data reference).
+  const dataIdentityRef = useRef<FoodTodayResponse | null | undefined>(undefined);
+  const dataReceivedAtRef = useRef<number>(0);
+  if (dataIdentityRef.current !== data) {
+    dataIdentityRef.current = data;
+    dataReceivedAtRef.current = data != null ? Date.now() : 0;
+  }
+  const [freshnessTick, setFreshnessTick] = useState(0);
+  const freshnessMs =
+    data != null && dataReceivedAtRef.current > 0
+      ? Date.now() - dataReceivedAtRef.current
+      : 0;
+  // Tick the relative-time recompute every STALE_TICK_MS once we have
+  // data on screen. When `data` goes null again (e.g. fresh fetch in
+  // flight) the timer clears. The interval is independent of the
+  // data-stamping logic above so the two never race.
+  useEffect(() => {
+    if (data == null) return undefined;
+    const id = window.setInterval(() => {
+      setFreshnessTick((n) => n + 1);
+    }, STALE_TICK_MS);
+    return () => {
+      window.clearInterval(id);
+    };
+  }, [data]);
 
   useEffect(() => {
     if (!serverOnline) {
@@ -109,6 +151,15 @@ export function LogTypeTodayTotalsStrip({
     };
   }, [serverOnline]);
 
+  // relay-231: the viewmodel is memoised so handleAskCoach (relay-232) can
+  // use it as a useCallback dep with a stable identity. The memo's deps
+  // include `freshnessTick` — NOT `freshnessMs` — because freshnessMs
+  // is computed from Date.now() on every render and depending on it
+  // would invalidate the memo on every render (defeating memoisation).
+  // The freshnessTick counter bumps every 15s via setInterval, which is
+  // the cadence at which the stale-data indicator actually needs to
+  // update. New payload arrivals trigger a memo invalidation through the
+  // `data` dep + the dataReceivedAtRef mutation.
   const viewModel = useMemo(
     () =>
       buildLogTypeTotalsViewModel(
@@ -117,8 +168,11 @@ export function LogTypeTodayTotalsStrip({
         pendingCount,
         yesterdayKcal,
         yesterdayProtein,
+        freshnessMs,
+        serverOnline,
       ),
-    [data, calorieTarget, pendingCount, yesterdayKcal, yesterdayProtein],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, calorieTarget, pendingCount, yesterdayKcal, yesterdayProtein, serverOnline, freshnessTick],
   );
   const {
     announceText,
@@ -136,6 +190,7 @@ export function LogTypeTodayTotalsStrip({
     proteinPct,
     proteinText,
     setupHint,
+    staleIndicator,
   } = viewModel;
 
   // relay-226: progress bars are only meaningful when there IS a target to
@@ -323,6 +378,26 @@ export function LogTypeTodayTotalsStrip({
               {comparison.unavailableText}
             </span>
           )}
+        </p>
+      ) : null}
+      {/* relay-231: stale-data indicator. Renders as a single muted line
+          that names how current the totals are. Sits below the comparison
+          line and the setup hint (the comparison block has the most
+          recent pull timestamp context, so reading order matches "delta
+          vs yesterday → when did we pull this from the server"). The
+          indicator is suppressed when there is no data to time-stamp —
+          relay-225's "No meals logged yet" is the right message when the
+          totals themselves are absent. The indicator itself is NOT part
+          of the aria-live region: the relative time changes on a 15s
+          interval and re-announcing "Updated 12s ago… 27s ago…" would be
+          noisy; the user can read the text directly. */}
+      {staleIndicator ? (
+        <p
+          className={`muted log-type-totals-strip__stale log-type-totals-strip__stale--${staleIndicator.kind}`}
+          data-testid="log-type-totals-strip-stale"
+          aria-hidden="true"
+        >
+          {staleIndicator.text}
         </p>
       ) : null}
       {/*

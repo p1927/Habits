@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildDayOverDayComparison,
+  buildStaleIndicator,
   DAY_OVER_DAY_UNAVAILABLE_TEXT,
   formatGrams,
   formatKcal,
   formatKcalDelta,
   formatProteinDelta,
+  formatRelativeUpdatedAt,
   kcalProgressPct,
   kcalRemaining,
+  STALE_INDICATOR_FRESH_MS,
 } from './logTypeTotals';
 import { proteinProgressPct } from './foodSectionShared';
 
@@ -246,6 +249,96 @@ describe('logTypeTotals — day-over-day comparison (relay-228)', () => {
       const unavailable = buildDayOverDayComparison(800, 40, null, null);
       expect(available.unavailableText).toBe(DAY_OVER_DAY_UNAVAILABLE_TEXT);
       expect(unavailable.unavailableText).toBe(DAY_OVER_DAY_UNAVAILABLE_TEXT);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// relay-231: stale-data indicator helpers.
+// ---------------------------------------------------------------------------
+
+describe('logTypeTotals — stale-data indicator (relay-231)', () => {
+  describe('formatRelativeUpdatedAt', () => {
+    it('reports "Just updated" for sub-5s payloads', () => {
+      expect(formatRelativeUpdatedAt(0)).toBe('Just updated');
+      expect(formatRelativeUpdatedAt(1_500)).toBe('Just updated');
+      expect(formatRelativeUpdatedAt(4_999)).toBe('Just updated');
+    });
+
+    it('reports seconds granularity in the 5s–60s window', () => {
+      expect(formatRelativeUpdatedAt(5_000)).toBe('Updated 5s ago');
+      expect(formatRelativeUpdatedAt(12_000)).toBe('Updated 12s ago');
+      expect(formatRelativeUpdatedAt(45_000)).toBe('Updated 45s ago');
+      // The window is exclusive at the upper boundary — exactly 60s
+      // rolls over to the minutes branch.
+      expect(formatRelativeUpdatedAt(59_999)).toBe('Updated 59s ago');
+    });
+
+    it('reports minutes granularity past the freshness window', () => {
+      expect(formatRelativeUpdatedAt(60_000)).toBe('Updated 1m ago');
+      expect(formatRelativeUpdatedAt(125_000)).toBe('Updated 2m ago');
+      expect(formatRelativeUpdatedAt(3_600_000)).toBe('Updated 60m ago');
+    });
+
+    it('matches the freshness window constant exported for the component', () => {
+      // Boundary check: a value one millisecond below the threshold is
+      // still the seconds bucket; the threshold itself crosses into the
+      // minutes bucket.
+      expect(STALE_INDICATOR_FRESH_MS).toBe(60_000);
+      expect(formatRelativeUpdatedAt(STALE_INDICATOR_FRESH_MS - 1)).toMatch(/ago$/);
+      expect(formatRelativeUpdatedAt(STALE_INDICATOR_FRESH_MS)).toBe('Updated 1m ago');
+    });
+  });
+
+  describe('buildStaleIndicator', () => {
+    it('returns null when there is no data to time-stamp (empty state owns the message)', () => {
+      // Even when the server is online and the data is fresh, no data
+      // means relay-225's "No meals logged yet" is the right surface —
+      // adding a stale indicator would be redundant noise.
+      expect(buildStaleIndicator(false, true, 0)).toBeNull();
+      expect(buildStaleIndicator(false, false, 0)).toBeNull();
+      expect(buildStaleIndicator(false, true, 5_000)).toBeNull();
+    });
+
+    it('returns the offline variant when the server is unreachable', () => {
+      expect(buildStaleIndicator(true, false, 0)).toEqual({
+        kind: 'offline',
+        text: 'Showing offline totals',
+      });
+      // The freshness value is irrelevant when the server is offline —
+      // the user needs to know the snapshot predates the disconnect,
+      // not the precise seconds since fetch.
+      expect(buildStaleIndicator(true, false, 999_999)).toEqual({
+        kind: 'offline',
+        text: 'Showing offline totals',
+      });
+    });
+
+    it('returns the fresh variant within the freshness window', () => {
+      expect(buildStaleIndicator(true, true, 0)).toEqual({
+        kind: 'fresh',
+        text: 'Just updated',
+      });
+      expect(buildStaleIndicator(true, true, 30_000)).toEqual({
+        kind: 'fresh',
+        text: 'Updated 30s ago',
+      });
+      // Just below the boundary is still fresh.
+      expect(buildStaleIndicator(true, true, STALE_INDICATOR_FRESH_MS - 1)).toEqual({
+        kind: 'fresh',
+        text: 'Updated 59s ago',
+      });
+    });
+
+    it('returns the stale variant past the freshness window', () => {
+      expect(buildStaleIndicator(true, true, STALE_INDICATOR_FRESH_MS)).toEqual({
+        kind: 'stale',
+        text: 'Updated 1m ago',
+      });
+      expect(buildStaleIndicator(true, true, 600_000)).toEqual({
+        kind: 'stale',
+        text: 'Updated 10m ago',
+      });
     });
   });
 });
