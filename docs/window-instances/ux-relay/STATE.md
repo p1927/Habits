@@ -27,7 +27,7 @@
 | review_round | `25` |
 | last_reviewed_round | `25` |
 | review_diff_range | `main...666cdd1` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | confirmed_next | `ui-068 Cards body-first capture (next); ui-069 Settings OAuth scopes queued` |
 | worktree_status | `none` |
 | worktree_path | `__cleared__` |
@@ -35,7 +35,7 @@
 | worktree_item_id | `__cleared__` |
 | review_changed_files | `pwa/src/components/agentChatComposer/statusChips.integration.test.tsx` |
 | review_fingerprint | `666cdd1-ui-067` |
-| ritual_step | `8-close` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ui-066 crit-002 aria-busy + pulse dot; Bugbot r24 1 fix-now + 2 fix-now + 1 backlog; ui-067 queued` |
 | execute_started | `yes` |
@@ -48,8 +48,8 @@
 | design_deliberation_done | `yes` |
 | design_chosen_approach | `aria-busy={loading} + .agent-tool-status__chip--active gates pulse animation; wrapper aria-live=polite announces joined chip text` |
 | design_mitigations | `Pulse only animates while loading=true; reduced-motion disables animation; chips without --active class retain static dot at opacity 0.85` |
-
 | execute_done | `yes` |
+
 ## IN_PROGRESS
 
 *(empty)*
