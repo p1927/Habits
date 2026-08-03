@@ -22,19 +22,19 @@
 | next_mode | `C` |
 | current_item_id | `ui-066` |
 | phase | `9-arm` |
-| review_status | `done` |
-| review_skip_reason | `—` |
-| review_round | `24` |
+| review_status | `pending` |
+| review_skip_reason | `No diff in window scope (pwa/ docs/window-instances/ux-relay/) this tick` |
+| review_round | `25` |
 | last_reviewed_round | `24` |
-| review_diff_range | `main...f0d06f9` |
+| review_diff_range | `uncommitted (staged + unstaged)` |
 | code_changed | `yes` |
 | confirmed_next | `ui-067 integration test next` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/components/agentChatComposer/statusChips.tsx,pwa/src/styles/agent-gemini.css,pwa/src/components/agentChatComposer/statusChips.test.tsx` |
-| review_fingerprint | `f0d06f9-ui-066` |
+| review_changed_files | `docs/window-instances/ux-relay/STATE.md pwa/src/components/agentChatComposer/statusChips.integration.test.tsx` |
+| review_fingerprint | `265a053196b4476f` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ui-066 crit-002 aria-busy + pulse dot; Bugbot r24 1 fix-now + 2 fix-now + 1 backlog; ui-067 queued` |
