@@ -18,33 +18,37 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-160` |
+| confirmed_next | `ch-patchwork-app-css` |
 | phase | `8-close` |
-| last_wake | `2026-08-02T07:47:07Z` |
+| last_wake | `2026-08-03T08:27:49Z` |
 | code_changed | `yes` |
-| review_status | `pending` |
+| review_status | `triaged` |
 | review_round | `27` |
-| last_reviewed_round | `26` |
-| worktree_status | `none` |
-| review_changed_files | `docs/window-instances/code-health/STATE.md tools/cursor-loop/scripts/audit_review.py` |
-| review_fingerprint | `9573f72f886fe5dd` |
-| review_diff_range | `uncommitted` |
-| review_skip_reason | `docs-only STATE.md appends for ch-160 ship: backlog done, history row, scan coverage, review finding r25; no pwa/ or server/ code changes` |
-| ritual_step | `9-arm` |
+| last_reviewed_round | `28` |
+| worktree_status | `active` |
+| review_changed_files | `pwa/src/lib/logTypeTotalsViewModel.ts pwa/src/lib/logTypeTotalsViewModel.test.ts` |
+| review_fingerprint | `f783cca` |
+| review_diff_range | `committed` |
+| review_skip_reason | `ch-patchwork-log-totals state-classifier extract (main..HEAD diff = 2 files / 187 net new lines); 9 new tests; vitest 130/130; tsc/oxlint/vite green` |
+| ritual_step | `9` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-159 shipped: agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests; 55/55 server tests pass; ff-merge 1bee1c6` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `295afbf` |
+| commit_hash | `f783cca` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_tick_applied_at | `2026-08-02T07:05:00+00:00` |
+| review_tick_applied_at | `2026-08-03T08:27:49+00:00` |
 | refactor_subphase | `none` |
 | refactor_plan_id | `ch-160` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
+| worktree_branch | `loop/code-health/ch-patchwork-log-totals` |
+| worktree_item_id | `ch-patchwork-log-totals` |
+| current_item_id | `ch-patchwork-log-totals` |
 
 ## IN_PROGRESS
 
@@ -67,7 +71,6 @@
 
 
 
-- [x] ch-142 | `useSwipeStack.ts` (184) split | structure | gesture lib + exit hook; 184→107; r20 offset-reset fix | done tick #142
 - [x] ch-143 | line scan — post ch-142 targets | structure | top: useLogSection 138, SwipeStack 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #142
 - [x] ch-144 | `useLogSection.ts` (138) split | structure | useLogSectionDismiss hook (dismiss concern); composition 138→139 + 18-new; deps tightened; r21 zero bugs | done tick #144
 - [x] ch-151 | `AgentChatComposer.tsx` (164) split | structure | 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); 164→83; r22 zero bugs; c5e101d merged | done tick #145
@@ -87,7 +90,7 @@
 - [ ] ch-oversize-loop-hook-lib | tools/cursor-loop/scripts/loop_hook_lib.py (1188) split | structure | isolate hook guard/loop lifecycle concerns; exclude generated worktree copies | priority=P2
 - [ ] ch-oversize-ritual-phase | tools/cursor-loop/scripts/ritual_phase.py (951) split | structure | separate phase transition, validation, and state serialization concerns | priority=P2
 - [ ] ch-oversize-design-system | .cursor/skills/ui-ux-pro-max/scripts/design_system.py (1068) split | structure | separate design token search and rendering concerns; skill tooling only | priority=P3
-- [ ] ch-patchwork-log-totals | LogTypeTodayTotalsStrip + test (4 recent fix commits) | structure | audit repeated patches and consolidate root behavior/test contract | priority=P1
+- [x] ch-patchwork-log-totals | LogTypeTodayTotalsStrip + test (4 recent fix commits) | structure | audit repeated patches and consolidate root behavior/test contract | priority=P1
 - [ ] ch-patchwork-app-css | pwa/src/App.css (3 recent fix commits) | structure | audit repeated CSS patches and consolidate affected selectors/tokens | priority=P2
 ## BUG_BACKLOG
 
@@ -377,7 +380,9 @@
 
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | ch-patchwork-log-totals | 8-close | classifyTotalsState single state enum — TotalsState (empty/goal-reached/target-unset/tracking) extracted from buildLogTypeTotalsViewModel; 9 new tests; 130/130 pass; tsc+oxlint+vite green | f783cca; vitest 130/130; tsc clean; oxlint 0 errors; vite build clean |
 | — | — | 8-close | — | — |
 |-----------|------|---------|----------|--------|
 | 2026-08-02T07:05:00Z | ch-159 | agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests (test_agent_tool_run_single.py); 55/55 server tests pass; ff-merge 1bee1c6 to main; service.py 251→298 (helper boilerplate offset) | build+tests+review | 1bee1c6 |
