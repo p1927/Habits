@@ -21,15 +21,15 @@
 | confirmed_next | `ch-161` |
 | phase | `9-arm` |
 | last_wake | `2026-08-03T08:27:49Z` |
-| code_changed | `no` |
-| review_status | `skipped` |
+| code_changed | `yes` |
+| review_status | `closed` |
 | review_round | `31` |
 | last_reviewed_round | `30` |
 | worktree_status | `none` |
-| review_changed_files | `—` |
-| review_fingerprint | `e3b0c44298fc1c14` |
-| review_diff_range | `none` |
-| review_skip_reason | `ch-161 server line-scan audit only: no app code touched; prepare_review_tick confirmed empty diff in window scope; node_modules absent in worktree so npm build/lint skipped intentionally` |
+| review_changed_files | `pwa/src/components/LogTypeTodayTotalsStrip.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.askCoach.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.dayOverDay.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.goalReached.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.keyboardFocus.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.macrosExpand.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.pendingBadge.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.staleIndicator.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.targetUnset.test.tsx` |
+| review_fingerprint | `288047bc906d233f` |
+| review_diff_range | `uncommitted` |
+| review_skip_reason | `ch-163 test-split refactor: all tests preserved verbatim, build+lint clean; zero findings in self-review; ready for merge` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ch-161 approaches: A) extract more from agent/service.py based on raw LOC; B) audit cohesion, function size, callers, and recent refactors across server candidates; selected B because service.py dupli` |
@@ -41,8 +41,8 @@
 | commit_done | `yes` |
 | merge_done | `yes` |
 | review_tick_applied_at | `2026-08-03T08:27:49+00:00` |
-| refactor_subphase | `execute` |
-| refactor_plan_id | `ch-161` |
+| refactor_subphase | `none` |
+| refactor_plan_id | `ch-163` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
 | current_item_id | `—` |
@@ -105,8 +105,12 @@
 
 
 
+
+
+
 | plan_id | step_n | smell | technique | files_in_scope | behavior_proof | out_of_scope | status |
 |---------|--------|-------|-----------|----------------|----------------|--------------|--------|
+| ch-163 | 1 | oversized test file (1308 lines); describe blocks intermingled; recent fix commits (relay-218/219/222/223/225/226/227/228/231/232) keep appending to the same suite; shared helpers already extracted, so remaining growth is parallel to one giant test file | split-by-state: extract each describe cluster into its own co-located *.test.tsx; keep totals-strip core file with entry-point coverage (totals aggregation + aria-live announce + empty-state fallback) | pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.targetUnset.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.goalReached.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.macrosExpand.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.pendingBadge.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.keyboardFocus.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.dayOverDay.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.askCoach.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.staleIndicator.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts tools/cursor-loop/scripts/state_snapshot.py | npm test (vitest run); 69/69 tests pass; existing it() blocks preserved verbatim; npm run build green (tsc + vite); oxlint 0 errors | pwa/src/lib/logTypeTotalsViewModel.test.ts; pwa/src/components/LogTypeTodayTotalsStrip.tsx; helpers file consolidation; ch-129 deferred policy | planned |
 | ch-161 | 1 | no-actionable-smell | audit-and-close | server/habits_api/** | measured LOC + longest-function + caller graph for every >100-line server file; no mixed-concerns or duplicated-loop smells remain; ch-159/160/162 already closed the only actionable items; route + sheet_io + vision files are single-purpose | pwa/, agent UI flows, .cursor tools, .agents skills | open |
 | ch-160 | 1 | mixed-concerns | extract-module | server/habits_api/agent/tools.py+server/habits_api/agent/agent_tool_specs.py+server/habits_api/agent/agent_tool_dispatch.py | python -m compileall server/habits_api passes; existing callers (agent/service.py, agent/routes.py) re-import from agent.tools without behavioral change; AGENT_TOOLS list (~160 lines of JSON specs) moves to agent_tool_specs.py; execute_tool dispatch table (~10 tools, ~70 lines) moves to agent_tool_dispatch.py; tools.py becomes ~5-line re-export | execute_tool tool implementations (log_food.py, search_food.py, etc.); service.py tool-call loops (already extracted ch-159); context/prompts split; tools.py testing (ch-129 deferred policy) | planned |
 | ch-159 | 1 | duplicated-loop | extract-method with optional callback hook | server/habits_api/agent/service.py+server/tests/test_agent_tool_ids.py | python -m compileall server/habits_api passes; existing test_agent_tool_ids.py imports _ensure_tool_call_ids from service.py unchanged; chat() and chat_stream() share _process_tool_calls helper; service.py 251→~170 | AGENT_TOOLS spec extraction (ch-160); execute_tool dispatch refactor (ch-160); context/prompts split; api.py oauth wire | planned |
@@ -262,8 +266,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r31-split | low | ch-163 PWA totals-strip test split — ZERO FINDINGS. 9 co-located test files (8 new + 1 trimmed main) all share LogTypeTodayTotalsStrip.test.helpers.ts for fixtures/mocks/DOM queries; 69/69 vitest tests pass; main file 1308→274 lines; new files 200-300 lines each; behavior preserved verbatim (every it() block relocated unchanged); build green (tsc + vite); oxlint 0 errors; helpers file unchanged; vi.mock block must be per-file per vitest hoisting — remaining ~12-line lifecycle duplication per file is acceptable. Patchwork signal cleared: future state additions land in focused files. | round-31 self-review | closed | — | closed |
 | ch-r31-000 | low | — | — | — | — | open |
 | ch-r31-b000 | low | — | — | — | — | open |
 | ch-r30-001 | low | docs/window-instances/code-health/STATE.md:255-258 — round 27/29 review rows logged with path:line citations to pwa/src/lib/logTypeTotalsViewModel.ts:78, :22, :142-143 and pwa/src/lib/logTypeTotalsViewModel.test.ts:25, :222-238, :245-267. r27-window-001/002/003 backed by hand-read of patch diff (foodSectionShared/logTypeTotals imports unchanged; totals export lines unchanged in callers). Final values match build/test output. | round-30 /code-review | closed | — | closed |
@@ -638,6 +644,10 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
+
+
 
 
 

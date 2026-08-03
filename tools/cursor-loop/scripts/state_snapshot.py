@@ -67,7 +67,7 @@ def parse_table_section(state_text: str, section_name: str) -> list[dict[str, st
         lowered = [c.lower() for c in cells]
         if not headers and any(
             h in lowered
-            for h in ("field", "id", "completed_at", "timestamp", "reviewed_at", "severity")
+            for h in ("field", "id", "completed_at", "timestamp", "reviewed_at", "severity", "plan_id")
         ):
             headers = [c.lower().replace(" ", "_") for c in cells]
             continue
