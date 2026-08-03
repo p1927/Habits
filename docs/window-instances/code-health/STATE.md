@@ -18,21 +18,21 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-patchwork-app-css` |
+| confirmed_next | `ch-154` |
 | phase | `8-close` |
 | last_wake | `2026-08-03T08:27:49Z` |
-| code_changed | `no` |
-| review_status | `skipped` |
-| review_round | `30` |
+| code_changed | `yes` |
+| review_status | `closed` |
+| review_round | `31` |
 | last_reviewed_round | `30` |
 | worktree_status | `none` |
-| review_changed_files | `—` |
-| review_fingerprint | `—` |
-| review_diff_range | `none` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ tools/cursor-loop/ docs/window-instances/code-health/) this tick` |
-| ritual_step | `9` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md` |
+| review_fingerprint | `2b91e7074ac58d73` |
+| review_diff_range | `uncommitted` |
+| review_skip_reason | `docs-only STATE.md sync (ch-patchwork-app-css audit deliverable + round-31 closure)` |
+| ritual_step | `1-wake` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ch-159 shipped: agent/service.py tool-call loop extract — _run_single_tool + _process_tool_calls + _stream_tool_calls; chat() and chat_stream() duplication eliminated; 4 new tests; 55/55 server tests pass; ff-merge 1bee1c6` |
+| brainstorm_outcome | `ch-patchwork-app-css audit: 4 recent App.css touches (relay-222/223/226/227) are ADDITIVE feature deliveries to a single co-located component (LogTypeTodayTotalsStrip, lines 3789-3868), NOT corrective patchwork for the same defect. Detector heuristic was a misclassification — feature commits that each add a distinct selector with distinct intent (macro expand / pending-badge / setup-hint / focus-ring) are not patchwork. Selector duplicate scan: 13 selectors appear >1x but all are base rule + @media prefers-reduced-motion + @media max-width pattern (standard CSS), no real overlap. Co-location: good (totals strip block is contiguous). Token usage: shared (--ok, --muted, --text-secondary, --font-size-sm, --revolut-card-radius, --focus-ring). Component ownership: 1 file (LogTypeTodayTotalsStrip.tsx). Dead/orphan selectors: 0. Recommendation: CLOSE ch-patchwork-app-css — not a defect. The 5608-line App.css monolith is project-wide scope (intentional single cascade for shared-token design system); splitting would create CSS module interop issues. Defer with note: not a code-health one-window fix.` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
@@ -67,12 +67,10 @@
 
 
 
-- [x] ch-143 | line scan — post ch-142 targets | structure | top: useLogSection 138, SwipeStack 138, AgentChatComposer 136, logTabPanelsPropsBuilder 135 | done tick #142
-- [x] ch-144 | `useLogSection.ts` (138) split | structure | useLogSectionDismiss hook (dismiss concern); composition 138→139 + 18-new; deps tightened; r21 zero bugs | done tick #144
 - [x] ch-151 | `AgentChatComposer.tsx` (164) split | structure | 5 child components (bar/statusChips/voiceNudge/attachPreview/disclaimer); 164→83; r22 zero bugs; c5e101d merged | done tick #145
 - [x] ch-145 | logTabPanelsPropsBuilder split extract props builder hook | refactor | Given single 132-line module, When split, Then props builder becomes hook plus per-tab fragments under 60 lines |
 ---
-- [ ] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
+- [x] ch-152 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 | priority=P1
 - [x] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
 - [ ] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
 - [x] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
@@ -87,7 +85,7 @@
 - [ ] ch-oversize-ritual-phase | tools/cursor-loop/scripts/ritual_phase.py (951) split | structure | separate phase transition, validation, and state serialization concerns | priority=P2
 - [ ] ch-oversize-design-system | .cursor/skills/ui-ux-pro-max/scripts/design_system.py (1068) split | structure | separate design token search and rendering concerns; skill tooling only | priority=P3
 - [x] ch-patchwork-log-totals | LogTypeTodayTotalsStrip + test (4 recent fix commits) | structure | audit repeated patches and consolidate root behavior/test contract | priority=P1
-- [ ] ch-patchwork-app-css | pwa/src/App.css (3 recent fix commits) | structure | audit repeated CSS patches and consolidate affected selectors/tokens | priority=P2
+- [x] ch-patchwork-app-css | pwa/src/App.css (3 recent fix commits) | structure | audit repeated CSS patches and consolidate affected selectors/tokens | priority=P2
 ## BUG_BACKLOG
 
 *(empty — scan as refactor uncovers bugs)*
@@ -252,8 +250,12 @@
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r31-000 | low | — | — | — | — | open |
+| ch-r31-b000 | low | — | — | — | — | open |
 | ch-r30-001 | low | docs/window-instances/code-health/STATE.md:255-258 — round 27/29 review rows logged with path:line citations to pwa/src/lib/logTypeTotalsViewModel.ts:78, :22, :142-143 and pwa/src/lib/logTypeTotalsViewModel.test.ts:25, :222-238, :245-267. r27-window-001/002/003 backed by hand-read of patch diff (foodSectionShared/logTypeTotals imports unchanged; totals export lines unchanged in callers). Final values match build/test output. | round-30 /code-review | closed | — | closed |
 | ch-r30-000 | low | Round 30 docs-only review: STATE.md diff (42+/2-) appends round 27 + round 29 review rows for ch-patchwork-log-totals view-model extraction (ch-patchwork-log-totals STATE sync). No pwa/ or server/ runtime code in diff; diff is bounded to the window own STATE.md (review findings table + checkpoint); references r27-window-001/002/003 with path:line citations to pwa/src/lib/logTypeTotalsViewModel.ts:78, :22, :142-143 and pwa/src/lib/logTypeTotalsViewModel.test.ts:25, :222-238, :245-267 | round-30 /code-review | closed | — | closed |
 | ch-r29-000 | low | Round 29 closure: ch-patchwork-log-totals view-model diff (2 files / 187 net new lines) reviewed — three findings logged with path:line citations; vitest 135/135; vite build green; oxlint 0 errors; tsc clean; bugbot phase skipped (no Cursor Task runtime in Hermes tick, window lens covered findings) | round-29 /code-review | closed | — | closed |
@@ -406,7 +408,9 @@
 
 
 
+
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
 | — | ch-patchwork-log-totals | review | round-27 review-closure: 3 window-lens findings (r27-window-001/002/003 with path:line citations) + round-30 docs-only STATE sync closure | ch-r27-window-001..003 + ch-r30-000/001 in REVIEW_FINDINGS; vitest 135/135; vite build green; oxlint 0 errors |
 | — | ch-patchwork-log-totals | 8-close | classifyTotalsState single state enum — TotalsState (empty/goal-reached/target-unset/tracking) extracted from buildLogTypeTotalsViewModel; 9 new tests; 130/130 pass; tsc+oxlint+vite green | f783cca; vitest 130/130; tsc clean; oxlint 0 errors; vite build clean |
 | — | — | 8-close | — | — |
@@ -620,6 +624,8 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
+
 
 
 
