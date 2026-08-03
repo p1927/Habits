@@ -75,10 +75,36 @@ export function LogTypeTodayTotalsStrip({
   const proteinTarget = data?.protein_target_g;
   const showProteinBar = proteinTarget != null && proteinTarget > 0 && !hasNoMealsLogged;
 
+  // relay-227: keyboard focus affordance. The strip carries a summary of
+  // today's totals; a keyboard user should be able to Tab to it, see a focus
+  // ring, and use Enter/Space to expose the macro breakdown (the only piece
+  // of "details" the strip can reveal). When hasMacros is false the strip
+  // has no details to expose, so it is NOT promoted to a button — the Card
+  // remains a non-interactive region in that case. The aria-label on the
+  // Card already names the summary for screen readers, so we don't need a
+  // second accessible name.
+  //
+  // Note: when interactive, the Card is itself the toggle. The previous
+  // "Show/Hide macros" child button was removed (relay-227) because nesting
+  // a <button> inside a <div role="button"> is invalid HTML and a11y-hostile
+  // for screen readers — they announce nested interactive elements
+  // inconsistently. The macros region is the controlled disclosure.
+  const hasDetails = hasMacros;
+  const handleToggleDetails = () => {
+    if (hasDetails) setExpanded((v) => !v);
+  };
+
   return (
     <Card
       className="log-type-totals-strip home-export-card--health"
-      ariaLabel="Today's calorie and protein totals"
+      ariaLabel={
+        hasDetails
+          ? "Today's calorie and protein totals. Press Enter to toggle macro details."
+          : "Today's calorie and protein totals"
+      }
+      onClick={hasDetails ? handleToggleDetails : undefined}
+      ariaExpanded={hasDetails ? expanded : undefined}
+      ariaControls={hasDetails ? 'log-type-totals-strip-macros' : undefined}
     >
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
         {announceText}
@@ -114,16 +140,24 @@ export function LogTypeTodayTotalsStrip({
           <div className="progress-fill" style={{ width: `${proteinPct}%` }} />
         </div>
       ) : null}
+      {/*
+        relay-227: the strip itself is now the disclosure toggle (see Card
+        onClick above). The old "Show/Hide macros" child button was removed
+        because nesting a real <button> inside a div[role=button] is invalid
+        HTML and produces inconsistent screen reader behavior. The visual
+        affordance is now carried by the focus ring on the Card and a small
+        hint line just above the footer that reads "Show macros" / "Hide
+        macros" depending on the expanded state. The hint is non-interactive
+        (a span), so the Card remains the single keyboard target.
+      */}
       {hasMacros ? (
-        <button
-          type="button"
-          className="log-type-totals-strip__expand"
-          aria-expanded={expanded}
-          aria-controls="log-type-totals-strip-macros"
-          onClick={() => setExpanded((v) => !v)}
+        <p
+          className="log-type-totals-strip__expand-hint"
+          data-testid="log-type-totals-strip-expand-hint"
+          aria-hidden="true"
         >
           {expanded ? 'Hide macros' : 'Show macros'}
-        </button>
+        </p>
       ) : null}
       {hasMacros && expanded ? (
         <div

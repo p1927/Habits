@@ -3833,24 +3833,26 @@ form.log-type-card {
   color: var(--muted);
 }
 
-.log-type-totals-strip__expand {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  padding: 0;
+.log-type-totals-strip__expand-hint {
   margin: 0.25rem 0 0.5rem;
-  font: inherit;
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--text-secondary);
-  cursor: pointer;
-  text-align: left;
+  /* The Card itself is the interactive target; the hint is a non-interactive
+     visual cue so it carries no hover/active state. */
+  pointer-events: none;
+  user-select: none;
 }
 
-.log-type-totals-strip__expand:focus-visible {
-  outline: 2px solid var(--focus-ring, currentColor);
-  outline-offset: 2px;
-  border-radius: 4px;
+/* relay-227: focus ring on the totals strip when it is acting as a
+   disclosure button (hasMacros). Uses the shared --focus-ring tokens so the
+   appearance matches the rest of the app's interactive surfaces (calendar
+   event chips, agent tools, etc.). :focus-visible keeps mouse users from
+   seeing the ring — only keyboard focus surfaces it. */
+.log-type-totals-strip[role='button']:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--revolut-card-radius, 20px);
 }
 
 .log-type-totals-strip__macros {

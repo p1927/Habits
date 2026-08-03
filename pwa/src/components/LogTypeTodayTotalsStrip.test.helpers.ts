@@ -125,9 +125,27 @@ export function progressBarCount(container: HTMLElement): number {
   return container.querySelectorAll('.log-type-totals-strip .progress-bar').length;
 }
 
-/** Resolve the "Show/Hide macros" expand button (or null). */
-export function getExpandButton(container: HTMLElement): HTMLButtonElement | null {
-  return container.querySelector('.log-type-totals-strip__expand') as HTMLButtonElement | null;
+/**
+ * Resolve the "Show/Hide macros" hint line (relay-227). It is a non-interactive
+ * `<p>` — the Card itself is the keyboard target — but the hint still announces
+ * the upcoming state ("Show macros" vs "Hide macros") for tests and the visual
+ * affordance.
+ */
+export function getExpandButton(container: HTMLElement): HTMLElement | null {
+  return container.querySelector('[data-testid="log-type-totals-strip-expand-hint"]');
+}
+
+/**
+ * Resolve the Card root — the interactive disclosure target (relay-227).
+ * Returns null when the strip is not interactive (no macros / no details to
+ * expose). Use this for click + keyboard tests.
+ */
+export function getStripCard(container: HTMLElement): HTMLElement | null {
+  const card = container.querySelector('.log-type-totals-strip');
+  if (!card) return null;
+  // Only present when the strip is acting as a disclosure button.
+  if (card.getAttribute('role') !== 'button') return null;
+  return card as HTMLElement;
 }
 
 /** Resolve the pending-sync badge node (or null). */

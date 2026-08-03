@@ -22,9 +22,9 @@
 | last_wake | `2026-08-02T13:34:00Z` |
 | next_action | `merge-worktree` |
 | phase | `9-arm` |
-| review_status | `done` |
+| review_status | `pending` |
 | code_changed | `yes` |
-| review_round | `82` |
+| review_round | `83` |
 | last_reviewed_round | `81` |
 | worktree_status | `active` |
 | ritual_step | `9-arm` |
@@ -44,8 +44,8 @@
 | worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
 | worktree_branch | `loop/worker-relay/relay-226` |
 | worktree_item_id | `relay-226` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/lib/logTypeTotalsViewModel.test.ts pwa/src/lib/logTypeTotalsViewModel.ts` |
-| review_fingerprint | `89a1f4a1d4cb0fa6` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/components/ui/Card.tsx` |
+| review_fingerprint | `1512001654f5a397` |
 | review_diff_range | `uncommitted` |
 
 ## IN_PROGRESS
@@ -178,8 +178,12 @@
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r83-fresh-001 | low | — | — | — | — | open |
+| rf-r83-000 | low | — | — | — | — | open |
 | rf-r82-000 | low | Bugbot+window lens: relay-226 AC satisfied — when calorieTarget is null/0 and meals are logged, the strip suppresses both kcal and protein progress bars (showKcalBar/showProteinBar gates) so no misleading 0% track renders; footer reads consumed kcal today (no remaining claim); setupHint surfaces Set a daily calorie target in Settings to track progress. below the footer with data-testid. Empty state keeps setupHint null. proteinTarget=null also hides protein bar. aria-live unchanged. TS build clean, lint 0 errors, 89/89 vitest pass including 6 new tests. Deferred: tappable link to Settings would couple to tab nav (out of AC). | round-82 bugbot | closed | relay-226 | closed |
 | rf-r80-fresh-001 | low | Fresh-eye: progress-fill width 0% in expanded panel renders an empty bar track next to carbs/fat grams. This is honest (no macro target denominator exists) but visually reads as 0%. Acceptable per deferred-items note in commit body; future macro-target support will swap style.width to a real fraction. No defect. | round-80 /code-review | closed | — | closed |
 | rf-r80-000 | low | Bugbot subagent skipped — review-bugbot skill not present locally (matches rf-r78-000 pattern). Window-lens review only: relay-222 AC satisfied — Show/Hide macros button with real button + aria-expanded + aria-controls; panel only renders when carbs and fat are non-null (explicit null guard); sits below protein row, above footer; 18/18 vitest pass on totals strip (5 new) + 56/56 full suite; build + lint clean; commit b54be8d; deferred: macro target denominators (no backend carbs_target_g/fat_target_g today — panel renders consumed grams only), aria-live non-update on toggle (intentional — user-driven disclosure) | round-80 bugbot | closed | — | closed |
@@ -406,6 +410,8 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
 
 
 
