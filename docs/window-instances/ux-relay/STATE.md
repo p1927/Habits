@@ -20,28 +20,28 @@
 |-------|-------|
 | last_wake | `2026-08-03T09:30:00Z` |
 | next_mode | `C` |
-| current_item_id | `ui-066` |
-| phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `No diff in window scope (pwa/ docs/window-instances/ux-relay/) this tick` |
+| current_item_id | `ui-067` |
+| phase | `8-close` |
+| review_status | `complete` |
+| review_skip_reason | `__cleared__` |
 | review_round | `25` |
-| last_reviewed_round | `24` |
-| review_diff_range | `uncommitted (staged + unstaged)` |
+| last_reviewed_round | `25` |
+| review_diff_range | `main...666cdd1` |
 | code_changed | `yes` |
-| confirmed_next | `ui-067 integration test next` |
+| confirmed_next | `ui-068 Cards body-first capture (next); ui-069 Settings OAuth scopes queued` |
 | worktree_status | `none` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/ux-relay/STATE.md pwa/src/components/agentChatComposer/statusChips.integration.test.tsx` |
-| review_fingerprint | `265a053196b4476f` |
-| ritual_step | `9-arm` |
+| worktree_path | `__cleared__` |
+| worktree_branch | `__cleared__` |
+| worktree_item_id | `__cleared__` |
+| review_changed_files | `pwa/src/components/agentChatComposer/statusChips.integration.test.tsx` |
+| review_fingerprint | `666cdd1-ui-067` |
+| ritual_step | `8-close` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ui-066 crit-002 aria-busy + pulse dot; Bugbot r24 1 fix-now + 2 fix-now + 1 backlog; ui-067 queued` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `f0d06f9` |
+| commit_hash | `666cdd1` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -49,6 +49,7 @@
 | design_chosen_approach | `aria-busy={loading} + .agent-tool-status__chip--active gates pulse animation; wrapper aria-live=polite announces joined chip text` |
 | design_mitigations | `Pulse only animates while loading=true; reduced-motion disables animation; chips without --active class retain static dot at opacity 0.85` |
 
+| execute_done | `yes` |
 ## IN_PROGRESS
 
 *(empty)*
@@ -99,9 +100,9 @@
 
 | id | status | journey_ref | persona | impact | touchpoints | before_state | after_state | acceptance_criteria | evidence | depends_on | ux_response |
 |----|--------|-------------|---------|--------|-------------|--------------|-------------|---------------------|----------|------------|-------------|
-| crit-077 | proposed | journey-settings-trust | privacy-conscious | 5 | Settings (Google card) → Settings (scope audit) | Connected pill only — server stores OAuth scopes in token_db but PWA never receives them; user cannot audit Calendar vs Sheets access or open Google permissions page from Habits | SettingsGrantedScopesPanel — expose google_scopes from API; human-label checklist on SettingsGoogleCard; partial grant Re-connect; Manage on Google Account link; disconnect retention note on banner | Given privacy-conscious user opens Settings at 390px while Google connected, When Google card renders, Then granted scope rows visible within 1s. Given Calendar scope missing from stored scopes, When panel renders, Then missing row highlighted with Re-connect pill. Given user taps Manage on Google, When link opens, Then myaccount.google.com/permissions in new tab. Given user disconnects, When success banner shows, Then copy notes Google stops future access but Sheets copy may remain | pwa/src/components/SettingsGoogleCard.tsx L12-26; server/habits_api/db/token_db.py L53-67; server/habits_api/routes/api.py L47; server/habits_api/google/oauth_service.py L61 | crit-011,crit-029 | — |
+| crit-077 | proposed | journey-settings-trust | privacy-conscious | 5 | Settings (Google card) → Settings (scope audit) | Connected pill only — server stores OAuth scopes in token_db but PWA never receives them; user cannot audit Calendar vs Sheets access or open Google permissions page from Habits | SettingsGrantedScopesPanel — expose google_scopes from API; human-label checklist on SettingsGoogleCard; partial grant Re-connect; Manage on Google Account link; disconnect retention note on banner | Given privacy-conscious user opens Settings at 390px while Google connected, When Google card renders, Then granted scope rows visible within 1s. Given Calendar scope missing from stored scopes, When panel renders, Then missing row highlighted with Re-connect pill. Given user taps Manage on Google, When link opens, Then myaccount.google.com/permissions in new tab. Given user disconnects, When success banner shows, Then copy notes Google stops future access but Sheets copy may remain | pwa/src/components/SettingsGoogleCard.tsx L12-26; server/habits_api/db/token_db.py L53-67; server/habits_api/routes/api.py L47; server/habits_api/google/oauth_service.py L61 | crit-011,crit-029 | agreed 2026-08-03 → ui-069 (scope: server exposes google_scopes first; PWA awaits; v1 ships scope checklist + manage link; defer disconnect retention note) |
 | crit-076 | proposed | element-only | returning user | 4 | Agent (chat panel) → Agent (assistant bubble) | Coach assistant replies render as plain text — bullet lists bold and code from LLM show literal markdown syntax unreadable at 390px | AgentCoachMarkdownRender — react-markdown remark-gfm rehype-sanitize for assistant role only; scoped .agent-coach-markdown in agent-gemini.css + App.css; Copy uses raw m.content; composes with crit-073 tool steps; streaming via useAgentChatStream token append | Given returning user receives Coach reply with bullet list at 390px, When bubble renders, Then list items display as formatted bullets not literal asterisks within 1s. Given reply contains raw HTML or javascript link, When rendered, Then no script execution and unsafe links stripped. Given user taps Copy, When clipboard writes, Then raw markdown source copied. Given partial list mid-stream, When token appends, Then at most one line-height flicker until block closes. Given crit-073 tool steps visible, When first token arrives, Then steps hide and markdown owns bubble body | pwa/src/components/AgentChatPanel.tsx L84-86; pwa/src/hooks/useAgentChatStream.ts L43-50; pwa/src/styles/agent-gemini.css L653-674; pwa/src/App.css L4464-4534 | crit-066,crit-073 | — |
-| crit-075 | proposed | journey-capture-thought | knowledge worker | 4 | Cards (capture sheet) → Cards (grid search) | CardsCreateSheet requires title and handleCreate blocks empty title; CreateCardRequest min_length=1 rejects empty title — user cannot save body-only quick thought; Keep body-first text note pattern missing | CardsBodyFirstCapture — remove title required; deriveCardTitle from first body line max 80 chars client + server; autofocus body textarea on sheet open; Save when body non-empty; optional title placeholder | Given knowledge worker on Cards at 390px opens FAB, When body textarea focused and user types thought without title, Then Save enabled within 300ms. Given user taps Save with body only, When createCard succeeds, Then card appears in grid with auto-title from first line within 1s. Given title provided, When save succeeds, Then explicit title used not derived. Given empty body and empty title, When Save tapped, Then validation prevents submit | pwa/src/components/CardsCreateSheet.tsx L39-45; pwa/src/sections/Cards.tsx L52-54 L105-119; server/habits_api/routes/cards.py L18 | crit-010,crit-057 | — |
+| crit-075 | proposed | journey-capture-thought | knowledge worker | 4 | Cards (capture sheet) → Cards (grid search) | CardsCreateSheet requires title and handleCreate blocks empty title; CreateCardRequest min_length=1 rejects empty title — user cannot save body-only quick thought; Keep body-first text note pattern missing | CardsBodyFirstCapture — remove title required; deriveCardTitle from first body line max 80 chars client + server; autofocus body textarea on sheet open; Save when body non-empty; optional title placeholder | Given knowledge worker on Cards at 390px opens FAB, When body textarea focused and user types thought without title, Then Save enabled within 300ms. Given user taps Save with body only, When createCard succeeds, Then card appears in grid with auto-title from first line within 1s. Given title provided, When save succeeds, Then explicit title used not derived. Given empty body and empty title, When Save tapped, Then validation prevents submit | pwa/src/components/CardsCreateSheet.tsx L39-45; pwa/src/sections/Cards.tsx L52-54 L105-119; server/habits_api/routes/cards.py L18 | crit-010,crit-057 | agreed 2026-08-03 → ui-068 |
 | crit-074 | proposed | element-only | returning user | 4 | Home (meal gallery) → Log (today list) | Home meal photo lightbox shows scan images but no link to the logged food entry — user must manually find item in Log Type tab | HomeMealPhotoLogBridge — lightbox View in Log pill navigates Log Type with scrollToFoodRow; store loggedFoodRow on addMealPhoto; fuzzy-match by label fallback; optional Log again via scanPrefillUrl sessionStorage | Given user with meal photo in Home gallery at 390px, When lightbox opens, Then View in Log pill visible within 1s. Given pill tapped, When Log Type opens, Then matching today food row highlighted or scrolled into view. Given photo from scan, When Log again tapped, Then Log Scan sub-tab opens with image prefilled | pwa/src/components/MealPhotoGallery.tsx L57-98; pwa/src/lib/mealPhotos.ts L1-6; pwa/src/components/HomeMealPhotosPanel.tsx L15-17; pwa/src/components/HomeDashboardFeedPanels.tsx L43 | crit-015 | — |
 | crit-073 | proposed | journey-coach-trust | skeptical new user | 5 | Agent (send) → Agent (stream wait) → Agent (reply) | First Coach reply shows blank bubble while tools run — user cannot see what data Coach is checking during variable-reward wait | CoachInlineToolSteps — vertical step list inside empty streaming assistant bubble from activeTools with toolStatusLabel; checkmarks on completed tools; hide when tokens arrive; aria-live Coach is working | Given skeptical user sends first Agent prompt at 390px, When tools run before first token, Then step labels like Checking food log visible inside Coach bubble within 1s. Given tool completes, When next tool starts, Then prior step shows checkmark. Given first token arrives, When bubble updates, Then step list hidden. Given no tools during stream, When loading, Then generic Working copy only | pwa/src/components/AgentChatPanel.tsx L77-122; pwa/src/hooks/useAgentChatStream.ts L56-67; pwa/src/components/AgentSectionBody.tsx L49-58; pwa/src/lib/agentToolStatus.ts | crit-002,crit-040 | — |
 | crit-072 | proposed | element-only | returning user | 4 | Log (Type tab) → Log (today list) | Type tab shows manual log forms and item list but no daily calorie or protein progress — user must switch Home to see how today is tracking | LogTypeTodayTotalsStrip — compact card above LogTypeTodayList with kcal consumed vs calorie_target progress bar + protein row reusing FoodProteinProgressCard pattern; live update after log/delete; kcal remaining chip | Given returning user on Log Type tab at 390px with 3 items logged, When panel renders, Then kcal and protein summary visible above today list within 1s. Given user logs new manual entry, When list refreshes, Then totals strip updates without Home tab visit. Given calorie_target unavailable, When strip renders, Then protein-only fallback with muted kcal copy | pwa/src/components/LogTypeTabPanel.tsx L122-129; pwa/src/components/LogTypeTodayList.tsx L79-96; pwa/src/components/FoodProteinProgressCard.tsx L8-31; pwa/src/lib/apiFood.ts getFoodTargets | crit-032 | — |
@@ -204,9 +205,10 @@
 
 ---
 
-## UI_POLISH_BACKLOG (Mode C — agreed items only)
+## UI_POLISH_BACKLOG
 
-- [x] ui-057 | **App tab shortcuts:** ⌘1–5 nav + localStorage hint + conditional aria-keyshortcuts | P3 | done 2026-07-27 — prop-ui-042 logic verified
+ (Mode C — agreed items only)
+
 - [x] ui-058 | **Settings OAuth UX:** disconnect success banner + aria-live error banner (prop-ui-044 / ux-gap-045) | P3 | done 2026-07-27
 - [x] ui-059 | **Agent starter chips:** Gemini wrap pills above composer, compact greeting (prop-ui-045) — superseded on main by relay-200 greeting grid; follow-up ux-gap-046 | P2 | done 2026-07-28
 - [x] ui-060 | **Agent greeting grid:** Gemini density + hover/focus/disabled + subline (prop-ui-046 / ux-gap-046) | P2 | done 2026-07-28
@@ -216,14 +218,19 @@
 - [x] ui-064 | **Log swipe velocity + aria-live:** flick commit + screen reader announce (crit-020) | P2 | done 2026-07-28
 - [x] ui-065 | **Agent Tools auto-send:** sendPrompt on tool row tap (crit-034) | P2 | done 2026-07-28
 - [x] ui-066 | **Agent tool status chips:** composer dock streaming status + aria-busy + pulse dot (crit-002 / Bugbot r24) | P2 | done 2026-08-03
-- [ ] ui-067 | **Tool status chips integration test:** cover crit-002 lifecycle (dock render on loading → clear on onDone/onError/finally) — deferred from Bugbot r24-003 | P3 | backlog
+- [x] ui-067 | **Tool status chips integration test:** cover crit-002 lifecycle (dock render on loading → clear on onDone/onError/finally) — deferred from Bugbot r24-003 | P3 | backlog
 
 ---
-
+- [ ] ui-068 | **Cards body-first capture:** prop-ui-048 / crit-075 — autofocus body textarea, derive title from first body line (80 chars cap), Save enabled when body non-empty (not title), backward-compat title explicit override, server CreateCardRequest min_length relaxed to body | P3 | backlog
+- [ ] ui-069 | **Settings OAuth scopes panel:** prop-ui-047 / crit-077 — server exposes google_scopes, human-label checklist on SettingsGoogleCard, partial grant Re-connect pill, Manage on Google Account link (account.google.com/permissions in new tab, rel=noopener), disconnect retention note | P3 | backlog
 ## REVIEW_FINDINGS
+
+
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r25-001 | low | ui-067 test 5 rerender not wrapped in act — pre-commit fix: act() wrapper applied; rerender now flushes within React batch boundary; 5/5 still pass | round-25 /code-review | closed | ui-067 | closed |
+| ux-r25-000 | low | Bugbot subagent skipped — review-bugbot skill not present locally (matches ux-r24-000 pattern). Window-lens review only: ui-067 integration test covers crit-002 lifecycle at dock level (5 tests: dock render on loading=true; chips remove on loading=false; no chips when loading=false regardless of toolStatusLabels; Working fallback; live tool transition). 5/5 pass; full suite 135 pass + 1 skip; build + lint clean; pre-commit fix: act() wrapper around test 5 rerender (avoids act warning) | round-25 bugbot | closed | ui-067 | closed |
 | ux-r23-000 | low | Bugbot: crit-034 happy path correct; auto-send wiring clean | round-23 bugbot | closed | ui-065 | closed |
 | ux-r23-001 | medium | Tool rows omitted scanning vs greeting — stacked attach+tools could auto-send during scan | round-23 /code-review | fix-now | ui-065 | closed |
 | ux-r23-002 | medium | sendPrompt loading guard racy on double-tap tool row (same as ux-r20-003) | round-23 /code-review | backlog | ui-065 | closed |
@@ -302,10 +309,11 @@
 | — | — | — | — | — | — | — |
 
 ---
-
-## HISTORY (UX / polish)
+## HISTORY
+ (UX / polish)
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
+| 2026-08-03 | ui-067 | 8-close | crit-002 — AgentChatComposer status chips integration test (5 tests: dock render on loading=true with aria-busy=true; chips remove on loading=false; no chips when loading=false regardless of toolStatusLabels; Working fallback; live tool transition). Closes Bugbot r24-003 (ux-r24-003). 5/5 pass; full suite 135 pass + 1 skip; build + lint clean; agreed crit-075 → ui-068; agreed crit-077 → ui-069 | 5 new integration tests pass; test:journey 2 passed; code_changed yes review_round 25; commit 666cdd1 |
 |-----------|------|------|---------|----------|--------|
 | 2026-08-03 | C | ui-066 | crit-002 — aria-busy={loading} + pulse dot (.agent-tool-status__chip--active); Bugbot r24 fixed aria-label span + stale active class; integration test deferred to ui-067 | build + 119 tests | f0d06f9 |
 | 2026-07-28 | C | ui-065 | crit-034 — tools sendPrompt on tap + disabled loading/offline/scanning | build | 9447113 |
@@ -350,6 +358,10 @@ UX window ships **Mode C** (UI polish) only. Brainstorm → PO window. Bugs/qual
 2. Read `UX_GAPS` — update any awaiting PO (`po-agreed` → ensure matching `ui-*` in backlog)
 3. Ship **only** items in `UI_POLISH_BACKLOG` marked `agreed` or already in progress
 4. Log triage outcome in HISTORY (`agreed prop-ui-*`, `rejected prop-ui-*`, etc.)
+
+
+
+
 
 
 
