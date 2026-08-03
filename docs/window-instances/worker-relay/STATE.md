@@ -20,26 +20,26 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-03T09:34:15Z` |
-| next_action | `arm-relay-228` |
+| next_action | `arm-relay-233` |
 | phase | `8-close` |
 | review_status | `skipped` |
 | code_changed | `no` |
-| review_round | `86` |
-| last_reviewed_round | `86` |
+| review_round | `87` |
+| last_reviewed_round | `87` |
 | worktree_status | `none` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `relay-228 day-over-day comparison: BuildDayOverDayComparison helper + formatKcalDelta/formatProteinDelta (sign-symmetric rounding, 'Same as yesterday' on zero); comparison field on LogTypeTotalsViewMo` |
+| brainstorm_outcome | `relay-231 stale-data indicator: formatRelativeUpdatedAt + buildStaleIndicator pure helpers (3 kinds: fresh/stale/offline); staleIndicator field on LogTypeTotalsViewModel; ref-based Date.now() capture during render (no useEffect setState); 15s setInterval tick counter; component renders muted <p> with kind modifier class; aria-hidden to avoid 15s noise into live region` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `f160b89` |
+| commit_hash | `d9bbda6` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | idle_mode_triggered | `no` |
 | idle_rescue_done | `yes` |
-| current_item_id | `relay-232` |
+| current_item_id | `relay-231` |
 | finalize_status | `success` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
@@ -47,7 +47,7 @@
 | review_changed_files | `pwa/src/App.css pwa/src/components/AppTabContent.tsx pwa/src/components/LogTypeTabPanel.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/hooks/useLogSection.ts pwa/src/hooks/useLogTabPanelsProps.ts pwa/src/lib/logTabPanelsPropsBuilder.ts pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts pwa/src/lib/logTotalsCoachPrompt.test.ts pwa/src/lib/logTotalsCoachPrompt.ts pwa/src/lib/logTypeTotalsViewModel.ts pwa/src/lib/logTabPanelsProps.ts pwa/src/lib/logTabPanelPropPickers.ts pwa/src/sections/Agent.tsx pwa/src/sections/Log.tsx` |
 | review_fingerprint | `1f6cff36d0b10d4c` |
 | review_diff_range | `uncommitted` |
-| review_skip_reason | `Code shipped at f160b89; relay-232 closed; review_round=86 done` |
+| review_skip_reason | `Code shipped at d9bbda6; relay-231 closed; review_round=87 done (window-lens, no bugbot skill locally)` |
 
 ## IN_PROGRESS
 
@@ -87,6 +87,7 @@
 
 
 
+
  (priority ordered)
 
 
@@ -94,7 +95,6 @@
 
 
 
-- [x] relay-221 | Log today totals strip goal-reached state | feature | Given totals strip kcal progress bar; When consumed >= calorieTarget and target is set; Then bar fills to 100% with goal-reached variant (green fill, footer reads "Goal reached" instead of remaining)
 - [x] relay-222 | Log today totals strip macro breakdown | feature | Given totals strip above today's list; When user taps the strip; Then expanded panel shows carbs/total-g and fat/total-g progress lines below protein (only renders if backend returns non-null macros)
 - [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
 - [x] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
@@ -112,6 +112,7 @@
 - [ ] relay-238 | Coach inline tool steps (CoachInlineToolSteps) | feature | Given a skeptical new user sends a first Agent prompt; When tools are running and tokens have not yet arrived; Then the empty streaming assistant bubble shows a vertical step list of active tools with status labels, checkmarks on completed tools, and an aria-live Coach is working announcement; steps hide once tokens arrive
 - [ ] relay-239 | Log totals strip reuse food history fetch (relay-228 dedupe) | refactor | Given LogTypeTodayTotalsStrip mounts and calls api.getFoodHistory(2) while useLogSectionData already calls api.getFoodHistory(14) in the containing Log section; When the Type sub-tab mounts; Then the strip should reuse the section-level history payload (lift state up) to avoid a redundant Sheets read per panel mount
 - [ ] relay-240 | AppTabContent useCallback wrap nav callbacks | refactor | Given AppTabContent wraps useAppShellNavigation callbacks (navigateAgentPrompt, navigateLogType, etc.) in inline arrows that create new identities every render; When useLogSection/useDaySection/useHomeSection pass those identities into their deps arrays; Then useMemo invalidations cascade and tab panels rebuild unnecessarily; wrap each nav callback in useCallback so identity is stable across renders
+- [x] relay-231 | Log today totals strip stale-data timestamp | feature | Given totals are loaded from a delayed or offline response; When the totals strip renders; Then show a concise last-updated indicator and preserve the existing totals instead of presenting stale data as current
 ## BRAINSTORM (unprioritized)
 
 | Idea | Inspiration | Notes |
@@ -205,8 +206,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| rf-r87-000 | low | Bugbot skill absent locally (matches rf-r78/r83/r85/r86 pattern); window-lens review of relay-231: AC satisfied — pure helper buildStaleIndicator covers 3 kinds (fresh within 60s window, stale past window with sign-symmetric minute bucketing, offline when serverOnline=false); component captures Date.now() in a ref during render (documented React pattern) and re-stamps on data identity change; 15s setInterval ticks freshnessTick counter to drive re-renders without invalidating the viewmodel memo every render; stale-indicator <p> has aria-hidden=true to keep 15s noisy updates out of the polite live region; data-testid log-type-totals-strip-stale + kind modifier class (--fresh/--stale/--offline) wired through CSS; offline variant gets italic + text-secondary for visual differentiation; fresh/stale stay at --muted; 220 vitest pass + 1 pre-existing skip + 0 lint errors + build clean + journey 2/2; deferred (in commit body): freshnessTick eslint-disable (lint cant suppress single line), offline→online transition UX (no "Refreshing…" intermediate). | round-87 /code-review | closed | — | open |
 | rf-r86-lens-001 | low | Window-lens per-file pass on relay-232 (every file cited, no defects): pwa/src/lib/logTotalsCoachPrompt.ts (new, 103 lines): pure helper; empty-state guard correct; hasCalorieTarget gate prevents '750 of 0 kcal'; 11 unit tests pass. pwa/src/lib/logTotalsCoachPrompt.test.ts (new, 138 lines): covers all 4 framing states + macros line + comparison line + plain-text invariant. pwa/src/lib/logTypeTotalsViewModel.ts:52-57,207: added calorieTarget field; no behavioural change to existing fields. pwa/src/components/LogTypeTodayTotalsStrip.tsx:13-19,28,112-126,167-176,341-358: onAskCoach prop + useMemo-wrapped viewModel + handleAskCoach + button JSX; button disabled when !serverOnline, hidden when onAskCoach undefined; preserves existing Card-as-button disclosure. pwa/src/components/LogTypeTodayTotalsStrip.test.tsx:56-64,1119-1254: 7 new tests cover button render/hide/disabled/click/empty/no-autosend/double-click. pwa/src/App.css:3879-3919: coach-row + coach-button + 4 states (default/hover/focus-visible/disabled) using existing --accent, --accent-dim, --focus-ring tokens; no new tokens. pwa/src/components/LogTypeTabPanel.tsx:43-49,81,135: optional onAskCoach prop forwarded. pwa/src/lib/logTabPanelsProps.ts:79-83: type extension only. pwa/src/lib/logTabPanelPropPickers.ts:58: picker pass-through. pwa/src/lib/logTabPanelsPropsBuilder.typeTab.ts:9-13,21-22,30: forwarded through builder. pwa/src/lib/logTabPanelsPropsBuilder.ts:46-50,68,78: type + builder updated. pwa/src/hooks/useLogTabPanelsProps.ts:33: dep added. pwa/src/hooks/useLogSection.ts:23-27,41,114: option forwarded. pwa/src/sections/Log.tsx:25-30,46,75: option forwarded to useLogSection. pwa/src/components/AppTabContent.tsx:96-99: wires onAskCoach to navigateAgentPrompt. pwa/src/sections/Agent.tsx:6,19-30: focusAgentComposer() added to existing useEffect; covers all handoff sources. | round-86 /code-review | closed | — | closed |
 | rf-r86-000c | low | Triage of rf-r86-000: zero-finding sentinel (bugbot skill absent locally; window-lens review clean). AC satisfied across all clauses. No deferred items from this finding. | round-86 bugbot | closed | — | closed |
 | rf-r86-fresh-001c | low | Triage of rf-r86-fresh-001: fixed in same tick. handleAskCoach identity churn resolved by wrapping buildLogTypeTotalsViewModel in useMemo (LogTypeTodayTotalsStrip.tsx:112-122). handleAskCoach identity now stable unless one of (data, calorieTarget, pendingCount, yesterdayKcal, yesterdayProtein) changes. Verified 73/73 tests still pass after the fix. | round-86 /code-review | closed | — | closed |
@@ -374,9 +377,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| — | — | 8-close | — | — |
 | 2026-08-03T20:55:00Z | relay-232 | done | build | f160b89 |
 | — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
@@ -460,6 +465,8 @@
 2. Odd = maintenance | Even = feature
 3. **Commit after each completed item** — never commit `.env`
 4. BACKLOG < 3: refill from BRAINSTORM + web research
+
+
 
 
 

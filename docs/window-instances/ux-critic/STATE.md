@@ -18,35 +18,35 @@
 
 | Field | Value |
 |-------|-------|
-| phase | `9-arm` |
+| phase | `8-close` |
 | ritual_step | `8-close` |
 | review_status | `triaged` |
-| review_skip_reason | `docs-only critique tick — crit-077 validate_critique_tick OK no pwa/server diff` |
-| review_round | `94` |
-| last_reviewed_round | `94` |
-| last_wake | `2026-07-28T19:55:00Z` |
+| review_skip_reason | `docs-only critique tick — crit-080 validate_critique_tick OK; STATE.md/CRITIQUE_LOG only` |
+| review_round | `98` |
+| last_reviewed_round | `96` |
+| last_wake | `2026-08-03T16:21:00Z` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `crit-078 Day element audit (tick 78, element mode)` |
-| tick_count | `77` |
-| tick_mode | `journey` |
+| confirmed_next | `crit-081 Cards element audit (tick 81, element mode)` |
+| tick_count | `80` |
+| tick_mode | `element` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/ux-critic/RITUAL.md docs/window-instances/ux-critic/STATE.md` |
+| review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `crit-077 — SettingsGrantedScopesPanel; rejected one-time banner only + block until full grant` |
+| brainstorm_outcome | `crit-080 DayHabitFailedSyncList recovery: A wire retryAllFailed + add Retry all chip in card header when failedCount>0 + per-row error reason tooltip from entry.lastError + per-row spinner during retry + aria-live habitSyncMessage on success/failure + dismiss all failed chip; B per-row only (rejected: retryAllFailed hook already exists but unused); C toast-only retry feedback (rejected: lost in alert stack)` |
 | execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `persistent scope checklist + Manage on Google link + disconnect retention note` |
-| design_mitigations | `parse scopes from token_db; expose via health/settings API; human labels for calendar spreadsheets scopes` |
-| review_fingerprint | `02ae9284657f064d` |
-| current_item_id | `crit-077` |
+| design_chosen_approach | `wire retryAllFailed to DayHabitFailedSyncList header Retry-all chip + per-row error reason via tooltip from entry.lastError + aria-live success/failure announce + spinner during retry; reuse habitSyncMessage banner in DaySectionAlerts` |
+| design_mitigations | `respect serverOnline (same guard as DaySectionHeader); coalesce rapid Retry all clicks via isRetrying ref; aria-live polite; ESC to dismiss banner per UndoToast pattern` |
+| review_fingerprint | `cdade04091fcc370` |
+| current_item_id | `crit-080` |
 
 ## IN_PROGRESS
 
@@ -86,7 +86,9 @@
 | 5 | Home | Apple Health | 2026-07-28T19:24:00Z | crit-074 |
 
 ---
-## CRITIQUE_BACKLOG (local tracker — mirror to ux-relay)
+## CRITIQUE_BACKLOG
+
+ (local tracker — mirror to ux-relay)
 
 
 
@@ -321,8 +323,34 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| uc-r98-001 | low | docs/window-instances/ux-critic/STATE.md crit-080 backlog row + CRITIQUE_LOG entry + ux-relay mirror — gap verified useOptimisticHabitLog retryAllFailed L104-108 unused; optimisticHabitLog L109-120 catch sets setError not entry.lastError; DayHabitFailedSyncList L9-37 per-row only — distinct from crit-047 emit crit-068 quick-adjust by recovery affordance surface | round-98 /code-review | closed | crit-080 | closed |
+| uc-r98-bugbot | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-98 bugbot. | round-98 bugbot | closed | — | closed |
+| uc-r98-000 | low | docs/window-instances/ux-critic/STATE.md diff tick 80 crit-080 — review skipped per RITUAL.md L122 code_changed=no validate_critique_tick OK no pwa/server diff | round-98 /code-review | closed | — | closed |
+| uc-r97-001 | low | docs/window-instances/ux-critic/STATE.md crit-080 backlog row + CRITIQUE_LOG entry + ux-relay mirror — gap verified retryAllFailed in useOptimisticHabitLog L104-108 unused; optimisticHabitLog L114-120 catch sets setError not entry.lastError; DayHabitFailedSyncList L9-37 per-row only — distinct from crit-047 emit and crit-068 quick-adjust by recovery affordance surface | round-97 /code-review | closed | crit-080 | closed |
+| uc-r97-bugbot | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-97 bugbot. | round-97 bugbot | closed | — | closed |
+| uc-r97-000 | low | docs-only tick 80 crit-080 — review skipped per RITUAL.md L122 code_changed=no validate_critique_tick OK; no pwa/server diff | round-97 /code-review | closed | — | closed |
+| uc-r96-002 | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot); window-lens review only. Source: round-96 bugbot. | round-96 bugbot | closed | — | closed |
+| uc-r96-001 | low | docs/window-instances/ux-critic/STATE.md L138+L243 crit-079 backlog row added; journey-capture-thought re-audit on bulk selection discoverability gap — distinct from crit-010/027/042/070/050/004 by surface (bulk actions vs capture vs search) and crit-018 (pin) by modal pattern | round-96 /code-review | closed | crit-079 | closed |
+| uc-r96-000 | low | docs-only tick 79 crit-079 — review skipped per RITUAL.md L122 code_changed=no validate_critique_tick OK; no pwa/server diff | round-96 /code-review | closed | — | closed |
+| uc-r95-003 | low | pwa/src/components/DayScheduleEmptyPanel.tsx L9-L20 — empty pane single CTA Add with Coach only; no parallel Today agenda or refresh-calendar pill; out of scope for crit-078 (view-toggle parity) — captured as adjacent observation for follow-up. | round-95 /code-review | backlog | crit-078 follow-up | closed |
+| uc-r95-002 | low | pwa/src/components/DayTimelineCard.tsx L34-L65 — view-toggle term drift: tablist pill text Schedule (L49) vs h2 swap Agenda (L35) for the same view; aria-label=Schedule view toggle (L37) does not match either; element-tick gap accepted into crit-078 backlog row. | round-95 /code-review | closed | crit-078 | closed |
+| uc-r95-001 | low | docs/window-instances/ux-critic/STATE.md L20-L47 — advance_ritual_step reset review_status to pending for new round, consistent with Phase 6 mandate; phase line correct 9-arm. | round-95 /code-review | closed | — | closed |
+| uc-r95-000 | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-95 bugbot. | round-95 bugbot | closed | — | closed |
 | uc-r94-002 | low | docs/window-instances/ux-critic/RITUAL.md L122 docs-only rule noted — gate requires review when git diff present | round-94 /code-review | closed | — | closed |
 | uc-r94-001 | low | docs/window-instances/ux-critic/STATE.md L127 distinct from crit-029 one-time banner — persistent Settings audit surface | round-94 /code-review | closed | crit-077 | closed |
 | uc-r94-000 | high | docs/window-instances/ux-critic/STATE.md L127 crit-077 gap confirmed SettingsGoogleCard L12-26 Connected pill only scopes in token_db not exposed to PWA | round-94 /code-review | closed | crit-077 | closed |
@@ -736,7 +764,19 @@
 
 
 
+
+
+
+
+
+
 | completed_at | item_id | phase | outcome | evidence |
+| — | — | 8-close | — | — |
+| — | — | 8-close | — | — |
+| — | — | 8-close | — | — |
+| 2026-08-03T11:40:00Z | crit-079 | 8-close | phase 8 close — history appended | validate_critique_tick OK; phase=9-arm |
+| 2026-08-03T11:38:00Z | crit-079 | 8-close | journey-capture-thought re-audit → Cards bulk-select discoverability proposed | validate_critique_tick OK |
+| 2026-08-03T14:10:18Z | crit-078 | 8-close | Day element audit → view-toggle label/heading parity proposed | validate_critique_tick OK |
 | 2026-07-28T19:55:00Z | crit-077 | 8-close | journey-settings-trust re-audit → SettingsGrantedScopesPanel proposed | validate_critique_tick OK |
 | 2026-07-28T19:50:00Z | crit-076 | 8-close | Agent element audit → AgentCoachMarkdownRender proposed | validate_critique_tick OK |
 | 2026-07-28T19:35:00Z | crit-075 | 8-close | journey-capture-thought re-audit → CardsBodyFirstCapture proposed | validate_critique_tick OK |
@@ -815,6 +855,21 @@
 | 2026-07-28T16:38:00Z | crit-054 | 8-close | Home element audit → dashboard freshness timestamp proposed | validate_critique_tick OK |
 | 2026-07-28T16:44:00Z | crit-055 | 8-close | journey-coach-trust re-audit → stream error recovery proposed | validate_critique_tick OK |
 | 2026-07-28T16:50:00Z | crit-056 | 8-close | Agent element audit → Activity feed drill-down proposed | validate_critique_tick OK |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

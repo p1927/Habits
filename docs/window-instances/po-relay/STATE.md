@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T11:45:00Z |
-| where_we_are | po-tick-023 state-sync tick: Round 32 review of cumulative uncommitted po-tick-021/022 docs (BRAINSTORM_LOG + UI_PROPOSALS + retro Round 30/31 review rows); confirmed_next aligned to current Worker pick (relay-228) |
-| confirmed_next | Worker relay-228 next (relay-226 shipped); UX ui-069 Settings OAuth scopes; Code ch-152 P1 still queued; recommend Worker pick relay-232 (Log→Coach handoff) before relay-236/237/238 based on RICE re-rank |
+| reviewed_at | 2026-08-03T16:27:09Z |
+| where_we_are | po-tick-024 idle-rescue orient: Worker handoff currently shows relay-231/233/234/236/237 open and stale next_action=arm-relay-228 although relay-228 and relay-232 are merged; Code handoff has 5 open; UX has ui-070 open |
+| confirmed_next | Worker should refresh stale next_action and pick relay-231; PO idle rescue will seed three validated cross-surface relay items; UX ui-070; Code ch-161 |
 
 ---
 
@@ -19,17 +19,17 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-01T21:30:00Z` |
-| current_item_id | `po-tick-023` |
-| phase | `8-close` |
+| current_item_id | `po-tick-024` |
+| phase | `4-execute` |
 | review_status | `done` |
 | review_skip_reason | `PO docs-only tick; cumulative uncommitted diff = po-tick-021 (Session #38 + relay-233/234/235 seed) + po-tick-022 (Session #39 + collision fix + relay-236/237/238 + prop-ui-047/048) + retro Round 30/31 review rows + po-tick-023 state-sync; cross-window renumber relay-233/234/235 → 236/237/238 (Round 18 precedent); no app code changes` |
 | review_round | `32` |
 | last_reviewed_round | `32` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
-| confirmed_next | `Worker relay-228 next (relay-226 shipped); UX ui-069 Settings OAuth scopes; Code ch-152 P1 still queued; recommend Worker pick relay-232 (Log→Coach handoff) before relay-236/237/238 based on RICE re-rank` |
+| confirmed_next | `Worker should refresh stale next_action and pick relay-231; PO idle rescue will seed three validated cross-surface relay items; UX ui-070; Code ch-161` |
 | loops | `ARMED pid=21082 notify=yes` |
-| ritual_step | `9-arm` |
+| ritual_step | `4-execute` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
@@ -37,10 +37,10 @@
 | review_changed_files | `docs/window-instances/po-relay/STATE.md` |
 | review_fingerprint | `e2e702f4e8ee2fa3` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `po-tick-022 3-lens + relay-233/234/235 → 236/237/238 collision fix + RICE re-rank relay-232 > 228 > 236/237/238` |
+| brainstorm_outcome | `po-tick-024 idle-rescue 3-lens: seed three new cross-surface relay-N (relay-241/242/243), promote prop-ui-049/050/051, and verify handoff reads` |
 | execute_started | `yes` |
-| fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| fix_verify_done | `no` |
+| reflect_done | `no` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `no` |
@@ -60,6 +60,8 @@
 ---
 
 | last-review | `{"reviewed_at":"2026-08-03T13:15:00Z","where_we_are":"po-tick-023 state-sync tick after Round 32 review of cumulative uncommitted po-tick-021/022 docs (BRAINSTORM_LOG + UI_PROPOSALS + history + retro Round 30/31 review rows)","confirmed_next":"Worker relay-228 next (relay-226 shipped via bf0d949); UX ui-069 Settings OAuth scopes; Code ch-152 P1 still queued; recommend Worker pick relay-232 (Log→Coach handoff) before relay-236/237/238 based on RICE re-rank"}` |
+| idle_mode_triggered | `yes` |
+| idle_rescue_done | `no` |
 ## IN_PROGRESS
 
 *(empty)*

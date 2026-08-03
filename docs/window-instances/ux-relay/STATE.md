@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T09:30:00Z |
-| where_we_are | ui-066 shipped — composer dock tool status chips (aria-busy + pulse dot, Bugbot r24 fixes) |
-| confirmed_next | ui-067 integration test (Bugbot r24-003 deferred) |
+| reviewed_at | 2026-08-03T16:05:00Z |
+| where_we_are | ui-069 shipped — Settings OAuth scopes checklist + authenticated status endpoint |
+| confirmed_next | ui-070 Cards bulk selection discoverability |
 
 ---
 
@@ -20,28 +20,28 @@
 |-------|-------|
 | last_wake | `2026-08-03T09:30:00Z` |
 | next_mode | `C` |
-| current_item_id | `ui-068` |
-| phase | `8-close` |
-| review_status | `complete` |
-| review_skip_reason | `__cleared__` |
-| review_round | `26` |
-| last_reviewed_round | `26` |
-| review_diff_range | `main...7563d60` |
+| current_item_id | `ui-070` |
+| phase | `9-arm` |
+| review_status | `skipped` |
+| review_skip_reason | `No uncommitted app diff after ui-069 merge; Round 27 review complete` |
+| review_round | `27` |
+| last_reviewed_round | `27` |
+| review_diff_range | `main...dfa4a3e` |
 | code_changed | `no` |
-| confirmed_next | `ui-069 Settings OAuth scopes (next); ui-070 Cards bulk selection queued; ui-068 verified shipped` |
+| confirmed_next | `ui-070 Cards bulk selection discoverability` |
 | worktree_status | `none` |
-| worktree_path | `__cleared__` |
-| worktree_branch | `__cleared__` |
-| worktree_item_id | `__cleared__` |
-| review_changed_files | `pwa/src/components/CardsCreateSheet.tsx pwa/src/sections/Cards.tsx pwa/src/components/CardsCreateSheet.test.tsx server/habits_api/cards/service.py server/habits_api/cards/derive_title.py server/habits_api/routes/cards.py server/tests/test_cards_derive_title.py` |
-| review_fingerprint | `2f547cde8319c883` |
-| ritual_step | `8-close` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `pwa/src/App.css pwa/src/components/SettingsGoogleCard.test.tsx pwa/src/components/SettingsGoogleCard.tsx pwa/src/components/SettingsSectionCards.tsx pwa/src/hooks/useSettingsSection.ts pwa/src/hooks/useSettingsSectionData.ts pwa/src/lib/apiSettings.ts pwa/src/lib/apiTypes.ts pwa/src/lib/settingsSectionShared.ts pwa/src/lib/settingsSectionTypes.ts pwa/src/sections/Settings.tsx server/habits_api/google/oauth_service.py server/habits_api/routes/api.py server/tests/test_google_status.py` |
+| review_fingerprint | `dfa4a3e-ui069` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ui-066 crit-002 aria-busy + pulse dot; Bugbot r24 1 fix-now + 2 fix-now + 1 backlog; ui-067 queued` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `7563d60` |
+| commit_hash | `dfa4a3e` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -97,12 +97,14 @@
 
 
 
+
  (ux-critic → UX handshake)
 
 > **ux-critic proposes here.** UX triages **≥1 `proposed` row every tick** — same gate as PO `UI_PROPOSALS`. Do **not** copy `proposed` rows to `UI_POLISH_BACKLOG`.
 
 | id | status | journey_ref | persona | impact | touchpoints | before_state | after_state | acceptance_criteria | evidence | depends_on | ux_response |
 |----|--------|-------------|---------|--------|-------------|--------------|-------------|---------------------|----------|------------|-------------|
+| crit-080 | proposed | element-only | returning user | 4 | Day (habit hours card) → Day (failed sync list) | Failed habit syncs list shows per-row Retry only; no Retry all bulk action, no per-row error reason copy, no retry progress feedback, no aria-live announcement on retry success/failure — useOptimisticHabitLog.ts retryAllFailed already defined but never wired to UI | Retry all chip in DayHabitHoursCard header when failedCount>0 wiring useOptimisticHabitLog retryAllFailed; per-row error reason via entry.lastError field set in optimisticHabitLog.ts catch L114-120; per-row spinner during retry using saving state; aria-live polite announce via habitSyncMessage banner in DaySectionAlerts; optional Dismiss all failed chip; respect serverOnline; ESC dismiss | pwa/src/components/DayHabitFailedSyncList.tsx L9-37; pwa/src/hooks/useOptimisticHabitLog.ts L95-108; pwa/src/lib/optimisticHabitLog.ts L109-120; pwa/src/components/DaySectionAlerts.tsx L17-20; pwa/src/components/DaySectionScheduleStack.tsx L37-39 | crit-047,crit-068 | — |
 | crit-079 | proposed | journey-capture-thought | knowledge worker | 4 | Cards (filter bar) → Cards (grid) → Cards (bulk bar) | visible Select chip in cards-bulk-bar pre-selection, Cmd/Ctrl+Shift+A shortcut to enter selection, Esc to exit, aria-keyshortcuts mirror, dismissible first-visit hint per cardsSectionShared pattern | Bulk select via long-press only — desktop has no mouse path, no keyboard shortcut, no first-visit hint; cards grid has no overflow Select entry | pwa/src/components/CardsBulkActionBar.tsx L31-77; pwa/src/components/CardsKeepGrid.tsx L98-105 L113-141; pwa/src/hooks/useCardsFilterShortcuts.ts; pwa/src/hooks/useLongPress.ts; pwa/src/sections/Cards.tsx L110-126 L215-245 | crit-070,crit-010,crit-004,crit-018,crit-028 | — | agreed 2026-08-03 → ui-070 (Select chip + Cmd/Ctrl+Shift+A + Esc + aria-keyshortcuts + first-visit hint; queue behind ui-068 / ui-069) |
 | crit-077 | proposed | journey-settings-trust | privacy-conscious | 5 | Settings (Google card) → Settings (scope audit) | Connected pill only — server stores OAuth scopes in token_db but PWA never receives them; user cannot audit Calendar vs Sheets access or open Google permissions page from Habits | SettingsGrantedScopesPanel — expose google_scopes from API; human-label checklist on SettingsGoogleCard; partial grant Re-connect; Manage on Google Account link; disconnect retention note on banner | Given privacy-conscious user opens Settings at 390px while Google connected, When Google card renders, Then granted scope rows visible within 1s. Given Calendar scope missing from stored scopes, When panel renders, Then missing row highlighted with Re-connect pill. Given user taps Manage on Google, When link opens, Then myaccount.google.com/permissions in new tab. Given user disconnects, When success banner shows, Then copy notes Google stops future access but Sheets copy may remain | pwa/src/components/SettingsGoogleCard.tsx L12-26; server/habits_api/db/token_db.py L53-67; server/habits_api/routes/api.py L47; server/habits_api/google/oauth_service.py L61 | crit-011,crit-029 | agreed 2026-08-03 → ui-069 (scope: server exposes google_scopes first; PWA awaits; v1 ships scope checklist + manage link; defer disconnect retention note) |
 | crit-076 | proposed | element-only | returning user | 4 | Agent (chat panel) → Agent (assistant bubble) | Coach assistant replies render as plain text — bullet lists bold and code from LLM show literal markdown syntax unreadable at 390px | AgentCoachMarkdownRender — react-markdown remark-gfm rehype-sanitize for assistant role only; scoped .agent-coach-markdown in agent-gemini.css + App.css; Copy uses raw m.content; composes with crit-073 tool steps; streaming via useAgentChatStream token append | Given returning user receives Coach reply with bullet list at 390px, When bubble renders, Then list items display as formatted bullets not literal asterisks within 1s. Given reply contains raw HTML or javascript link, When rendered, Then no script execution and unsafe links stripped. Given user taps Copy, When clipboard writes, Then raw markdown source copied. Given partial list mid-stream, When token appends, Then at most one line-height flicker until block closes. Given crit-073 tool steps visible, When first token arrives, Then steps hide and markdown owns bubble body | pwa/src/components/AgentChatPanel.tsx L84-86; pwa/src/hooks/useAgentChatStream.ts L43-50; pwa/src/styles/agent-gemini.css L653-674; pwa/src/App.css L4464-4534 | crit-066,crit-073 | — |
@@ -214,7 +216,6 @@
 
  (Mode C — agreed items only)
 
-- [x] ui-059 | **Agent starter chips:** Gemini wrap pills above composer, compact greeting (prop-ui-045) — superseded on main by relay-200 greeting grid; follow-up ux-gap-046 | P2 | done 2026-07-28
 - [x] ui-060 | **Agent greeting grid:** Gemini density + hover/focus/disabled + subline (prop-ui-046 / ux-gap-046) | P2 | done 2026-07-28
 - [x] ui-061 | **Day jump to now:** auto-scroll grid to now line + floating chip (crit-003) | P2 | done 2026-07-28
 - [x] ui-062 | **Agent greeting auto-send + voice bridge:** chip sends on tap, voice coach lede (crit-009) | P2 | done 2026-07-28
@@ -226,7 +227,7 @@
 
 ---
 - [x] ui-068 | **Cards body-first capture:** prop-ui-048 / crit-075 — autofocus body textarea, derive title from first body line (80 chars cap), Save enabled when body non-empty (not title), backward-compat title explicit override, server CreateCardRequest min_length relaxed to body | P3 | done 2026-08-03
-- [ ] ui-069 | **Settings OAuth scopes panel:** prop-ui-047 / crit-077 — server exposes google_scopes, human-label checklist on SettingsGoogleCard, partial grant Re-connect pill, Manage on Google Account link (account.google.com/permissions in new tab, rel=noopener), disconnect retention note | P3 | backlog
+- [x] ui-069 | **Settings OAuth scopes panel:** prop-ui-047 / crit-077 — server exposes google_scopes, human-label checklist on SettingsGoogleCard, partial grant Re-connect pill, Manage on Google Account link (account.google.com/permissions in new tab, rel=noopener), disconnect retention note | P3 | backlog
 - [ ] ui-070 | **Cards bulk selection discoverability:** crit-079 — visible Select chip on CardsFilterBar (entry point) + Cmd/Ctrl+Shift+A shortcut (mirroring useCardsFilterShortcuts pattern) + Esc to exit + aria-keyshortcuts on filter chips + dismissible first-visit hint (cardsSectionShared pattern). Queue behind ui-068 / ui-069 | P3 | backlog
 ## REVIEW_FINDINGS
 
@@ -237,8 +238,12 @@
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r27-001 | low | Bugbot-equivalent reviewer unavailable: delegated review call returned HTTP 404 after three retries; manual window-lens review completed instead. No product finding is inferred from the unavailable tool. | round-27 bugbot | closed | — | closed |
+| ux-r27-000 | low | Window-lens review: ui-069 Settings OAuth scopes checklist plus authenticated google status endpoint are covered by 6 PWA tests and 5 server tests; build, lint, journey, and server helper tests pass. No blocking correctness or security issue found in the committed diff. | round-27 /code-review | closed | — | closed |
 | ux-r26-004 | low | Cards.tsx L86-100 handleCreate catch variable rename (e → err) was incidental fix of pre-existing latent bug — outer catch was shadowing inner e reference. Build clean, no behavior change for callers | round-26 /code-review | closed | ui-068 | closed |
 | ux-r26-003 | low | CardsCreateSheet.tsx L84 'Title: {previewTitle}' placeholder still prefixes explicit title — minor: when user types in title field, placeholder becomes redundant 'Title: My Explicit Title' below user input. Lower priority; not visible during normal input | round-26 /code-review | backlog | ui-068 | open |
 | ux-r26-002 | low | CardsCreateSheet.tsx L60-64 client preview duplicates derive_card_title logic (4 lines of TypeScript). Acceptable duplication for UX preview affordance — server is the canonical source of truth. Future improvement: move derive_title to a shared TS/Python module if drift becomes a bug | round-26 /code-review | backlog | ui-068 | open |
@@ -326,9 +331,11 @@
 ---
 ## HISTORY
 
+
  (UX / polish)
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
+| 2026-08-03T16:08:00Z | ui-069 | ui-069 | crit-077 / prop-ui-047 — Settings OAuth scopes checklist with human-labeled Calendar/Sheets grants, partial-grant Re-connect, Manage on Google Account new-tab link, and authenticated /auth/google/status endpoint; disconnect retention note remains deferred per agreed scope | PWA: build + lint + journey; 6 component tests; server: 5 status tests passed |
 | 2026-08-03 | C | ui-068 | crit-075 / prop-ui-048 — Cards body-first capture. server derive_card_title helper extracted; CreateCardRequest title min_length=1 relaxed to body min_length=1; CardsCreateSheet autofocuses body textarea on open; title preview placeholder shows live 'Title: {derived}'; Save gated on body.trim(); 8 PWA tests + 10 server tests added; incidental catch(e)→catch(err) shadow fix in Cards.tsx handleCreate. crit-079 triaged → ui-070 queued. Deferred: ux-r26-002 shared TS/Python derive_title module; ux-r26-003 Title: prefix on explicit-title placeholder | 61 server pass; 143 PWA pass + 1 skip; journey 2 pass; build + lint 0 errors; commit 7563d60 |
 | 2026-08-03 | ui-067 | 8-close | crit-002 — AgentChatComposer status chips integration test (5 tests: dock render on loading=true with aria-busy=true; chips remove on loading=false; no chips when loading=false regardless of toolStatusLabels; Working fallback; live tool transition). Closes Bugbot r24-003 (ux-r24-003). 5/5 pass; full suite 135 pass + 1 skip; build + lint clean; agreed crit-075 → ui-068; agreed crit-077 → ui-069 | 5 new integration tests pass; test:journey 2 passed; code_changed yes review_round 25; commit 666cdd1 |
 |-----------|------|------|---------|----------|--------|
@@ -375,6 +382,9 @@ UX window ships **Mode C** (UI polish) only. Brainstorm → PO window. Bugs/qual
 2. Read `UX_GAPS` — update any awaiting PO (`po-agreed` → ensure matching `ui-*` in backlog)
 3. Ship **only** items in `UI_POLISH_BACKLOG` marked `agreed` or already in progress
 4. Log triage outcome in HISTORY (`agreed prop-ui-*`, `rejected prop-ui-*`, etc.)
+
+
+
 
 
 
