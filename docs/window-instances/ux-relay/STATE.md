@@ -27,7 +27,7 @@
 | review_round | `26` |
 | last_reviewed_round | `26` |
 | review_diff_range | `main...7563d60` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | confirmed_next | `ui-069 Settings OAuth scopes (next); ui-070 Cards bulk selection queued; ui-068 verified shipped` |
 | worktree_status | `none` |
 | worktree_path | `__cleared__` |
