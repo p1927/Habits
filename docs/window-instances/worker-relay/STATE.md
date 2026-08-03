@@ -20,20 +20,20 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-03T09:34:15Z` |
-| next_action | `prepare-relay-225` |
-| phase | `3-select` |
+| next_action | `arm-relay-225` |
+| phase | `8-close` |
 | review_status | `skipped` |
 | code_changed | `no` |
 | review_round | `84` |
 | last_reviewed_round | `84` |
-| worktree_status | `active` |
-| ritual_step | `3.3-worktree` |
+| worktree_status | `none` |
+| ritual_step | `8-merge` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `relay-225 (empty-state fallback): verified retroactive — ch-patchwork-log-totals b2c4ee6 owns the implementation; classifyTotalsState() returns "empty" branch + viewmodel footerText carries "No meals` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
-| reflect_done | `no` |
-| commit_hash | `b2c4ee6` |
+| reflect_done | `yes` |
+| commit_hash | `69b89a5` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -41,13 +41,13 @@
 | idle_rescue_done | `yes` |
 | current_item_id | `relay-225` |
 | finalize_status | `success` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
-| worktree_branch | `loop/worker-relay/relay-225` |
-| worktree_item_id | `relay-225` |
-| review_changed_files | `pwa/src/App.css pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/components/ui/Card.tsx` |
-| review_fingerprint | `b016797` |
-| review_diff_range | `ff-merged` |
-| review_skip_reason | `relay-225 retroactively verified — no code diff on this tick; ch-patchwork-log-totals b2c4ee6 owns the implementation; 6/6 relay-225 vitest describe + 130/130 full suite + npm run lint 0 errors + npm run build clean; review_status=skipped because code_changed=no` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
+| review_diff_range | `none` |
+| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
 
 ## IN_PROGRESS
 
