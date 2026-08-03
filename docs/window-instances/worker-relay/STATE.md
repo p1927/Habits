@@ -8,10 +8,10 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-02T12:16:00Z |
-| where_we_are | relay-223 shipped (ada4813); next: relay-225 (empty-state fallback) — comes before 226/227 (no target / keyboard) and 228 (day-over-day) since the empty-state AC explicitly pairs with zero meals + visible strip |
-| confirmed_next | relay-225 |
-| brainstorm_notes | Empty-state fallback: when no meals logged today and strip is visible, show zeroed kcal/protein with 'No meals logged yet' message and keep readable without progress implication. Strip already covers target-unset + calorie-only case so empty-state needs to also render zeroed without progress bar |
+| reviewed_at | 2026-08-03T09:33:41Z |
+| where_we_are | relay-225 (empty-state fallback) AC already satisfied at HEAD b2c4ee6 via ch-patchwork-log-totals classifyTotalsState work — verified by 6/6 dedicated relay-225 vitest cases + 130/130 full suite + lint 0 + build clean; marked done without further code delta |
+| confirmed_next | relay-228 |
+| brainstorm_notes | day-over-day comparison: shows yesterday-vs-today kcal and protein deltas with explicit unavailable state when yesterday data is missing; AC pairs with the new state classifier so 'today' (state classifier) plus a new 'yesterday' aggregated view from server are the inputs |
 
 ---
 
@@ -19,8 +19,8 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-08-02T13:34:00Z` |
-| next_action | `arm-relay-228` |
+| last_wake | `2026-08-03T09:34:15Z` |
+| next_action | `close-relay-225` |
 | phase | `8-close` |
 | review_status | `skipped` |
 | code_changed | `no` |
@@ -33,13 +33,13 @@
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `b016797` |
+| commit_hash | `b2c4ee6` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
 | idle_mode_triggered | `no` |
 | idle_rescue_done | `yes` |
-| current_item_id | `relay-227` |
+| current_item_id | `relay-225` |
 | finalize_status | `success` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
@@ -47,7 +47,7 @@
 | review_changed_files | `pwa/src/App.css pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.tsx pwa/src/components/ui/Card.tsx` |
 | review_fingerprint | `b016797` |
 | review_diff_range | `ff-merged` |
-| review_skip_reason | `relay-227 shipped (b016797); zero-finding review round-83 closed; ready for relay-228` |
+| review_skip_reason | `relay-225 retroactively verified — no code diff on this tick; classifyTotalsState b2c4ee6 owns the implementation; 6/6 dedicated tests + 130/130 full suite pass; ready for review-status=skipped` |
 
 ## IN_PROGRESS
 
@@ -92,7 +92,6 @@
 
 
 
-- [x] relay-216 | Home empty rings Log first meal CTA | feature | Given zero food logged today, When Home rings visible, Then primary CTA opens Log Scan per crit-001
 - [x] relay-218 | Log today kcal + protein totals strip | feature | Given Log tab Type sub-tab visible; When Today's log card renders; Then sticky totals strip above list shows kcal/total-target and protein/target-g with progress fraction
 - [x] relay-219 | Log today totals strip aggregation tests | refactor | Given FoodTodayResponse totals + pending optimistic entries; When totals strip computes kcal/protein; Then unit tests cover totals+pending, no data, and target-null cases
 - [x] relay-220 | Log today totals strip aria-live | ux | Given totals strip above Log Today's list; When totals change (log saved, pending clears); Then aria-live=polite announces kcal + protein updates
@@ -101,7 +100,7 @@
 - [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
 - [ ] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
 - [x] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
-- [ ] relay-225 | Log today totals strip empty-state fallback | feature | Given no meals are logged today and the totals strip is visible; When the Log Type tab opens; Then the strip shows zeroed kcal/protein values, a clear ‘No meals logged yet’ message, and remains readable without implying progress
+- [x] relay-225 | Log today totals strip empty-state fallback | feature | Given no meals are logged today and the totals strip is visible; When the Log Type tab opens; Then the strip shows zeroed kcal/protein values, a clear ‘No meals logged yet’ message, and remains readable without implying progress
 - [ ] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
 - [x] relay-230 | Totals strip pending-sync count accuracy | feature | Given optimistic food entries are pending sync; When the totals strip renders; Then show the exact pending meal count and update it after sync or failure without hiding the underlying totals
 - [ ] relay-232 | Log totals strip Ask Coach handoff | feature | Given the totals strip has today nutrition totals; When the user activates Ask Coach; Then Agent opens with a plain-text kcal protein and macro summary prefilled once, focus lands in the composer, and no message sends without confirmation
@@ -336,9 +335,11 @@
 
 
 
+
  (newest first)
 
 | Timestamp | Item | Outcome | Verified | Commit |
+| 2026-08-03T09:33:32Z | relay-225 | done | code-already-shipped via ch-patchwork-log-totals b2c4ee6 (classifyTotalsState empty branch + viewmodel footerText + hasMacros gating + showKcalBar/showProteinBar suppression) | b2c4ee6 + vitest 6/6 relay-225 describe + 130/130 full pwa suite + npm run lint 0 errors + npm run build clean |
 | — | — | 8-close | — | — |
 | — | — | 8-close | — | — |
 | — | relay-230 | po-merge | Merged duplicate pending-count story into refined relay-223; FoodTodayResponse has no pending field, so AC now uses existing local optimistic/queued entries and preserves confirmed totals. | pwa/src/lib/apiTypes.ts:23-31 |
