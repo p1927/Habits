@@ -19,24 +19,24 @@
 | Field | Value |
 |-------|-------|
 | confirmed_next | `ch-165` |
-| phase | `5-verify` |
+| phase | `8-close` |
 | last_wake | `2026-08-04T00:39:44Z` |
 | code_changed | `yes` |
 | review_status | `triaged` |
 | review_round | `33` |
 | last_reviewed_round | `31` |
-| worktree_status | `active` |
+| worktree_status | `none` |
 | review_changed_files | `docs/window-instances/code-health/STATE.md` |
 | review_fingerprint | `2b91e7074ac58d73` |
 | review_diff_range | `uncommitted` |
 | review_skip_reason | `ch-164 STATE sync tick: docs-only edit to window own STATE.md (mark backlog done + HISTORY + SCAN_COVERAGE + confirmed_next→ch-165); no pwa/ or server/ runtime code in diff; audit_review.py --loop-id code-health ran clean against post-close STATE; ch-r33-sync ZERO FINDINGS self-review` |
-| ritual_step | `5-verify` |
+| ritual_step | `8-commit` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `Approach B (worktree): docs-only STATE sync for ch-164 close (mark backlog row done + append HISTORY row + update confirmed_next to ch-165); verify via audit_review.py --loop-id code-health against th` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
-| reflect_done | `no` |
-| commit_hash | `c172f74` |
+| reflect_done | `yes` |
+| commit_hash | `50e9582` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
@@ -45,10 +45,10 @@
 | refactor_plan_id | `ch-164` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
-| current_item_id | `ch-164` |
-| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
-| worktree_branch | `loop/code-health/ch-164` |
-| worktree_item_id | `ch-164` |
+| current_item_id | `—` |
+| worktree_path | `—` |
+| worktree_branch | `—` |
+| worktree_item_id | `—` |
 
 ## IN_PROGRESS
 
@@ -272,7 +272,7 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
-| ch-r33-sync | low | ch-164 STATE sync tick — ZERO FINDINGS. STATE.md diff is bounded to: (a) backlog row ch-164 marked done with shipped-evidence annotation (refers ff9f14b commit + r27 bugbot/fresh-eye closures + 7/7 test_audit_review_consistency.sh pass), (b) confirmed_next ch-161→ch-165, (c) LAST_REVIEW refreshed, (d) HISTORY row appended, (e) SCAN_COVERAGE row for audit_review.py + test added. No pwa/ or server/ runtime code in diff. Self-verified: audit_review.py --loop-id code-health runs against post-close STATE and returns OK (no issues) — the very audit function ch-164 ships passes on its own window. | round-33 self-review | closed | — | closed |
+| ch-r33-sync | low | ch-164 STATE sync tick — ZERO FINDINGS. STATE.md diff is bounded to: (a) backlog row ch-164 marked done with shipped-evidence annotation (refers ff9f14b commit + r27 bugbot/fresh-eye closures + 7/7 test_audit_review_consistency.sh pass), (b) confirmed_next ch-161→ch-165, (c) LAST_REVIEW refreshed, (d) HISTORY row appended, (e) SCAN_COVERAGE row for audit_review.py + test added. No pwa/ or server/ runtime code in diff. Self-verified: audit_review.py --loop-id code-health runs against post-close STATE and returns OK (no issues) — the very audit function ch-164 ships passes on its own window. | round-33 bugbot window-lens | closed | — | closed |
 | ch-r33-000 | low | — | — | — | — | open |
 | ch-r33-b000 | low | — | — | — | — | open |
 | ch-r31-split | low | ch-163 PWA totals-strip test split — ZERO FINDINGS. 9 co-located test files (8 new + 1 trimmed main) all share LogTypeTodayTotalsStrip.test.helpers.ts for fixtures/mocks/DOM queries; 69/69 vitest tests pass; main file 1308→274 lines; new files 200-300 lines each; behavior preserved verbatim (every it() block relocated unchanged); build green (tsc + vite); oxlint 0 errors; helpers file unchanged; vi.mock block must be per-file per vitest hoisting — remaining ~12-line lifecycle duplication per file is acceptable. Patchwork signal cleared: future state additions land in focused files. | round-31 self-review | closed | — | closed |
