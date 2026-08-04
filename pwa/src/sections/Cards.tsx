@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CardsBulkActionBar, CardsChangeTypeSheet } from '../components/CardsBulkActionBar';
 import { CardsCreateSheet } from '../components/CardsCreateSheet';
 import { CardsFilterBar } from '../components/CardsFilterBar';
@@ -37,6 +37,16 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
   const [newBody, setNewBody] = useState('');
   const [error, setError] = useState('');
   const [sicknessEvents, setSicknessEvents] = useState<SicknessTimelineEvent[]>([]);
+  // ui-072 / crit-081 — sickness timeline → related notes handoff
+  // (announces the active event + scrolls the grid into view after a tap).
+  const [sicknessHandoffMessage, setSicknessHandoffMessage] = useState('');
+  const cardsGridRef = useRef<HTMLDivElement | null>(null);
+  const reduceMotion = useRef(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    reduceMotion.current = mq.matches;
+  }, []);
 
   // Bulk-selection state (ui-070).
   const [selectionMode, setSelectionMode] = useState(false);
@@ -228,6 +238,30 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
     setBulkUndo(null);
   }, []);
 
+  // ui-072 / crit-081 — sickness timeline event activation switches to the
+  // sickness filter, prefills the event label into search, scrolls the grid
+  // into view, and announces the handoff for screen-reader users.
+  const handleSicknessEventSelect = useCallback(
+    (ev: SicknessTimelineEvent) => {
+      setFilter('sickness');
+      setSearch(ev.label);
+      setSicknessHandoffMessage(`Showing sickness notes for ${ev.label}.`);
+      // Scroll the grid into view on the next paint so the filter + search
+      // have been applied and matches are visible. jsdom does not implement
+      // Element.scrollIntoView, so the call is feature-detected.
+      requestAnimationFrame(() => {
+        const node = cardsGridRef.current;
+        if (!node || typeof node.scrollIntoView !== 'function') return;
+        if (reduceMotion.current) {
+          node.scrollIntoView();
+        } else {
+          node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    },
+    [],
+  );
+
   // UndoToast manages its own setTimeout dismissal; no manual cleanup needed.
 
   return (
@@ -268,10 +302,10 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
       )}
 
       {(filter === 'all' || filter === 'sickness') && (
-        <CardsSicknessTimelineCard events={sicknessEvents} />
+        <CardsSicknessTimelineCard events={sicknessEvents} onEventSelect={handleSicknessEventSelect} />
       )}
 
-      <div role="tabpanel" id="cards-filter-panel" aria-labelledby={`cards-filter-${filter}`}>
+      <div role="tabpanel" id="cards-filter-panel" aria-labelledby={`cards-filter-${filter}`} ref={cardsGridRef}>
         <CardsKeepGrid
           cards={filtered}
           onDelete={(card) => void handleDelete(card)}
@@ -330,6 +364,13 @@ export function Cards({ serverOnline, onNavigateMealPlanSyncSource }: CardsProps
           {error}
         </div>
       )}
+
+      {/* ui-072 / crit-081 — visually hidden, screen-reader announcement of
+          the sickness-event handoff. The Cards section has no other polite
+          live region, so the wrapper is owned by the section. */}
+      <p className="sr-only" role="status" aria-live="polite">
+        {sicknessHandoffMessage}
+      </p>
     </section>
   );
 }

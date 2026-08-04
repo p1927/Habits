@@ -3444,6 +3444,38 @@ button:disabled {
   min-width: 4px;
 }
 
+/* ui-072 / crit-081 — sickness timeline events become focusable buttons
+   so the user can jump from a 90-day event bar to its related notes.
+   Plain render (no onEventSelect) keeps the original aria-hidden layout. */
+.sickness-timeline-event {
+  appearance: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  margin: 0;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.sickness-timeline-event:hover {
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+}
+
+.sickness-timeline-event:focus-visible {
+  outline: none;
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--warn) 32%, transparent);
+}
+
 .sickness-timeline-dates {
   font-size: 0.625rem;
 }
