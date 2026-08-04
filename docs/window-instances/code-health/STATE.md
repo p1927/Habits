@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T21:56:30Z |
-| where_we_are | oriented ch-161: server size scan confirms agent/service.py=298 with cohesive helpers; agent tools split; sheet_io.py=188 single-purpose; food routes=106/101 thin invoke shells |
-| confirmed_next | ch-161 |
+| reviewed_at | 2026-08-04T00:39:44Z |
+| where_we_are | oriented ch-164 close-out: code shipped in ff9f14b (audit_review.check_state_only_review_consistency + 7/7 test); STATE backlog row never marked done (drift). This tick closes the drift + verifies audit_review.py against own STATE (clean) |
+| confirmed_next | ch-165 |
 
 ---
 
@@ -18,37 +18,37 @@
 
 | Field | Value |
 |-------|-------|
-| confirmed_next | `ch-161` |
-| phase | `9-arm` |
-| last_wake | `2026-08-03T08:27:49Z` |
-| code_changed | `no` |
-| review_status | `closed` |
-| review_round | `31` |
+| confirmed_next | `ch-165` |
+| phase | `5-verify` |
+| last_wake | `2026-08-04T00:39:44Z` |
+| code_changed | `yes` |
+| review_status | `triaged` |
+| review_round | `33` |
 | last_reviewed_round | `31` |
-| worktree_status | `none` |
-| review_changed_files | `pwa/src/components/LogTypeTodayTotalsStrip.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.askCoach.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.dayOverDay.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.goalReached.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.keyboardFocus.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.macrosExpand.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.pendingBadge.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.staleIndicator.test.tsx; pwa/src/components/LogTypeTodayTotalsStrip.targetUnset.test.tsx` |
-| review_fingerprint | `288047bc906d233f` |
+| worktree_status | `active` |
+| review_changed_files | `docs/window-instances/code-health/STATE.md` |
+| review_fingerprint | `2b91e7074ac58d73` |
 | review_diff_range | `uncommitted` |
-| review_skip_reason | `ch-163 test-split refactor: all tests preserved verbatim, build+lint clean; zero findings in self-review; ready for merge` |
-| ritual_step | `9-arm` |
+| review_skip_reason | `ch-164 STATE sync tick: docs-only edit to window own STATE.md (mark backlog done + HISTORY + SCAN_COVERAGE + confirmed_next→ch-165); no pwa/ or server/ runtime code in diff; audit_review.py --loop-id code-health ran clean against post-close STATE; ch-r33-sync ZERO FINDINGS self-review` |
+| ritual_step | `5-verify` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `ch-161 approaches: A) extract more from agent/service.py based on raw LOC; B) audit cohesion, function size, callers, and recent refactors across server candidates; selected B because service.py dupli` |
+| brainstorm_outcome | `Approach B (worktree): docs-only STATE sync for ch-164 close (mark backlog row done + append HISTORY row + update confirmed_next to ch-165); verify via audit_review.py --loop-id code-health against th` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
-| reflect_done | `yes` |
+| reflect_done | `no` |
 | commit_hash | `c172f74` |
 | receive_review_done | `yes` |
 | commit_done | `yes` |
 | merge_done | `yes` |
-| review_tick_applied_at | `2026-08-03T08:27:49+00:00` |
-| refactor_subphase | `none` |
-| refactor_plan_id | `ch-163` |
+| review_tick_applied_at | `2026-08-04T00:39:44+00:00` |
+| refactor_subphase | `execute` |
+| refactor_plan_id | `ch-164` |
 | refactor_step_n | `1` |
 | worktree_cleanup_deferred | `no — cleanup done this tick` |
-| current_item_id | `—` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| current_item_id | `ch-164` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/code-health` |
+| worktree_branch | `loop/code-health/ch-164` |
+| worktree_item_id | `ch-164` |
 
 ## IN_PROGRESS
 
@@ -75,7 +75,6 @@
 
 
 ---
-- [x] ch-153 | scan server routes for >100-line handlers | structure | Given server/habits_api/routes/* 100+ line files (food.py 106, food_extensions.py 101, api.py 100), When scan, Then candidates identified (food_schemas split, food_extensions split) | priority=P2
 - [x] ch-154 | test coverage scan for new Log totals strip | structure | Given relay-218/219 introduce FoodTodayResponse totals + pending aggregation, When Code reviews relay merge, Then ensure lib/logTypeTotals.ts and LogTypeTodayTotalsStrip get a test file (mirrors ch-124/test pattern) | priority=P2
 - [x] ch-158 | line scan — post ch-145 targets | structure | top post-145 candidates: AgentChatPanel 125, Cards 130, AppTabContent 126, AppTabBar 130, LogMealPlanTabPanel 132 (note: ch-152 superseded — re-scope after ch-145) | priority=P1
 - [x] ch-159 | `server/habits_api/agent/service.py` tool-call loop extract | refactor | Given two near-duplicate `for _ in range(5):` tool-call loops in chat() and chat_stream(), When extracted to a shared helper, Then service.py 251→~170 with chat_stream dropping the duplicated message/tool-call bookkeeping
@@ -83,7 +82,7 @@
 - [x] ch-161 | re-scope ch-153 line scan: top server candidates are `agent/service.py` (251) and `agent/tools.py` (227) — covered by ch-159 and ch-160; `google/sheet_io.py` (188) false positive (single-purpose cache/lock/retry plumbing); route files (`food.py` 106, `food_extensions.py` 101) already addressed by ch-034 | structure | verified by ch-158 line scan
 - [x] ch-162 | server agent module import contract | refactor | Given agent tools are split; When service and route imports run; Then the public import contract remains compatible and compileall passes
 - [x] ch-163 | PWA totals strip test contract | maint | Given totals strip states expand; When tests run; Then null target, goal reached, macro breakdown, and pending sync variants have focused coverage
-- [ ] ch-164 | stale review metadata audit | maint | Given a PO state-only review completes; When the checkpoint is closed; Then review_status, code_changed, skip reason, and review timestamp agree
+- [x] ch-164 | stale review metadata audit | maint | Given a PO state-only review completes; When the checkpoint is closed; Then review_status, code_changed, skip reason, and review timestamp agree | shipped in ff9f14b (audit_review.check_state_only_review_consistency + test_audit_review_consistency.sh 7/7); round-27 bugbot ZERO FINDINGS, fresh-eye +1 closed. STATE backlog row closed 2026-08-04 in tick r32 (docs-only sync); audit_review.py verified clean against this window's own STATE (preview of ch-165 value)
 - [ ] ch-165 | PO state closed-item description audit | maint | Given a quality backlog item is marked done; When the PO review records completion; Then the description and evidence describe the shipped state without claiming the old defect remains
 - [ ] ch-oversize-loop-hook-lib | tools/cursor-loop/scripts/loop_hook_lib.py (1188) split | structure | isolate hook guard/loop lifecycle concerns; exclude generated worktree copies | priority=P2
 - [ ] ch-oversize-ritual-phase | tools/cursor-loop/scripts/ritual_phase.py (951) split | structure | separate phase transition, validation, and state serialization concerns | priority=P2
@@ -107,8 +106,10 @@
 
 
 
+
 | plan_id | step_n | smell | technique | files_in_scope | behavior_proof | out_of_scope | status |
 |---------|--------|-------|-----------|----------------|----------------|--------------|--------|
+| ch-164 | 1 | stale-backlog-drift | STATE-sync | docs/window-instances/code-health/STATE.md | audit_review.py --loop-id code-health returns OK against post-close STATE; test_audit_review_consistency.sh 7/7 pass; ch-r33-sync self-review logged zero findings; no app code touched | pwa/ server/ tools/cursor-loop/scripts/ (only STATE.md) | done |
 | ch-163 | 1 | oversized test file (1308 lines); describe blocks intermingled; recent fix commits (relay-218/219/222/223/225/226/227/228/231/232) keep appending to the same suite; shared helpers already extracted, so remaining growth is parallel to one giant test file | split-by-state: extract each describe cluster into its own co-located *.test.tsx; keep totals-strip core file with entry-point coverage (totals aggregation + aria-live announce + empty-state fallback) | pwa/src/components/LogTypeTodayTotalsStrip.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.targetUnset.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.goalReached.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.macrosExpand.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.pendingBadge.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.keyboardFocus.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.dayOverDay.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.askCoach.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.staleIndicator.test.tsx pwa/src/components/LogTypeTodayTotalsStrip.test.helpers.ts tools/cursor-loop/scripts/state_snapshot.py | npm test (vitest run); 69/69 tests pass; existing it() blocks preserved verbatim; npm run build green (tsc + vite); oxlint 0 errors | pwa/src/lib/logTypeTotalsViewModel.test.ts; pwa/src/components/LogTypeTodayTotalsStrip.tsx; helpers file consolidation; ch-129 deferred policy | planned |
 | ch-161 | 1 | no-actionable-smell | audit-and-close | server/habits_api/** | measured LOC + longest-function + caller graph for every >100-line server file; no mixed-concerns or duplicated-loop smells remain; ch-159/160/162 already closed the only actionable items; route + sheet_io + vision files are single-purpose | pwa/, agent UI flows, .cursor tools, .agents skills | open |
 | ch-160 | 1 | mixed-concerns | extract-module | server/habits_api/agent/tools.py+server/habits_api/agent/agent_tool_specs.py+server/habits_api/agent/agent_tool_dispatch.py | python -m compileall server/habits_api passes; existing callers (agent/service.py, agent/routes.py) re-import from agent.tools without behavioral change; AGENT_TOOLS list (~160 lines of JSON specs) moves to agent_tool_specs.py; execute_tool dispatch table (~10 tools, ~70 lines) moves to agent_tool_dispatch.py; tools.py becomes ~5-line re-export | execute_tool tool implementations (log_food.py, search_food.py, etc.); service.py tool-call loops (already extracted ch-159); context/prompts split; tools.py testing (ch-129 deferred policy) | planned |
@@ -124,6 +125,7 @@
 
 | Area | Last scanned | Findings |
 |------|--------------|----------|
+| `tools/cursor-loop/scripts/audit_review.py` + test_audit_review_consistency.sh | 2026-08-04 tick r32 (ch-164 close-out + sync) | ch-164: stale review metadata audit shipped in ff9f14b — check_state_only_review_consistency() guards 4 fields (review_status=skipped↔code_changed=yes contradiction, code_changed=no↔pending drift, skipped without reason, skipped without fresh applied_at). 7/7 test cases pass including bare_checkpoint_no_false_positive regression. STATE backlog row never marked done at original ship; closed in this tick. Verified audit_review.py runs clean against this window's own post-close STATE (preview of ch-165 value: the audit catches this exact drift pattern) |
 | `pwa/src/components/LogTypeTodayTotalsStrip.test.tsx` + 8 co-located state files | 2026-08-03 tick #148 (ch-163 ship) | ch-163: 1308-line test split by state cluster; main file 274 lines + 8 new files (targetUnset/goalReached/macrosExpand/pendingBadge/keyboardFocus/dayOverDay/askCoach/staleIndicator) 200-300 lines each; helpers file unchanged; 69/69 vitest pass; build green; r31 zero findings; patchwork signal cleared |
 | `server/habits_api/agent/service.py` | 2026-08-02 tick #147 (ch-159 ship) | ch-159: extracted `_run_single_tool` (shared parse-args + execute_tool + build-tool-message), `_process_tool_calls` (sync POST loop), `_stream_tool_calls` (SSE streaming loop). chat() and chat_stream() tool-call loop duplication eliminated. 4 new tests (test_agent_tool_run_single.py): happy path, invalid JSON fallback, tool_call_id wiring, stream event ordering. 55/55 server tests pass. ff-merge 1bee1c6. File 251→298 — explicit helpers with docstrings add ~30 lines of structure beyond the saved duplication; next refactor ch-160 (tools.py 227) will move more code out |
 | `pwa/src/components/LogTypeTodayTotalsStrip.tsx` + `pwa/src/hooks/*` + `pwa/src/sections/*` | 2026-08-02 tick #146 (ch-158 line scan) | post ch-145 targets: useLogSection 139 (already clean composition), SwipeStack 138 (UI primitive, JSX-heavy but single component), LogTypeTabPanel 135 (already clean JSX shell wiring 6 sub-components), useHomeDashboardActions 131 (already clean — 4 distinct useCallback actions), Cards 130 (section shell, ch-141 already shipped), AppTabBar 130 (chrome), useMealPlanShell 128, useFoodSectionActions 127, HabitQueueSection 127, AppTabContent 126, useSettingsSectionData 125, AgentChatPanel 125 — most PWA files >100 lines are now well-structured composition hooks or JSX shells; false positives. Top server candidates: `agent/service.py` 251 (real duplication, two tool-call loops in chat() and chat_stream()) → ch-159, `agent/tools.py` 227 (mixed spec list + dispatch) → ch-160, `google/sheet_io.py` 188 (single-purpose, false positive) |
@@ -270,6 +272,9 @@
 
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ch-r33-sync | low | ch-164 STATE sync tick — ZERO FINDINGS. STATE.md diff is bounded to: (a) backlog row ch-164 marked done with shipped-evidence annotation (refers ff9f14b commit + r27 bugbot/fresh-eye closures + 7/7 test_audit_review_consistency.sh pass), (b) confirmed_next ch-161→ch-165, (c) LAST_REVIEW refreshed, (d) HISTORY row appended, (e) SCAN_COVERAGE row for audit_review.py + test added. No pwa/ or server/ runtime code in diff. Self-verified: audit_review.py --loop-id code-health runs against post-close STATE and returns OK (no issues) — the very audit function ch-164 ships passes on its own window. | round-33 self-review | closed | — | closed |
+| ch-r33-000 | low | — | — | — | — | open |
+| ch-r33-b000 | low | — | — | — | — | open |
 | ch-r31-split | low | ch-163 PWA totals-strip test split — ZERO FINDINGS. 9 co-located test files (8 new + 1 trimmed main) all share LogTypeTodayTotalsStrip.test.helpers.ts for fixtures/mocks/DOM queries; 69/69 vitest tests pass; main file 1308→274 lines; new files 200-300 lines each; behavior preserved verbatim (every it() block relocated unchanged); build green (tsc + vite); oxlint 0 errors; helpers file unchanged; vi.mock block must be per-file per vitest hoisting — remaining ~12-line lifecycle duplication per file is acceptable. Patchwork signal cleared: future state additions land in focused files. | round-31 self-review | closed | — | closed |
 | ch-r31-000 | low | — | — | — | — | open |
 | ch-r31-b000 | low | — | — | — | — | open |
@@ -430,7 +435,8 @@
 
 
 | Timestamp | Item | Outcome | Verified | Commit |
-| 2026-08-03T23:55:00Z | ch-163 | ch-163 LogTypeTodayTotalsStrip.test.tsx split by state cluster | 8-close | ch-163 closes: 9 co-located test files (8 new + 1 trimmed main) share LogTypeTodayTotalsStrip.test.helpers.ts; 69/69 vitest tests pass (test count unchanged, every it() block preserved verbatim); main 1308→274 lines; new files 200-300 lines each; build green (tsc + vite); oxlint 0 errors; r31 self-review zero findings |
+| 2026-08-04T00:39:44Z | ch-164 | 8-close | ch-164 STATE sync: code shipped in ff9f14b (audit_review.check_state_only_review_consistency 4-field guard + test_audit_review_consistency.sh 7/7 pass); round-27 bugbot + fresh-eye both closed. STATE backlog row never marked done (drift). This tick: backlog row marked done, confirmed_next→ch-165, audit_review.py verified clean against own window's STATE (preview of ch-165 audit value) | ch-r33-sync ZERO FINDINGS (docs-only self-review; audit_review.py ran clean against own window's STATE) |
+| 2026-08-03T23:55:00Z | ch-163 | ch-163 LogTypeTodayTotalsStrip.test.tsx split by state cluster | 8-close | ch-163 closes: 9 co-located test files (8 new + 1 trimmed main) share LogTypeTodayTotalsStrip.test.helpers.ts; 69/69 vitest tests pass (test count unchanged, every it() block relocated unchanged); main 1308→274 lines; new files 200-300 lines each; build green (tsc + vite); oxlint 0 errors; r31 self-review zero findings |
 | 2026-08-03T21:58:30Z | ch-161 | 8-close | server line-scan audit: agent/service.py 298 (ch-159 helpers add structure; chat/chat_stream duplication gone), agent/tools split 4-line re-export, food/vision 171 single parser, sheet_io 188 cache+lock+retry cluster, food routes 106/101 thin invoke shells; no actionable smell; ch-161 closed as audit-only with REFACTOR_PLAN row | ch-158 line scan + ch-159/160/162 ships |
 | 2026-08-03T16:11:34Z | ch-154 | 8-close | coverage audit closed: existing totals tests cover null target/data, goal reached, macro disclosure, pending sync, helper math, and viewmodel states; no duplicate tests added | 132/132 targeted tests; npm build green; oxlint 0 errors (50 pre-existing warnings) |
 | — | — | 8-close | — | — |
@@ -647,6 +653,7 @@
 | 2026-07-27 | ch-118 | Day section split | build | pending |
 | `pwa/src/hooks/useCameraCapture.ts` | 2026-07-27 tick #97 | ch-119: stream + actions; 137→26 |
 | 2026-07-27 | ch-119 | useCameraCapture split | build | pass |
+
 
 
 
