@@ -8,9 +8,9 @@
 
 | Field | Value |
 |-------|-------|
-| reviewed_at | 2026-08-03T16:27:09Z |
-| where_we_are | po-tick-024 idle-rescue orient: Worker handoff currently shows relay-231/233/234/236/237 open and stale next_action=arm-relay-228 although relay-228 and relay-232 are merged; Code handoff has 5 open; UX has ui-070 open |
-| confirmed_next | Worker should refresh stale next_action and pick relay-231; PO idle rescue will seed three validated cross-surface relay items; UX ui-070; Code ch-161 |
+| reviewed_at | 2026-08-04T06:40:41Z |
+| where_we_are | po-tick-025 3-lens orient: Worker has 10 open items (relay-233/234/236/237/238/239/240/241/242/243, no seed mandate); Code has 5 open (no seed mandate); UX promoted crit-082 → prop-ui-049 for next UX triage; Round 34 review closed all findings; relay-231 shipped via d9bbda6 since po-tick-024. |
+| confirmed_next | Worker next relay-233 (RICE re-rank: relay-242 > relay-233 > relay-241 > relay-237 > relay-238); UX triage prop-ui-049 → ui-073; Code ch-165; no relay seed while Worker has 10 open. |
 
 ---
 
@@ -19,27 +19,27 @@
 | Field | Value |
 |-------|-------|
 | last_wake | `2026-08-01T21:30:00Z` |
-| current_item_id | `po-tick-024` |
-| phase | `9-arm` |
-| review_status | `skipped` |
-| review_skip_reason | `PO docs-only/product backlog tick; no executable product code changes.` |
-| review_round | `33` |
-| last_reviewed_round | `32` |
+| current_item_id | `po-tick-025` |
+| phase | `8-close` |
+| review_status | `triaged` |
+| review_skip_reason | `Round 33 reviewed PO STATE mutation; no executable PO code changed. Bugbot-equivalent review found no additional defects; one stale confirmed_next metadata item was fixed.` |
+| review_round | `34` |
+| last_reviewed_round | `33` |
 | review_diff_range | `uncommitted` |
-| code_changed | `no` |
-| confirmed_next | `Worker should refresh stale next_action and pick relay-231; PO idle rescue will seed three validated cross-surface relay items; UX ui-070; Code ch-161` |
+| code_changed | `yes` |
+| confirmed_next | `Worker next relay-233 (RICE re-rank: relay-242 > relay-233 > relay-241 > relay-237 > relay-238); UX triage prop-ui-049 → ui-073; Code ch-165; no relay seed while Worker has 10 open.` |
 | loops | `ARMED pid=21082 notify=yes` |
-| ritual_step | `9-arm` |
+| ritual_step | `1-wake` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/po-relay/STATE.md` |
-| review_fingerprint | `e2e702f4e8ee2fa3` |
+| review_fingerprint | `be241b5deb8f5552` |
 | brainstorm_done | `yes` |
-| brainstorm_outcome | `po-tick-024 idle-rescue 3-lens: seed three new cross-surface relay-N (relay-241/242/243), promote prop-ui-049/050/051, and verify handoff reads` |
+| brainstorm_outcome | `PO tick 025 3-lens: UX promotes crit-082 (LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped) as prop-ui-049 to UI_PROPOSALS; PO keeps Worker at 10 open (no seed mandate); Business values relay-242 highest (Log→Coach with user-removable context) then relay-241 (Day→Log handoff).` |
 | execute_started | `yes` |
-| fix_verify_done | `no` |
+| fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
@@ -106,12 +106,14 @@
 
 ## UI_PROPOSALS
 
+
  (PO → UX handshake)
 
 > **PO proposes here.** UX triages on every UX tick. Do **not** write directly to `ux-relay/STATE.md` `UI_POLISH_BACKLOG` — only `agreed` items move there.
 
 | id | status | origin | surface | proposal | acceptance criteria | ux_response |
 |----|--------|--------|---------|----------|---------------------|-------------|
+| prop-ui-049 | proposed | po | Log (Manual entry + Today list) | LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped sections polish (crit-082) | Given returning user on Log Type tab at 390px after logging 4oz of chicken, When user taps the oz toggle, Then Quantity field shows 4 and muted copy reads approx 113g; Given user taps Edit on a today row, When sheet opens, Then food+quantity+mealType pre-populated and Save updates the row within 500ms; Given today list has items across Breakfast/Lunch/Dinner, When list renders, Then meal sub-headings appear with counts; Given row with no meal_type, When grouped, Then falls under Other section | — |
 | prop-ui-048 | proposed | po | Cards | Body-first capture sheet polish (relay-237) | Given Cards create sheet opens; When body is empty; Then body textarea autofocuses, title field shows derived preview 'Title: {first line, 80 chars cap}', and disabled state of Save matches body presence not title presence | agreed 2026-08-03 → ui-068 |
 | prop-ui-047 | proposed | po | Settings | OAuth scopes panel polish (relay-236) | Given Settings Google card exposes granted scopes; When scopes are listed; Then human-label checklist matches Google account wording, partial grant state shows Re-connect pill instead of blank, and the Manage on Google Account link opens account.google.com in a new tab with rel=noopener | agreed 2026-08-03 → ui-069 (server-side google_scopes exposure first; PWA awaits; v1 ships scope checklist + Manage link; defer disconnect retention note) |
 | prop-ui-038 | refined | po | Agent | Token-by-token streaming assistant bubble | Backend live; UX ui-038 verified | Verified done ui-038 2026-07-27 |
@@ -133,6 +135,14 @@
 ---
 ## BRAINSTORM_LOG
  (newest first)
+
+### 2026-08-04 — Session #41 (PO tick po-tick-025)
+
+**UX lens (ux-heuristics):** Worker has 10 open relay items — healthy depth on Log totals-strip batch (relay-233/234/239/240 — all post-relay-218) plus fresh-surface variety (relay-236/237/238 Settings/Cards/Coach from po-tick-021) plus Worker-seeded cross-feature additions (relay-241/242/243 from d4fe24c). The Worker's relay-242 (Agent coach follow-up from nutrition totals) is the highest-leverage unstarted item because it closes the Log→Coach handoff with **user-removable** context — fixing the risk in relay-232 (prefill-once, no removal). ux-critic surface: crit-082 is a fresh element-mode proposal (`LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped sections`) with strong evidence (LogManualEntryForm.tsx L51-59, LogFoodEditSheet.tsx L30-33, LogTypeTodayList.tsx L79-97 — all hardcoded `g`; LogTypeTodayList rows Delete-only) and a clear compose-chain with crit-041/051/052/062/072/030 (all shipped/done). Promoted to **prop-ui-049** for UX triage on next UX tick.
+
+**PO lens (define-prioritization-framework):** Worker 10 open ≥ 5 threshold → no seed mandate. Code 5 open ≥ 5 → no seed mandate. UX backlog empty → only prop-ui-049 queued. RICE re-rank on unstarted Worker items (excluding already-shipped relay-231 and relay-232): **relay-242** (Log→Coach follow-up, user-removable context = trust + retention, impact 5 / reach 4) > **relay-233** (macro drill-down, day-strip continuity, impact 4 / reach 4) > **relay-241** (Day→Log handoff, schedule completion appears in Log with back-link, impact 4 / reach 3) > **relay-237** (Cards body-first capture, Keep pattern, impact 4 / reach 3) > **relay-238** (Coach inline tool steps, first-impression credibility, impact 5 / reach 4 — but already proposed via prop-ui-049 polish). Recommend Worker pick **relay-242** next if relay-233 ships quickly; otherwise continue with relay-233 (Worker next-action already correct).
+
+**Business lens (jobs-to-be-done):** Three distinct jobs close with this batch: (1) **Log measurement friction** — 4oz chicken user mentally converts to 113g every meal (crit-082 / prop-ui-049 — quantity unit toggle + row Edit for typo fix); (2) **Log→Coach trust loop** — relay-242 with user-removable context fixes the "Coach assumes I want this" anxiety from relay-232; (3) **Day→Log retention** — relay-241 closes the schedule completion feedback loop, "I planned this, I did this" reinforcement. The most leveraged ROI is relay-242 because it fuses daily nutrition feedback (Trigger: read totals; Action: tap Ask Coach; Variable Reward: Coach's contextual answer; Investment: ask follow-up) with **user control** of context — a Hook loop + trust signal. relay-241 is the slow-burn retention hook (schedule completion visible in Log → "did what I planned" identity reinforcement).
 
 ### 2026-08-03 — Session #40 (PO tick po-tick-023)
 
@@ -414,8 +424,18 @@ Round 29 product review logged: pr-r29-000/001/003 closed; pr-r29-002 backlog=re
 
 
 
+
+
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| pr-r34-002 | low | docs/window-instances/po-relay/STATE.md — CHECKPOINT confirmed_next aligned to current handoffs: Worker next relay-233 (10 open items, no seed mandate), Code next ch-165, UX ui-072 ships crit-081; no stale carry-forward; Worker backlog seeded by d4fe24c (relay-241/242/243) not yet picked — consistent with RICE re-rank (relay-242 > relay-233 > relay-241 > relay-237) | round-34 /code-review | closed | — | closed |
+| pr-r34-001 | low | docs/window-instances/po-relay/STATE.md — Round 34 confirms Round 33 review-of-record closed (pr-r33-000/001); the new prop-ui-049 row carries crit-082 evidence chain (LogManualEntryForm.tsx L51-59, LogFoodEditSheet.tsx L30-33, LogTypeTodayList.tsx L79-97) and references sessionStorage lastUnit + aria-label Switch unit to oz; UX window can triage on next tick | round-34 /code-review | closed | prop-ui-049 | closed |
+| pr-r34-000 | low | Bugbot skipped — PO doc diff only; UI_PROPOSALS row append (prop-ui-049) + CHECKPOINT phase advance + 3-lens brainstorm_outcome update; no executable product code in pwa/server | round-34 bugbot | closed | — | closed |
+| pr-r33-000 | low | Bugbot-equivalent review: no additional defects found in the Round 33 PO state diff after verifying current handoffs, checkpoint metadata, and repository paths. The prepared review scope contains only the PO STATE mutation; relay-231 shipped separately and passed focused tests/build. | round-33 bugbot | closed | — | closed |
+| pr-r33-001 | low | docs/window-instances/po-relay/STATE.md:12 and CHECKPOINT confirmed_next — stale carry-forward still described the prior idle-rescue seed plan after relay-231 shipped and Worker handoff moved to relay-233; corrected to current Worker relay-233, Code ch-164, and UX ui-072 routing. | round-33 /code-review | fix-now | po-tick-024 | closed |
 | pr-r32-006 | low | docs/window-instances/po-relay/STATE.md:11 — review_skip_reason cites 'Round 31 review' but the cumulative uncommitted diff includes Round 30 + Round 31 retro rows + the po-tick-023 state-sync items; review_skip_reason should cover the cumulative diff scope (Round 30/31 retroactive + Round 32 review-of-record) | round-32 /code-review | fix-now | po-tick-023 | closed |
 | pr-r32-005 | low | docs/window-instances/po-relay/STATE.md:12 — where_we_are text 'Round 31 review' is stale; review_round=32 is now pending; where_we_are should reflect Round 32 review or 'po-tick-023 state-sync tick after stale po-tick-021/022 land' | round-32 /code-review | fix-now | po-tick-023 | closed |
 | pr-r32-004 | low | docs/window-instances/po-relay/STATE.md:23 — checkpoint loops='ARMED pid=21082' references pid 21082 from prior tick; if process died or pid re-used, this is stale. Should be verified via `verify-wake.sh po-relay` before arm in Phase 9 | round-32 /code-review | closed | — | closed |
@@ -598,9 +618,13 @@ Round 29 product review logged: pr-r29-000/001/003 closed; pr-r29-002 backlog=re
 
 
 
+
+
  (PO / brainstorm)
 
 | Timestamp | Mode | Item | Outcome | Verified | Commit |
+| 2026-08-04T06:40:41Z | po-tick-025 | 8-close | Session #41 (po-tick-025): 3-lens (UX/PO/Business) + crit-082 promoted to prop-ui-049 (LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped sections); no relay seed (Worker 10 open); RICE re-rank relay-242 > relay-233 > relay-241 > relay-237; Round 34 review closed all findings | brainstorm |
+| — | relay-231 | 8-close | PO tick 024 complete: 3-lens review validated shipped stale-data timestamp; current Worker/Code/UX routing recorded; Round 33 metadata review fixed stale confirmed_next. | d9bbda6; focused tests 97/97; build clean; lint 0 errors |
 | 2026-08-03 | PO | po-tick-022 | Session #39 stale-tick recovery — 3-lens + relay-233/234/235 → 236/237/238 collision fix (Worker STATE L111-113) + prop-ui-047/048 reference corrections + Round 31 review; reconstructs po-tick-021 deliverable (uncommitted prop-ui-047/048 rows) + RICE re-rank relay-232 > relay-228 > relay-236/237/238 | brainstorm | po-tick-022-bundle |
 | — | po-tick-021 | 8-close | po-tick-021 3-lens + 3 fresh-surface relay-N (relay-233/234/235) + prop-ui-047/048 | po-tick-021 brainstorm applied |
 | 2026-08-03 | PO | po-tick-023 | 8-close | Session #40 — 3-lens (UX/PO/Business) + relay-228 Worker pick accepted (relay-226 already shipped via bf0d949; confirmed_next was stale on relay-226, fixed). RICE re-rank hold: relay-232 > relay-228 > relay-236/237/238 (carry-forward from po-tick-022). No new relay-* seed (worker 5 open meets threshold; vertical diversity from po-tick-021 still in place). prop-ui-047/048 both agreed (ui-069/ui-068). | brainstorm | po-tick-023-state-sync |
@@ -639,6 +663,7 @@ Round 29 product review logged: pr-r29-000/001/003 closed; pr-r29-002 backlog=re
 - UX-originated gaps → UX writes [`ux-relay/STATE.md`](../ux-relay/STATE.md) `UX_GAPS`; PO promotes to `UI_PROPOSALS` on next PO tick
 - Quality/refactor items → tag **Code window** in QUALITY_BACKLOG
 - Open conflicts → `DESIGN_DECISIONS` (both windows must check before shipping)
+
 
 
 
