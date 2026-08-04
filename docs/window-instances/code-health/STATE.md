@@ -19,7 +19,7 @@
 | Field | Value |
 |-------|-------|
 | confirmed_next | `ch-165` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | last_wake | `2026-08-04T00:39:44Z` |
 | code_changed | `yes` |
 | review_status | `triaged` |
@@ -30,7 +30,7 @@
 | review_fingerprint | `2b91e7074ac58d73` |
 | review_diff_range | `uncommitted` |
 | review_skip_reason | `ch-164 STATE sync tick: docs-only edit to window own STATE.md (mark backlog done + HISTORY + SCAN_COVERAGE + confirmed_next→ch-165); no pwa/ or server/ runtime code in diff; audit_review.py --loop-id code-health ran clean against post-close STATE; ch-r33-sync ZERO FINDINGS self-review` |
-| ritual_step | `8-commit` |
+| ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `Approach B (worktree): docs-only STATE sync for ch-164 close (mark backlog row done + append HISTORY row + update confirmed_next to ch-165); verify via audit_review.py --loop-id code-health against th` |
 | execute_started | `yes` |
