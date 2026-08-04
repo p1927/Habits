@@ -18,24 +18,24 @@
 
 | Field | Value |
 |-------|-------|
-| last_wake | `2026-08-01T21:30:00Z` |
+| last_wake | `2026-08-04T06:40:41Z` |
 | current_item_id | `po-tick-025` |
 | phase | `9-arm` |
-| review_status | `pending` |
-| review_skip_reason | `Round 33 reviewed PO STATE mutation; no executable PO code changed. Bugbot-equivalent review found no additional defects; one stale confirmed_next metadata item was fixed.` |
+| review_status | `skipped` |
+| review_skip_reason | `No diff in window scope (docs/window-instances/po-relay/ docs/window-instances/instances.manifest.json docs/maintenance/ docs/agents/ docs/RELAY.md) this tick; Round 35 review-of-record closed (cd98e43)` |
 | review_round | `36` |
 | last_reviewed_round | `35` |
-| review_diff_range | `uncommitted` |
-| code_changed | `yes` |
+| review_diff_range | `cd98e43` |
+| code_changed | `no` |
 | confirmed_next | `Worker next relay-233 (RICE re-rank: relay-242 > relay-233 > relay-241 > relay-237 > relay-238); UX triage prop-ui-049 → ui-073; Code ch-165; no relay seed while Worker has 10 open.` |
-| loops | `ARMED pid=21082 notify=yes` |
+| loops | `ARMED pid=40443 notify=yes` |
 | ritual_step | `1-wake` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `docs/window-instances/po-relay/STATE.md` |
-| review_fingerprint | `e2e702f4e8ee2fa3` |
+| review_changed_files | `—` |
+| review_fingerprint | `—` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `PO tick 025 3-lens: UX promotes crit-082 (LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped) as prop-ui-049 to UI_PROPOSALS; PO keeps Worker at 10 open (no seed mandate); Business values relay-242 highest (Log→Coach with user-removable context) then relay-241 (Day→Log handoff).` |
 | execute_started | `yes` |
