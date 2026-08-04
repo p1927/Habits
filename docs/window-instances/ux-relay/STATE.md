@@ -20,21 +20,21 @@
 |-------|-------|
 | last_wake | `2026-08-03T09:30:00Z` |
 | next_mode | `C` |
-| current_item_id | `ui-071` |
+| current_item_id | `ui-072` |
 | phase | `9-arm` |
-| review_status | `skipped` |
+| review_status | `pending` |
 | review_skip_reason | `Round 29 reviewed and merged commit 2a5d068; code_changed reset after worktree merge/close for steady-state arm.` |
-| review_round | `29` |
+| review_round | `30` |
 | last_reviewed_round | `29` |
-| review_diff_range | `uncommitted` |
-| code_changed | `no` |
+| review_diff_range | `uncommitted (staged + unstaged)` |
+| code_changed | `yes` |
 | confirmed_next | `ui-072 Cards sickness timeline related-notes handoff` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
-| review_changed_files | `pwa/src/hooks/useCardsBulkShortcut.test.tsx pwa/src/hooks/useCardsBulkShortcut.ts pwa/src/sections/Cards.tsx` |
-| review_fingerprint | `d7ce05564ab4cd39` |
+| review_changed_files | `docs/window-instances/ux-relay/STATE.md pwa/src/App.css pwa/src/components/CardsSicknessTimelineCard.tsx pwa/src/components/SicknessTimeline.test.tsx pwa/src/components/SicknessTimeline.tsx pwa/src/sections/Cards.sicknessHandoff.test.tsx pwa/src/sections/Cards.tsx` |
+| review_fingerprint | `240264c86c8320d8` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `ui-071: preserve the current Cards bulk-select DOM and behavior; implement the four low-risk review followups as test-first maintenance (idempotency coverage, shared hint dismissal, direct setter call` |
@@ -257,8 +257,10 @@
 
 
 
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| ux-r30-000 | low | Bugbot skill unavailable at .cursor/skills-cursor/review-bugbot/SKILL.md; manual window-lens review covered all changed files. No correctness, accessibility, security, performance, or regression issues. crit-081 AC fully covered: sickness event bars are now focusable buttons (role/aria-label/group), activation switches filter to sickness, prefills search with event label, scrolls grid into view (reduced-motion guarded, jsdom-safe), and announces via aria-live. Single-day events render date only in the label; 9 new tests pass; build + lint + journey clean. Matches ux-r24/25/26/27/29 bugbot-unavailable pattern. | round-30 bugbot-unavailable /code-review | closed | ui-072 | closed |
 | ux-r29-000 | low | Bugbot skill unavailable at .cursor/skills-cursor/review-bugbot/SKILL.md; manual window-lens review covered all changed files. No correctness, accessibility, security, or regression issues found. Idempotency is explicit at useCardsBulkShortcut.ts:34-36 and covered at useCardsBulkShortcut.test.tsx:69-83; Cards.tsx:60-64 consolidates selection entry without changing UI. | round-29 bugbot-unavailable /code-review | closed | — | closed |
 | ux-r28-004 | low | useCardsBulkShortcut L19-20: enter/exit useCallback wrappers are cosmetic — could pass setSelectionMode directly to useEffect dep and inline. Works correctly; minor smell. | round-28 /code-review | backlog | ui-071 | open |
 | ux-r28-003 | low | Cards.tsx L60-63 + L132-139: dismissBulkHint is called from two callbacks (enterSelection chip path + enterSelectionWith long-press path). Could extract a single helper. Acceptable duplication for two entry points. | round-28 /code-review | backlog | ui-071 | open |
@@ -411,6 +413,7 @@ UX window ships **Mode C** (UI polish) only. Brainstorm → PO window. Bugs/qual
 2. Read `UX_GAPS` — update any awaiting PO (`po-agreed` → ensure matching `ui-*` in backlog)
 3. Ship **only** items in `UI_POLISH_BACKLOG` marked `agreed` or already in progress
 4. Log triage outcome in HISTORY (`agreed prop-ui-*`, `rejected prop-ui-*`, etc.)
+
 
 
 
