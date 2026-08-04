@@ -20,11 +20,11 @@
 |-------|-------|
 | last_wake | `2026-08-01T21:30:00Z` |
 | current_item_id | `po-tick-025` |
-| phase | `8-close` |
-| review_status | `triaged` |
+| phase | `9-arm` |
+| review_status | `pending` |
 | review_skip_reason | `Round 33 reviewed PO STATE mutation; no executable PO code changed. Bugbot-equivalent review found no additional defects; one stale confirmed_next metadata item was fixed.` |
-| review_round | `34` |
-| last_reviewed_round | `33` |
+| review_round | `36` |
+| last_reviewed_round | `35` |
 | review_diff_range | `uncommitted` |
 | code_changed | `yes` |
 | confirmed_next | `Worker next relay-233 (RICE re-rank: relay-242 > relay-233 > relay-241 > relay-237 > relay-238); UX triage prop-ui-049 → ui-073; Code ch-165; no relay seed while Worker has 10 open.` |
@@ -35,13 +35,13 @@
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/po-relay/STATE.md` |
-| review_fingerprint | `be241b5deb8f5552` |
+| review_fingerprint | `e2e702f4e8ee2fa3` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `PO tick 025 3-lens: UX promotes crit-082 (LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped) as prop-ui-049 to UI_PROPOSALS; PO keeps Worker at 10 open (no seed mandate); Business values relay-242 highest (Log→Coach with user-removable context) then relay-241 (Day→Log handoff).` |
 | execute_started | `yes` |
 | fix_verify_done | `yes` |
 | reflect_done | `yes` |
-| commit_hash | `—` |
+| commit_hash | `e07f02a` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `no` |
 | design_chosen_approach | `—` |
@@ -429,8 +429,12 @@ Round 29 product review logged: pr-r29-000/001/003 closed; pr-r29-002 backlog=re
 
 
 
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| pr-r35-001 | low | docs/window-instances/po-relay/STATE.md — Round 35 review-of-record commits Round 34 review (pr-r34-000/001/002 closed) and po-tick-025 state mutation (e07f02a); the prepare_review_tick reset is the expected lifecycle hook for transitioning review_round 34→35 after commit; no defects in diff | round-35 /code-review | closed | — | closed |
+| pr-r35-000 | low | Bugbot skipped — Round 35 is the post-commit review of Round 34 commit (e07f02a); uncommitted diff contains only the prepare_review_tick self-reset (Round 34 review fingerprint was transient; replaced by Round 35 fingerprint). No executable logic in the diff. | round-35 bugbot | closed | — | closed |
 | pr-r34-002 | low | docs/window-instances/po-relay/STATE.md — CHECKPOINT confirmed_next aligned to current handoffs: Worker next relay-233 (10 open items, no seed mandate), Code next ch-165, UX ui-072 ships crit-081; no stale carry-forward; Worker backlog seeded by d4fe24c (relay-241/242/243) not yet picked — consistent with RICE re-rank (relay-242 > relay-233 > relay-241 > relay-237) | round-34 /code-review | closed | — | closed |
 | pr-r34-001 | low | docs/window-instances/po-relay/STATE.md — Round 34 confirms Round 33 review-of-record closed (pr-r33-000/001); the new prop-ui-049 row carries crit-082 evidence chain (LogManualEntryForm.tsx L51-59, LogFoodEditSheet.tsx L30-33, LogTypeTodayList.tsx L79-97) and references sessionStorage lastUnit + aria-label Switch unit to oz; UX window can triage on next tick | round-34 /code-review | closed | prop-ui-049 | closed |
 | pr-r34-000 | low | Bugbot skipped — PO doc diff only; UI_PROPOSALS row append (prop-ui-049) + CHECKPOINT phase advance + 3-lens brainstorm_outcome update; no executable product code in pwa/server | round-34 bugbot | closed | — | closed |
@@ -663,6 +667,8 @@ Round 29 product review logged: pr-r29-000/001/003 closed; pr-r29-002 backlog=re
 - UX-originated gaps → UX writes [`ux-relay/STATE.md`](../ux-relay/STATE.md) `UX_GAPS`; PO promotes to `UI_PROPOSALS` on next PO tick
 - Quality/refactor items → tag **Code window** in QUALITY_BACKLOG
 - Open conflicts → `DESIGN_DECISIONS` (both windows must check before shipping)
+
+
 
 
 
