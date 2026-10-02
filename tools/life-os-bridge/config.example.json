@@ -1,0 +1,10 @@
+{
+  "beeper_url": "http://localhost:23373",
+  "beeper_token": "PASTE_BEEPER_ACCESS_TOKEN",
+  "webhook_url": "PASTE_APPS_SCRIPT_WEB_APP_URL_ENDING_IN_/exec",
+  "webhook_token": "PASTE_WEBHOOK_TOKEN_FROM_APPS_SCRIPT_SCRIPT_PROPERTIES",
+  "include_snippet": false,
+  "snippet_chars": 60,
+  "lookback_days": 14,
+  "networks": []
+}
