@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Card } from './ui/Card';
 import { api, ApiError, type FoodTodayResponse } from '../lib/api';
-import { formatGrams } from '../lib/logTypeTotals';
+import { formatGrams, type MacroFilter } from '../lib/logTypeTotals';
 import { buildLogTypeTotalsViewModel } from '../lib/logTypeTotalsViewModel';
 import { buildLogTotalsCoachPrompt } from '../lib/logTotalsCoachPrompt';
 
@@ -27,6 +27,14 @@ export interface LogTypeTodayTotalsStripProps {
   // Optional so existing call sites that don't wire the Agent handoff
   // (e.g. tests, future non-Log mounts) keep working.
   onAskCoach?: (prompt: string) => void;
+  // relay-233: macro contribution drill-down. When provided AND the strip
+  // has items to drill into, the Carbs and Fat rows render as
+  // <button type="button"> elements that invoke this callback with the
+  // chosen MacroFilter. The callback is expected to lift state up to the
+  // panel (LogTypeTabPanel) which then forwards the filter to the today
+  // list. Optional so call sites that don't wire a drill-down surface
+  // (e.g. non-Log shells, tests) keep rendering as plain <p> rows.
+  onMacroClick?: (macro: MacroFilter) => void;
 }
 
 export function LogTypeTodayTotalsStrip({
@@ -34,6 +42,7 @@ export function LogTypeTodayTotalsStrip({
   serverOnline,
   pendingCount = 0,
   onAskCoach,
+  onMacroClick,
 }: LogTypeTodayTotalsStripProps) {
   const [calorieTarget, setCalorieTarget] = useState<number | null>(null);
   // Expanded panel state for the carbs/fat breakdown (relay-222).

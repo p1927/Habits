@@ -124,6 +124,58 @@ export function buildDayOverDayComparison(
 }
 
 // ---------------------------------------------------------------------------
+// Macro top-contributors drill-down (relay-233).
+//
+// The totals strip's macros panel (Carbs / Fat / Protein) doubles as the
+// activation surface for a "where is my <macro> coming from" drill-down:
+// clicking a macro filters the today's-log list to the top contributors for
+// that macro, ranks each row by grams descending, and surfaces a
+// "Clear filter" affordance so the user can return to the full list. The
+// helper below is the pure ranking step — the component owns the click
+// state, the filter rendering, and the aria-live announce path.
+//
+// Edge cases the helper must handle:
+//   - macro='protein' uses `protein` per FoodLogItem
+//   - macro='carbs' / 'fat' use the matching field
+//   - items with macro === 0 contribute nothing and are still emitted but
+//     ranked last (so the user sees them but knows they're zero-impact)
+//   - topN defaults to 3 (matches the visual density of a phone list)
+//   - ties are broken by row ASC (older entries first) so the ranking is
+//     deterministic across renders
+// ---------------------------------------------------------------------------
+
+export type MacroFilter = 'protein' | 'carbs' | 'fat';
+
+export interface MacroContribution {
+  row: number;
+  food: string;
+  grams: number;
+  rank: number;
+}
+
+export function buildMacroTopContributors(
+  items: readonly { row: number; food: string; protein: number; carbs: number; fat: number }[],
+  macro: MacroFilter,
+  topN: number = 3,
+): MacroContribution[] {
+  const decorated = items.map((item) => ({
+    row: item.row,
+    food: item.food,
+    grams: item[macro] ?? 0,
+  }));
+  decorated.sort((a, b) => {
+    if (b.grams !== a.grams) return b.grams - a.grams;
+    return a.row - b.row;
+  });
+  return decorated.slice(0, Math.max(0, topN)).map((entry, idx) => ({
+    row: entry.row,
+    food: entry.food,
+    grams: entry.grams,
+    rank: idx + 1,
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Stale-data indicator (relay-231).
 //
 // The totals strip is rendered from the latest `FoodTodayResponse` snapshot.
