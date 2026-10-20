@@ -29,7 +29,7 @@ V2_CHECKPOINT_FIELDS = (
     "review_changed_files",
     "review_fingerprint",
 )
-VALID_ARCHETYPES = frozenset({"engineer", "designer", "product", "qa"})
+VALID_ARCHETYPES = frozenset({"engineer", "designer", "product", "qa", "observer"})
 VALID_SEVERITIES = frozenset({"critical", "high", "medium", "low"})
 VALID_ACTIONS = frozenset({"fix-now", "backlog", "closed", "pushback", "open", "—", "-"})
 VALID_REVIEW_STATUSES = frozenset({"done", "triaged", "skipped", "pending"})

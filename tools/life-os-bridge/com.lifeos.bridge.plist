@@ -7,15 +7,20 @@
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/python3</string>
-    <string>/Users/pratyushmishra/Documents/GitHub/Habits/tools/life-os-bridge/bridge.py</string>
+    <string>__DEST__/bridge.py</string>
   </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>LIFEOS_BRIDGE_HOME</key>
+    <string>__DEST__</string>
+  </dict>
   <key>StartInterval</key>
   <integer>900</integer>
   <key>RunAtLoad</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>/Users/pratyushmishra/Documents/GitHub/Habits/tools/life-os-bridge/bridge.log</string>
+  <string>__DEST__/bridge.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/pratyushmishra/Documents/GitHub/Habits/tools/life-os-bridge/bridge.log</string>
+  <string>__DEST__/bridge.log</string>
 </dict>
 </plist>

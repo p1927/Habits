@@ -24,9 +24,9 @@
 | phase | `8-close` |
 | review_status | `skipped` |
 | code_changed | `no` |
-| review_round | `87` |
+| review_round | `88` |
 | last_reviewed_round | `87` |
-| worktree_status | `none` |
+| worktree_status | `active` |
 | ritual_step | `9-arm` |
 | brainstorm_done | `yes` |
 | brainstorm_outcome | `relay-231 stale-data indicator: formatRelativeUpdatedAt + buildStaleIndicator pure helpers (3 kinds: fresh/stale/offline); staleIndicator field on LogTypeTotalsViewModel; ref-based Date.now() capture during render (no useEffect setState); 15s setInterval tick counter; component renders muted <p> with kind modifier class; aria-hidden to avoid 15s noise into live region` |
@@ -39,15 +39,15 @@
 | merge_done | `yes` |
 | idle_mode_triggered | `no` |
 | idle_rescue_done | `yes` |
-| current_item_id | `relay-231` |
+| current_item_id | `relay-233` |
 | finalize_status | `success` |
-| worktree_path | `—` |
-| worktree_branch | `—` |
-| worktree_item_id | `—` |
+| worktree_path | `/Users/pratyushmishra/Documents/GitHub/Habits/.worktrees/worker-relay` |
+| worktree_branch | `loop/worker-relay/relay-233` |
+| worktree_item_id | `relay-233` |
 | review_changed_files | `—` |
 | review_fingerprint | `—` |
 | review_diff_range | `none` |
-| review_skip_reason | `No diff in window scope (pwa/ server/ docs/window-instances/worker-relay/) this tick` |
+| review_skip_reason | `No product diff in pwa/server; worker STATE metadata only` |
 
 ## IN_PROGRESS
 
@@ -98,7 +98,6 @@
 
 
 
-- [x] relay-222 | Log today totals strip macro breakdown | feature | Given totals strip above today's list; When user taps the strip; Then expanded panel shows carbs/total-g and fat/total-g progress lines below protein (only renders if backend returns non-null macros)
 - [x] relay-224 | Merge relay-218 to main + remove leftover main stubs | quality | Given worktree branch loop/worker-relay/relay-218 has committed df5109b and main has untracked stubs pwa/src/components/LogTypeTodayTotalsStrip.tsx + pwa/src/lib/logTypeTotals.ts from an abandoned approach, When merge attempted, Then resolve by either removing main stubs and fast-forwarding, or rebasing worktree onto main stubs; verify build after
 - [x] relay-226 | Log today totals strip target-unset state | feature | Given no calorie target is configured; When the totals strip renders; Then it shows consumed kcal and protein without a misleading progress percentage or remaining-calories claim, with a concise setup affordance
 - [x] relay-227 | Log today totals strip keyboard focus affordance | ux | Given a keyboard user focuses the interactive totals strip; When focus enters the strip; Then a visible focus ring and accessible name identify the totals summary and Enter/Space exposes its details
@@ -106,7 +105,7 @@
 - [x] relay-228 | Log today totals strip day-over-day comparison | feature | Given today totals are visible and yesterday totals are available; When the user opens the Log Type sub-tab; Then show yesterday-vs-today kcal and protein deltas with an explicit unavailable state when yesterday data is missing
 - [x] relay-230 | Totals strip pending-sync count accuracy | feature | Given optimistic food entries are pending sync; When the totals strip renders; Then show the exact pending meal count and update it after sync or failure without hiding the underlying totals
 - [x] relay-232 | Log totals strip Ask Coach handoff | feature | Given the totals strip has today nutrition totals; When the user activates Ask Coach; Then Agent opens with a plain-text kcal protein and macro summary prefilled once, focus lands in the composer, and no message sends without confirmation
-- [ ] relay-231 | Log today totals strip stale-data timestamp | feature | Given totals are loaded from a delayed or offline response; When the totals strip renders; Then show a concise last-updated indicator and preserve the existing totals instead of presenting stale data as current
+- [x] relay-231 | Log today totals strip stale-data timestamp | feature | Given totals are loaded from a delayed or offline response; When the totals strip renders; Then show a concise last-updated indicator and preserve the existing totals instead of presenting stale data as current
 - [ ] relay-233 | Log macro contribution drill-down | feature | Given the totals strip shows protein carbs and fat; When the user activates one macro; Then today food rows reveal the top contributing meals for that macro, expose a clear-filter action, and announce the filtered result count accessibly
 - [ ] relay-234 | Log seven-day nutrition trend drill-down | feature | Given at least two days of nutrition history; When the user opens the totals trend; Then show seven-day kcal and protein trends, mark missing days, provide an accessible text summary, and allow return to Today
 - [x] relay-223 | Log today totals strip pending sync badge | feature | Given optimistic food entries are pending or queued locally; When the Log Type totals strip renders; Then its footer shows the exact pending meal count beside confirmed totals and updates after success or failure

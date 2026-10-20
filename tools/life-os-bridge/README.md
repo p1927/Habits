@@ -4,7 +4,8 @@ Reads your 1:1 chats (WhatsApp, Instagram, ...) from Beeper Desktop's local API 
 (name, channel, direction, timestamp, optional short snippet) to your Life OS web app. Groups are skipped.
 It never sends a message to anyone.
 
-`config.json`, `state.json` and `bridge.log` live next to `bridge.py` and are git-ignored. Never commit them.
+`config.json`, `state.json` and `bridge.log` are git-ignored. Never commit them. Manual runs use the copies next to
+`bridge.py`; the background job uses the copies under `~/Library/Application Support/life-os-bridge/`.
 
 ## Setup (once)
 
@@ -24,23 +25,31 @@ It never sends a message to anyone.
    ```bash
    python3 tools/life-os-bridge/bridge.py
    ```
-6. Run it every 15 minutes with launchd (the plist hardcodes this repo's absolute path; edit it if you move the repo):
+6. Run it every 15 minutes in the background:
    ```bash
-   cp tools/life-os-bridge/com.lifeos.bridge.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.lifeos.bridge.plist
+   bash tools/life-os-bridge/install.sh
    ```
-   Stop it with `launchctl unload ~/Library/LaunchAgents/com.lifeos.bridge.plist`. Logs: `tools/life-os-bridge/bridge.log`.
+   macOS blocks background jobs from reading `~/Documents`, so `install.sh` copies the script, your `config.json` and the
+   sync state to `~/Library/Application Support/life-os-bridge/` and registers a launchd job there. **Re-run `install.sh`
+   after editing `bridge.py` or `config.json`** (for example when the Beeper token is renewed).
+   Log: `~/Library/Application Support/life-os-bridge/bridge.log`. Stop it with
+   `launchctl unload ~/Library/LaunchAgents/com.lifeos.bridge.plist`.
 
 ## Privacy
 
 - Message text is **not** sent unless `include_snippet` is `true` (then only the first `snippet_chars` characters).
 - Only name, channel, direction (`in` = they spoke last, `out` = you did) and a timestamp go to your Apps Script.
+- A chat can only **create** a new contact if you have sent a message in it and its title is not a bare phone number;
+  otherwise it only updates people already in your CRM. This keeps unsaved numbers, businesses and bots out.
+- `ignore_names` skips chats that are not people (default: Note to self, Meta AI). Names are HTML-unescaped.
 - `networks` limits it, e.g. `["whatsapp"]`. Empty means every network Beeper has.
 - Beeper bridges your chats through its own infrastructure; this script only adds a local read of what Beeper already holds.
 - It needs Beeper Desktop running and your Mac awake. Missed runs catch up on the next run.
 
 ## Notes
 
-- Contacts are matched by chat title. A WhatsApp chat titled with a phone number creates a contact with that number
-  until you rename the contact in the sheet. Set a contact's `circle` to `Ignore` to stop tracking someone.
+- Contacts are matched by chat title. Chats with unsaved numbers never create contacts and are skipped unless a contact
+  with that exact name already exists; save the number in your phone so the chat gets a real name. Set a contact's `circle` to `Ignore` to stop tracking
+  someone (useful for businesses and service contacts).
 - Beeper's API is labelled experimental; if an endpoint changes, `bridge.py` will say what failed.
 - The Apps Script side (bootloader, engine Doc, data sheet) lives in Google Drive, folder `Assistant`.

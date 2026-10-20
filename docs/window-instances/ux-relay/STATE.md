@@ -21,7 +21,7 @@
 | last_wake | `2026-08-03T09:30:00Z` |
 | next_mode | `C` |
 | current_item_id | `ui-072` |
-| phase | `8-close` |
+| phase | `9-arm` |
 | review_status | `skipped` |
 | review_skip_reason | `Round 30 reviewed (window-lens zero findings; Bugbot skill path still unavailable). code_changed reset after worktree merge/close for steady-state arm.` |
 | review_round | `30` |
@@ -101,12 +101,14 @@
 
 
 
+
  (ux-critic → UX handshake)
 
 > **ux-critic proposes here.** UX triages **≥1 `proposed` row every tick** — same gate as PO `UI_PROPOSALS`. Do **not** copy `proposed` rows to `UI_POLISH_BACKLOG`.
 
 | id | status | journey_ref | persona | impact | touchpoints | before_state | after_state | acceptance_criteria | evidence | depends_on | ux_response |
 |----|--------|-------------|---------|--------|-------------|--------------|-------------|---------------------|----------|------------|-------------|
+| crit-082 | proposed | element-only | returning user | 4 | Log (Manual entry + Today list) | Log Type tab form has Quantity (g) hardcoded number input with no unit toggle and today list rows have no Edit affordance — only Delete × — user who measured 4oz of chicken must mentally convert to 113g or delete/re-add for typo fix; meal-grouping hidden in flat chronological list | LogQuantityUnitToggle on LogManualEntryForm and LogFoodEditSheet Quantity field (g/oz/kg segmented control with convertToGrams helper 1oz=28.3495g 1kg=1000g) + LogTypeRowEdit on today list rows opens LogFoodEditSheet pre-populated with food+quantity+mealType via PATCH /food/items/{row} + meal-grouped sub-headings (Breakfast/Lunch/Dinner/Snack) using item.meal_type; sessionStorage lastUnit; aria-label Switch unit to oz; compose with crit-041 macro preview | Given returning user on Log Type tab at 390px after logging 4oz of chicken, When user taps oz toggle, Then Quantity field shows 4 and muted copy reads ≈ 113g. Given user taps Edit on a today row, When sheet opens, Then food+quantity+mealType pre-populated and Save updates the row within 500ms. Given today list has items across Breakfast/Lunch/Dinner, When list renders, Then meal sub-headings appear with counts. Given row with no meal_type, When grouped, Then falls under Other section | pwa/src/components/LogManualEntryForm.tsx L51-59; pwa/src/components/LogFoodEditSheet.tsx L30-33; pwa/src/components/LogTypeTodayList.tsx L79-97; pwa/src/components/LogVoiceQuickForm.tsx L31; pwa/src/lib/logSectionShared.ts MEAL_TYPES; support.myfitnesspal.com/hc/en-us/articles/360032274592; MFP diary meal-grouped rows pattern | complements crit-041 crit-051 crit-052 crit-062 crit-072 crit-030; relay-* PATCH /food/items/{row} endpoint or LogFoodEditSheet edit-mode branch | — |
 | crit-081 | agreed | element-only | returning user | 4 | Cards (sickness timeline card) → Cards (sickness grid) | Sickness timeline event bars expose only a title tooltip and do not open related notes, forcing manual filter/search work. | Tapping a sickness event opens the sickness filter, pre-fills search with the event label, scrolls the matching grid into view, highlights matching text, and announces the related-notes action. | Given a 90-day sickness timeline with an event bar; When the bar is activated; Then Cards selects sickness, pre-fills the event label, scrolls the grid into view, and matching notes expose mark.cards-search-hit. Given keyboard or assistive-technology focus; When the bar is focused; Then its aria-label says Open related sickness notes. | pwa/src/components/SicknessTimeline.tsx L31-58 currently title-only aria-hidden bar; pwa/src/components/CardsSicknessTimelineCard.tsx L9-17 has no onEventSelect; server/habits_api/cards/sickness_sheet.py L23-55 supplies event label/start/end. Rejected hover-only and inline-note-card alternatives. | depends_on crit-004,crit-070 | agreed 2026-08-04 → ui-072; queue behind detail-sheet and search-highlight dependencies |
 | crit-080 | proposed | element-only | returning user | 4 | Day (habit hours card) → Day (failed sync list) | Failed habit syncs list shows per-row Retry only; no Retry all bulk action, no per-row error reason copy, no retry progress feedback, no aria-live announcement on retry success/failure — useOptimisticHabitLog.ts retryAllFailed already defined but never wired to UI | Retry all chip in DayHabitHoursCard header when failedCount>0 wiring useOptimisticHabitLog retryAllFailed; per-row error reason via entry.lastError field set in optimisticHabitLog.ts catch L114-120; per-row spinner during retry using saving state; aria-live polite announce via habitSyncMessage banner in DaySectionAlerts; optional Dismiss all failed chip; respect serverOnline; ESC dismiss | pwa/src/components/DayHabitFailedSyncList.tsx L9-37; pwa/src/hooks/useOptimisticHabitLog.ts L95-108; pwa/src/lib/optimisticHabitLog.ts L109-120; pwa/src/components/DaySectionAlerts.tsx L17-20; pwa/src/components/DaySectionScheduleStack.tsx L37-39 | crit-047,crit-068 | — |
 | crit-079 | shipped | journey-capture-thought | knowledge worker | 4 | Cards (filter bar) → Cards (grid) → Cards (bulk bar) | visible Select chip in cards-bulk-bar pre-selection, Cmd/Ctrl+Shift+A shortcut to enter selection, Esc to exit, aria-keyshortcuts mirror, dismissible first-visit hint per cardsSectionShared pattern | Bulk select via long-press only — desktop has no mouse path, no keyboard shortcut, no first-visit hint; cards grid has no overflow Select entry | pwa/src/components/CardsBulkActionBar.tsx L31-77; pwa/src/components/CardsKeepGrid.tsx L98-105 L113-141; pwa/src/hooks/useCardsFilterShortcuts.ts; pwa/src/hooks/useLongPress.ts; pwa/src/sections/Cards.tsx L110-126 L215-245 | crit-070,crit-010,crit-004,crit-018,crit-028 | — | shipped ui-070 2026-08-04 (commit 83e72ec) |
@@ -412,6 +414,7 @@ UX window ships **Mode C** (UI polish) only. Brainstorm → PO window. Bugs/qual
 2. Read `UX_GAPS` — update any awaiting PO (`po-agreed` → ensure matching `ui-*` in backlog)
 3. Ship **only** items in `UI_POLISH_BACKLOG` marked `agreed` or already in progress
 4. Log triage outcome in HISTORY (`agreed prop-ui-*`, `rejected prop-ui-*`, etc.)
+
 
 
 

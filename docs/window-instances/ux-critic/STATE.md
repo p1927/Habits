@@ -21,32 +21,32 @@
 | phase | `9-arm` |
 | ritual_step | `9-arm` |
 | review_status | `triaged` |
-| review_skip_reason | `docs-only critique tick — crit-080 validate_critique_tick OK; STATE.md/CRITIQUE_LOG only` |
-| review_round | `100` |
-| last_reviewed_round | `96` |
-| last_wake | `2026-08-04T04:05:33Z` |
+| review_skip_reason | `docs-only critique tick — crit-082 validate_critique_tick OK; STATE.md/CRITIQUE_LOG only` |
+| review_round | `101` |
+| last_reviewed_round | `100` |
+| last_wake | `2026-08-04T06:33:35Z` |
 | review_diff_range | `uncommitted` |
-| code_changed | `yes` |
-| confirmed_next | `crit-081 Cards element audit (tick 81, element mode)` |
-| tick_count | `81` |
+| code_changed | `no` |
+| confirmed_next | `crit-083 Log element audit (tick 83, element mode) — LogSubTabs/LogStatusShell recovery-state surface or fresh surface; AUDIT_ROTATION next=Home after Log` |
+| tick_count | `82` |
 | tick_mode | `element` |
 | worktree_status | `none` |
 | worktree_path | `—` |
 | worktree_branch | `—` |
 | worktree_item_id | `—` |
 | review_changed_files | `docs/window-instances/ux-critic/STATE.md` |
-| brainstorm_done | `yes` |
+| brainstorm_done | `no` |
 | brainstorm_outcome | `crit-081 SicknessTimeline tap-to-jump: A timeline row becomes button + onTapEvent callback through CardsSicknessTimelineCard → SicknessTimelineEventRow; tap scrolls Cards grid into view + filter snaps to sickness + search pre-fills with event label + matching notes highlight via mark.cards-search-hit (reuses crit-070); row height ≥44px tap target; row role=listitem not li+aria-hidden track; aria-label open related sickness notes; only on filter in (all, sickness); B hover-only (rejected: PWA mobile-first no hover at 390px); C inline related note cards (rejected: timeline becomes dense breaks at-a-glance scan)` |
 | execute_started | `yes` |
-| fix_verify_done | `no` |
+| fix_verify_done | `yes` |
 | reflect_done | `yes` |
 | commit_hash | `—` |
 | receive_review_done | `yes` |
 | design_deliberation_done | `yes` |
-| design_chosen_approach | `wire onTapEvent prop on CardsSicknessTimelineCard → SicknessTimelineEventRow; row becomes button with role=listitem; on tap section handler does scrollToGrid + setFilter('sickness') + setSearch(event.label); reuse highlightSearchMatch from crit-070; aria-label open related sickness notes; row min-height 44px` |
-| design_mitigations | `respect currentFilter (skip route when user already on sickness); only enabled when filter in (all,sickness) — silently no-op otherwise; aria-live polite on grid scroll; back arrow from sickness grid returns to All; preserve scroll position; aria-hidden track retained for visual users` |
+| design_chosen_approach | `LogQuantityUnitToggle + LogTypeRowEdit: add g/oz/kg segmented control to LogManualEntryForm Quantity field with convertToGrams helper (1 oz = 28.3495 g, 1 kg = 1000 g) + oz/kg→g on submit; row Edit button on LogTypeTodayList opens LogFoodEditSheet pre-populated with food+quantity+mealType, submits via PATCH /food/items/{row} API; meal-grouped sub-headings (Breakfast/Lunch/Dinner/Snack) from MEAL_TYPES using item.meal_type when present; sessionStorage lastUnit default; aria-label Switch unit to oz; preserve crit-041 macro preview pattern` |
+| design_mitigations | `convertToGrams pure function in logSectionShared.ts unit-testable; g remains canonical storage (apiFood already validates g); Edit on row does not delete; if apiFood has no PATCH endpoint relay must add updateFoodItem row first; oz/kg toggle hidden for voice log path (qty parsed by LLM in grams); meal-grouped sub-headings hidden if items.length<4 to avoid empty section noise; aria-live Quantity in oz reads as 4 oz on switch; back-compat for items without meal_type falls under Other` |
 | review_fingerprint | `cdade04091fcc370` |
-| current_item_id | `crit-081` |
+| current_item_id | `crit-082` |
 
 ## IN_PROGRESS
 
@@ -345,8 +345,14 @@
 
 
 
+
+
+
 | id | severity | finding | source | action | backlog_ref | status |
 |----|----------|---------|--------|--------|-------------|--------|
+| uc-r101-bugbot | low | BUGBOT_INFRASTRUCTURE_MISSING — review-bugbot skill path .cursor/skills-cursor/review-bugbot/SKILL.md not present; Hermes session exposes no Task(subagent_type=bugbot) primitive; window-lens review only. Source: round-101 bugbot. | round-101 bugbot | closed | — | closed |
+| uc-r101-001 | low | crit-082 gap confirmed: LogManualEntryForm.tsx L51-59 + LogFoodEditSheet.tsx L30-33 hardcoded (g); LogTypeTodayList.tsx L79-97 Delete-only rows no Edit; no convertToGrams helper anywhere; distinct from crit-041 (scan edit), crit-051 (scan portion), crit-052 (scan meal chips), crit-062 (sub-tab badge), crit-072 (totals header), crit-030 (history drill); competitive-teardown 2.2/5 vs MFP 4.5/5 | round-101 /code-review | closed | crit-082 | closed |
+| uc-r101-000 | low | docs-only tick 82 crit-082 — review skipped per RITUAL.md L142 code_changed=no validate_critique_tick OK; no pwa/server diff | round-101 /code-review | closed | crit-082 | closed |
 | uc-r100-002 | low | docs/window-instances/ux-critic/STATE.md crit-081 design_mitigations — preserve currentFilter guard prevents no-op when user already on sickness; scroll preservation on back nav; aria-live polite for grid scroll; aria-hidden track retained for sighted users — composes with existing timeline aria-label wrapper | round-100 /code-review | closed | crit-081 | closed |
 | uc-r100-001 | medium | docs/window-instances/ux-critic/STATE.md crit-081 evidence_block — SicknessTimeline L31-58 confirmed li with aria-hidden track + title tooltip only; CardsSicknessTimelineCard L9-17 no onEventSelect; Cards.tsx L278-280 mount on all|sickness only; depends_on crit-004 detail sheet and crit-070 search highlight must ship first; tap-to-jump is journey composite on top of those primitives | round-100 /code-review | closed | crit-081 | closed |
 | uc-r100-000 | low | docs/window-instances/ux-critic/STATE.md crit-081 CRITIQUE_LOG row + AUDIT_ROTATION Cards update + ux-relay mirror — gap verified SicknessTimelineEventRow has title tooltip only; no onSelect prop; CardsSicknessTimelineCard has no onEventSelect; Cards.tsx L278-280 mount-only path — distinct from crit-004 detail sheet and crit-070 search highlight by lifecycle (timeline → grid exit); validate_critique_tick OK | round-100 /code-review | closed | crit-081 | closed |
@@ -790,7 +796,11 @@
 
 
 
+
+
 | completed_at | item_id | phase | outcome | evidence |
+| 2026-08-04T06:33:35Z | crit-082 | 8-close | Log element audit → crit-082 proposed (LogQuantityUnitToggle + LogTypeRowEdit + meal-grouped sections) | validate_critique_tick OK; CRITIQUE_LOG row written; ux-relay CRITIQUE_BACKLOG mirror OK; rubric 4.4 (specificity 5 / measurability 5 / novelty 4 / journey_fit 3 / reference_fidelity 5) |
+| 2026-08-04T06:33:35Z | crit-082 | 4-execute | Log element audit → Quantity unit toggle (g/oz/kg) + today row inline Edit + meal-grouped sections proposed (brainstorm done; evidence LogManualEntryForm L51-59 LogFoodEditSheet L30-33 LogTypeTodayList L79-97) | validate_critique_tick OK; crit-082 brainstormed; A chosen; competitive-teardown delta 2.2/5 vs MFP 4.5/5 |
 | 2026-08-04T04:05:33Z | crit-081 | 8-close | Cards element audit → SicknessTimeline tap-to-jump to related sickness notes proposed | validate_critique_tick OK |
 | 2026-08-03T16:21:00Z | crit-080 | 8-close | Day element audit → habit sync retry-all recovery affordance proposed | validate_critique_tick OK |
 | — | — | 8-close | — | — |
@@ -879,6 +889,9 @@
 | 2026-07-28T16:38:00Z | crit-054 | 8-close | Home element audit → dashboard freshness timestamp proposed | validate_critique_tick OK |
 | 2026-07-28T16:44:00Z | crit-055 | 8-close | journey-coach-trust re-audit → stream error recovery proposed | validate_critique_tick OK |
 | 2026-07-28T16:50:00Z | crit-056 | 8-close | Agent element audit → Activity feed drill-down proposed | validate_critique_tick OK |
+
+
+
 
 
 

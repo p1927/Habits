@@ -27,6 +27,16 @@ CODE_STEP_LINE: tuple[str, ...] = (
     "9-arm",
 )
 
+# Observer archetype step line (docs-only digest, no worktree/review)
+OBSERVER_STEP_LINE: tuple[str, ...] = (
+    "1-wake",
+    "2-orient",
+    "3.1-select",
+    "4-execute",
+    "5-verify",
+    "8-reflect",
+    "9-arm",
+)
 PRODUCT_STEP_LINE: tuple[str, ...] = (
     "1-wake",
     "2-orient",
@@ -61,11 +71,13 @@ STEP_TO_PHASE: dict[str, str] = {
 FINAL_STEPS_BEFORE_ARM = frozenset({"8-merge", "8-reflect", "9-arm"})
 
 
-VALID_ARCHETYPES: frozenset[str] = frozenset({"engineer", "designer", "qa", "product", ""})
+VALID_ARCHETYPES: frozenset[str] = frozenset({"engineer", "designer", "qa", "product", "observer", ""})
 
 
 def step_line_for(archetype: str) -> tuple[str, ...]:
     normalized = (archetype or "").strip().lower()
+    if normalized == "observer":
+        return OBSERVER_STEP_LINE
     if normalized not in VALID_ARCHETYPES:
         print(
             f"RITUAL_STEP_WARN unknown archetype '{archetype}' — falling back to CODE_STEP_LINE",

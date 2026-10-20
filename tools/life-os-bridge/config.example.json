@@ -6,5 +6,11 @@
   "include_snippet": false,
   "snippet_chars": 60,
   "lookback_days": 14,
-  "networks": []
+  "networks": [],
+  "ignore_names": [
+    "Note to self",
+    "Meta AI"
+  ],
+  "context_messages": 10,
+  "transcript_chars": 1500
 }

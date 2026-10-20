@@ -13,6 +13,7 @@ Usage:
 Config: config.json next to this script (git-ignored; see README.md). Stdlib only, Python 3.8+.
 """
 import argparse
+import html
 import json
 import os
 import re
@@ -28,6 +29,7 @@ HOME = Path(os.environ.get("LIFEOS_BRIDGE_HOME", Path(__file__).resolve().parent
 CONFIG_PATH = HOME / "config.json"
 STATE_PATH = HOME / "state.json"
 SKIP_TYPES = {"REACTION", "NOTICE"}
+PHONE_RE = re.compile(r"^\+?[\d\s().-]{7,}$")  # unsaved contacts show up as bare numbers
 BATCH = 50
 
 
@@ -44,6 +46,17 @@ def parse_ts(value):
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
+
+
+def clean_name(value):
+    """Chat titles can be HTML-escaped more than once (e.g. 'G&amp;amp;D'); unescape until stable."""
+    s = str(value)
+    for _ in range(3):
+        nxt = html.unescape(s)
+        if nxt == s:
+            break
+        s = nxt
+    return " ".join(s.split())
 
 
 def iso(dt):
@@ -63,9 +76,12 @@ def load_config():
     cfg.setdefault("beeper_url", "http://localhost:23373")
     cfg.setdefault("include_snippet", False)
     cfg.setdefault("snippet_chars", 60)
+    cfg.setdefault("context_messages", 1)   # >1 posts the last N messages of the chat as one transcript
+    cfg.setdefault("transcript_chars", 1500)
     cfg.setdefault("lookback_days", 14)
     cfg.setdefault("networks", [])  # e.g. ["whatsapp", "instagram"]; empty = all
     cfg.setdefault("max_chats", 400)
+    cfg.setdefault("ignore_names", ["Note to self", "Meta AI"])  # chats that are not people
     return cfg
 
 
@@ -101,42 +117,78 @@ def recent_chats(cfg, since):
 
 
 def latest_message(cfg, chat, since):
+    """Return (newest real message after `since` or None, whether you have ever sent a message in this chat)."""
     page = beeper_get(cfg, "/v1/chats/%s/messages" % urllib.parse.quote(chat["id"], safe=""))
-    best = None
+    best, engaged, real = None, False, []
     for m in page.get("items", []):
-        if m.get("isDeleted") or str(m.get("type", "TEXT")).upper() in SKIP_TYPES or not m.get("timestamp"):
+        if m.get("isDeleted") or str(m.get("type", "TEXT")).upper() in SKIP_TYPES:
+            continue
+        if m.get("isSender"):
+            engaged = True
+        if not m.get("timestamp"):
             continue
         ts = parse_ts(m["timestamp"])
+        real.append((ts, m))
         if ts <= since:
             continue
         if best is None or ts > best[0]:
             best = (ts, m)
-    return best
+    real.sort(key=lambda x: x[0], reverse=True)
+    return best, engaged, real[: int(cfg["context_messages"])]
+
+
+TAG_RE = re.compile(r"<[^>]+>")
+
+
+def plain(text):
+    """Beeper returns some messages (business broadcasts) as HTML; keep readable text only."""
+    s = html.unescape(TAG_RE.sub(" ", re.sub(r"(?i)<br\s*/?>", " ", str(text or ""))))
+    return " ".join(s.split())
+
+
+def transcript(cfg, name, recent):
+    """Last N messages of a chat, oldest first, as 'Me: ... || Name: ...' (newest part kept when too long)."""
+    parts = []
+    for _, m in reversed(recent):
+        text = plain(m.get("text"))
+        if not text:
+            text = "[%s]" % str(m.get("type", "media")).lower()
+        who = "Me" if m.get("isSender") else name
+        parts.append("%s: %s" % (who, text[:200]))
+    out = " || ".join(parts)
+    limit = int(cfg["transcript_chars"])
+    return out[-limit:] if len(out) > limit else out
 
 
 def build_interactions(cfg, since):
     wanted = {n.lower() for n in cfg["networks"]}
+    ignore = {n.lower() for n in cfg["ignore_names"]}
     out = []
     for chat in recent_chats(cfg, since):
         if str(chat.get("type", "")).lower() != "single":
             continue
         network = str(chat.get("network", "")).lower()
-        name = str(chat.get("title", "")).strip()
-        if not name or (wanted and network not in wanted):
+        name = clean_name(chat.get("title", ""))
+        if not name or name.lower() in ignore or (wanted and network not in wanted):
             continue
-        found = latest_message(cfg, chat, since)
+        found, engaged, recent = latest_message(cfg, chat, since)
         if not found:
             continue
         ts, msg = found
         snippet = ""
         if cfg["include_snippet"]:
-            snippet = " ".join(str(msg.get("text") or "").split())[: int(cfg["snippet_chars"])]
+            if int(cfg["context_messages"]) > 1:
+                snippet = transcript(cfg, name, recent)
+            else:
+                snippet = plain(msg.get("text"))[: int(cfg["snippet_chars"])]
         out.append({
             "name": name,
             "channel": network or "chat",
             "direction": "out" if msg.get("isSender") else "in",
             "summary": snippet,
             "timestamp": iso(ts),
+            # Same rule as the Gmail sync: only chats you have written in, with a real name, may create a contact.
+            "createIfMissing": engaged and not PHONE_RE.match(name),
         })
     return out
 

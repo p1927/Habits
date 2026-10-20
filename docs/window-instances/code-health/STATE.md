@@ -21,7 +21,7 @@
 | confirmed_next | `ch-165` |
 | phase | `9-arm` |
 | last_wake | `2026-08-04T00:39:44Z` |
-| code_changed | `yes` |
+| code_changed | `no` |
 | review_status | `triaged` |
 | review_round | `33` |
 | last_reviewed_round | `31` |
